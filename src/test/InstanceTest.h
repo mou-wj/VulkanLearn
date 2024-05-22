@@ -1,21 +1,21 @@
 #pragma once
 
-#include "../common/TestBase.h"
-#include "TestFwd.h"
+#include "VKTestBase.h"
+
 
 NS_TEST_BEGIN
 
 
-class InstanceTest : public TestBase {
+class InstanceTest : public VKTestBase {
 public:
-	InstanceTest() = default;
+	InstanceTest();
 	void run() override;
 
 
 
 
 };
-
+TEST_REGISTER(InstanceTest)
 
 
 

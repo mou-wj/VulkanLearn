@@ -1,7 +1,9 @@
 #pragma once
 #include "Global.h"
 
+#include <vulkan/vulkan.h>
 
+#include <iostream>
 #include <map>
 #include <string>
 NS_TEST_BEGIN
@@ -41,8 +43,8 @@ private:
 	static TestManager* m_instance;
 	std::map<std::string, TestBase*> m_tests;
 };
-#define TEST_REGISTER(TestName) static TestManager::TestRegister<TestName> testRegister(#TestName)
-#define TEST_RUN(TestName) TestManager::Instance()->RunTest(#TestName)
+#define TEST_REGISTER(TestName) static TestManager::TestRegister<TestName> testRegister(#TestName);
+#define TEST_RUN(TestName) TestManager::Instance()->RunTest(#TestName);
 
 
 NS_TEST_END

@@ -1,16 +1,16 @@
 #pragma once
 
-#include "../common/TestBase.h"
+#include "VKTestBase.h"
 #include "TestFwd.h"
 
 NS_TEST_BEGIN
 
 
-class DeviceAndQueueTest : public TestBase {
+class DeviceAndQueueTest final: public  VKTestBase{
 public:
-	DeviceAndQueueTest() = default;
+	DeviceAndQueueTest();
 	void run() override;
-
+	virtual ~DeviceAndQueueTest();	
 
 
 

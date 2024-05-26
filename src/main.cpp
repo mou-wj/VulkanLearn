@@ -4,6 +4,6 @@ NS_TEST_USING
 
 void main() {
 
-	TEST_RUN(InstanceTest);
+	TEST_RUN(DeviceAndQueueTest);
 	
 }

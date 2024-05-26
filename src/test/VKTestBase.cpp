@@ -14,16 +14,16 @@ VKTestBase::~VKTestBase()
 	//ClearContex();
 }
 
-extern std::vector<VkLayerProperties> GetSurportLayers();
-extern std::vector<VkExtensionProperties> GetSurportExtensions();
+extern std::vector<VkLayerProperties> GetInstanceSurportLayers();
+extern std::vector<VkExtensionProperties> GetInstanceSurportExtensions();
 extern bool CheckExtensionSurport(const char* name, const std::vector<VkExtensionProperties>& exts);
 
 void VKTestBase::PrepareContex()
 {
 	VkInstanceCreateInfo info{};
 	info.sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	auto layers = GetSurportLayers();
-	auto extenstions = GetSurportExtensions();
+	auto layers = GetInstanceSurportLayers();
+	auto extenstions = GetInstanceSurportExtensions();
 	std::vector<const char*> wantLayerNames;
 	std::vector<const char*> wantExtensionNames;
 

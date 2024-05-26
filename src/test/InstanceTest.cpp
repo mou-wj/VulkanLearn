@@ -19,7 +19,7 @@ uint32_t GetApiVersion()
 
 
 }
-std::vector<VkLayerProperties> GetSurportLayers() {
+std::vector<VkLayerProperties> GetInstanceSurportLayers() {
 	std::vector<VkLayerProperties> layerProps;
 	uint32_t numLayer = 0;
 	vkEnumerateInstanceLayerProperties(&numLayer, nullptr);
@@ -36,7 +36,7 @@ std::vector<VkLayerProperties> GetSurportLayers() {
 	}
 	return layerProps;
 }
-std::vector<VkExtensionProperties> GetSurportExtensions() {
+std::vector<VkExtensionProperties> GetInstanceSurportExtensions() {
 	//获取核心层的拓展
 	std::vector<VkExtensionProperties> extensionProps;
 	uint32_t numExtension = 0;
@@ -127,8 +127,8 @@ public:
 static VkInstance CreateInstanceTest() {
 	VkInstanceCreateInfo info{};
 	info.sType = VkStructureType::VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	auto layers = GetSurportLayers();
-	auto extenstions = GetSurportExtensions();
+	auto layers = GetInstanceSurportLayers();
+	auto extenstions = GetInstanceSurportExtensions();
 	std::vector<const char*> wantLayerNames;
 	std::vector<const char*> wantExtensionNames;
 	//debug report ext

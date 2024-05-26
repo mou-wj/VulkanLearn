@@ -15,7 +15,7 @@ public:
 	virtual void run()  = 0;
 	virtual ~VKTestBase();
 protected:
-	VkInstance instance{ VK_NULL_HANDLE };
+
 	//准备Vulkan上下文，供需要的测试类在构造函数体中调用
 	void PrepareContex();
 
@@ -28,7 +28,7 @@ protected:
 	VkDebugUtilsMessengerEXT messager{ VK_NULL_HANDLE };
 
 };
-TEST_REGISTER(InstanceTest)
+
 
 
 

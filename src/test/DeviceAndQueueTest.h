@@ -5,7 +5,7 @@
 
 NS_TEST_BEGIN
 
-
+MARK_TEST_SEQUENCE(2)
 class DeviceAndQueueTest final: public  VKTestBase{
 public:
 	DeviceAndQueueTest();

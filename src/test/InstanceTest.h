@@ -5,7 +5,7 @@
 
 NS_TEST_BEGIN
 
-
+MARK_TEST_SEQUENCE(1)
 class InstanceTest : public VKTestBase {
 public:
 	InstanceTest();

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#define MARK_TEST_SEQUENCE(x) 
 NS_TEST_BEGIN
 
 

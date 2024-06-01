@@ -9,7 +9,9 @@ public:
 	CommandBufferTest();
 	void run() override;
 	virtual ~CommandBufferTest();
-
+private:
+	VkCommandPool commandPool{ nullptr };
+	std::vector<VkCommandBuffer> commandBuffers;
 
 };
 TEST_REGISTER(CommandBufferTest)

@@ -6,7 +6,17 @@
 
 #include <vector>
 
+#define THROW_ERROR throw std::runtime_error("error");
 #define MARK_TEST_SEQUENCE(x) 
+
+#define VK_API_WRAPPER(VK_API) auto res = VK_API;if(res != VK_SUCCESS) THROW_ERROR
+
+#define VK_STRCUTURE_LINK(NodeHead,NodeToInsert) {\
+const void* tmp = NodeHead.pNext;\
+NodeToInsert.pNext = tmp;\
+NodeHead.pNext = &NodeToInsert;\
+}
+
 NS_TEST_BEGIN
 
 
@@ -27,7 +37,8 @@ protected:
 	VkPhysicalDevice physicalDevice{ VK_NULL_HANDLE };
 	VkDevice device{ VK_NULL_HANDLE };
 	VkDebugUtilsMessengerEXT messager{ VK_NULL_HANDLE };
-
+	std::vector<VkQueue> queues;
+	int queueFamilyIndex{ -1 };
 };
 
 

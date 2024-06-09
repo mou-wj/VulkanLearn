@@ -12,7 +12,8 @@ public:
 	void run() override;
 	virtual ~SyncronizationAndCacheControlTest();
 
-
+private:
+	void FenceTest();
 
 };
 TEST_REGISTER(SyncronizationAndCacheControlTest)

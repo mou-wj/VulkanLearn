@@ -5,6 +5,7 @@ NS_TEST_BEGIN
 class InstanceTest;
 class DeviceAndQueueTest;
 class CommandBufferTest;
+class SyncronizationAndCacheControlTest;
 
 
 

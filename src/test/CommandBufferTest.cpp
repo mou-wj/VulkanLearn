@@ -2,7 +2,7 @@
 
 NS_TEST_BEGIN
 #define NV 1
-struct EnableFeature {
+namespace EnableFeature {
 	static bool inheritedConditionalRendering;
 	static bool multiview;
 };

@@ -9,7 +9,8 @@
 #define THROW_ERROR throw std::runtime_error("error");
 #define MARK_TEST_SEQUENCE(x) 
 
-#define VK_API_WRAPPER(VK_API) auto res = VK_API;if(res != VK_SUCCESS) THROW_ERROR
+#define VK_API_WRAPPER(VK_API) {auto res = VK_API;if(res != VK_SUCCESS) THROW_ERROR}
+#define VK_RESULT_CHECK_CALL(VK_API) VK_API_WRAPPER(VK_API)
 
 #define VK_STRCUTURE_LINK(NodeHead,NodeToInsert) {\
 const void* tmp = NodeHead.pNext;\
@@ -41,8 +42,15 @@ protected:
 	int queueFamilyIndex{ -1 };
 };
 
-
-
-
+inline void* ImportVKInstanceFunction(VkInstance instance,const char* funcName) {
+	PFN_vkGetDeviceProcAddr pfnGetInstanceProcAddr = (PFN_vkGetDeviceProcAddr)vkGetInstanceProcAddr(instance, "vkGetDeviceProcAddr");
+	return pfnGetInstanceProcAddr;
+}
+inline void* ImportVKDeviceFunction(VkDevice device, const char* funcName) {
+	PFN_vkGetDeviceProcAddr pfnGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)vkGetDeviceProcAddr(device, "vkGetDeviceProcAddr");
+	return pfnGetDeviceProcAddr;
+}
+#define VK_INSTANCE_FUNCTION_GET_AND_CALL(Instance,FuncName,...) ((PFN_##FuncName)ImportVKInstanceFunction(instance,#FuncName))(__VA_ARGS__);
+#define VK_DEVICE_FUNCTION_GET_AND_CALL(Device,FuncName,...) ((PFN_##FuncName)ImportVKDeviceFunction(Device,#FuncName))(__VA_ARGS__);
 NS_TEST_END
 

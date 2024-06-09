@@ -16,7 +16,12 @@ VKTestBase::~VKTestBase()
 
 extern std::vector<VkLayerProperties> GetInstanceSurportLayers();
 extern std::vector<VkExtensionProperties> GetInstanceSurportExtensions();
-extern bool CheckExtensionSurport(const char* name, const std::vector<VkExtensionProperties>& exts);
+extern bool CheckExtensionSurport(const char* extensionName, const  std::vector<VkExtensionProperties>& extensions);
+extern std::vector<VkPhysicalDevice> GetPhysicalDevices(VkInstance instance);
+extern std::vector<VkPhysicalDeviceProperties> GetPhysicalDeviceProperties(const std::vector<VkPhysicalDevice>& physicalDevices);
+extern std::vector<std::vector<VkQueueFamilyProperties>> GetPhysicalDeviceQueueFamilyPeoperties(const std::vector<VkPhysicalDevice>& physicalDevices);
+extern std::vector<VkExtensionProperties> GetPhysicalDeviceExtension(const VkPhysicalDevice physicalDevice);
+
 
 void VKTestBase::PrepareContex()
 {
@@ -96,9 +101,7 @@ void VKTestBase::PrepareContex()
 
 	//create device
 
-	extern std::vector<VkPhysicalDevice> GetPhysicalDevices(VkInstance instance);
-	extern std::vector<VkPhysicalDeviceProperties> GetPhysicalDeviceProperties(const std::vector<VkPhysicalDevice>&physicalDevices);
-	extern std::vector<std::vector<VkQueueFamilyProperties>> GetPhysicalDeviceQueueFamilyPeoperties(const std::vector<VkPhysicalDevice>&physicalDevices);
+
 
 
 
@@ -156,7 +159,7 @@ out:
 	deviceCreateInfo.enabledLayerCount = 0;
 	deviceCreateInfo.ppEnabledLayerNames = nullptr;
 
-	auto res = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
+	res = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
 	if (res != VK_SUCCESS)
 	{
 		throw std::runtime_error("Create device failed");

@@ -14,7 +14,11 @@ public:
 
 private:
 	void FenceTest();
-
+	void SemaphoreTest();
+	void EventTest();
+	void MemoryBarrierTest();
+	void BufferMemoryBarrierTest();
+	void ImageMemoryBarrierTest();
 };
 TEST_REGISTER(SyncronizationAndCacheControlTest)
 

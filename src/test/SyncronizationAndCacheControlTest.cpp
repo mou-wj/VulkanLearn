@@ -2,6 +2,9 @@
 #include <Windows.h>
 #include <vulkan/vulkan_win32.h>
 #include <winnt.h>
+#include <vulkan/vulkan_metal.h>
+typedef uint32_t zx_handle_t;//因为zx_handle_t 是google的开源操作系统fuchsia的句柄类型，所以这里定义一个uint32_t类型的句柄类型zx_handle_t，不起实际作用只是为了通过编译
+#include <vulkan/vulkan_fuchsia.h>
 NS_TEST_BEGIN
 
 
@@ -631,7 +634,9 @@ void SyncronizationAndCacheControlTest::run()
 
 	FenceTest();
 
+	SemaphoreTest();
 
+	EventTest();
 
 
 
@@ -661,7 +666,7 @@ enum class VkExternalFenceHandleTypeFlagBitsWithNotation {
 void SyncronizationAndCacheControlTest::FenceTest()
 {
 	//create
-	VkFenceCreateInfo fenceCreateInfo = {};
+	VkFenceCreateInfo fenceCreateInfo = {};//queue与host间
 	fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	//fenceCreateInfo.flags = 0;//创建一个未signaled的fence
 	fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;//创建一个signaled的fence
@@ -819,6 +824,273 @@ void SyncronizationAndCacheControlTest::FenceTest()
 
 
 
+}
+
+struct SemaphoreCreateInfoExt
+{
+	VkExportMetalObjectCreateInfoEXT exportMetalObjectInfo{};
+	VkExportSemaphoreCreateInfo exportSemaphoreInfo{};
+	VkExportSemaphoreWin32HandleInfoKHR exportSemaphoreWin32HandleInfo{};
+	VkImportMetalSharedEventInfoEXT importMetalSharedEventInfo{};
+	VkQueryLowLatencySupportNV queryLowLatencySupportInfo{};
+	VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo{};
+	SemaphoreCreateInfoExt() {
+		Init();
+	}
+	void Init() {
+		exportMetalObjectInfo.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT;
+		exportMetalObjectInfo.pNext = &exportSemaphoreInfo;
+		exportSemaphoreInfo.sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO;
+		exportSemaphoreInfo.pNext = &exportSemaphoreWin32HandleInfo;
+		exportSemaphoreWin32HandleInfo.sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR;
+		exportSemaphoreWin32HandleInfo.pNext = &importMetalSharedEventInfo;
+		importMetalSharedEventInfo.sType = VK_STRUCTURE_TYPE_IMPORT_METAL_SHARED_EVENT_INFO_EXT;
+		importMetalSharedEventInfo.pNext = &queryLowLatencySupportInfo;
+		queryLowLatencySupportInfo.sType = VK_STRUCTURE_TYPE_QUERY_LOW_LATENCY_SUPPORT_NV;
+		queryLowLatencySupportInfo.pNext = &semaphoreTypeCreateInfo;
+		semaphoreTypeCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
+		semaphoreTypeCreateInfo.pNext = nullptr;
+	}
+};
+
+
+void SyncronizationAndCacheControlTest::SemaphoreTest()
+{
+	VkSemaphore binarySemaphore{ nullptr }, timelineSemaphore{ nullptr };//queue间或queue与host间
+	VkSemaphoreCreateInfo binarySemaphoreCreateInfo{};
+	binarySemaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+	binarySemaphoreCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;//创建一个触发的二状态信号量
+
+	SemaphoreCreateInfoExt binarySemaphoreCreateInfoExt{};
+	binarySemaphoreCreateInfo.pNext = &binarySemaphoreCreateInfoExt.exportMetalObjectInfo;//把扩展信息添加到信号量创建信息中
+	//指定信号量的类型
+	auto& binarySemaphoreTypeCreateInfoExt = binarySemaphoreCreateInfoExt.semaphoreTypeCreateInfo;
+	binarySemaphoreTypeCreateInfoExt.semaphoreType = VK_SEMAPHORE_TYPE_BINARY;//VK_SEMAPHORE_TYPE_BINARY是二状态信号量（只有触发和未触发两种状态）,或者VK_SEMAPHORE_TYPE_TIMELINE是timeline信号量
+	binarySemaphoreTypeCreateInfoExt.initialValue = 0;//如果是二状态信号量,初始值为0,如果是timeline信号量,初始值为一个指定的值
+
+	//导出payload
+	bool suportWin32HandleExport = false, surportFdHandleExport = false, surpotZircorExport = false;
+	auto& exportSemaphoreInfo = binarySemaphoreCreateInfoExt.exportSemaphoreInfo;
+	{
+		//先获取可以导出payload的格式属性
+		VkExternalSemaphoreProperties externalSemaphoreProperties{};
+		VkPhysicalDeviceExternalSemaphoreInfo externalSemaphoreInfo{};//通过VkPhysicalDeviceExternalSemaphoreInfo指明要查询的导出句柄的类型
+		externalSemaphoreInfo.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO;
+		externalSemaphoreInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT;
+		//获取win32句柄的属性
+		vkGetPhysicalDeviceExternalSemaphoreProperties(physicalDevice, &externalSemaphoreInfo, &externalSemaphoreProperties);
+		suportWin32HandleExport = (externalSemaphoreProperties.externalSemaphoreFeatures & VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT) != 0;
+		if (suportWin32HandleExport) {
+			exportSemaphoreInfo.handleTypes |= VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT;
+
+			auto& exportSemaphoreWin32HandleInfo = binarySemaphoreCreateInfoExt.exportSemaphoreWin32HandleInfo;//如果支持导出win32句柄就可以添加额外的属性描述信息,如果semaphoreCreateInfo的pNext中不含exportSemaphoreInfo，那么该结构体会被忽略
+			exportSemaphoreWin32HandleInfo.sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR;//
+			exportSemaphoreWin32HandleInfo.dwAccess = SEMAPHORE_ALL_ACCESS;//指定导出信号量的访问权限
+			exportSemaphoreWin32HandleInfo.pAttributes = nullptr;//指定导出信号量的安全属性，先设置为nullptr即使用默认属性
+			exportSemaphoreWin32HandleInfo.name = L"test";//指定导出信号量的名字，可以为空
+
+
+
+		}
+		externalSemaphoreInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;
+		//获取fd的属性
+		vkGetPhysicalDeviceExternalSemaphoreProperties(physicalDevice, &externalSemaphoreInfo, &externalSemaphoreProperties);
+		surportFdHandleExport = (externalSemaphoreProperties.externalSemaphoreFeatures & VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT) != 0;
+
+		if (surportFdHandleExport)
+		{
+			exportSemaphoreInfo.handleTypes |= VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
+		}
+
+		//获取Zircon共享内存导出
+		externalSemaphoreInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
+		//获取Zircon的属性
+		vkGetPhysicalDeviceExternalSemaphoreProperties(physicalDevice, &externalSemaphoreInfo, &externalSemaphoreProperties);
+		surpotZircorExport = (externalSemaphoreProperties.externalSemaphoreFeatures & VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT) != 0;
+
+		if (surpotZircorExport)
+		{
+			exportSemaphoreInfo.handleTypes |= VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
+		}
+	}
+
+	//
+	auto& queryLowLatencySupportNV = binarySemaphoreCreateInfoExt.queryLowLatencySupportInfo;
+	queryLowLatencySupportNV.pQueriedLowLatencyData = nullptr;//这个结构体用于查询低延迟特性，如果不需要查询低延迟特性，可以设置为nullptr（待确认）
+
+	//
+
+	vkCreateSemaphore(device, &binarySemaphoreCreateInfo, nullptr, &binarySemaphore);//创建二状态信号
+
+	//如果binarySemaphore已经导出了win32句柄，那么可以调用调用以下操作获取句柄
+	HANDLE semaphoreHandle{ nullptr };
+	if (suportWin32HandleExport)
+	{
+		
+		VkSemaphoreGetWin32HandleInfoKHR getWin32HandleInfo{};
+		getWin32HandleInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_WIN32_HANDLE_INFO_KHR;
+		getWin32HandleInfo.pNext = nullptr;
+		getWin32HandleInfo.semaphore = binarySemaphore;
+		getWin32HandleInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT;
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetSemaphoreWin32HandleKHR, device, &getWin32HandleInfo, &semaphoreHandle);//同一个handle type的句柄只能导出一次，且不需要时需要关闭句柄
+	}
+	//如果binarySemaphore已经导出了fd句柄，那么可以调用以下操作获取句柄
+	int fd{ -1 };
+	if (surportFdHandleExport) {
+
+		
+		VkSemaphoreGetFdInfoKHR getFdInfo{};
+		getFdInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR;
+		getFdInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
+		getFdInfo.semaphore = binarySemaphore;
+		getFdInfo.pNext = nullptr;
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetSemaphoreFdKHR, device, &getFdInfo, &fd);//同一个handle type的fd只能导出一次，且不需要时需要关闭fd,相当于文件描述符，不需要时调用close(fd)关闭
+
+	}
+
+	//zircon句柄导出
+	zx_handle_t zirconHandle;
+	if (surpotZircorExport)
+	{
+		//zx_handle 主要出现在Fuchsia操作系统的Vulkan实现中。Fuchsia是Google开发的一个开源操作系统，旨在在广泛的设备上运行，包括手机、平板电脑、笔记本电脑和嵌入式设备。zx_handle 是Fuchsia中表示系统资源的一种通用句柄类型
+		VkSemaphoreGetZirconHandleInfoFUCHSIA getZirconHandleInfo{};//用于获取Zircon共享内存句柄
+		getZirconHandleInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA;
+		getZirconHandleInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
+		getZirconHandleInfo.semaphore = binarySemaphore;
+		getZirconHandleInfo.pNext = nullptr;
+		
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetSemaphoreZirconHandleFUCHSIA, device, &getZirconHandleInfo, &zirconHandle);//同一个handle type的zircon handle只能导出一次，且不需要时需要关闭zircon handle
+	}
+
+	//导入payload
+	//引入一个win32 handle
+	//可以多次导入
+	if (suportWin32HandleExport)
+	{
+		VkImportSemaphoreWin32HandleInfoKHR importSemaphoreWin32HandleInfo{};
+		importSemaphoreWin32HandleInfo.sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR;
+		importSemaphoreWin32HandleInfo.flags = VK_SEMAPHORE_IMPORT_TEMPORARY_BIT;
+		importSemaphoreWin32HandleInfo.handle = semaphoreHandle;//不需要时候主动关闭句柄
+		importSemaphoreWin32HandleInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT;//需要符合VkExternalSemaphoreProperties中的compitable的handle type
+		//导入类型可以为VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT，VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT，VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D12_FENCE_BIT，都是引用导入，可以是临时或者永久的
+		if (importSemaphoreWin32HandleInfo.handle || importSemaphoreWin32HandleInfo.handleType == VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT) {
+			importSemaphoreWin32HandleInfo.name = nullptr;
+		}
+		else {
+			importSemaphoreWin32HandleInfo.name = L"test";//如果handle无效就需要指定导入的信号量的名字
+		}
+		
+		importSemaphoreWin32HandleInfo.pNext = nullptr;
+		importSemaphoreWin32HandleInfo.semaphore = binarySemaphore;
+		
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkImportSemaphoreWin32HandleKHR, device, &importSemaphoreWin32HandleInfo);
+	}
+	
+	//引入fd句柄
+	if (surportFdHandleExport) {
+		VkImportSemaphoreFdInfoKHR importSemaphoreFdInfo{};
+		importSemaphoreFdInfo.sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR;
+		importSemaphoreFdInfo.fd = fd;//不需要时候主动关闭fd，如果类型是VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT，那么fd为-1可以表示一个已经触发的信号量
+		importSemaphoreFdInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;//需要符合VkExternalSemaphoreProperties中的compitable的handle type
+		//VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT是引用导入，可以是临时或者永久的，VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT是复制导入，是临时的
+		importSemaphoreFdInfo.flags = VK_SEMAPHORE_IMPORT_TEMPORARY_BIT;//如果是VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT复制导入，那么flags必须为VK_SEMAPHORE_IMPORT_TEMPORARY_BIT，这里直接设置为临时导入
+		importSemaphoreFdInfo.pNext = nullptr;
+		importSemaphoreFdInfo.semaphore = binarySemaphore;
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkImportSemaphoreFdKHR, device, &importSemaphoreFdInfo);
+
+
+	}
+
+	//引入zircon handle
+	if (surpotZircorExport)
+	{
+		VkImportSemaphoreZirconHandleInfoFUCHSIA importSemaphoreZirconHandleInfo{};
+		importSemaphoreZirconHandleInfo.sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA;
+		importSemaphoreZirconHandleInfo.flags = VK_SEMAPHORE_IMPORT_TEMPORARY_BIT;
+		importSemaphoreZirconHandleInfo.pNext = nullptr;
+		importSemaphoreZirconHandleInfo.semaphore = binarySemaphore;//不能是timeline信号量
+		importSemaphoreZirconHandleInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;//需要符合VkExternalSemaphoreProperties中的compitable的handle type,VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA是引用导入，可以是临时或者永久的
+		importSemaphoreZirconHandleInfo.zirconHandle = zirconHandle;
+		
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkImportSemaphoreZirconHandleFUCHSIA, device, &importSemaphoreZirconHandleInfo);
+
+
+
+	}
+
+
+	vkDestroySemaphore(device, binarySemaphore, nullptr);//销毁信号量
+
+
+
+
+
+
+
+	//创建一个timeline信号量
+
+	SemaphoreCreateInfoExt timelineSemaphoreCreateInfoExt{};
+	VkSemaphoreCreateInfo timelineSemaphoreCreateInfo{};
+	timelineSemaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;;
+	timelineSemaphoreCreateInfo.pNext = &timelineSemaphoreCreateInfoExt.exportMetalObjectInfo;
+	timelineSemaphoreCreateInfo.flags = 0;//创建一个未触发的信号量
+	auto& timelineSemaphoreTypeInfo = timelineSemaphoreCreateInfoExt.semaphoreTypeCreateInfo;
+	timelineSemaphoreTypeInfo.initialValue = 0;//初始值为0
+	timelineSemaphoreTypeInfo.semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE_KHR;//创建timeline信号量
+	VK_RESULT_CHECK_CALL(vkCreateSemaphore(device, &timelineSemaphoreCreateInfo, nullptr, &timelineSemaphore));
+
+	uint64_t counterValue{ 0 };
+	//获取当前时间线值
+	vkGetSemaphoreCounterValue(device, timelineSemaphore, &counterValue);
+
+	//触发timeline类型信号量
+	VkSemaphoreSignalInfo semaphoreSignalInfo{
+		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO,
+		.pNext = nullptr,
+		.semaphore = timelineSemaphore,
+		.value = 1000,//这个值必须大于当前时间线值且小于在pending状态下信号量触发操作的值，且差值不能大于maxTimelineSemaphoreValueDifference
+		//.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO,
+	};//无序初始化，顺序需要和定义的时候一样，不然会报错
+	vkSignalSemaphore(device, &semaphoreSignalInfo);//触发timeline信号量，并且直接将信号量的当前值设置为value的值
+
+	//等待timeline类型信号量触发
+	VkSemaphoreWaitInfo semapheWaitInfo{};
+	semapheWaitInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
+	semapheWaitInfo.flags = VK_SEMAPHORE_WAIT_ANY_BIT;//VK_SEMAPHORE_WAIT_ANY_BIT表示等待任意信号量触发，如果没有设置则是表示等待所有信号量触发
+	semapheWaitInfo.pNext = nullptr;
+	semapheWaitInfo.pSemaphores = &timelineSemaphore;//这里的信号量都必须是timeline信号量
+	semapheWaitInfo.semaphoreCount = 1;
+	uint64_t signalValue = 1000;//触发需要的值
+	semapheWaitInfo.pValues = &signalValue;//这里的值是触发信号量需要的值，不是等待时间
+	vkWaitSemaphores(device, &semapheWaitInfo, VK_TIMEOUT);
+
+
+
+	vkDestroySemaphore(device,timelineSemaphore, nullptr);//销毁信号量
+
+	
+}
+
+void SyncronizationAndCacheControlTest::EventTest()
+{
+	VkEvent vEvent{nullptr};//queue内或queue与host间
+
+
+
+
+
+}
+
+void SyncronizationAndCacheControlTest::MemoryBarrierTest()
+{
+}
+
+void SyncronizationAndCacheControlTest::BufferMemoryBarrierTest()
+{
+}
+
+void SyncronizationAndCacheControlTest::ImageMemoryBarrierTest()
+{
 }
 
 

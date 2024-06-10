@@ -1071,12 +1071,79 @@ void SyncronizationAndCacheControlTest::SemaphoreTest()
 	
 }
 
+//event这一节的内容先就这样，不再细究了，后面有实践机会再补充和深入理解
 void SyncronizationAndCacheControlTest::EventTest()
 {
+	//如果VK_KHR_portability_subset 拓展开启且VkPhysicalDevicePortabilitySubsetFeaturesKHR::events 是 VK_FALSE,那么不支持使用event
 	VkEvent vEvent{nullptr};//queue内或queue与host间
+	VkEventCreateInfo eventCreateInfo{};
+	eventCreateInfo.sType = VK_STRUCTURE_TYPE_EVENT_CREATE_INFO;
+	//eventCreateInfo.pNext = nullptr;
+	eventCreateInfo.flags = VK_EVENT_CREATE_DEVICE_ONLY_BIT;//创建一个只在device内部使用的event，如果为0则host也能用
+
+	//pnext中只能含有两种结构体中的一种VkExportMetalObjectCreateInfoEXT和VkImportMetalSharedEventInfoEXT
+	VkExportMetalObjectCreateInfoEXT exportMetalObjectInfo{};
+	exportMetalObjectInfo.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT;
+	exportMetalObjectInfo.pNext = nullptr;
+	exportMetalObjectInfo.exportObjectType = VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT;
+	eventCreateInfo.pNext = &exportMetalObjectInfo;
+
+	
+
+	VK_RESULT_CHECK_CALL(vkCreateEvent(device, &eventCreateInfo, nullptr, &vEvent));
+
+
+	//获取event状态
+	auto res = vkGetEventStatus(device, vEvent);
+	switch (res)
+	{
+	case VK_EVENT_SET: break;//event成功触发
+	case VK_EVENT_RESET:break;//event未触发
+	default:
+		break;//查询失败返回VK_ERROR_OUT_OF_HOST_MEMORY VK_ERROR_OUT_OF_DEVICE_MEMORY VK_ERROR_DEVICE_LOST
+	}
+
+	//触发event
+	vkSetEvent(device, vEvent);//如果队列中执行的命令需要等待host端的event，那么必须保证在提交命令前host端的event已经触发，该event就不能以VK_EVENT_CREATE_DEVICE_ONLY_BIT创建
+
+	//重置event到未触发状态
+	vkResetEvent(device, vEvent);//该event就不能以VK_EVENT_CREATE_DEVICE_ONLY_BIT创建
+
+	//如果在命令缓冲区中触发event
+	if (0)//这里没有cmdbuf的创建，所以这里的代码不会执行，只是为了展示
+	{
+		VkCommandBuffer cmdBuf{};
+		VkDependencyInfo eventDependencyInfo{};
+		eventDependencyInfo.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
+		eventDependencyInfo.pNext = nullptr;
+		eventDependencyInfo.dependencyFlags = 0;//这里目前还不怎么清楚，直接先设置为0
+		eventDependencyInfo.memoryBarrierCount = 0;
+		eventDependencyInfo.pMemoryBarriers = nullptr;
+		eventDependencyInfo.bufferMemoryBarrierCount = 0;
+		eventDependencyInfo.pBufferMemoryBarriers = nullptr;
+		eventDependencyInfo.imageMemoryBarrierCount = 0;
+		eventDependencyInfo.pImageMemoryBarriers = nullptr;
+		vkCmdSetEvent2(cmdBuf, vEvent, &eventDependencyInfo);//必须在命令的render pass实例外调用
+	
+		vkCmdResetEvent2(cmdBuf, vEvent, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);//必须在命令的render pass实例外调用
+
+		vkCmdWaitEvents2(cmdBuf, 1, &vEvent, &eventDependencyInfo);//可以和vkCmdSetEvent2和vkCmdResetEvent之间有内存依赖,和vkCmdSetEvent2有内存依赖，且不能等待vkCmdSetEvent触发的event
+
+		vkCmdSetEvent(cmdBuf, vEvent, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);//必须在命令的render pass实例外调用
+	
+
+		vkCmdResetEvent(cmdBuf, vEvent, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);//必须在命令的render pass实例外调用
+
+		vkCmdWaitEvents(cmdBuf, 1, &vEvent, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, 0, nullptr, 0, nullptr, 0, nullptr);//只能等待vkCmdSetEvent触发的event
+	}
 
 
 
+	vkDestroyEvent(device, vEvent, nullptr);
+	VkImportMetalSharedEventInfoEXT importMetalSharedEventInfo{};
+	importMetalSharedEventInfo.sType = VK_STRUCTURE_TYPE_IMPORT_METAL_SHARED_EVENT_INFO_EXT;
+	importMetalSharedEventInfo.pNext = nullptr;
+	//importMetalSharedEventInfo.mtlSharedEvent = metalSharedEvent;
 
 
 }

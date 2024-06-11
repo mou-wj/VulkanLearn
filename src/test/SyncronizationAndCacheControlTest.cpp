@@ -7,7 +7,8 @@ typedef uint32_t zx_handle_t;//因为zx_handle_t 是google的开源操作系统f
 #include <vulkan/vulkan_fuchsia.h>
 NS_TEST_BEGIN
 
-
+//同步逻辑：
+//第一个同步域 | 内存依赖（本节内容） | 第二个同步域
 
 //--------------------------------------------------------------------------
 //管线阶段
@@ -373,6 +374,8 @@ enum class VkAccessFlagBits2WithNotation
  * @return 
 */
 bool CheckMatchAccessFlagsAndPipelineStageFlags2(VkAccessFlags2 accessFlags, VkPipelineStageFlags2 pipelineStages2) {
+	//有些访问权限与管线阶段在有些特性没有开启的时候是无法使用的，这里仅仅只做访问控制和管线状态的匹配，不管特性是否开启是如何
+	//影响这些访问权限和管线状态的细节，不过一般这种影响都满足如果一个特性没有开启，那么和它相关的访问权限以及管线状态都是无法使用的
 	bool res = false;
 	res |= (accessFlags == VK_ACCESS_2_NONE);
 	res |= (accessFlags & VK_ACCESS_2_MEMORY_READ_BIT) == VK_ACCESS_2_MEMORY_READ_BIT;
@@ -1148,17 +1151,466 @@ void SyncronizationAndCacheControlTest::EventTest()
 
 }
 
-void SyncronizationAndCacheControlTest::MemoryBarrierTest()
+enum class  VkDependencyFlagBitsWithNotation {
+	VK_DEPENDENCY_BY_REGION_BIT = 0x00000001,//指明依赖是framebuffer-local的
+	// Provided by VK_VERSION_1_1
+	VK_DEPENDENCY_DEVICE_GROUP_BIT = 0x00000004,//指明依赖不是device-local的
+	// Provided by VK_VERSION_1_1
+	VK_DEPENDENCY_VIEW_LOCAL_BIT = 0x00000002,//指明依赖是view-local的
+	// Provided by VK_EXT_attachment_feedback_loop_layout
+	VK_DEPENDENCY_FEEDBACK_LOOP_BIT_EXT = 0x00000008,//指明render pass将通过 VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT布局从同一个image中读取或写入数据
+	// Provided by VK_KHR_multiview
+	VK_DEPENDENCY_VIEW_LOCAL_BIT_KHR = VK_DEPENDENCY_VIEW_LOCAL_BIT,
+	// Provided by VK_KHR_device_group
+	VK_DEPENDENCY_DEVICE_GROUP_BIT_KHR = VK_DEPENDENCY_DEVICE_GROUP_BIT
+};
+
+
+void SyncronizationAndCacheControlTest::PipelineBarrierTest()
 {
+	VkCommandBuffer cmdBuf;
+	VkDependencyInfo dependencyInfo{};
+	dependencyInfo.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
+	dependencyInfo.dependencyFlags = 0;
+	dependencyInfo.pNext = nullptr;
+	dependencyInfo.memoryBarrierCount = 0;
+	dependencyInfo.pMemoryBarriers = nullptr;
+	dependencyInfo.bufferMemoryBarrierCount = 0;
+	dependencyInfo.pBufferMemoryBarriers = nullptr;
+	dependencyInfo.imageMemoryBarrierCount = 0;
+	dependencyInfo.pImageMemoryBarriers = nullptr;
+
+	//vkCmdPipelineBarrier2和vkCmdPipelineBarrier定义在该命令之前的所有命令后在该命令后的所有命令的内存依赖
+	//cmd
+	{
+		//开始render pass实例的命令用法如下，以下命令不能交叉使用，只能单独使用
+		{
+			vkCmdBeginRendering(cmdBuf, nullptr);
+			{
+				//这里是render pass实例的范围
+			}
+			vkCmdEndRendering(cmdBuf);
+
+			vkCmdBeginRenderPass(cmdBuf, nullptr, VK_SUBPASS_CONTENTS_INLINE);
+			{
+				//这里是render pass实例的范围
+			}
+			vkCmdEndRenderPass(cmdBuf);
+
+			vkCmdBeginRenderPass2(cmdBuf, nullptr, nullptr);
+			{
+				//这里是render pass实例的范围
+			}
+			vkCmdEndRenderPass2(cmdBuf, nullptr);
+		
+		
+		}
+		
+
+
+
+
+
+		vkCmdPipelineBarrier2(cmdBuf, &dependencyInfo);
+		/*
+		  framebuffer-space管线状态包括：
+		  • VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+		  • VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+		  • VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT
+		  • VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+		 
+		有效用法：
+		1.如果该命令没有在render pass实例内调用，且该实例至少有一个subpass依赖，那么该命令的dependenceFlags就不能包括
+		VK_DEPENDENCY_BY_REGION_BIT 或者 VK_DEPENDENCY_VIEW_LOCAL_BIT
+		2.如果该命令没有在render pass实例内调用，那么就不能有任何的buffer memory barriers
+		3.如果该命令在render pass实例内调用，那么任何的image memory barriers都必须是作为当前子传递中使用的附件，既作为输入附件，也作为颜色、color resolve或深度/模板附件
+		4.如果该命令在render pass实例内调用，且image memory barriers是用作color resolve附件，那么对应的颜色附件必须是 VK_ATTACHMENT_UNUSED
+		5.如果该命令在render pass实例内调用，且image memory barriers是用作color resolve附件，那么该附件必须是以非零的VkExternalFormatANDROID：：externalFormat值创建的
+		6.如果该命令在render pass实例内调用，则image memory barriers的oldLayout和newLayout必须相同
+		7.如果该命令在render pass实例内调用，则任何memory barriers的srcQueueFamilyIndex和dstQueueFamilyIndex必须相同
+		8.如果该命令在render pass实例内调用，且任何memory barriers的source stage masks包含"framebuffer-space管线状态"，那么destination stage masks必须只包括"framebuffer-space管线状态"
+		9.如果该命令在render pass实例内调用，且任何memory barriers的source stage masks包含"framebuffer-space管线状态"，那么dependenceFlags必须包括VK_DEPENDENCY_BY_REGION_BIT
+		10.如果该命令在render pass实例内调用，则source 和destination stage masks必须只能包含图形管线的管线状态
+		11.如果该命令在render pass实例外调用，那么dependenceFlags不能包括 VK_DEPENDENCY_VIEW_LOCAL_BIT
+		12.如果该命令在render pass实例内调用，且在当前的subpass内有多个view，那么dependenceFlags必须包括 VK_DEPENDENCY_VIEW_LOCAL_BIT
+		13.如果shaderTileImageColorReadAccess, shaderTileImageStencilReadAccess,或者shaderTileImageDepthReadAccess 特性开启且 dynamicRenderingLocalRead特性为开启，则不能在render pass实例内调用该命令
+		14.如果 dynamicRenderingLocalRea未开启，且该命令在 vkCmdBeginRendering开始的render pass实例内调用，那么就不能有buffer或者image memory barriers
+		15.如果 dynamicRenderingLocalRea未开启，且该命令在 vkCmdBeginRendering开始的render pass实例内调用，那么memory barriers的访问控制只能是VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+			VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT, 或者VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+		16.如果该命令在vkCmdBeginRendering开始的render pass实例中调用，那么用在当前render pass的附件的image的布局必须是VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR 或者 VK_IMAGE_LAYOUT_GENERAL
+		17.如果该命令在vkCmdBeginRendering开始的render pass实例中调用，那么memory barriers的srcStageMask 和 dstStageMask只能是"framebuffer-space管线状态"中的
+		18. synchronization2特性必须开启
+		19.无论是在memory，image memory还是buffer memory barriers中的srcPipelineStages以及dstPipelineStages管线状态都必须是当前cmdbuffer所在的cmdPool创建时的queueFamily支持的
+
+		***** 附录：管线状态和访问控制的匹配参考之前的内容 
+		*/
+
+
+		vkCmdPipelineBarrier(cmdBuf, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 0, nullptr);
+		//// Provided by VK_VERSION_1_0
+		//void vkCmdPipelineBarrier(
+		//	VkCommandBuffer commandBuffer,
+		//	VkPipelineStageFlags srcStageMask,
+		//	VkPipelineStageFlags dstStageMask,
+		//	VkDependencyFlags dependencyFlags,
+		//	uint32_t memoryBarrierCount,
+		//	const VkMemoryBarrier * pMemoryBarriers,
+		//	uint32_t bufferMemoryBarrierCount,
+		//	const VkBufferMemoryBarrier * pBufferMemoryBarriers,
+		//	uint32_t imageMemoryBarrierCount,
+		//	const VkImageMemoryBarrier * pImageMemoryBarriers);
+		
+		/*
+		合法用法：
+		1.srcStageMask以及dstStageMask是否能使用或者是否能合法使用可以部分参考文档中pipeline stages合法用法的内容
+		2.memory barriers中的srcAccessMask和dstAccessMask必须是和srcStageMask以及dstStageMask相匹配的合法的访问控制
+		3.buffer memory barriers中，如果 srcQueueFamilyIndex和dstQueueFamilyIndex相等，那么srcAccessMask和dstAccessMask必须是和srcStageMask以及dstStageMask相匹配的合法的访问控制
+		4.image memory barriers中，如果 srcQueueFamilyIndex和dstQueueFamilyIndex相等，那么srcAccessMask和dstAccessMask必须是和srcStageMask以及dstStageMask相匹配的合法的访问控制
+		5.如果该命令没有在render pass实例内调用，且该实例至少有一个subpass依赖，那么该命令的dependenceFlags就不能包括
+		VK_DEPENDENCY_BY_REGION_BIT 或者 VK_DEPENDENCY_VIEW_LOCAL_BIT
+		6.如果该命令没有在render pass实例内调用，那么就不能有任何的buffer memory barriers
+		7.如果该命令在render pass实例内调用，那么任何的image memory barriers都必须是作为当前子传递中使用的附件，既作为输入附件，也作为颜色、color resolve或深度/模板附件
+		8.如果该命令在render pass实例内调用，且image memory barriers是用作color resolve附件，那么对应的颜色附件必须是 VK_ATTACHMENT_UNUSED
+		9.如果该命令在render pass实例内调用，且image memory barriers是用作color resolve附件，那么该附件必须是以非零的VkExternalFormatANDROID：：externalFormat值创建的
+		10.如果该命令在render pass实例内调用，则image memory barriers的oldLayout和newLayout必须相同
+		11.如果该命令在render pass实例内调用，则任何memory barriers的srcQueueFamilyIndex和dstQueueFamilyIndex必须相同
+		12.如果该命令在render pass实例内调用，且任何memory barriers的source stage masks包含"framebuffer-space管线状态"，那么destination stage masks必须只包括"framebuffer-space管线状态"
+		13.如果该命令在render pass实例内调用，且任何memory barriers的source stage masks包含"framebuffer-space管线状态"，那么dependenceFlags必须包括VK_DEPENDENCY_BY_REGION_BIT
+		14.如果该命令在render pass实例内调用，则source 和destination stage masks必须只能包含图形管线的管线状态
+		15.如果该命令在render pass实例外调用，那么dependenceFlags不能包括 VK_DEPENDENCY_VIEW_LOCAL_BIT
+		16.如果该命令在render pass实例内调用，且在当前的subpass内有多个view，那么dependenceFlags必须包括 VK_DEPENDENCY_VIEW_LOCAL_BIT
+		17.如果shaderTileImageColorReadAccess, shaderTileImageStencilReadAccess,或者shaderTileImageDepthReadAccess 特性开启且 dynamicRenderingLocalRead特性为开启，则不能在render pass实例内调用该命令
+		18.如果 dynamicRenderingLocalRea未开启，且该命令在 vkCmdBeginRendering开始的render pass实例内调用，那么就不能有buffer或者image memory barriers
+		19.如果 dynamicRenderingLocalRea未开启，且该命令在 vkCmdBeginRendering开始的render pass实例内调用，那么memory barriers的访问控制只能是VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+			VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT, 或者VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+		20.如果该命令在vkCmdBeginRendering开始的render pass实例中调用，那么用在当前render pass的附件的image的布局必须是VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR 或者 VK_IMAGE_LAYOUT_GENERAL
+		21.如果该命令在vkCmdBeginRendering开始的render pass实例中调用，那么memory barriers的srcStageMask 和 dstStageMask只能是"framebuffer-space管线状态"中的
+		22.任何srcStageMask以及dstStageMask都必须是该命令所在的cmdbuffer所在的cmdPool创建时的queueFamily支持的
+		23.如果srcStageMask以及dstStageMask包含VK_PIPELINE_STAGE_HOST_BIT,那么pImageMemoryBarriers的任何元素， pBufferMemoryBarriers的任何元素，srcQueueFamilyIndex 和 dstQueueFamilyIndex必须相等
+
+
+
+		
+		*/
+	}
+
+	//memory barriers
+	//访问权限和管线阶段的匹配见之前的函数CheckMatchAccessFlagsAndPipelineStageFlags2里面的实例
+	VkMemoryBarrier2 memoryBarrier2;//用在pipeline barrier中作为全局的内存栅栏，控制执行过程中所有内存对象的访问
+	memoryBarrier2.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER_2;
+	memoryBarrier2.srcAccessMask = VK_ACCESS_2_SHADER_WRITE_BIT_KHR;
+	memoryBarrier2.srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR;
+	memoryBarrier2.dstAccessMask = VK_ACCESS_2_SHADER_READ_BIT_KHR;
+	memoryBarrier2.dstStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR;
+	memoryBarrier2.pNext = nullptr;
+
+	VkMemoryBarrier memoryBarrier;//用在pipeline barrier中作为全局的内存栅栏，控制执行过程中单个内存对象的访问
+	memoryBarrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+	memoryBarrier.pNext = nullptr;
+	memoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+	memoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+
+	//buffer memory barriers
+	//1.如果srcQueueFamilyIndex和dstQueueFamilyIndex不相等，且srcQueueFamilyIndex和当前执行的cmdbuffer的queueFamilyIndex相等，那么
+	//该buffer memory barriers将会定义一个所有权释放操作，这样dstAccessMask，dstStageMask则是会被忽略的；
+	//2.如果srcQueueFamilyIndex和dstQueueFamilyIndex不相等，且dstQueueFamilyIndex和当前执行的cmdbuffer的queueFamilyIndex相等，那么
+	//该buffer memory barriers将会定义一个所有权获取操作，这样srcAccessMask，srcStageMask则是会被忽略的；
+	VkBufferMemoryBarrier2 bufferMemoryBarrier2;//用在pipeline barrier中控制buffer memory某个范围的访问以及所有权转换
+	bufferMemoryBarrier2.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2;
+	bufferMemoryBarrier2.pNext = nullptr;
+	bufferMemoryBarrier2.buffer = nullptr;
+	bufferMemoryBarrier2.offset = 0;
+	bufferMemoryBarrier2.size = VK_WHOLE_SIZE;//VK_WHOLE_SIZE表示从offset开始，直到buffer末尾的所有字节都将被栅栏操作影响,一个确定的值则表示从offset开始的size个字节将被栅栏操作影响
+	bufferMemoryBarrier2.srcAccessMask = VK_ACCESS_2_SHADER_WRITE_BIT_KHR;
+	bufferMemoryBarrier2.srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR;
+	bufferMemoryBarrier2.srcQueueFamilyIndex = 0;
+	bufferMemoryBarrier2.dstAccessMask = VK_ACCESS_2_SHADER_READ_BIT_KHR;
+	bufferMemoryBarrier2.dstStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR;
+	bufferMemoryBarrier2.dstQueueFamilyIndex = 0;
+	/*
+	合法用法
+	1.访问权限和管线阶段的匹配见之前的函数CheckMatchAccessFlagsAndPipelineStageFlags2里面的实例
+	2.如果buffer以VK_SHARING_MODE_EXCLUSIVE模式创建，且srcQueueFamilyIndex和dstQueueFamilyIndex不相等，那么srcQueueFamilyIndex和dstQueueFamilyIndex必须是
+	VK_QUEUE_FAMILY_EXTERNAL或者 VK_QUEUE_FAMILY_FOREIGN_EXT或者一个合法的queueFamilyIndex，且srcQueueFamilyIndex和dstQueueFamilyIndex至少有一个是VK_QUEUE_FAMILY_EXTERNAL或者 VK_QUEUE_FAMILY_FOREIGN_EXT，
+	另一个是一个合法的queueFamilyIndex
+	3.如果VK_KHR_external_memory特性未开启，则srcQueueFamilyIndex和dstQueueFamilyIndex就不能是VK_QUEUE_FAMILY_EXTERNAL
+	4.如果 VK_EXT_queue_family_foreign特性未开启，则srcQueueFamilyIndex和dstQueueFamilyIndex就不能是VK_QUEUE_FAMILY_FOREIGN_EXT
+	5.如果srcStageMask 或者 dstStageMask 含有 VK_PIPELINE_STAGE_2_HOST_BIT，则srcQueueFamilyIndex和dstQueueFamilyIndex必须相等
+
+	*/
+
+
+
+
+	//1.如果srcQueueFamilyIndex和dstQueueFamilyIndex不相等，且srcQueueFamilyIndex和当前执行的cmdbuffer的queueFamilyIndex相等，那么
+	//该buffer memory barriers将会定义一个所有权释放操作，这样dstAccessMask，dstStageMask则是会被忽略的；
+	//2.如果srcQueueFamilyIndex和dstQueueFamilyIndex不相等，且dstQueueFamilyIndex和当前执行的cmdbuffer的queueFamilyIndex相等，那么
+	//该buffer memory barriers将会定义一个所有权获取操作，这样srcAccessMask，srcStageMask则是会被忽略的；
+	//3.如果srcAccessFlags中或者dstAccessFlags中包含VK_ACCESS_HOST_WRITE_BIT或者VK_ACCESS_HOST_READ_BIT,那么即是host端可访问的内存，也是device端可访问的内存
+	VkBufferMemoryBarrier bufferMemoryBarrier;//用在pipeline barrier中控制buffer memory某个范围的访问以及所有权转换
+	bufferMemoryBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+	bufferMemoryBarrier.pNext = nullptr;
+	bufferMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+	bufferMemoryBarrier.srcQueueFamilyIndex = 0;
+	bufferMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	bufferMemoryBarrier.dstQueueFamilyIndex = 0;
+	bufferMemoryBarrier.buffer = nullptr;
+	bufferMemoryBarrier.offset = 0;
+	bufferMemoryBarrier.size = VK_WHOLE_SIZE;//VK_WHOLE_SIZE表示从offset开始，直到buffer末尾的所有字节都将被栅栏操作影响,一个确定的值则表示从offset开始的size个字节将被栅栏操作影响
+	/*
+	合法用法
+	1.访问权限和管线阶段的匹配见之前的函数CheckMatchAccessFlagsAndPipelineStageFlags2里面的实例
+	2.如果buffer以VK_SHARING_MODE_EXCLUSIVE模式创建，且srcQueueFamilyIndex和dstQueueFamilyIndex不相等，那么srcQueueFamilyIndex和dstQueueFamilyIndex必须是
+	VK_QUEUE_FAMILY_EXTERNAL或者 VK_QUEUE_FAMILY_FOREIGN_EXT或者一个合法的queueFamilyIndex，且srcQueueFamilyIndex和dstQueueFamilyIndex至少有一个是VK_QUEUE_FAMILY_EXTERNAL或者 VK_QUEUE_FAMILY_FOREIGN_EXT，
+	另一个是一个合法的queueFamilyIndex
+	3.如果VK_KHR_external_memory特性未开启，则srcQueueFamilyIndex和dstQueueFamilyIndex就不能是VK_QUEUE_FAMILY_EXTERNAL
+	4.如果 VK_EXT_queue_family_foreign特性未开启，则srcQueueFamilyIndex和dstQueueFamilyIndex就不能是VK_QUEUE_FAMILY_FOREIGN_EXT
+	5.如果 synchronization2特性未开启且buffer是以VK_SHARING_MODE_CONCURRENT创建的，那么srcQueueFamilyIndex和dstQueueFamilyIndex必须是VK_QUEUE_FAMILY_IGNORED 或者 VK_QUEUE_FAMILY_EXTERNAL
+		
+	
+	*/
+
+
+
+	//image memory barriers
+	//1.如果image以VK_SHARING_MODE_EXCLUSIVE创建，且srcQueueFamilyIndex和dstQueueFamilyIndex不相等，且srcQueueFamilyIndex和当前执行的cmdbuffer的queueFamilyIndex相等，那么
+	//该image memory barriers将会定义一个所有权释放操作，且第二个同步域不应用这个释放操作(即dstAccessMask，dstStageMask则是会被忽略的)；如果dstQueueFamilyIndex和当前执行的cmdbuffer的queueFamilyIndex相等，那么
+	//该image memory barriers将会定义一个所有权获取操作，且第一个同步域不应用这个获取操作(即srcAccessMask，srcStageMask则是会被忽略的)；除了srcQueueFamilyIndex和dstQueueFamilyIndex不相等导致所有权转换的情况
+	// 还有一些srcQueueFamilyIndex和dstQueueFamilyIndex中含有保留的特殊的用于转换的队列也会触发所有权转换操作
+	//2.如果image是disjointed,那么subresourceRange里面的aspectMask含有VK_IMAGE_ASPECT_COLOR_BIT相当于包含
+	//VK_IMAGE_ASPECT_PLANE_0_BIT & VK_IMAGE_ASPECT_PLANE_1_BIT & VK_IMAGE_ASPECT_PLANE_2_BIT
+	VkImageMemoryBarrier2 imageMemoryBarrier2;//用在pipeline barrier中控制image memory某个范围(layer，mip等)的访问，布局转换以及所有权转换
+	imageMemoryBarrier2.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
+	imageMemoryBarrier2.pNext = nullptr;//pnext可以链接 VkExternalMemoryAcquireUnmodifiedEXT 或者VkSampleLocationsInfoEXT 结构体
+	imageMemoryBarrier2.image = nullptr;
+	imageMemoryBarrier2.srcAccessMask = VK_ACCESS_2_SHADER_WRITE_BIT_KHR;
+	imageMemoryBarrier2.srcStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR;
+	imageMemoryBarrier2.srcQueueFamilyIndex = 0;
+	imageMemoryBarrier2.dstAccessMask = VK_ACCESS_2_SHADER_READ_BIT_KHR;
+	imageMemoryBarrier2.dstStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR;
+	imageMemoryBarrier2.dstQueueFamilyIndex = 0;
+	imageMemoryBarrier2.newLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	imageMemoryBarrier2.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	imageMemoryBarrier2.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imageMemoryBarrier2.subresourceRange.baseArrayLayer = 0;
+	imageMemoryBarrier2.subresourceRange.layerCount = 1;
+	imageMemoryBarrier2.subresourceRange.baseMipLevel = 0;
+	imageMemoryBarrier2.subresourceRange.levelCount = 1;
+	/*
+	合法用法
+	1.访问权限和管线阶段的匹配见之前的函数CheckMatchAccessFlagsAndPipelineStageFlags2里面的实例
+	2.布局需要和创建image时候的用法标志匹配，即如果oldLayout或者newLayout是
+		.oldLayout只能是VK_IMAGE_LAYOUT_UNDEFINED或者当前的layout，newLayout不能是VK_IMAGE_LAYOUT_UNDEFINED或者 VK_IMAGE_LAYOUT_PREINITIALIZED
+		.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL 那么image创建时的用法标志必须包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL ，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_SAMPLED_BIT或者VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+		.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_TRANSFER_DST_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含 VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT,或者VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT其中之一
+		.VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT,或者VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT其中之一
+		.VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT 或者 VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT,或者VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT其中之一
+		.VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR，那么image创建时的用法标志必须包含 VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_ENCODE_SRC_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_ENCODE_DST_KHR,那么image创建时的用法标志必顶包含VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_ENCODE_DPB_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR
+		.VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT 或者VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT 其中之一, 以及
+			VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT 或者 VK_IMAGE_USAGE_SAMPLED_BIT其中之一,以及VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT
+		.VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_STORAGE_BIT, 或者 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT 和 VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ， VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT两者其中一个
+	3.如果synchronization2特性没有开启，那么oldLayout和newLayout不能是VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR 或者 VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR
+	4.如果image以VK_SHARING_MODE_EXCLUSIVE模式创建，且srcQueueFamilyIndex和dstQueueFamilyIndex不相等，那么srcQueueFamilyIndex和dstQueueFamilyIndex必须是
+	VK_QUEUE_FAMILY_EXTERNAL或者 VK_QUEUE_FAMILY_FOREIGN_EXT或者一个合法的queueFamilyIndex，且srcQueueFamilyIndex和dstQueueFamilyIndex至少有一个是VK_QUEUE_FAMILY_EXTERNAL或者 VK_QUEUE_FAMILY_FOREIGN_EXT，
+	另一个是一个合法的queueFamilyIndex
+	5.如果VK_KHR_external_memory特性未开启，则srcQueueFamilyIndex和dstQueueFamilyIndex就不能是VK_QUEUE_FAMILY_EXTERNAL
+	6.如果 VK_EXT_queue_family_foreign特性未开启，则srcQueueFamilyIndex和dstQueueFamilyIndex就不能是VK_QUEUE_FAMILY_FOREIGN_EXT
+	7.如果attachmentFeedbackLoopLayout特性未开启，oldLayout不能是VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT
+	8.如果 dynamicRenderingLocalRead特性未开启，oldLayout不能是VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR，newLayout不能是VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR
+	9.subresourceRange中的base层数和mipmap级别必须在image的层数和mipmap级别范围内，且加起来层数和mipmap的计数count不能超过image的层数和mipmap级别
+	10.如果image有color format，且是single-plane或者不能disjoint的，那么subresourceRange.aspectMask必须包含 VK_IMAGE_ASPECT_COLOR_BIT
+	11.如果separateDepthStencilLayouts未开启且image有depth/stencil format，那么subresourceRange.aspectMask必须包含 VK_IMAGE_ASPECT_DEPTH_BIT 以及 VK_IMAGE_ASPECT_STENCIL_BIT，如果separateDepthStencilLayouts开启
+		那么subresourceRange.aspectMask必须包含 VK_IMAGE_ASPECT_DEPTH_BIT 或者 VK_IMAGE_ASPECT_STENCIL_BIT
+	12.如果subresourceRange.aspectMask包含VK_IMAGE_ASPECT_DEPTH_BIT，那么oldLayout或者newLayout不能是VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL或者VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL
+	13.如果subresourceRange.aspectMask包含VK_IMAGE_ASPECT_STENCIL_BIT，那么oldLayout或者newLayout不能是 VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL 或者VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL
+	14.subresourceRange.aspectMask必须和image的format兼容
+	15.如果srcStageMask 或者 dstStageMask包含VK_PIPELINE_STAGE_2_HOST_BIT,srcQueueFamilyIndex 和dstQueueFamilyIndex 必须相等
+	16.如果srcStageMask包含VK_PIPELINE_STAGE_2_HOST_BIT，oldLayout必须是VK_IMAGE_LAYOUT_PREINITIALIZED, VK_IMAGE_LAYOUT_UNDEFINED,或者 VK_IMAGE_LAYOUT_GENERAL其中之一
+	*/
+
+	
+
+	//
+	//1.如果srcAccessMask中含有 VK_ACCESS_HOST_WRITE_BIT,那么由该访问类型执行的内存写也会可见，因为该访问类型不是通过资源执行的。如果dstAccessMask中含有VK_ACCESS_HOST_WRITE_BIT 或者 VK_ACCESS_HOST_READ_BIT
+	// 可用的内存写入也对这些类型的访问可见，因为这些访问类型不是通过资源执行的。
+	//2.如果srcQueueFamilyIndex和dstQueueFamilyIndex不相等，且srcQueueFamilyIndex和当前执行的cmdbuffer的queueFamilyIndex相等，那么
+	//该image memory barriers将会定义一个所有权释放操作，且第二个同步域不应用这个释放操作(即dstAccessMask，dstStageMask则是会被忽略的)；如果dstQueueFamilyIndex和当前执行的cmdbuffer的queueFamilyIndex相等，那么
+	//该image memory barriers将会定义一个所有权获取操作，且第一个同步域不应用这个获取操作(即srcAccessMask，srcStageMask则是会被忽略的)；除了srcQueueFamilyIndex和dstQueueFamilyIndex不相等导致所有权转换的情况
+	// 还有一些srcQueueFamilyIndex和dstQueueFamilyIndex中含有保留的特殊的用于转换的队列也会触发所有权转换操作
+	//3.如果image是disjointed且是multi-plane的, 那么subresourceRange里面的aspectMask含有VK_IMAGE_ASPECT_COLOR_BIT相当于包含
+	//VK_IMAGE_ASPECT_PLANE_0_BIT & VK_IMAGE_ASPECT_PLANE_1_BIT & VK_IMAGE_ASPECT_PLANE_2_BIT
+	VkImageMemoryBarrier imageMemoryBarrier = {};
+	imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	imageMemoryBarrier.pNext = nullptr;//pnext可以链接 VkExternalMemoryAcquireUnmodifiedEXT 或者VkSampleLocationsInfoEXT 结构体
+	imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+	imageMemoryBarrier.srcQueueFamilyIndex = 0;
+	imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	imageMemoryBarrier.dstQueueFamilyIndex = 0;
+	imageMemoryBarrier.image = nullptr;
+	imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
+	imageMemoryBarrier.subresourceRange.layerCount = 1;
+	imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
+	imageMemoryBarrier.subresourceRange.levelCount = 1;
+	/*
+	合法用法
+	1.布局需要和创建image时候的用法标志匹配，即如果oldLayout或者newLayout是
+		.oldLayout只能是VK_IMAGE_LAYOUT_UNDEFINED或者当前的layout，newLayout不能是VK_IMAGE_LAYOUT_UNDEFINED或者 VK_IMAGE_LAYOUT_PREINITIALIZED
+		.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL 那么image创建时的用法标志必须包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL ，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_SAMPLED_BIT或者VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+		.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_TRANSFER_DST_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含 VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT,或者VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT其中之一
+		.VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT,或者VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT其中之一
+		.VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT 或者 VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		.VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_USAGE_SAMPLED_BIT,或者VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT其中之一
+		.VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR，那么image创建时的用法标志必须包含 VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_ENCODE_SRC_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_ENCODE_DST_KHR,那么image创建时的用法标志必顶包含VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR
+		.VK_IMAGE_LAYOUT_VIDEO_ENCODE_DPB_KHR,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR
+		.VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT,那么image创建时的用法标志必须包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT 或者VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT 其中之一, 以及
+			VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT 或者 VK_IMAGE_USAGE_SAMPLED_BIT其中之一,以及VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT
+		.VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR，那么image创建时的用法标志必须包含VK_IMAGE_USAGE_STORAGE_BIT, 或者 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT 和 VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ， VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT两者其中一个
+	2.如果synchronization2特性没有开启，那么oldLayout和newLayout不能是VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR 或者 VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR
+	3.如果image以VK_SHARING_MODE_EXCLUSIVE模式创建，且srcQueueFamilyIndex和dstQueueFamilyIndex不相等，那么srcQueueFamilyIndex和dstQueueFamilyIndex必须是
+	VK_QUEUE_FAMILY_EXTERNAL或者 VK_QUEUE_FAMILY_FOREIGN_EXT或者一个合法的queueFamilyIndex，且srcQueueFamilyIndex和dstQueueFamilyIndex至少有一个是VK_QUEUE_FAMILY_EXTERNAL或者 VK_QUEUE_FAMILY_FOREIGN_EXT，
+	另一个是一个合法的queueFamilyIndex
+	4.如果VK_KHR_external_memory特性未开启，则srcQueueFamilyIndex和dstQueueFamilyIndex就不能是VK_QUEUE_FAMILY_EXTERNAL
+	5.如果 VK_EXT_queue_family_foreign特性未开启，则srcQueueFamilyIndex和dstQueueFamilyIndex就不能是VK_QUEUE_FAMILY_FOREIGN_EXT
+	6.如果attachmentFeedbackLoopLayout特性未开启，oldLayout不能是VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT
+	7.如果 dynamicRenderingLocalRead特性未开启，oldLayout不能是VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR，newLayout不能是VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR
+	8.subresourceRange中的base层数和mipmap级别必须在image的层数和mipmap级别范围内，且加起来层数和mipmap的计数count不能超过image的层数和mipmap级别
+	9.如果image有color format，且是single-plane或者不能disjoint的，那么subresourceRange.aspectMask必须包含 VK_IMAGE_ASPECT_COLOR_BIT
+	10.如果separateDepthStencilLayouts未开启且image有depth/stencil format，那么subresourceRange.aspectMask必须包含 VK_IMAGE_ASPECT_DEPTH_BIT 以及 VK_IMAGE_ASPECT_STENCIL_BIT，如果separateDepthStencilLayouts开启
+		那么subresourceRange.aspectMask必须包含 VK_IMAGE_ASPECT_DEPTH_BIT 或者 VK_IMAGE_ASPECT_STENCIL_BIT
+	11.如果subresourceRange.aspectMask包含VK_IMAGE_ASPECT_DEPTH_BIT，那么oldLayout或者newLayout不能是VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL或者VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL
+	12.如果subresourceRange.aspectMask包含VK_IMAGE_ASPECT_STENCIL_BIT，那么oldLayout或者newLayout不能是 VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL 或者VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL
+	13.subresourceRange.aspectMask必须和image的format兼容
+	14.如果 synchronization2特性没有开启，且image以 VK_SHARING_MODE_CONCURREN创建，那么srcQueueFamilyIndex 以及 dstQueueFamilyIndex必须是  VK_QUEUE_FAMILY_IGNORED 或者VK_QUEUE_FAMILY_EXTERNAL，且至少有一个为VK_QUEUE_FAMILY_IGNORED
+	*/
+
+
+
+
+
+
+
+	//图像的布局转换（layout tranfer）可以直接在host端进行，但是该操作不会检查是否有队列正在使用该图像，所以可能会导致未定义行为
+	// Provided by VK_EXT_host_image_copy
+	typedef struct {
+		VkStructureType sType;
+		const void* pNext;
+		VkImage image;
+		VkImageLayout oldLayout;
+		VkImageLayout newLayout;
+		VkImageSubresourceRange subresourceRange;
+	} VkHostImageLayoutTransitionInfoEXT;//这个接口和相关的机构体目前安装的vulkan里没有定义，这里定义用作示例
+	auto  vkTransitionImageLayoutEXT = [](
+		VkDevice device,
+		uint32_t transitionCount,
+		const VkHostImageLayoutTransitionInfoEXT* pTransitions)->VkResult {
+
+			return VkResult::VK_SUCCESS;
+	};
+
+	
+	VkHostImageLayoutTransitionInfoEXT layoutTransitionInfo = {};
+	uint32_t VK_STRUCTURE_TYPE_HOST_IMAGE_LAYOUT_TRANSITION_INFO_EXT = 0;//这个类型也没有定义，这里定义用作示例
+	layoutTransitionInfo.sType = (VkStructureType)VK_STRUCTURE_TYPE_HOST_IMAGE_LAYOUT_TRANSITION_INFO_EXT;
+	layoutTransitionInfo.image = nullptr;
+	layoutTransitionInfo.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	layoutTransitionInfo.newLayout = VK_IMAGE_LAYOUT_GENERAL;
+	layoutTransitionInfo.pNext = nullptr;
+	layoutTransitionInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	layoutTransitionInfo.subresourceRange.baseArrayLayer = 0;
+	layoutTransitionInfo.subresourceRange.layerCount = 1;
+	layoutTransitionInfo.subresourceRange.baseMipLevel = 0;
+	layoutTransitionInfo.subresourceRange.levelCount = 1;
+	/*
+	合法用法可以参考前面的image memory barrier的用法
+	*/
+	vkTransitionImageLayoutEXT(device, 1,&layoutTransitionInfo);
+	
+	//外部队列
+	VK_QUEUE_FAMILY_EXTERNAL;//这个外部队列表示用同一套底层设备组或者物理设备，相同的通过 VkPhysicalDeviceIDProperties::driverUUID.指明的驱动版本，但是在不同VkInstance中的队列族
+	VK_QUEUE_FAMILY_FOREIGN_EXT;//这个外部队列表示不管底层的物理设备以及驱动版本是否相同都行，但是在不同VkInstance中的队列族
+	//1.所有权释放：通过buffer 和image memory barriers指定，pipeline barrriers命令执行，dstAccessFlags会被忽略，触发semaphore，在VK_PIPELINE_STAGE_ALL_COMMANDS_BIT管线时期
+	//2.所有权获取：通过buffer 和image memory barriers指定，pipeline barrriers命令执行，srcAccessFlags会被忽略，接受semaphore，在VK_PIPELINE_STAGE_ALL_COMMANDS_BIT管线时期
+	//3.所有权释放和获取定义的两个buffer 或者 image memory barrier的 oldLayout 和 newLayout必须相同，虽然这两个barrier提交两次，但操作只会执行一次，
+	//如果不需要所有权转换就设置 srcQueueFamilyIndex 和 dstQueueFamilyIndex为相同的或者为VK_QUEUE_FAMILY_IGNORED.
+	//4.资源所有权被释放后，所有对资源的操作都是未定义的，只有当所有权被获取了，获取了资源的队列才能正确访问该资源
+	
+	typedef struct {
+		VkStructureType sType;
+		const void* pNext;
+		VkBool32 acquireUnmodifiedMemory;//如果是VK_FALSE,则表明获取的内存在源queueFamily释放后可能被修改，如果是VK_TRUE，则表明获取的内存不会被修改
+	} VkExternalMemoryAcquireUnmodifiedEXT;//这个结构体没有定义，所以这里定义用作示例，这个结构体可以添加在VkImageMemoryBarrier2或者VkImageMemoryBarrier的pnext中，主要用在获取保留的用于转换的外部队列的获取操作中
 }
 
-void SyncronizationAndCacheControlTest::BufferMemoryBarrierTest()
+void SyncronizationAndCacheControlTest::AnotherTest()
 {
+	//等待队列空闲
+	VkQueue queue;//示例用queue
+	
+	vkQueueWaitIdle(queue);//等待queue执行完所有的命令，然后返回，相当于等待该队列上的所有fence触发
+
+
+	vkDeviceWaitIdle(device);//等待设备控空闲，相当于等待所有的队列执行完所有的命令
+
+	//notation:
+	//1.当命令提交到队列后，相当于建立了一个memory dependence,其中第一个同步域是host端的操作，第二个同步域是提交的命令操作
+	//2.event只能在同一个物理设备内使用，不能在不同物理设备之间使用，semaphore可以跨物理设备使用，fence可以跨物理设备使用，但是不能跨VkInstance使用
+
+	//获取某个操作的时间戳
+	VkCalibratedTimestampInfoEXT timestampInfo{};//描述精确的时间戳信息应该从哪里捕获
+	timestampInfo.sType = VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT;
+	timestampInfo.pNext = nullptr;
+	
+	//获取支持的domain类型
+	auto vkGetPhysicalDeviceCalibrateableTimeDomainsKHR = []() {};//示例用vkGetPhysicalDeviceCalibrateableTimeDomainsKHR
+
+	timestampInfo.timeDomain = VK_TIME_DOMAIN_DEVICE_EXT;//应该是通过vkGetPhysicalDeviceCalibrateableTimeDomainsKHR获取的VkTimeDomainKHR的值的一部分
+	/*
+		VK_TIME_DOMAIN_DEVICE_KHR ：指定设备的时域。此时域中的时间戳值使用相同的单位，并且与使用vkCmdWriteTimestamp 或者 vkCmdWriteTimestamp2 捕获的设备时间戳值相当，并被定义为根据设备的时间戳周期递增。
+		VK_TIME_DOMAIN_CLOCK_MONOTONIC_KHR ： 指定在POSIX平台上可用的CLOCK_MONOTONIC时域。此时域中的时间戳值以纳秒为单位。
+		VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_KHR ：指定在POSIX平台上可用的CLOCK_MONOTONIC_RAW时域。此时域中的时间戳值以纳秒为单位。
+		VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR ： 指定Windows上可用的性能计数器（QPC）时域。此时域中的时间戳值与Windows查询性能计算器API提供的单位相同。
+	*/
+	
+	uint64_t timeStampValue = 0,//返回的时间戳值
+		maxDeviation = 0;//用于计算时间戳的最大偏差
+	vkGetCalibratedTimestampsEXT(device, 1, &timestampInfo, &timeStampValue, &maxDeviation);
+
 }
 
-void SyncronizationAndCacheControlTest::ImageMemoryBarrierTest()
-{
-}
 
 
 

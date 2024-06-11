@@ -16,9 +16,8 @@ private:
 	void FenceTest();
 	void SemaphoreTest();
 	void EventTest();
-	void MemoryBarrierTest();
-	void BufferMemoryBarrierTest();
-	void ImageMemoryBarrierTest();
+	void PipelineBarrierTest();
+	void AnotherTest();
 };
 TEST_REGISTER(SyncronizationAndCacheControlTest)
 

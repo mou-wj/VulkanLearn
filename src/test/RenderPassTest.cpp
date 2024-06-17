@@ -588,8 +588,15 @@ void RenderPassTest::RenderPassCreateTest()
 	//subpass描述,主要描述附件以及subpass的用处
 	VkSubpassDescription subpassDescription{};
 	subpassDescription.flags = 0;/*
-	todo 20240617
-	
+		VK_SUBPASS_DESCRIPTION_PER_VIEW_ATTRIBUTES_BIT_NVX: 指定当前subpass编译的着色器会在 pre-rasterization 着色器阶段的单个调用中为所有view输出属性，如果不含当前标志，则该subpass则不输出到 *PerViewNV[]，而是输出到non-per-view (e.g. Position) outputs.
+		VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX: 指定当前subpass编译的着色器使用per-view positions将只有x分量不同，Per-view viewport mask也将被使用
+		VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM: 指定当前subpass的framebuffer region 是 fragment region，即最小的region dependence是基于pixel的，而不是基于sample的，任何fragment shader都可以访问当前fragment shader调用的的任何sample
+		VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM: 指定当前subpass执行shader resolve操作（允许自定义resolve操作）
+		VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_EXT: 指定当前subpass支持以VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT.创建的pipeline
+		VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT: 指定当前subpass支持以VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT.创建的pipeline
+		VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT: 指定当前subpass支持以VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT.创建的pipeline
+		VK_SUBPASS_DESCRIPTION_ENABLE_LEGACY_DITHERING_BIT_EXT: 指明当前subpass启用legacy dithering
+
 	*/
 	subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpassDescription.colorAttachmentCount = 1;
@@ -646,12 +653,26 @@ void RenderPassTest::RenderPassCreateTest()
 
 
 
+	VkAttachmentReference unusedAttachmentRef;//定义一个空的VkAttachmentReference
+	unusedAttachmentRef.attachment = VK_ATTACHMENT_UNUSED;//attachment设置为VK_ATTACHMENT_UNUSED,说明当前reference的attachment是空的
+	unusedAttachmentRef.layout = VK_IMAGE_LAYOUT_UNDEFINED;
+	/*
+	1.如果attachment是VK_ATTACHMENT_UNUSED，则layout不能为 VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_PREINITIALIZED, 或者 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+	2.如果attachment是VK_ATTACHMENT_UNUSED，且separateDepthStencilLayouts特性没有开启，则layout不能为VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+				VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL, 或VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL
+	3.如果synchronization2特性没有开启，则layout不能为VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR 或者 VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR
+	4. 如果attachmentFeedbackLoopLayout特性没有开启，则layout不能为VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT
+	5. 如果dynamicRenderingLocalRead特性没有开启，则layout不能为VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR
+	6. layout必须是合法的值
+	
+	*/
 
 
-
-
-
-
+	VK_SUBPASS_EXTERNAL;//指明是一个外部的subpass
+	VkSubpassDependency subpassDependency;//定义一个空的VkSubpassDependency
+	/*
+		todo 20240618
+	*/
 
 }
 

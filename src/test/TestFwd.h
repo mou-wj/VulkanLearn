@@ -6,7 +6,7 @@ class InstanceTest;
 class DeviceAndQueueTest;
 class CommandBufferTest;
 class SyncronizationAndCacheControlTest;
-
+class RenderPassTest;
 
 
 NS_TEST_END

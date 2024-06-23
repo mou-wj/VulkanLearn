@@ -15,6 +15,12 @@ public:
 private:
 	void RenderPassInstanceCommandTest();
 	void RenderPassCreateTest();
+	void FrameBufferCreateTest();
+	void RenderPassCmdTest();
+
+private:
+
+	VkRenderPass renderPass{ VK_NULL_HANDLE };
 };
 TEST_REGISTER(RenderPassTest)
 

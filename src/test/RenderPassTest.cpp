@@ -1302,7 +1302,19 @@ struct RenderPassBeginInfoExt {
 		Init();
 	}
 	void Init() {
+		deviceGroupRenderPassBeginInfo.sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO;
+		deviceGroupRenderPassBeginInfo.pNext = &multiviewPerViewRenderAreasRenderPassBeginInfoQCOM;
+		multiviewPerViewRenderAreasRenderPassBeginInfoQCOM.sType = VK_STRUCTURE_TYPE_MULTIVIEW_PER_VIEW_RENDER_AREAS_RENDER_PASS_BEGIN_INFO_QCOM;
+		multiviewPerViewRenderAreasRenderPassBeginInfoQCOM.pNext = &renderPassAttachmentBeginInfo;
 
+		renderPassAttachmentBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_ATTACHMENT_BEGIN_INFO;
+		renderPassAttachmentBeginInfo.pNext = &renderPassSampleLocationsBeginInfoEXT;
+		renderPassSampleLocationsBeginInfoEXT.sType = VK_STRUCTURE_TYPE_RENDER_PASS_SAMPLE_LOCATIONS_BEGIN_INFO_EXT;
+		renderPassSampleLocationsBeginInfoEXT.pNext = &renderPassStripeBeginInfoARM;
+		renderPassStripeBeginInfoARM.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//这个结构体的sType没有定义
+		renderPassStripeBeginInfoARM.pNext = &renderPassTransformBeginInfoQCOM;
+		renderPassTransformBeginInfoQCOM.sType = VK_STRUCTURE_TYPE_RENDER_PASS_TRANSFORM_BEGIN_INFO_QCOM;
+		renderPassTransformBeginInfoQCOM.pNext = nullptr;
 	}
 
 };
@@ -1312,9 +1324,120 @@ void RenderPassTest::RenderPassCmdTest()
 {
 
 	VkCommandBuffer cmdbuf;
+
+	RenderPassBeginInfoExt renderPassBeginInfoExt{};
+
+	//参考使用VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT创建的图像的深度/模板附件的深度方面的图像布局取决于用于渲染到图像子资源的最后一个样本位置，以下结构体指明采样位置
+	VkRenderPassSampleLocationsBeginInfoEXT& renderPassSampleLocationsBeginInfoEXT = renderPassBeginInfoExt.renderPassSampleLocationsBeginInfoEXT;
+	renderPassSampleLocationsBeginInfoEXT.attachmentInitialSampleLocationsCount = 1;
+
+	VkAttachmentSampleLocationsEXT attachmentSampleLocationsEXT{};
+	attachmentSampleLocationsEXT.attachmentIndex = 0;//如果该索引所指的附件并不是以VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT创建的，则sampleLocationsInfo中的设置则会被忽略
+	VkSampleLocationsInfoEXT locationsEXTs;
+	locationsEXTs.sType = VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT;
+	locationsEXTs.pNext = nullptr;
+	locationsEXTs.sampleLocationsCount = 1;
+	VkSampleLocationEXT location;
+	location.x = 0;
+	location.y = 0;
+	locationsEXTs.pSampleLocations = &location;
+	locationsEXTs.sampleLocationsPerPixel = VK_SAMPLE_COUNT_4_BIT;
+	VkExtent2D locationGridSize;
+	locationGridSize.height = 1;
+	locationGridSize.height = 1;
+	locationsEXTs.sampleLocationGridSize = locationGridSize;
+
+
+	attachmentSampleLocationsEXT.sampleLocationsInfo = locationsEXTs;//是用于将给定附件的布局从附件的初始布局转换到在使用它的第一个子传递中为附件指定的图像布局的sample位置状态。
+
+
+	renderPassSampleLocationsBeginInfoEXT.pAttachmentInitialSampleLocations = &attachmentSampleLocationsEXT;//是attachmentInitialSampleLocationsCount个VkAttachmentSampleLocationsEXT的数组首地址指针，指明附件的索引以及采样位置，并且每个元素指明了depth/stencil附件在subpass中的第一次使用时的自动转换布局时使用的采样位置
+	renderPassSampleLocationsBeginInfoEXT.postSubpassSampleLocationsCount = 1;
+	VkSubpassSampleLocationsEXT subpassSampleLocationsEXT{};
+	subpassSampleLocationsEXT.subpassIndex = 0;//如果subpass没有depth/stencil附件或者该附件不是以VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT创建，且VkPhysicalDeviceSampleLocationsPropertiesEXT::variableSampleLocations 为 VK_TRUE，则 sampleLocationsInfo中的参数会被忽略
+	VkSampleLocationsInfoEXT slocationsEXTs;
+	slocationsEXTs.sType = VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT;
+	slocationsEXTs.pNext = nullptr;
+	slocationsEXTs.sampleLocationsCount = 1;
+	VkSampleLocationEXT slocation;
+	slocation.x = 0;
+	slocation.y = 0;
+	slocationsEXTs.pSampleLocations = &slocation;
+	slocationsEXTs.sampleLocationsPerPixel = VK_SAMPLE_COUNT_4_BIT;
+	VkExtent2D slocationGridSize;
+	slocationGridSize.height = 1;
+	slocationGridSize.height = 1;
+	locationsEXTs.sampleLocationGridSize = slocationGridSize;
+	subpassSampleLocationsEXT.sampleLocationsInfo = slocationsEXTs;
+
+	renderPassSampleLocationsBeginInfoEXT.pPostSubpassSampleLocations = &subpassSampleLocationsEXT;//是postSubpassSampleLocationsCount个VkSubpassSampleLocationsEXT的数组首地址指针，指明subpass的索引以及采样位置，每个元素指明了depth/stencil附件在subpass中的最后一次使用时的自动转换布局时使用的采样位置，额外，如果
+	//VkPhysicalDeviceSampleLocationsPropertiesEXT::variableSampleLocations 为 VK_FALSE,则其中的元素必须和绑定在该subpass对应的命令缓冲区中的pipeline的采样位置相匹配，如果variableSampleLocations 为 VK_TRUE，这里面的值将不会使用
+
+
+
+	//VkRenderPassTransformBeginInfoQCOM
+	//如果要启用render pass transform,则需要包含一个VkRenderPassTransformBeginInfoQCOM结构体
+	VkRenderPassTransformBeginInfoQCOM& renderPassTransformBeginInfoQCOM = renderPassBeginInfoExt.renderPassTransformBeginInfoQCOM;
+	renderPassTransformBeginInfoQCOM.transform = VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR;//指明render pass的转换方式，这里指明为旋转180°作为参考，这里只能指定transform-02871
+	//为VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR, VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR, VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR,或者VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR，且renderPass创建时的flags必须包含VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM
+
+
+	//VkDeviceGroupRenderPassBeginInfo
+	//如果包含了该数据结构，则将设置一个devivce mask和该device上的render areas
+	VkDeviceGroupRenderPassBeginInfo& deviceGroupRenderPassBeginInfo = renderPassBeginInfoExt.deviceGroupRenderPassBeginInfo;
+	deviceGroupRenderPassBeginInfo.deviceMask = 1;
+	deviceGroupRenderPassBeginInfo.deviceRenderAreaCount = 1;//如果非0，则pDeviceRenderAreas将复写VkRenderPassBeginInfo::renderArea，然后为每个物理设备提供渲染区域，如果没有该结构体，则render pass实例的device mask为VkDeviceGroupCommandBufferBeginInfo::deviceMask，如果没有提供该结构体或者该值为0，则, VkRenderPassBeginInfo::renderArea应用到所有物理设备
+	VkRect2D renderArea{};
+	renderArea.extent.width = 1;
+	renderArea.extent.height = 1;
+	renderArea.offset.x = 0;
+	renderArea.offset.y = 0;
+
+	deviceGroupRenderPassBeginInfo.pDeviceRenderAreas = &renderArea;//指明每个物理设备的渲染区域
+	/*
+	VkDeviceGroupRenderPassBeginInfo有效用法：
+	1.deviceMask不能为0，且必须为一个合法的device mask，且必须时command buffer初始device mask中的子集
+	2. pDeviceRenderAreas的 offset.x， offset.y必须大于等于0， extent.width， extent.height必须大于0
+	3.offset.x + extent.width必须小于等于 maxFramebufferWidth，offset.y + extent.height必须小于等于 maxFramebufferHeight，
+
+	*/
+
+
+	//VkRenderPassAttachmentBeginInfo
+	VkRenderPassAttachmentBeginInfo& renderPassAttachmentBeginInfo = renderPassBeginInfoExt.renderPassAttachmentBeginInfo;
+	renderPassAttachmentBeginInfo.attachmentCount = 0;
+	renderPassAttachmentBeginInfo.pAttachments = VK_NULL_HANDLE;//指明每个附件所对应的image view，和创建render pass的附件一一对应
+	/*
+	1. pAttachments的每个元素只能指定一个mipmap，且必须以identity swizzle创建，且创建时的 VkImageViewCreateInfo::viewType不等于 VK_IMAGE_VIEW_TYPE_3D
+	2.如果 multisampled-render-to-single-sampled对任何subpass开启，pAttachments的每个元素的采样数为VK_SAMPLE_COUNT_1_BIT的必须有支持VkMultisampledRenderToSingleSampledInfoEXT::rasterizationSamples的format格式
+	3.pAttachments应该是attachmentCount个有效的VkImageView的句柄的数组的首地址
+	*/
+
+
+	// VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM
+	//如果启用multiview,且multiviewPerViewRenderAreas特性开启，则可以包含一个VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM结构体
+	VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM& multiviewPerViewRenderAreasRenderPassBeginInfoQCOM = renderPassBeginInfoExt.multiviewPerViewRenderAreasRenderPassBeginInfoQCOM;
+	multiviewPerViewRenderAreasRenderPassBeginInfoQCOM.perViewRenderAreaCount = 1;//如果不为0将复写VkRenderPassBeginInfo::renderArea 或 VkRenderingInfo::renderArea，然后为每个视图提供渲染区域，VkRenderPassBeginInfo::renderArea 或 VkRenderingInfo::renderArea则为pPerViewRenderAreas的并集，
+	//且perViewRenderAreaCount必须大于render pass中VkRenderPassMultiviewCreateInfo::pViewMasks. 或者 VkRenderingInfo::viewMask指定的最大有效位的索引，如果是0，VkRenderPassBeginInfo::renderArea or VkRenderingInfo::renderArea将应用到所有的render view
+		VkRect2D viewRenderArea{};
+		viewRenderArea.extent.width = 1;
+		viewRenderArea.extent.height = 1;
+		viewRenderArea.offset.x = 0;
+		viewRenderArea.offset.y = 0;
+	multiviewPerViewRenderAreasRenderPassBeginInfoQCOM.pPerViewRenderAreas = &viewRenderArea;
+	/*
+	VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM有效用法：
+	1. pPerViewRenderAreas的 offset.x， offset.y必须大于等于0， extent.width， extent.height必须大于0
+	2.pPerViewRenderAreas的offset.x + extent.width必须小于等于 maxFramebufferWidth，offset.y + extent.height必须小于等于 maxFramebufferHeight，
+	3.如果VkRenderPassBeginInfo或者VkRenderingInfo的pNext中含有该结构体且 VkRenderPassMultiviewCreateInfo::pViewMasks或者VkRenderingInfo::viewMask设置了第n位，则 perViewRenderAreaCount至少为n+1
+	4.pPerViewRenderAreas为perViewRenderAreaCount个有效的VkRect2D的数组的首地址
+	*/
+
+
+
 	VkRenderPassBeginInfo renderPassBeginInfo{};
 	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassBeginInfo.pNext = nullptr;
+	renderPassBeginInfo.pNext = &renderPassBeginInfoExt.deviceGroupRenderPassBeginInfo;
 	renderPassBeginInfo.clearValueCount = 0;
 	renderPassBeginInfo.pClearValues = VK_NULL_HANDLE;//是VkClearValue的数组首地址指针，按照attachment索引，不在索引内的元素将会被忽略
 	renderPassBeginInfo.framebuffer = VK_NULL_HANDLE;
@@ -1402,7 +1525,13 @@ void RenderPassTest::RenderPassCmdTest()
 	VkSubpassBeginInfo subpassBeginInfo{};
 	subpassBeginInfo.sType = VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO;
 	subpassBeginInfo.pNext = nullptr;
-	subpassBeginInfo.contents = VK_SUBPASS_CONTENTS_INLINE;
+	subpassBeginInfo.contents = VK_SUBPASS_CONTENTS_INLINE;/*如果contents 为 VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_EXT, 则nestedCommandBuffer 必须开启
+	VK_SUBPASS_CONTENTS_INLINE：指明命令将被记录到一个primaryCommandBuffer中，且该subpass不能包含任何执行secondaryCommandBuffer的命令
+	VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS：指明命令将被记录到一个secondaryCommandBuffer中，该secondaryCommandBuffer中只能使用vkCmdExecuteCommands命令来执行其他secondaryCommandBuffer直到遇到vkCmdNextSubpass 或者 vkCmdEndRenderPass.
+	VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_EXT：指明该subpass的命令可以记录到一个primaryCommandBuffer以及通过 vkCmdExecuteCommands执行的secondaryCommandBuffer中。
+	*/
+
+
 	vkCmdBeginRenderPass2(cmdbuf, &renderPassBeginInfo, &subpassBeginInfo);//调用了该命令后即可开始第一个subpass的命令记录
 	/*
 	合法用法：
@@ -1448,10 +1577,53 @@ void RenderPassTest::RenderPassCmdTest()
 
 
 
+	//查询渲染粒度,用于辅助设置renderArea
+	VkExtent2D renderAreaGranularity{};
+	vkGetRenderAreaGranularity(device, renderPass, &renderAreaGranularity);
+	/*
+	理想情况：
+	1.renderArea的width以及offset.x应该是renderAreaGranularity返回的width的整数倍,height以及offset.y应该是renderAreaGranularity返回的height的整数倍
+	2.renderArea.width + renderArea.offset.x应该等于VkRenderPassBeginInfo中framebuffer的width,renderArea.height + renderArea.offset.y应该等于VkRenderPassBeginInfo中framebuffer的height
+	*/
 
 
 
+	//进入到下一个subpass
+	vkCmdNextSubpass(cmdbuf, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);//调用了该命令后即可开始下一个subpass的命令记录，subpass的索引随着该调用依次递增，该command buffer必须是recoding状态，且改命令不能在render pass实例外
+	//调用，不能在video code外调用，command buffer 必须支持图形操作
 
+
+	VkSubpassEndInfo subpassEndInfo{};
+	subpassEndInfo.sType = VK_STRUCTURE_TYPE_SUBPASS_END_INFO;
+		VkSubpassFragmentDensityMapOffsetEndInfoQCOM subpassFragmentDensityMapOffsetEndInfo{};
+		subpassFragmentDensityMapOffsetEndInfo.sType = VK_STRUCTURE_TYPE_SUBPASS_FRAGMENT_DENSITY_MAP_OFFSET_END_INFO_QCOM;
+		subpassFragmentDensityMapOffsetEndInfo.pNext = nullptr;
+		subpassFragmentDensityMapOffsetEndInfo.fragmentDensityOffsetCount = 0;
+			VkOffset2D fragmentDensityOffset{};
+			fragmentDensityOffset.x = 0;
+			fragmentDensityOffset.y = 0;
+			subpassFragmentDensityMapOffsetEndInfo.pFragmentDensityOffsets = &fragmentDensityOffset;//包含fragment density map offsets 每个layer的offset,其中索引=层。每个（x，y）偏移量都是帧缓冲区像素，并将片段密度映射的获取移动到该量上。偏移量可以是正的或负的。如果该结构体没有包含在最后一个subpass的EndInfo的pNext中，则将忽略该结构体的参数，
+			//如果最后一个subpass的VkSubpassEndInfo::pNext中或者是renderPass不含VkSubpassFragmentDensityMapOffsetEndInfoQCOM,或者fragmentDensityOffsetCount为0，则offset (0,0) 将会被 Fetch Density Value使用
+		/*
+		VkSubpassFragmentDensityMapOffsetEndInfoQCOM有效用法：
+		1.
+		
+		
+		
+		
+		
+		*/
+	subpassEndInfo.pNext = &subpassFragmentDensityMapOffsetEndInfo;//pNext中可以含有VkSubpassFragmentDensityMapOffsetEndInfoQCOM
+	vkCmdNextSubpass2(cmdbuf, &subpassBeginInfo, &subpassEndInfo);//等用与vkCmdNextSubpass，只是可以扩展
+
+
+
+	//结束render pass 渲染
+	vkCmdEndRenderPass(cmdbuf);//调用该命令后，当前subpass必须是最后一个subpass，渲染结束。不能和vkCmdBeginRendering配套使用，vkCmdBeginQuery*以及vkCmdEndQuery*必须配套使用在同一个subpass中，该command buffer必须是recoding状态，且改命令不能在render pass实例外
+	//调用，不能在video code外调用，command buffer 必须支持图形操作
+
+	vkCmdEndRenderPass2(cmdbuf, &subpassEndInfo);//等用与vkCmdEndRenderPass，只是可以扩展，调用该命令后，当前subpass必须是最后一个subpass，渲染结束。不能和vkCmdBeginRendering配套使用，vkCmdBeginQuery*以及vkCmdEndQuery*必须配套使用在同一个subpass中，该command buffer必须是recoding状态，且改命令不能在render pass实例外
+	//调用，不能在video code外调用，command buffer 必须支持图形操作
 
 }
 

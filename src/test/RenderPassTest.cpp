@@ -1291,15 +1291,159 @@ VK_RESOLVE_MODE_EXTERNAL_FORMAT_DOWNSAMPLE_ANDROID：表示将把单个采样的颜色附件降
 */
 
 
+struct RenderPassBeginInfoExt {
+	VkDeviceGroupRenderPassBeginInfo deviceGroupRenderPassBeginInfo{};
+	VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM multiviewPerViewRenderAreasRenderPassBeginInfoQCOM{};
+	VkRenderPassAttachmentBeginInfo renderPassAttachmentBeginInfo{};
+	VkRenderPassSampleLocationsBeginInfoEXT renderPassSampleLocationsBeginInfoEXT{};
+	VkRenderPassStripeBeginInfoARM renderPassStripeBeginInfoARM{};
+	VkRenderPassTransformBeginInfoQCOM renderPassTransformBeginInfoQCOM{};
+	RenderPassBeginInfoExt() {
+		Init();
+	}
+	void Init() {
+
+	}
+
+};
+
+
 void RenderPassTest::RenderPassCmdTest()
 {
 
 	VkCommandBuffer cmdbuf;
 	VkRenderPassBeginInfo renderPassBeginInfo{};
+	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBeginInfo.pNext = nullptr;
+	renderPassBeginInfo.clearValueCount = 0;
+	renderPassBeginInfo.pClearValues = VK_NULL_HANDLE;//是VkClearValue的数组首地址指针，按照attachment索引，不在索引内的元素将会被忽略
+	renderPassBeginInfo.framebuffer = VK_NULL_HANDLE;
+	renderPassBeginInfo.renderArea.extent = VkExtent2D{ .width = 1,
+														.height = 1 };
+	/*
+	renderArea:指明渲染过程中会被影响的所有附件中x，y处于范围内的pixel值，且会作用于所有的layer，如果应用了VkRenderPassTransformBeginInfoQCOM::transform，则renderArea必须再framebuffer的维度内，
+				如果 render pass transform启用，则renderArea必须为framebuffer 的转换前的维度，当renderArea被 VkRenderPassTransformBeginInfoQCOM::transform,转换后，将会为framebuffer转换后的维度，
+				如果 multiviewPerViewRenderAreas 开启，则renderArea必须是VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM::pPerViewRenderAreas的一个并集
+				如果 subpassShading开启，则renderArea必须等于framebuffer的维度 
+	*/
+	renderPassBeginInfo.renderArea.offset = { .x = 0,.y = 0 };
+	renderPassBeginInfo.renderPass = VK_NULL_HANDLE;
+	
+	/*
+	合法用法：
+	1.clearValueCount 必须大于renderPass最大的指明了loadOp（或者stencilLoadOp如果有depth/stencil format）为VK_ATTACHMENT_LOAD_OP_CLEAR的attachment索引
+	2.如果clearValueCount 不为 0, pClearValues 必须是合法的clearValueCount个VkClearValue的数组首地址
+	3.renderPass必须和创建framebuffer时的renderPass相兼容
+	4.如果pNext 中不含VkDeviceGroupRenderPassBeginInfo 或者含但是其deviceRenderAreaCount 为 0,则
+												（1）renderArea.extent.width，renderArea.extent.height必须大于0,renderArea.offset.x，renderArea.offset.y 必须大于等于0
+												（2）renderArea.extent.width + renderArea.offset.x 必须小于等于framebuffer创建时的width，renderArea.extent.height + renderArea.offset.y 必须小于等于framebuffer创建时的height
+	5.如果pNext 中含有VkDeviceGroupRenderPassBeginInfo，则 pDeviceRenderAreas中的每一个元素的offset.x + extent.width必须小于等于framebuffer创建时的width，offset.y + extent.height必须小于等于framebuffer创建时的height
+	6.如果 framebuffer创建时的VkFramebufferCreateInfo::flags 不是 VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, 且 pNext 包含VkRenderPassAttachmentBeginInfo , 则 VkRenderPassAttachmentBeginInfo.attachmentCount必须为0
+	7.如果 framebuffer 创建时的 VkFramebufferCreateInfo::flags 包含VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, 则
+												（1）pNext中的VkRenderPassAttachmentBeginInfo.attachmentCount必须等于创建framebuffer时的 VkFramebufferAttachmentsCreateInfo::attachmentImageInfoCount
+												（2） pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件必须再renderPass以及framebuffer所在的Device上创建
+												（3）pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件的VkImageView 创建时的VkImageCreateInfo::flags 必须等于创建framebuffer的VkFramebufferAttachmentsCreateInfo::pAttachmentImageInfos中对应元素的flags参数
+												（4）pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件的VkImageView 创建时的usage 必须源于创建framebuffer的VkFramebufferAttachmentsCreateInfo::pAttachmentImageInfos中对应元素的usage参数
+												（5）pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件的VkImageView 创建时的width，height 必须等于创建framebuffer的VkFramebufferAttachmentsCreateInfo::pAttachmentImageInfos中对应元素的width，height参数
+												（6）pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件的VkImageView 创建时的VkImageCreateInfo::subresourceRange.layerCount 必须等于创建framebuffer的VkFramebufferAttachmentsCreateInfo::pAttachmentImageInfos中对应元素的 layerCount参数
+												（7）pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件的VkImageView 创建时的 VkImageFormatListCreateInfo::viewFormatCount必须等于创建framebuffer的VkFramebufferAttachmentsCreateInfo::pAttachmentImageInfos中对应元素的  viewFormatCount参数，
+												（8）pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件的VkImageView 创建时的 VkImageFormatListCreateInfo::pViewFormats 中的元素必须等于创建framebuffer的VkFramebufferAttachmentsCreateInfo::pAttachmentImageInfos中对应元素的  pViewFormats中的元素
+												（9）pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件的VkImageView 创建时的VkImageCreateInfo::format 必须等于renderPass的对应附件的 VkAttachmentDescription::format
+												（10）如果nullColorAttachmentWithExternalFormatResolve 为 VK_FALSE,则subpass中所有使用一个通过 vkGetAndroidHardwareBufferPropertiesANDROID接口获取的VkAndroidHardwareBufferFormatResolvePropertiesANDROID::colorAttachmentFormat格式创建的image来作为resolve 附件的是color 附件的格式必须和该resolve附件相同
+												（11）pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件的VkImageView 创建时的format以VkExternalFormatANDROID::externalFormat创建， 其format必须等于renderPass创建时对应的 VkAttachmentDescription2的pNext中的VkExternalFormatANDROID::externalFormat
+												（12）pNext中的VkRenderPassAttachmentBeginInfo.pAttachments中的每个附件的VkImageView 创建时的VkImageCreateInfo::samples 必须等于renderPass的对应附件的VkAttachmentDescription::samples，或者等于VK_SAMPLE_COUNT_1_BIT如果创建renderPass时的pNext中含有VkMultisampledRenderToSingleSampledInfoEXT且multisampledRenderToSingleSampledEnable为VK_TRUE
 
-	vkCmdBeginRenderPass(cmdbuf, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE)
+	
+	8.如果pNext中含有VkRenderPassTransformBeginInfoQCOM，则renderArea.offset必须为（0，0），被VkRenderPassTransformBeginInfoQCOM::transform转换的renderArea.extent必须等于framebuffer的维度
+	9.如果pNext中含有VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM且其perViewRenderAreaCount不为0，则 multiviewPerViewRenderAreas 特性必须开启，且renderArea必须是所有render view的render area的一个并集
+	10.如果pNext 含有VkRenderPassStripeBeginInfoARM ,  VkRenderPassStripeInfoARM::pStripeInfos中定义的stripe areas的并集必须包含renderArea 
+	11.renderPass和framebuffer所在的Device必须相同
+	*/
 
 
+
+
+
+	vkCmdBeginRenderPass(cmdbuf, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);//调用了该命令后即可开始第一个subpass的命令记录
+	/*
+	有效用法：
+	1.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+	2.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL,
+			VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL,
+			VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 或者
+			VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL，
+			VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL, 或者 VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL,
+			VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL, 或者
+			VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+	3.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescriptionStencilLayout中的stencilInitialLayout或者 stencilFinalLayout，或者VkAttachmentReferenceStencilLayout中的stencilLayout为
+			VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL, 或者
+			VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+	4.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_SAMPLED_BIT 或者 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
+	5.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+	6.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_TRANSFER_DST_BIT
+	7.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout不为VK_IMAGE_LAYOUT_UNDEFINED，则其initialLayout必须为当前 pRenderPassBegin中的framebuffer对应的附件的image subresource的图像布局
+	8.VkRenderPassCreateInfo中的pDependencies中的srcStageMask以及dstStageMask必须是能够被commmandBuffer所在的commmandPool创建时的queueFamilyIndex所对应的队列簇支持的。
+	9.如果renderPass所用的framebuffer的任何附件和改renderPass所用的其他附件存在内存重叠，且至少有一个附件是需要写入的，则这些附件都需要包含VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT，这些附件只能在subpass中用作color attachment, depth/stencil, 或者 resolve attachment
+	10.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT 或者 VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT 与上 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT 或者 VK_IMAGE_USAGE_SAMPLED_BIT 
+			再与上 VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT
+	11.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_STORAGE_BIT, 或者 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT 与上 VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ， VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT其中之一
+	12.如果contents 为 VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_EXT, 则nestedCommandBuffer 必须开启
+	13.commandBuffer 必须是recording 状态
+	*/
+
+
+	VkSubpassBeginInfo subpassBeginInfo{};
+	subpassBeginInfo.sType = VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO;
+	subpassBeginInfo.pNext = nullptr;
+	subpassBeginInfo.contents = VK_SUBPASS_CONTENTS_INLINE;
+	vkCmdBeginRenderPass2(cmdbuf, &renderPassBeginInfo, &subpassBeginInfo);//调用了该命令后即可开始第一个subpass的命令记录
+	/*
+	合法用法：
+	1.pRenderPassBegin中的framebuffer和renderPass必须创建在commandBuffer所在的Device上
+	2.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+	3.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL,
+			VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL,
+			VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 或者
+			VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL，
+			VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL, 或者 VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL,
+			VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL, 或者
+			VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+	4.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescriptionStencilLayout中的stencilInitialLayout或者 stencilFinalLayout，或者VkAttachmentReferenceStencilLayout中的stencilLayout为
+			VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL, 或者
+			VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+	
+	
+	
+	
+	5.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_SAMPLED_BIT 或者 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
+	6.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有 VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+	7.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_TRANSFER_DST_BIT
+	8.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout不为VK_IMAGE_LAYOUT_UNDEFINED，则其initialLayout必须为当前 pRenderPassBegin中的framebuffer对应的附件的image subresource的图像布局
+	9.VkRenderPassCreateInfo中的pDependencies中的srcStageMask以及dstStageMask必须是能够被commmandBuffer所在的commmandPool创建时的queueFamilyIndex所对应的队列簇支持的。
+	10.如果renderPass所用的framebuffer的任何附件和改renderPass所用的其他附件存在内存重叠，且至少有一个附件是需要写入的，则这些附件都需要包含VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT，这些附件只能在subpass中用作color attachment, depth/stencil, 或者 resolve attachment
+	11.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT 或者 VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT 与上 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT 或者 VK_IMAGE_USAGE_SAMPLED_BIT 
+			再与上 VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT
+	12.如果pRenderPassBegin中的rendPass创建时的任何VkAttachmentDescription中的initialLayout或者 finalLayout，或者VkAttachmentReference中的layout为
+			VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR，则 pRenderPassBegin中的framebuffer对应的附件的image view创建时必须含有VK_IMAGE_USAGE_STORAGE_BIT, 或者 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT 与上 VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ， VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT其中之一
+	13.commandBuffer 必须是recording 状态
+
+	
+	
+	
+	*/
 
 
 

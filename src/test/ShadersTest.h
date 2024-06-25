@@ -13,7 +13,7 @@ public:
 	~ShadersTest();
 
 private:
-
+	void ShaderCreateTest();
 
 private:
 

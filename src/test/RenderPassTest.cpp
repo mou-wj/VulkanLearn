@@ -1131,6 +1131,52 @@ VK_ATTACHMENT_UNUSED
 	18.如果 dependencyFlags不包含 VK_DEPENDENCY_VIEW_LOCAL_BIT, viewOffset 必须为 0
 	*/
 
+
+
+	//VkRenderPassCreationControlEXT有效用法，可以包含在VkRenderPassCreateInfo2或者VkSubpassDescription2的pNext中
+	//
+	VkRenderPassCreationControlEXT& renderPassCreateControlExt = renderPassCreateInfo2Ext.renderPassCreationControlEXT;
+	renderPassCreateControlExt.disallowMerging = VK_FALSE;//指明是否不开启render pass中的subpass的合并
+	VkRenderPassCreationControlEXT& srenderPassCreateControlExt = subpassDesctiption2Ext.renderPassCreationControlEXT;
+	srenderPassCreateControlExt.disallowMerging = VK_FALSE;//指明是否当前的subapass不能和前一个subpass进行合并
+
+
+	//VkRenderPassCreationFeedbackCreateInfoEXT有效用法，可以包含在VkRenderPassCreateInfo2中
+	//
+	VkRenderPassCreationFeedbackCreateInfoEXT& renderPassCreationFeedbackCreateInfoEXT = renderPassCreateInfo2Ext.renderPassCreationFeedbackCreateInfoEXT;
+	VkRenderPassCreationFeedbackInfoEXT renderPassFeedBack{};
+	renderPassFeedBack.postMergeSubpassCount = 0;//render pass创建后该值将为合并后的subpass 数量.
+	renderPassCreationFeedbackCreateInfoEXT.pRenderPassFeedback = &renderPassFeedBack;
+	
+	//VkRenderPassSubpassFeedbackCreateInfoEXT有效用法，可以包含在VkRenderPassCreateInfo2中
+	VkRenderPassSubpassFeedbackCreateInfoEXT& srenderPassCreationFeedbackCreateInfoEXT = subpassDesctiption2Ext.renderPassSubpassFeedbackCreateInfoEXT;
+	VkRenderPassSubpassFeedbackInfoEXT srenderPassFeedBack{};
+	srenderPassFeedBack.subpassMergeStatus = VK_SUBPASS_MERGE_STATUS_MERGED_EXT;/*指明当前的subpass是否和之前的subpass合并了或者没有合并的原因
+		VK_SUBPASS_MERGE_STATUS_MERGED_EXT:指明和前一个subpass合并了subpass
+		VK_SUBPASS_MERGE_STATUS_DISALLOWED_EXT：不允许和前一个subpass合并subpass，由VkRenderPassCreationControlEXT控制，如果是创建render pass包含，则所有的subpass都为该值否则只有创建包含了该数据结构的subpass为该值
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_SIDE_EFFECTS_EXT：指明因为合并由副作用而导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_VIEWS_MISMATCH_EXT：指明因为view mask不匹配导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_ALIASING_EXT：指明因为两个subpass间存在aliasing附件导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_DEPENDENCIES_EXT：指明因为subpass dependence不允许合并导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_INCOMPATIBLE_INPUT_ATTACHMENT_EXT：指明因为从前一个subpass输入的input附件不是color附件或者format不匹配导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_TOO_MANY_ATTACHMENTS_EXT：指明因为太多附件导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_INSUFFICIENT_STORAGE_EXT：指明内存不够导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_DEPTH_STENCIL_COUNT_EXT：指明太多depth/stencil附件导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_RESOLVE_ATTACHMENT_REUSE_EXT：指明一个resolve附件作为下一个subpass的输入附件导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_SINGLE_SUBPASS_EXT：指明只有一个subpass导致没有合并subpass
+		VK_SUBPASS_MERGE_STATUS_NOT_MERGED_UNSPECIFIED_EXT：指明未知原因导致没有合并subpass
+
+	
+	
+	*/
+	
+	srenderPassFeedBack.description[0] = 's';//提供额外信息的UTF-8字符串
+	srenderPassFeedBack.postMergeIndex = 0;//为合并后当前subpass的索引
+
+	srenderPassCreationFeedbackCreateInfoEXT.pSubpassFeedback = &srenderPassFeedBack;
+
+
+
 	vkCreateRenderPass2(device, &renderPassCreateInfo2, nullptr, &renderPass);
 
 	vkDestroyRenderPass(device, renderPass, nullptr);
@@ -1606,12 +1652,18 @@ void RenderPassTest::RenderPassCmdTest()
 			//如果最后一个subpass的VkSubpassEndInfo::pNext中或者是renderPass不含VkSubpassFragmentDensityMapOffsetEndInfoQCOM,或者fragmentDensityOffsetCount为0，则offset (0,0) 将会被 Fetch Density Value使用
 		/*
 		VkSubpassFragmentDensityMapOffsetEndInfoQCOM有效用法：
-		1.
-		
-		
-		
-		
-		
+		1.如果 fragmentDensityMapOffset特性没有开启或者render pass中没有fragment density map 附件，则fragmentDensityOffsetCount为0
+		2.如果VkSubpassDescription::fragmentDensityMapAttachment 不是 VK_ATTACHMENT_UNUSED且不以 VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM创建,fragmentDensityOffsetCount 必须为 0
+		3.如果VkSubpassDescription::pDepthStencilAttachment 不是 VK_ATTACHMENT_UNUSED且不以 VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM创建,fragmentDensityOffsetCount 必须为 0
+		4.如果VkSubpassDescription::pInputAttachments的任意元素 不是 VK_ATTACHMENT_UNUSED且不以 VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM创建,fragmentDensityOffsetCount 必须为 0
+		5.如果VkSubpassDescription::pColorAttachments的任意元素 不是 VK_ATTACHMENT_UNUSED且不以 VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM创建,fragmentDensityOffsetCount 必须为 0
+		6.如果VkSubpassDescription::pResolveAttachments的任意元素 不是 VK_ATTACHMENT_UNUSED且不以 VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM创建,fragmentDensityOffsetCount 必须为 0
+		7.如果VkSubpassDescription::pPreserveAttachments的任意元素 不是 VK_ATTACHMENT_UNUSED且不以 VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM创建,fragmentDensityOffsetCount 必须为 0
+		8.如果fragmentDensityOffsetCount不为 0 且 render pass的multiview 开启,fragmentDensityOffsetCount 必须等于创建fragment density map attachment view的 layerCount 
+		9.如果fragmentDensityOffsetCount不为 0 且 render pass的multiview 没有开启,fragmentDensityOffsetCount 必须等于1
+		10.pFragmentDensityOffsets中的元素的x必须是fragmentDensityOffsetGranularity.width的整数倍，y必须是 fragmentDensityOffsetGranularity.height的整数倍
+		11.pFragmentDensityOffsets必须是fragmentDensityOffsetCount个合法的 VkOffset2D数据结构的数组首地址
+
 		*/
 	subpassEndInfo.pNext = &subpassFragmentDensityMapOffsetEndInfo;//pNext中可以含有VkSubpassFragmentDensityMapOffsetEndInfoQCOM
 	vkCmdNextSubpass2(cmdbuf, &subpassBeginInfo, &subpassEndInfo);//等用与vkCmdNextSubpass，只是可以扩展
@@ -1630,7 +1682,17 @@ void RenderPassTest::RenderPassCmdTest()
 
 
 
+/*
+同步选项：
+1.VkSubpassDependency同步上一个subpass对于附件的写以及resolve操作以及后一个subpass的input附件读取
+2.vkCmdPipelineBarrier同步上一个subpass对于附件的写操作以及后一个subpass的input附件读取
+3. vkCmdPipelineBarrier同步上一个subpass对于附件的写操作以及后一个subpass的non-attachment附件读取，如果该附件的layout为VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT
+4.如果subresource用作color 以及 input attachment，则pipeline读取将按照VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT
+5.如果subresource用作depth 以及 input attachment，则pipeline读取将按照VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT
+6.如果subresource用作stencil 以及 input attachment，则pipeline读取将按照VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT
+7.如果subresource用作两个分开的 non-attachment的资源, 在fragment shader中写到同一个pixel或者sample可以通过另外的fragment shader，使用一种fragment interlock执行模式来写到同一个pixel或者sample
 
+*/
 
 
 

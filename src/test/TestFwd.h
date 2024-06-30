@@ -8,6 +8,7 @@ class CommandBufferTest;
 class SyncronizationAndCacheControlTest;
 class RenderPassTest;
 class ShadersTest;
+class PipelineTest;
 
 
 NS_TEST_END

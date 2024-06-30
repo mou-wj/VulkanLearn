@@ -1607,7 +1607,7 @@ void SyncronizationAndCacheControlTest::AnotherTest()
 	
 	uint64_t timeStampValue = 0,//返回的时间戳值
 		maxDeviation = 0;//用于计算时间戳的最大偏差
-	vkGetCalibratedTimestampsEXT(device, 1, &timestampInfo, &timeStampValue, &maxDeviation);
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetCalibratedTimestampsEXT, device, 1, &timestampInfo, &timeStampValue, &maxDeviation);
 
 }
 

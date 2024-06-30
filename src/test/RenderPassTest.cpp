@@ -143,9 +143,9 @@ void RenderPassTest::RenderPassInstanceCommandTest()
 	VkRenderingInfoKHR renderInfo;
 	renderInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
 
-	vkCmdBeginRenderingKHR(cmdbuf, &renderInfo);
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device,vkCmdBeginRenderingKHR,cmdbuf, &renderInfo);
 	/*
-	合法用法：
+	vkCmdBeginRenderingKHR合法用法：
 	1. dynamicRendering特性需要开启
 	2. nestedCommandBuffer特性未开启，pRenderingInfo->flags不能是VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT
 	3. pRenderingInfo->pDepthAttachment不是NULL，pRenderingInfo->pDepthAttachment->imageView如果不是VK_NULL_HANDLE则该imageview的布局要和 pRenderingInfo->pDepthAttachment->imageLayout相同
@@ -403,13 +403,13 @@ void RenderPassTest::RenderPassInstanceCommandTest()
 
 
 
-	vkCmdEndRenderingKHR(cmdbuf);//如果pRenderingInfo->flags为VK_RENDERING_SUSPENDING_BIT，则调用该命令后会挂起该render pass等待下一个render pass获取
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device,vkCmdEndRenderingKHR,cmdbuf);//如果pRenderingInfo->flags为VK_RENDERING_SUSPENDING_BIT，则调用该命令后会挂起该render pass等待下一个render pass获取
 
 	VkTilePropertiesQCOM tilePropertiesQCOM{};
 	tilePropertiesQCOM.sType = VK_STRUCTURE_TYPE_TILE_PROPERTIES_QCOM;
 
 	//查询dynamic rendering的tile属性
-	vkGetDynamicRenderingTilePropertiesQCOM(device, &renderInfo, &tilePropertiesQCOM);
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetDynamicRenderingTilePropertiesQCOM,device, &renderInfo, &tilePropertiesQCOM);
 
 }
 
@@ -744,7 +744,7 @@ void RenderPassTest::RenderPassCreateTest()
 	{
 		VkCommandBuffer cmdbuf;
 		//动态开启非附件（以loop标识创建的附件）写入，只在以含有VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT动态状态创建的pipeline中使用
-		vkCmdSetAttachmentFeedbackLoopEnableEXT(cmdbuf, VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkCmdSetAttachmentFeedbackLoopEnableEXT,cmdbuf, VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT);
 		/*
 		 1.attachmentFeedbackLoopDynamicState特性必须开启
 		 2.aspectMask只能包含VK_IMAGE_ASPECT_NONE, VK_IMAGE_ASPECT_COLOR_BIT,VK_IMAGE_ASPECT_DEPTH_BIT, 以及 VK_IMAGE_ASPECT_STENCIL_BIT

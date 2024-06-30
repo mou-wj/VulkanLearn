@@ -14,7 +14,9 @@ public:
 
 private:
 	void ShaderCreateTest();
-
+	void ShaderModuleCreateTest();
+	void CooperateMatrixsTest();
+	void CUDAModuleTest();
 private:
 
 	

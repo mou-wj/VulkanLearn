@@ -13,7 +13,7 @@ public:
 	~PipelineTest();
 
 private:
-
+	void ComputePipelineCreateTest();
 
 private:
 

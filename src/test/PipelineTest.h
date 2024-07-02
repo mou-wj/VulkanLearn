@@ -14,7 +14,7 @@ public:
 
 private:
 	void ComputePipelineCreateTest();
-
+	void GraphicPipelineCreateTest();
 private:
 
 };

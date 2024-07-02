@@ -5,13 +5,20 @@ NS_TEST_BEGIN
 
 多种管线的创建：
 	compute
-
+	graphic
 
 
 */
 
 
-
+// Provided by VK_NV_device_generated_commands_compute
+typedef struct VkComputePipelineIndirectBufferInfoNV {
+	VkStructureType sType;
+	const void* pNext;
+	VkDeviceAddress deviceAddress;
+	VkDeviceSize size;
+	VkDeviceAddress pipelineDeviceAddressCaptureReplay;
+} VkComputePipelineIndirectBufferInfoNV;
 
 
 
@@ -194,6 +201,15 @@ void PipelineTest::ComputePipelineCreateTest()
 		VkPipelineShaderStageRequiredSubgroupSizeCreateInfo& pipelineShaderStageRequiredSubgroupSizeCreateInfo = pipelineShaderStageCreateInfoExt.pipelineShaderStageRequiredSubgroupSizeCreateInfo;
 		pipelineShaderStageRequiredSubgroupSizeCreateInfo.requiredSubgroupSize = 1;//指明新创建的pipeline shader stage所需要的subgroup大小， minSubgroupSize <= requiredSubgroupSize(2的指数) <= maxSubgroupSize
 
+		VkPipelineShaderStageModuleIdentifierCreateInfoEXT& pipelineShaderStageModuleIdentifierCreateInfoEXT = pipelineShaderStageCreateInfoExt.pipelineShaderStageModuleIdentifierCreateInfoEXT;
+		pipelineShaderStageModuleIdentifierCreateInfoEXT.identifierSize = 0;//指定pIdentifier中数据的字节长度
+		pipelineShaderStageModuleIdentifierCreateInfoEXT.pIdentifier = nullptr;// 是一个指向一个指定标识符的不透明数据缓冲区的指针，这个可以通过VkShaderModuleIdentifierEXT获得，见ShadersTest章节
+		/*
+		有效用法：
+		1.如果该结构体包含在VkPipelineShaderStageCreateInfo的pNext中，且identifierSize不为0，则shaderModuleIdentifier特性必须开启，对应要创建的pipeline创建是必须包含VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT，
+		2.identifierSize 必须小于等于 VK_MAX_SHADER_MODULE_IDENTIFIER_SIZE_EXT
+		
+		*/
 
 
 
@@ -236,17 +252,17 @@ void PipelineTest::ComputePipelineCreateTest()
 
 	*/
 
-	//VkPipelineCreateFlags2CreateInfoKHR
-	VkPipelineCreateFlags2CreateInfoKHR& pipelineCreateFlags2CreateInfoKHR = computePipelineCreateInfoExt.pipelineCreateFlags2CreateInfoKHR;
-	pipelineCreateFlags2CreateInfoKHR.sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO_KHR;
-	//pipelineCreateFlags2CreateInfoKHR.pNext = nullptr;//已经链接好了这里不再设置
-	pipelineCreateFlags2CreateInfoKHR.flags = VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES_BIT_KHR;
+		//VkPipelineCreateFlags2CreateInfoKHR
+		VkPipelineCreateFlags2CreateInfoKHR& pipelineCreateFlags2CreateInfoKHR = computePipelineCreateInfoExt.pipelineCreateFlags2CreateInfoKHR;
+		pipelineCreateFlags2CreateInfoKHR.sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO_KHR;
+		//pipelineCreateFlags2CreateInfoKHR.pNext = nullptr;//已经链接好了这里不再设置
+		pipelineCreateFlags2CreateInfoKHR.flags = VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES_BIT_KHR;
 
-	//VkSubpassShadingPipelineCreateInfoHUAWEI
-	// subpass shading pipeline是一个compute pipeline，只能在subpass的render area范围内调用，允许访问在调用subpass中指定的输入附件，创建一个subpass shading pipeline需要在创建compute pipeline的时候的vkCreateComputePipelines.pNext这个中包含这个结构体
-	VkSubpassShadingPipelineCreateInfoHUAWEI& subpassShadingPipelineCreateInfoHUAWEI = computePipelineCreateInfoExt.subpassShadingPipelineCreateInfoHUAWEI;
-	subpassShadingPipelineCreateInfoHUAWEI.renderPass = VK_NULL_HANDLE;//指明当前pipeline需要用到的render pass，只能使用和当前pipeline兼容的render pass
-	subpassShadingPipelineCreateInfoHUAWEI.subpass = 0;//指明当前pipeline需要用到的subpass的索引
+		//VkSubpassShadingPipelineCreateInfoHUAWEI
+		// subpass shading pipeline是一个compute pipeline，只能在subpass的render area范围内调用，允许访问在调用subpass中指定的输入附件，创建一个subpass shading pipeline需要在创建compute pipeline的时候的vkCreateComputePipelines.pNext这个中包含这个结构体
+		VkSubpassShadingPipelineCreateInfoHUAWEI& subpassShadingPipelineCreateInfoHUAWEI = computePipelineCreateInfoExt.subpassShadingPipelineCreateInfoHUAWEI;
+		subpassShadingPipelineCreateInfoHUAWEI.renderPass = VK_NULL_HANDLE;//指明当前pipeline需要用到的render pass，只能使用和当前pipeline兼容的render pass
+		subpassShadingPipelineCreateInfoHUAWEI.subpass = 0;//指明当前pipeline需要用到的subpass的索引
 
 	//subpass shading pipeline的workgroup大小是一个二维向量，其宽度和高度的幂次数为2。宽度和高度的最大数量取决于实现，并且可能因渲染过程中不同的格式和附件的样本计数而有所不同，可以使用以下接口查询。
 	VkExtent2D maxWorkGroupSize;
@@ -254,41 +270,82 @@ void PipelineTest::ComputePipelineCreateTest()
 
 
 
-	//VkPipelineRobustnessCreateInfoEXT
-	//由于ComputePipelineCreateInfoExt以及PipelineShaderStageCreateInfoExt都含有该结构体，故这里同时设置,这个结构体如果包含在创建pipeline的信息结构体中其作用域就是整个管线对资源的访问（它只影响由创建信息指定的管道的子集），包含在shader stage的创建信息中则作用域只对当前shader stage对资源的访问，如果同时指定，shader stage对资源的访问优先
-	VkPipelineRobustnessCreateInfoEXT& pipelineRobustnessCreateInfoEXTForPipeline = computePipelineCreateInfoExt.pipelineRobustnessCreateInfoEXT;
-	VkPipelineRobustnessCreateInfoEXT& pipelineRobustnessCreateInfoEXTForShaderStage = pipelineShaderStageCreateInfoExt.pipelineRobustnessCreateInfoEXT;
+		//VkPipelineRobustnessCreateInfoEXT
+		//由于ComputePipelineCreateInfoExt以及PipelineShaderStageCreateInfoExt都含有该结构体，故这里同时设置,这个结构体如果包含在创建pipeline的信息结构体中其作用域就是整个管线对资源的访问（它只影响由创建信息指定的管道的子集），包含在shader stage的创建信息中则作用域只对当前shader stage对资源的访问，如果同时指定，shader stage对资源的访问优先
+		VkPipelineRobustnessCreateInfoEXT& pipelineRobustnessCreateInfoEXTForPipeline = computePipelineCreateInfoExt.pipelineRobustnessCreateInfoEXT;
+		VkPipelineRobustnessCreateInfoEXT& pipelineRobustnessCreateInfoEXTForShaderStage = pipelineShaderStageCreateInfoExt.pipelineRobustnessCreateInfoEXT;
 
-	pipelineRobustnessCreateInfoEXTForPipeline.images = VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DEVICE_DEFAULT_EXT;//为◦ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE以及VK_DESCRIPTOR_TYPE_STORAGE_IMAGE所指的资源指明超出资源范围的访问行为
-	pipelineRobustnessCreateInfoEXTForPipeline.vertexInputs = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;//为input vertex arributes所指的资源指明超出资源范围的访问行为
-	pipelineRobustnessCreateInfoEXTForPipeline.storageBuffers = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;//为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER，VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER以及VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC所指的资源指明超出资源范围的访问行为
-	pipelineRobustnessCreateInfoEXTForPipeline.uniformBuffers = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;//为 VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER，VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER，VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC以及VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK所指的资源指明超出资源范围的访问行为
+		pipelineRobustnessCreateInfoEXTForPipeline.images = VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DEVICE_DEFAULT_EXT;//为◦ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE以及VK_DESCRIPTOR_TYPE_STORAGE_IMAGE所指的资源指明超出资源范围的访问行为
+		pipelineRobustnessCreateInfoEXTForPipeline.vertexInputs = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;//为input vertex arributes所指的资源指明超出资源范围的访问行为
+		pipelineRobustnessCreateInfoEXTForPipeline.storageBuffers = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;//为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER，VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER以及VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC所指的资源指明超出资源范围的访问行为
+		pipelineRobustnessCreateInfoEXTForPipeline.uniformBuffers = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;//为 VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER，VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER，VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC以及VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK所指的资源指明超出资源范围的访问行为
 
-	pipelineRobustnessCreateInfoEXTForShaderStage.images = VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DEVICE_DEFAULT_EXT;/*
-	 	VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DEVICE_DEFAULT_EXT: 指定此管道阶段遵循在创建此管道的设备上启用的健壮性特性的行为
-		VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DISABLED_EXT: 指定此管道阶段对相关资源类型的image访问不能越界
- 		VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_EXT: 指定此管道阶段对相关image资源类型的越界访问的行为，就好像启用了robustBufferAccess特性一样
- 		VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_2_EXT: 指定此管道阶段对相关image资源类型的越界访问表现为启用了robustBufferAccess2特性一样
-	
-	*/
-	pipelineRobustnessCreateInfoEXTForShaderStage.vertexInputs = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;/*
-		VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT: 指定此管道阶段遵循在创建此管道的设备上启用的健壮性特性的行为
- 		VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DISABLED_EXTL: 指定此管道阶段对相关资源类型的buffer访问不能越界
- 		VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXT: 指定此管道阶段对相关buffer资源类型的越界访问的行为，就好像启用了robustBufferAccess特性一样
- 		VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT: 指定此管道阶段对相关buffer资源类型的越界访问表现为启用了robustBufferAccess2特性一样
-	
-	*/
-	pipelineRobustnessCreateInfoEXTForShaderStage.storageBuffers = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;
-	pipelineRobustnessCreateInfoEXTForShaderStage.uniformBuffers = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;
-	/*
-	VkPipelineRobustnessCreateInfoEXT有效用法：
-	1.如果 pipelineRobustness 特性 没有开启, 则（1） storageBuffers，uniformBuffers以及 vertexInputs不能是VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT
-												  （2）images 不能是VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DEVICE_DEFAULT_EXT
-	2.如果 robustImageAccess 特性 没有开启, 则images不能是VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_EXT
-	3.如果 robustBufferAccess2 特性 没有开启, 则（1） storageBuffers，uniformBuffers以及 vertexInputs不能是VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT
-												  （2）images 不能是VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_2_EXT
-	
-	*/
+		pipelineRobustnessCreateInfoEXTForShaderStage.images = VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DEVICE_DEFAULT_EXT;/*
+		 	VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DEVICE_DEFAULT_EXT: 指定此管道阶段遵循在创建此管道的设备上启用的健壮性特性的行为
+			VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DISABLED_EXT: 指定此管道阶段对相关资源类型的image访问不能越界
+ 			VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_EXT: 指定此管道阶段对相关image资源类型的越界访问的行为，就好像启用了robustBufferAccess特性一样
+ 			VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_2_EXT: 指定此管道阶段对相关image资源类型的越界访问表现为启用了robustBufferAccess2特性一样
+		
+		*/
+		pipelineRobustnessCreateInfoEXTForShaderStage.vertexInputs = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;/*
+			VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT: 指定此管道阶段遵循在创建此管道的设备上启用的健壮性特性的行为
+ 			VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DISABLED_EXTL: 指定此管道阶段对相关资源类型的buffer访问不能越界
+ 			VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXT: 指定此管道阶段对相关buffer资源类型的越界访问的行为，就好像启用了robustBufferAccess特性一样
+ 			VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT: 指定此管道阶段对相关buffer资源类型的越界访问表现为启用了robustBufferAccess2特性一样
+		
+		*/
+		pipelineRobustnessCreateInfoEXTForShaderStage.storageBuffers = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;
+		pipelineRobustnessCreateInfoEXTForShaderStage.uniformBuffers = VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT;
+		/*
+		VkPipelineRobustnessCreateInfoEXT有效用法：
+		1.如果 pipelineRobustness 特性 没有开启, 则（1） storageBuffers，uniformBuffers以及 vertexInputs不能是VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_DEVICE_DEFAULT_EXT
+													  （2）images 不能是VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_DEVICE_DEFAULT_EXT
+		2.如果 robustImageAccess 特性 没有开启, 则images不能是VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_EXT
+		3.如果 robustBufferAccess2 特性 没有开启, 则（1） storageBuffers，uniformBuffers以及 vertexInputs不能是VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT
+													  （2）images 不能是VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_2_EXT
+		
+		*/
+
+		//VkComputePipelineIndirectBufferInfoNV
+		//如果一个计算管道将在设备生成的命令中使用，通过指定其管道令牌与VkBindPipelineIndirectCommandNV，则其的metadata将被保存到一个缓冲区中，通过VkComputePipelineIndirectBufferInfoNV指定这个缓冲区的地址
+		VkComputePipelineIndirectBufferInfoNV& computePipelineIndirectBufferInfoNV = computePipelineCreateInfoExt.computePipelineIndirectBufferInfoNV;
+		computePipelineIndirectBufferInfoNV.deviceAddress = 0;//指向metadata将会被保存的缓冲区的设备地址
+		computePipelineIndirectBufferInfoNV.size = 0;//metadata将会被保存的缓冲区的大小
+		computePipelineIndirectBufferInfoNV.pipelineDeviceAddressCaptureReplay = 0;//指明metadata最开始被存放的地址且可以用来重新填充deviceAddress，目前这个参数的应用场景还不是很明确
+		/*
+		VkComputePipelineIndirectBufferInfoNV有效用法
+		1.VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV::deviceGeneratedComputePipelines特性必须开启
+		2.管线创建的VkComputePipelineCreateInfo::flags中必须含有VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV
+		3.deviceAddress 必须和通过vkGetPipelineIndirectMemoryRequirementsNV返回的 VkMemoryRequirements2::alignment对齐
+		4.deviceAddress 必须从含有VK_BUFFER_USAGE_TRANSFER_DST_BIT 和 VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT 用法位创建的 buffer 中分配
+		5.size必须大于等于vkGetPipelineIndirectMemoryRequirementsNV中返回的 VkMemoryRequirements2::size
+		6.如果 pipelineDeviceAddressCaptureReplay 不为0 则 （1） VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV::deviceGeneratedComputeCaptureReplay 特性必须开启
+                                                           （2）address 必须以 VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT 进行分配
+	    												   （3） pipeline 必须已经为了replay重新创建了
+		7.pipelineDeviceAddressCaptureReplay 必须满足和 deviceAddress 相似的对齐和大小限制
+
+		*/
+		{
+					// Provided by VK_NV_device_generated_commands_compute
+			auto vkCmdUpdatePipelineIndirectBufferNV = [](
+				VkCommandBuffer commandBuffer,
+				VkPipelineBindPoint pipelineBindPoint,
+				VkPipeline pipeline) {
+
+			};//这个接口没有定义，这里定义将pipeline的metadata保存到一个缓冲区中
+			VkCommandBuffer cmdBuf;
+			vkCmdUpdatePipelineIndirectBufferNV(cmdBuf, VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline);//将pipeline的metadata保存到一个缓冲区中
+			/*
+			vkCmdUpdatePipelineIndirectBufferNV有效用法：
+			1.必须在render pass实例以及video coding域外调用
+			2.pipelineBindPoint 必须为 VK_PIPELINE_BIND_POINT_COMPUTE
+			3.pipeline 创建必须含有 VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV 
+			4.pipeline创建是必须有一个 VkComputePipelineIndirectBufferInfoNV指定数据保存的地址
+			5.VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV::deviceGeneratedComputePipelines特性必须开启
+			6.cmdBuf所在的pool对应的queue必须支持图形，转换或者计算操作
+			*/
+		
+		}
 
 
 	vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &computePipelineCreateInfo, nullptr, &computePipeline);
@@ -300,6 +357,144 @@ void PipelineTest::ComputePipelineCreateTest()
 	2.如果pipelineCache 以 VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT标志创建,主机对 pipelineCache 必须要进行外部同步--如外部多线程同步等
 	
 	*/
+
+	//销毁pipeline
+	vkDestroyPipeline(device, computePipeline, nullptr);
+}
+
+void PipelineTest::GraphicPipelineCreateTest()
+{
+
+
+	VkPipeline graphicPipeline;
+
+	//创建管线所需要的状态被分为4个部分 vertex input state, pre-rasterization shader state, fragment shader state, 以及 fragment output state.
+	/*
+	vertex input state：
+			VkPipelineVertexInputStateCreateInfo
+			VkPipelineInputAssemblyStateCreateInfo
+			一些其他细节见p743
+	pre-rasterization shader state：
+			VkPipelineShaderStageCreateInfo 包含:
+				Vertex shaders
+				Tessellation control shaders
+				Tessellation evaluation shaders
+				Geometry shaders
+				Task shaders
+				Mesh shaders
+			VkPipelineViewportStateCreateInfo
+			VkPipelineRasterizationStateCreateInfo
+			VkPipelineTessellationStateCreateInfo
+			VkRenderPass and subpass parameter
+			The viewMask parameter of VkPipelineRenderingCreateInfo (formats are ignored)
+			VkPipelineDiscardRectangleStateCreateInfoEXT
+			VkPipelineFragmentShadingRateStateCreateInfoKHR
+			一些其他细节见p743
+	fragment shader state：
+		VkPipelineShaderStageCreateInfo 
+			fragment shader
+		VkPipelineLayout
+		VkPipelineMultisampleStateCreateInfo 
+		VkPipelineDepthStencilStateCreateInfo
+		VkRenderPass and subpass parameter
+		The viewMask parameter of VkPipelineRenderingCreateInfo (formats are ignored)
+		VkPipelineFragmentShadingRateStateCreateInfoKHR
+		VkPipelineFragmentShadingRateEnumStateCreateInfoNV
+		VkPipelineRepresentativeFragmentTestStateCreateInfoNV
+		Inclusion/omission： 对于  VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR  以及VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT
+		VkRenderingInputAttachmentIndexInfoKHR
+	fragment output state：
+		VkPipelineColorBlendStateCreateInfo
+		VkRenderPass and subpass parameter
+		VkPipelineMultisampleStateCreateInfo
+		VkPipelineRenderingCreateInfo
+		VkAttachmentSampleCountInfoAMD
+		VkAttachmentSampleCountInfoNV
+		VkExternalFormatANDROID
+		Inclusion/omission：对于  VK_PIPELINE_CREATE_COLOR_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT 以及 VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT ， VK_PIPELINE_CREATE_2_ENABLE_LEGACY_DITHERING_BIT_EXT 
+		VkRenderingAttachmentLocationInfoKHR
+
+	动态状态中如果有已经设置的静态状态，则该动态状态会被忽略
+	一个完整的pipeline总是包含pre-rasterization shader state
+
+	*/
+	VkGraphicsPipelineCreateInfo graphicPipelineCreateInfo{};
+
+
+
+	VkPipelineShaderStageCreateInfo shaderStages{};
+	VkPipelineVertexInputStateCreateInfo vertexInputState{};
+	VkPipelineInputAssemblyStateCreateInfo inputAssemblyState{};
+	VkPipelineTessellationStateCreateInfo tessellationState{};
+	VkPipelineViewportStateCreateInfo viewportState{};
+	VkPipelineRasterizationStateCreateInfo rasterizationState{};
+	VkPipelineMultisampleStateCreateInfo multisampleState{};
+	VkPipelineDepthStencilStateCreateInfo depthStencilState{};
+	VkPipelineColorBlendStateCreateInfo colorBlendState{};
+	VkPipelineDynamicStateCreateInfo dynamicState{};
+
+
+
+
+	graphicPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	graphicPipelineCreateInfo.pNext = nullptr;
+	graphicPipelineCreateInfo.stageCount = 1;
+	graphicPipelineCreateInfo.pStages = &shaderStages;//指明管线所涉及的着色器状态
+	graphicPipelineCreateInfo.pVertexInputState = &vertexInputState;//指明顶点输入，如果管线包含mesh shader则可以被忽略，如果管线以VK_DYNAMIC_STATE_VERTEX_INPUT_EXT动态状态创建则该可以为NULL
+	graphicPipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;//是一个指向VkPipelineInputAssemblyStateCreateInfo结构的指针，它决定了顶点着色的输入装配行为，如图形命令中所述。如果启用了VK_EXT_extended_dynamic_state3扩展，如果管道是使用VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE创建的，并且VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY动态状态集，动态原始拓扑不受限制为VK_TRUE，则可以为NULL。如果管道包含一个网格着色器阶段，则会忽略它。
+	graphicPipelineCreateInfo.pTessellationState = &tessellationState;//是一个指向VkPipelineTessellationStateCreateInfo结构的指针，定义tessellation shader的tessellation stage使用。如果管道是使用VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT动态状态集创建的，则可以为NULL。
+	graphicPipelineCreateInfo.pViewportState = &viewportState;//是指向VkPipelineViewportStateCreateInfo结构的指针，定义在启用光栅化时使用的视口状态。如果启用了VK_EXT_extended_dynamic_state3扩展，那么如果在创建管道时同时设置了VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT和VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT动态状态，则它可以为NULL。
+	graphicPipelineCreateInfo.pRasterizationState = &rasterizationState;//是一个指向定义光栅化状态的VkPipelineRasterizationStateCreateInfo结构的指针。如果启用了VK_EXT_extended_dynamic_state3扩展，则如果在管道中创建了所有VK_DYNAMIC_STATE_DEPTH_CLAMP_ENABLE_EXT、VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE、VK_DYNAMIC_STATE_POLYGON_MODE_EXT、VK_DYNAMIC_STATE_CULL_MODE、VK_DYNAMIC_STATE_FRONT_FACE、
+	//VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE、VK_DYNAMIC_STATE_DEPTH_BIAS和VK_DYNAMIC_STATE_LINE_WIDTH动态状态，则可以为NULL。
+	graphicPipelineCreateInfo.pMultisampleState = &multisampleState;//是一个指向VkPipelineMultisampleStateCreateInfo结构的指针，它定义了在启用栅格化时使用的多样本状态。如果启用了VK_EXT_extended_dynamic_state3扩展，如果创建管道时设置了所有VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT、VK_DYNAMIC_STATE_SAMPLE_MASK_EXT和VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXT动态状态，
+	//并且在设备上禁用了Toone或设置了VK_DYNAMIC_STATE_ALPHA_TO_ONE_ENABLE_EXT，则可以为空，在这种情况下，假定VkPipelineMultisampleStateCreateInfo：：sampleShadingEnable为VK_FALSE。
+	graphicPipelineCreateInfo.pDepthStencilState = &depthStencilState;//是一个指向VkPipelineDepthStencilStateCreateInfo结构的指针，定义在渲染过程中为访问深度或模板附件时的光栅化的深度/模板状态。如果启用了VK_EXT_extended_dynamic_state3扩展，则如果在管道中创建了所有VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE、VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE、VK_DYNAMIC_STATE_DEPTH_COMPARE_OP、
+	//VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE、VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE、VK_DYNAMIC_STATE_STENCIL_OP和VK_DYNAMIC_STATE_DEPTH_BOUNDS动态状态，则可以为NULL。
+	graphicPipelineCreateInfo.pColorBlendState = &colorBlendState;//是一个指向VkPipelineColorBlendStateCreateInfo结构的指针，它定义了在渲染期间启用了光栅化的颜色附件的颜色混合状态。如果启用了VK_EXT_extended_dynamic_state3扩展，则如果创建管道时设置了所有VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXT、VK_DYNAMIC_STATE_LOGIC_OP_EXT、VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT、
+	//VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT、VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT和VK_DYNAMIC_STATE_BLEND_CONSTANTS动态状态，则可以为NULL。
+	graphicPipelineCreateInfo.pDynamicState = &dynamicState;//是指向VkPipelineDynamicStateCreateInfo结构的指针，定义管道状态对象的哪些属性是动态的，可以独立于管道状态进行更改。这可以是NULL，这意味着管道中没有任何状态被认为是动态状态。
+
+	VkPipelineLayout pipelineLayout;
+	graphicPipelineCreateInfo.layout = pipelineLayout;//指定pipeline的绑定布局以及描述符布局
+	graphicPipelineCreateInfo.renderPass = VK_NULL_HANDLE;//指明当前 pipeline 所对应的render pass环境，但是pipeline可以在和render pass兼容的其他render pass中使用
+	graphicPipelineCreateInfo.subpass = 0;//指明当前pipeline对应render pass中的subpass 索引
+	graphicPipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;//指明pipeline的可以从哪个pipeline派生
+	graphicPipelineCreateInfo.basePipelineIndex = 0;//指明pipeline的可以从哪个pipeline派生的在 pCreateInfos中索引值
+	/*
+	VkGraphicsPipelineCreateInfo有效用法：
+	1.如果pNext中不包含VkPipelineCreateFlags2CreateInfoKHR则 flags 必须是合法的 VkPipelineCreateFlagBits 的组合值
+	2.如果 flags 包含 VK_PIPELINE_CREATE_DERIVATIVE_BIT 则:
+													（1）如果 basePipelineIndex 为 -1,basePipelineHandle 必须是一个有效的 graphics VkPipeline 句柄
+													（2）如果 basePipelineHandle 为VK_NULL_HANDLE, basePipelineIndex 必须是当前创建命令vkCreateComputePipelines中pCreateInfos 参数的一个有效的索引值
+													（3）basePipelineIndex 必须为 -1或者 basePipelineHandle 必须为 VK_NULL_HANDLE
+	3.如果push constant 块在shader中声明了,则layout中的 push constant的 range 必须和shader的 stage 以及 range匹配
+	4.如果 resource variables 在shader中声明了,则  
+													（1）layout中的 descriptor slot 必须匹配shader stage
+													（2）如果layout中的 descriptor type不是VK_DESCRIPTOR_TYPE_MUTABLE_EXT,则 descriptor slot必须匹配 descriptor slot
+	
+	
+	*/
+
+
+
+
+
+
+
+	vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicPipelineCreateInfo, nullptr, &graphicPipeline);
+	/*
+	vkCreateGraphicsPipelines有效用法：
+	1.如果pCreateInfos中的某个元素的flags包含VK_PIPELINE_CREATE_DERIVATIVE_BIT，则
+													（1）如果其basePipelineIndex不为-1，则basePipelineIndex必须小于当前元素在pCreateInfos中的索引值
+													（1）basePipelineHandle的创建flags必须含有 VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT
+	2.如果pipelineCache 以 VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT标志创建,主机对 pipelineCache 必须要进行外部同步--如外部多线程同步等
+	
+	*/
+
+
+
+
+
 
 }
 

@@ -471,6 +471,161 @@ void PipelineTest::GraphicPipelineCreateTest()
 	4.如果 resource variables 在shader中声明了,则  
 													（1）layout中的 descriptor slot 必须匹配shader stage
 													（2）如果layout中的 descriptor type不是VK_DESCRIPTOR_TYPE_MUTABLE_EXT,则 descriptor slot必须匹配 descriptor slot
+	5.如果 resource variables 在shader中声明为array，则layout中的 descriptor slot必须匹配 descriptor count
+	6.如果 pipeline 需要 pre-rasterization shader state 则 pStages 其中一个必须为 VK_SHADER_STAGE_VERTEX_BIT 或者 VK_SHADER_STAGE_MESH_BIT_EXT
+	7.如果 pipeline 需要 pre-rasterization shader state 则pStages中的 geometric shader stages 必须来自于 mesh shading pipeline (stage isVK_SHADER_STAGE_TASK_BIT_EXT or VK_SHADER_STAGE_MESH_BIT_EXT) 或者来自于 primitive shading pipeline (stage is VK_SHADER_STAGE_VERTEX_BIT,
+										VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, 或者 VK_SHADER_STAGE_GEOMETRY_BIT)
+	8.如果 pipeline 需要 pre-rasterization shader state 且 pStages 同时含有VK_SHADER_STAGE_TASK_BIT_EXT and VK_SHADER_STAGE_MESH_BIT_EXT, 则 mesh shader 的入口点不能声明DrawIndex BuiltIn描述的变量
+	9.VK_SHADER_STAGE_TASK_BIT_EXT或VK_SHADER_STAGE_MESH_BIT_EXT的shader stage必须使用TaskNV和MeshNV执行模型或TaskEXT和MeshEXT执行模型，但不能同时使用
+	10.如果 pipeline 需要 pre-rasterization shader state 则tessellation control shader stage以及tessellation evaluation shader stage如果pStages中有则需要同时包含在内
+	11.如果 pipeline 需要 pre-rasterization shader state 且 pStages 包含 tessellation control shader stage, 且 VK_EXT_extended_dynamic_state3 拓展没有开启或者  VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT dynamic state 没有设置, pTessellationState必须是一个有效的 VkPipelineTessellationStateCreateInfo 指针
+	12.如果 pTessellationState 不为NULL则必须是有效的 VkPipelineTessellationStateCreateInfo 指针
+	13.如果 pipeline 需要 pre-rasterization shader state 且 pStages 包含 tessellation shader stages, 则（1）则至少一个shader stage的 shader code 必须包含 OpExecutionMode 指令指明管线细分类型
+																									   （2）如果两个stages的 shader code 都包含 OpExecutionMode 指令指明管线细分类型，则两者指明的细分类型必须是相同的
+																									   （3）则至少一个shader stage的 shader code 必须包含 OpExecutionMode 指令指明管线的output patch size
+																									   （4）如果两个stages的 shader code 都包含 OpExecutionMode 指令指明管线的output patch size，则两者指明的output patch size必须是相同的
+	14.如果 pipeline 以 pre-rasterization shader state 和 vertex input state创建且 pStages 包含 tessellation shader stages, 且 如果 VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY dynamic state 没有开启设置 或者dynamicPrimitiveTopologyUnrestricted 为 VK_FALSE, 则pInputAssembly中的 topology 必须为 VK_PRIMITIVE_TOPOLOGY_PATCH_LIST
+	15.如果 pipeline 以 pre-rasterization shader state 和 vertex input state创建且pInputAssembly中的 topology 为 VK_PRIMITIVE_TOPOLOGY_PATCH_LIST, 且 VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY dynamic state 没有开启设置 或者dynamicPrimitiveTopologyUnrestricted 为 VK_FALSE , 则 pStages 必须包含 tessellation shader stages
+	16.如果 pipeline 以 TessellationEvaluation Execution Model创建,且没有 Geometry Execution Model, 使用 PointMode Execution Mode, 且 shaderTessellationAndGeometryPointSize 开启, 如果maintenance5没有开启则以 PointSize 修饰的变量必须被赋值
+	17.如果 pipeline 以 Vertex Execution Model 创建且没有 TessellationEvaluation 或者 Geometry Execution Model, 且pInputAssembly中的 topology为 VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 而且VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY dynamic state 没有开启或者 dynamicPrimitiveTopologyUnrestricted 为 VK_FALSE,如果maintenance5没有开启则以 PointSize 修饰的变量必须被写入
+	18.如果 maintenance5 开启且以PointSize描述的变量被写入了，所有的执行路径都必须写入到PointSize修饰的变量中
+	19.如果 pipeline 以 TessellationEvaluation Execution Model创建, 没有 Geometry Execution Model, 使用 PointMode Execution Mode, 且 shaderTessellationAndGeometryPointSize 没有开启,  PointSize 修饰的变量就不能被写入
+	20.如果 pipeline 以 Geometry Execution Model创建, 使用 OutputPoints Execution Mode, 则（1）如果 shaderTessellationAndGeometryPointSize 开启,如果maintenance5没有开启则PointSize修饰的变量必须为写入到每个发射的点中
+																						  （2）如果 shaderTessellationAndGeometryPointSize 没有开启,则PointSize修饰的变量就不能被写入
+	
+	21.如果 pipeline 需要 pre-rasterization shader state 且 pStages 包含一个 geometry shader stage, 则（1）如果不包含任何 tessellation shader stages, 则其geometry shader code必须包含一个 OpExecutionMode 指令指明一个和pInputAssembly的topology兼容的输入图元类型
+																									  （2） 如果包含  tessellation shader stages,则其geometry shader code必须包含一个 OpExecutionMode 指令指明一个和essellation stages输出的图元类型兼容的输入图元类型
+
+	22.如果 pipeline 需要 pre-rasterization shader state 以及 fragment shader state, 且其同时包含 fragment shader 以及 geometry shader, 则在所有执行路径下， fragment shader code 需要从PrimitiveId修饰的输入变量中读取数据则 geometry shader code 必须写入到对应的PrimitiveId修饰的变量中
+
+	23.如果 pipeline 需要 pre-rasterization shader state, 其包含一个 mesh shader 则在所有执行路径下，fragment shader code需要从PrimitiveId修饰的变量中读取输入变量，则 mesh shader code 必须写入到对应的以PrimitiveId修饰的变量中
+	24.如果  renderPass 不为 VK_NULL_HANDLE 且 pipeline 以 fragment shader state 创建， the fragment shader 不能从subpass中任何定义为VK_ATTACHMENT_UNUSED的 input attachment 中读取数据
+	25.如果 pipeline 需要 pre-rasterization shader state 且在pStages中包含 multiple pre-rasterization , 则pStages中的入口点的shader code以及VkGraphicsPipelineCreateInfo的其他状态入口点的shader code必须符合 Shader Interfaces 章节描述的链接规则
+	25.如果 pipeline 需要 pre-rasterization shader state 和 fragment shader state,  fragment shader 和最后的 pre-rasterization shader stage 以及相关的 state 必须符合 Shader Interfaces 章节描述的链接规则
+	26.如果 renderPass 不为 VK_NULL_HANDLE, 且 pipeline 以 fragment output interface state创建, 则（1）对于subpass中的任何 color attachment , 如果其对应的attachment description中的format的 potential format features 不包含 VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT, 则其对应的pColorBlendState中的pAttachments中的 blendEnable必须为VK_FALSE
+																								  （2）若pColorBlendState 不为 NULL, pColorBlendState的 attachmentCount member 没有被忽略, subpass使用 color attachments, the pColorBlendState中的attachmentCount 必须等于创建subpass的 colorAttachmentCount
+
+	27.如果 pipeline 需要 pre-rasterization shader state, 且 pViewportState->pViewports 不是动态的, 则（1）pViewportState->pViewports 必须是pViewportState->viewportCount个 有效 VkViewport 的数组首地址
+																									  （2）pViewportState->pScissors 必须是pViewportState->scissorCount个 有效 VkRect2D 的数组首地址
+	
+	28.如果 pipeline 需要 pre-rasterization shader state, 且 wideLines 特性没有开启, 且pDynamicState中的pDynamicStates中没有 VK_DYNAMIC_STATE_LINE_WIDTH, 则pRasterizationStatethe的 lineWidth 必须为 1.0
+	29.如果 pipeline 需要 pre-rasterization shader state, 且 VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE dynamic state开启 或者pRasterizationState的 rasterizerDiscardEnable 为 VK_FALSE, 以及  VK_EXT_extended_dynamic_state3 拓展没有开启或者  VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT 或 VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT dynamic states 没有设置, 则pViewportState 必须是一个有效的 VkPipelineViewportStateCreateInfo 指针
+	30.如果pViewportState 不为 NULL 则其必须为一个合法的 VkPipelineViewportStateCreateInfo 指针
+	31.如果 pipeline 需要 fragment output interface state, 且 VK_EXT_extended_dynamic_state3拓展没有开启或者 VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT, VK_DYNAMIC_STATE_SAMPLE_MASK_EXT, 或 VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXT dynamic states 任何之一没有开启, 或者 alphaToOne 在Device上支持但 VK_DYNAMIC_STATE_ALPHA_TO_ONE_ENABLE_EXT 没有设置, pMultisampleState 必须是一个有效的 VkPipelineMultisampleStateCreateInfo 指针
+	32.如果 pMultisampleState 不为 NULL 就必须是一个有效的 VkPipelineMultisampleStateCreateInfo 指针
+	33.如果 pipeline 以 fragment shader state创建, VkPipelineMultisampleStateCreateInfo::alphaToCoverageEnable 为VK_TRUE且没有被忽略, 则 Fragment Output Interface 必须在Index 0 的Location 0 处含有一个拥有  alphaComponent 的变量
+	34.如果 renderPass 不为 VK_NULL_HANDLE,  pipeline  以 fragment shader state创建, 且 subpass 使用一个 depth/stencil attachment, 且VK_EXT_extended_dynamic_state3 拓展没有开启或者VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE, VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE,
+					VK_DYNAMIC_STATE_DEPTH_COMPARE_OP, VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE,VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE, VK_DYNAMIC_STATE_STENCIL_OP,或VK_DYNAMIC_STATE_DEPTH_BOUNDS dynamic states 任何之一没有设置, pDepthStencilState必须是一个有效的 VkPipelineDepthStencilStateCreateInfo 指针
+	35.如果 pDepthStencilState 不为 NULL 则必须为有效的VkPipelineDepthStencilStateCreateInfo 指针
+	36.如果 renderPass 不为 VK_NULL_HANDLE,  pipeline 以 fragment output interface state创建,  subpass 使用 color attachments, 且 VK_EXT_extended_dynamic_state3 拓展没有开启, 或者 VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXT,VK_DYNAMIC_STATE_LOGIC_OP_EXT, VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT,
+					VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT, VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT,或者 VK_DYNAMIC_STATE_BLEND_CONSTANTS dynamic states 任何之一没有设置, pColorBlendState 必须是合法的 VkPipelineColorBlendStateCreateInfo 指针
+	37.如果 pipeline 需要 pre-rasterization shader state,  depthBiasClamp 特性没有开启,  pDynamicState的pDynamicStates 中的元素没有 VK_DYNAMIC_STATE_DEPTH_BIAS,且pRasterizationState的depthBiasEnable 为 VK_TRUE, 则pRasterizationState的 depthBiasClamp必须为 0.0
+	38.如果 pipeline 需要 fragment shader state,  VK_EXT_depth_range_unrestricted 拓展没有启用且pDynamicState的 pDynamicStates 没有 VK_DYNAMIC_STATE_DEPTH_BOUNDS, 且pDepthStencilState的depthBoundsTestEnable 为 VK_TRUE, 则pDepthStencilState的 minDepthBounds 以及 maxDepthBounds必须在 0.0 and 1.0
+	39.如果 pipeline 需要 fragment shader state 或者 fragment output interface state,且rasterizationSamples 以及 sampleLocationsInfo 不是动态的,则
+																			（1）如果pMultisampleState的pNext中的VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsEnable 为 VK_TRUE，则sampleLocationsInfo.sampleLocationGridSize.width 必须均等的划分成从传入参数的samples为rasterizationSamples的vkGetPhysicalDeviceMultisamplePropertiesEXT接口返回的VkMultisamplePropertiesEXT::sampleLocationGridSize.width
+																			（2）如果pMultisampleState的pNext中的VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsEnable 为 VK_TRUE或者使用 VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT ，sampleLocationsInfo.sampleLocationGridSize.height 必须均等的划分成从传入参数的samples为rasterizationSamples的vkGetPhysicalDeviceMultisamplePropertiesEXT接口返回的VkMultisamplePropertiesEXT::sampleLocationGridSize.height
+																			（3）如果pMultisampleState的pNext中的VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsEnable 为 VK_TRUE或者使用 VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT ，sampleLocationsInfo.sampleLocationsPerPixel 必须等于 rasterizationSamples
+	40.如果 pipeline 需要 fragment shader state, 且pMultisampleState的pNext中的VkPipelineSampleLocationsStateCreateInfoEXT的 sampleLocationsEnable  为 VK_TRUE, 则 fragment shader code 不能静态使用拓展的InterpolateAtSample指令
+	41.如果 pipeline 需要 fragment output interface state, 且VK_AMD_mixed_attachment_samples 拓展, the VK_NV_framebuffer_mixed_samples 拓展, or the multisampledRenderToSingleSampled 特性没有一个开启, rasterizationSamples 不是动态的, 且如果 subpass 使用 color 以及或者 depth/stencil attachments,则pMultisampleState的 rasterizationSamples必须等于那些subpass的附件的采样数
+	42.如果 pipeline 需要 fragment output interface state, 且VK_AMD_mixed_attachment_samples 特性开启, rasterizationSamples 不是动态的, 且如果 subpass 使用 color 以及或者 depth/stencil attachments,则pMultisampleState的 rasterizationSamples必须等于那些subpass的附件的最大的采样数
+	43.如果 renderPass 不为 VK_NULL_HANDLE,  VK_EXT_multisampled_render_to_single_sampled 拓展没有开启, rasterizationSamples 不是动态的, 且 subpass的VkSubpassDescription2::pNext中含有一个VkMultisampledRenderToSingleSampledInfoEXT ，这个结构体的multisampledRenderToSingleSampledEnable为VK_TRUE, 则 pMultisampleState的rasterizationSamples 必须等于VkMultisampledRenderToSingleSampledInfoEXT::rasterizationSamples
+	44.如果 pipeline 需要 fragment output interface state, 且VK_NV_framebuffer_mixed_samples 拓展没有开启, rasterizationSamples 不是动态的, 且如果 subpass 有一个 depth/stencil attachment 以及 depth test, stencil test, 或者 depth bounds test 是开启的, 则 pMultisampleState的 rasterizationSamples必须等于 depth/stencil attachment的采样数
+	45.如果 pipeline 需要 fragment output interface state, 且 VK_NV_framebuffer_mixed_samples 拓展开启了, rasterizationSamples 不是动态的, 且如果 subpass 有任何 color attachments,则pMultisampleState的 rasterizationSamples 必须大于等于那些 subpass attachments 的采样数
+	46.如果 pipeline 需要 fragment output interface state, 且 VK_NV_coverage_reduction_mode 拓展开启了, 且 rasterizationSamples 不是动态的, 则通过VkPipelineCoverageReductionStateCreateInfoNV::coverageReductionMode指定 coverage reduction mode ,  pMultisampleState的rasterizationSamples  以及 depth/stencil attachments (如果subpass 有的话)的采样数 必须是 vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV返回的值的合法的组合值
+	47.如果 pipeline 需要 fragment output interface state, rasterizationSamples 不是动态的, 且 subpass 没有使用任何 color 以及或者 depth/stencil attachments, 则pMultisampleState的 rasterizationSamples必须符合 无附件 subpass的规则
+	48.如果renderPass 不是 VK_NULL_HANDLE, 则（1）subpass 必须有效的renderPass的 subpass 
+											 （2）如果 pipeline 以 pre-rasterization shader state创建, 且subpass viewMask 不为 0, 以及 multiviewTessellationShader 没有开启, 则 pStages 不能包含 tessellation shaders
+										     （3）如果 pipeline 以 pre-rasterization shader state创建, 且subpass viewMask 不为 0, 以及 multiviewGeometryShader 没有开启, 则 pStages 不能包含一个 geometry shader
+											 （4）如果 pipeline 以 pre-rasterization shader state创建, 且subpass viewMask 不为 0,则pipeline的所有 shaders 在接口处不能包含以Layer built-in描述的变量
+											 （5）如果 pipeline 以 pre-rasterization shader state创建, 且subpass viewMask 不为 0, 以及 multiviewMeshShader 没有开启, 则 pStages 不能包含一个 mesh shader
+
+	49.flags 不能包含 VK_PIPELINE_CREATE_DISPATCH_BASE 
+	50.如果 pipeline 需要 fragment shader state 以及一个 input attachment在renderPass创建的时候通过aspectMask 引用,则 the fragment shader 只能从该input attachment的aspects中读取数据
+	51.每个shader stage中的 layout中能够访问的资源数必须小于或等于VkPhysicalDeviceLimits::maxPerStageResources
+	52.如果 pipeline 需要 pre-rasterization shader state,且pDynamicState的pDynamicStates 没有 VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV, 以及pViewportState的pNext中的VkPipelineViewportWScalingStateCreateInfoNV的viewportWScalingEnable为 VK_TRUE, 则VkPipelineViewportWScalingStateCreateInfoNV的 pViewportWScalings必须是 VkPipelineViewportWScalingStateCreateInfoNV::viewportCount 个有效的VkViewportWScalingNV 的数组首地址
+	53.如果 pipeline 需要 pre-rasterization shader state,且pDynamicState的pDynamicStates 没有 VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NV , 且如果 pViewportState->pNext 包含一个exclusiveScissorCount不为0的VkPipelineViewportExclusiveScissorStateCreateInfoNV, 则其 pExclusiveScissors 必须是 exclusiveScissorCount 个有效的 VkRect2D 数组首地址
+	54.如果pDynamicStates中包含VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_ENABLE_NV 则实现至少支持版本为specVersion 2 版本的VK_NV_scissor_exclusive拓展 
+	55.如果 pipeline 需要 pre-rasterization shader state, 且pDynamicState的pDynamicStates 没有 VK_DYNAMIC_STATE_VIEWPORT_SHADING_RATE_PALETTE_NV, 且如果 pViewportState->pNext 中包含一个 VkPipelineViewportShadingRateImageStateCreateInfoNV , 则其 pShadingRatePalettes 必须是 viewportCount个有效的 VkShadingRatePaletteNV 的数组首地址
+	56.如果 pipeline 需要 pre-rasterization shader state, 且pDynamicState的pDynamicStates 没有 VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT, 且如果 pNext 中包含一个 discardRectangleCount不为0的VkPipelineDiscardRectangleStateCreateInfoEXT ,则其 pDiscardRectangles 必须是discardRectangleCount 个有效的VkRect2D 数组首地址
+	57.如果pDynamicStates中不含VK_DYNAMIC_STATE_DISCARD_RECTANGLE_ENABLE_EXT或者VK_DYNAMIC_STATE_DISCARD_RECTANGLE_MODE_EXT，则实现必须至少支持版本为specVersion 2的VK_EXT_discard_rectangles拓展
+	58.如果 pipeline 需要 vertex input state, 且 pVertexInputState 不是动态的, 则pVertexInputState 必须是一个有效的VkPipelineVertexInputStateCreateInfo指针
+	59.如果 pipeline 以 vertex input state创建且 pVertexInputState 不是动态的, 则 （1）所有在Vertex Execution Model OpEntryPoint以Location修饰的Input storage class变量的位置必须包含在VkVertexInputAttributeDescription::location中
+																				  （2）所有在Vertex Execution Model OpEntryPoint中对应位置的Input variables的数字类型必须等于VkVertexInputAttributeDescription::format
+																				  （3）如果 VkVertexInputAttributeDescription::format 有一个 64-bit component, 则所有Vertex Execution Model OpEntryPoint对应位置的Input variables的 scalar width必须为 64-bit
+																				  （4） 如果所有Vertex Execution Model OpEntryPoint对应位置的Input variables的 scalar width为 64-bit, 则其对应的VkVertexInputAttributeDescription::format 必须含有一个 64-bit component
+																				  （5）如果 VkVertexInputAttributeDescription::format 含有一个 64-bit component,  则所有Vertex Execution Model OpEntryPoint对应位置的Input variables不能使用在format中没有的component 
+
+	60.如果 pipeline 需要 vertex input state, 且 VK_EXT_extended_dynamic_state3 拓展开启, 或者是 VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE, 或VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY dynamic states其中之一没有被设置, 或者 dynamicPrimitiveTopologyUnrestricted 为 VK_FALSE, pInputAssemblyState 必须是有效的 VkPipelineInputAssemblyStateCreateInfo 指针
+	61.如果pInputAssemblyState 不为 NULL则必须是有效的VkPipelineInputAssemblyStateCreateInfo 指针
+	62.如果 pipeline 需要 pre-rasterization shader state,  Xfb execution mode 可以在pStages的一个或多个stage中指定 , 且pStages中任何指明了specifies Xfb execution mode的 shader stage必须是 pre-rasterization shader stage中的最后一个
+	63.如果 pipeline 需要 pre-rasterization shader state, 且VkPipelineRasterizationStateStreamCreateInfoEXT::rasterizationStream 指定一个不为0的值,所有入口点的输出接口的被编译描述为Position, PointSize, ClipDistance, 或者 CullDistance的变量必须以匹配rasterizationStream的单独的Stream values来描述 
+
+	64.如果 pipeline 需要 pre-rasterization shader state, 且VkPipelineRasterizationStateStreamCreateInfoEXT::rasterizationStream 为0或者没有指定，所有入口点的输出接口的被编译描述为Position, PointSize, ClipDistance, 或者 CullDistance的变量必须以Stream values为0来描述，或者不必指明Stream描述
+
+	65.如果 pipeline 需要 pre-rasterization shader state, 且最后的 pre-rasterizationshader stage是一个 geometry shader, 且该 geometry shader 使用 GeometryStreams capability, 则 VkPhysicalDeviceTransformFeedbackFeaturesEXT::geometryStreams 特性就必须开启
+	66.如果 pipeline 需要 pre-rasterization shader state, pipeline中存在 mesh shader则pipeline中的shader stage就不能含有 Xfb execution mode
+	67.如果 the pipeline 需要 pre-rasterization shader state 以及至少一个 fragment output interface state 或者 fragment shader state, 且 pMultisampleState 不为 NULL,  则pRasterizationState的pNext中的VkPipelineRasterizationLineStateCreateInfoKHR的lineRasterizationMode
+							为VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR 或者VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR, 则pMultisampleState的 alphaToCoverageEnable,alphaToOneEnable, 以及 sampleShadingEnable必须全部为VK_FALSE
+	68.如果 pipeline 需要 pre-rasterization shader state, VkPipelineRasterizationLineStateCreateInfoKHR的 stippledLineEnable 为VK_TRUE,  pDynamicState的pDynamicStates 没有 VK_DYNAMIC_STATE_LINE_STIPPLE_EXT, 则VkPipelineRasterizationLineStateCreateInfoKHR的lineStippleFactor必须在 [1,256]范围中
+	69.flags不能包含 VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR，VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR以及 VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR，
+							VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR，VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR， VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR，
+							VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR 以及 VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV
+	70.如果 extendedDynamicState 特性没有开启, 且创建VkInstance的VkApplicationInfo::apiVersion 小于 Version 1.3 则pDynamicState的pDynamicStates就不能有 VK_DYNAMIC_STATE_CULL_MODE,
+																								VK_DYNAMIC_STATE_FRONT_FACE, VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY,
+																								VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT, VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT,
+																								VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE, VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE,
+																								VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE, VK_DYNAMIC_STATE_DEPTH_COMPARE_OP,
+																								VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE, VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE, 或者
+																								VK_DYNAMIC_STATE_STENCIL_OP 设置
+	71.如果 pipeline 需要 pre-rasterization shader state, 且pDynamicStates中包含VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT，则（1）viewportCount 必须为0
+																														（2）VK_DYNAMIC_STATE_VIEWPORT就不能包含在pDynamicStates中
+																												 
+	72.如果 pipeline 需要 pre-rasterization shader state, 且pDynamicStates中包含VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT，则（1）scissorCount 必须为0
+																													   （2）VK_DYNAMIC_STATE_SCISSOR就不能包含在pDynamicStates中
+
+
+	73.如果 pipeline 需要 pre-rasterization shader state, 且包含一个 a mesh shader,pDynamicState的pDynamicStates中就不能有 VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY, 或者 VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE
+	74.如果 extendedDynamicState2 特性没有开启, 用来创建VkInstance的VkApplicationInfo::apiVersion 小于 Version 1.3 则pDynamicState的pDynamicStates就不能有VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE, VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE, 或者VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE
+	75.如果 extendedDynamicState2LogicOp 特性没有开启,  则pDynamicState的pDynamicStates就不能有 VK_DYNAMIC_STATE_LOGIC_OP_EXT
+	76.如果 extendedDynamicState2PatchControlPoints 特性没有开启,  则pDynamicState的pDynamicStates就不能有 VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT
+	77.如果 pipeline 需要 pre-rasterization shader state, 且包含一个 a mesh shader,  则pDynamicState的pDynamicStates就不能有VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE, or VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT
+	78.如果 flags 包含 VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV, 则deviceGeneratedCommands 特性必须开启
+	79.如果 pipeline 需要 pre-rasterization shader state 且 flags 包含 VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV, 则所有的stages不能指定 Xfb execution mode
+	80.如果 pipeline 不是以完整的state集创建的, 或者VkPipelineLibraryCreateInfoKHR::libraryCount 不为 0,则 VkGraphicsPipelineShaderGroupsCreateInfoNV::groupCount 以及 VkGraphicsPipelineShaderGroupsCreateInfoNV::pipelineCount 必须为 0
+	81.如果 pipeline 是以完整的state集创建的, 且VkPipelineLibraryCreateInfoKHR::libraryCount 为 0, 且pNext中包含一个 VkGraphicsPipelineShaderGroupsCreateInfoNV,则 VkGraphicsPipelineShaderGroupsCreateInfoNV::groupCount 必须大于 0
+	82.如果 pipelineCreationCacheControl 特性没有开启, flags 不能包含 VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT 或者 VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT
+	83.如果 pipelineProtectedAccess 特性没有开启, flags 不能包含VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT 或者 VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT
+	84.flags 不能同时包含 VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT 和 VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT
+	85.如果 pipeline 需要 pre-rasterization shader state 或者 fragment shader state 且pDynamicState->pDynamicState中不含VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR , 则
+											（1）VkPipelineFragmentShadingRateStateCreateInfoKHR::fragmentSize.width必须大于或等于1，VkPipelineFragmentShadingRateStateCreateInfoKHR::fragmentSize.height必须大于或等于1，且两者都为2的指数，且都必须小于或者等于4，
+											（2）如果pipelineFragmentShadingRate特性没有开启，则VkPipelineFragmentShadingRateStateCreateInfoKHR::fragmentSize.width以及VkPipelineFragmentShadingRateStateCreateInfoKHR::fragmentSize.height必须同时为1
+											（3）则VkPipelineFragmentShadingRateStateCreateInfoKHR::combinerOps[0]，combinerOps[1]必须是一个有效的VkFragmentShadingRateCombinerOpKHR值
+											（4）如果primitiveFragmentShadingRate特性没有开启，则VkPipelineFragmentShadingRateStateCreateInfoKHR::combinerOps[0]，combinerOps[1]必须为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+
+	86.如果 pipeline 需要 pre-rasterization shader state 且 primitiveFragmentShadingRateWithMultipleViewports 限制不支持,则（1）如果pDynamicState->pDynamicStates中不包含VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT ,且 VkPipelineViewportStateCreateInfo::viewportCount 大于 1,则pStages的入口点不能写 PrimitiveShadingRateKHR built-in
+																														   （2）则pStages的入口点写入到ViewportIndex built-in，但不能写 PrimitiveShadingRateKHR built-in
+																														   （3）则pStages的入口点写入到ViewportMaskNV built-in，但不能写 PrimitiveShadingRateKHR built-in
+
+
+	87.如果 pipeline 需要 pre-rasterization shader state 或者 fragment shader state,  fragmentShadingRateNonTrivialCombinerOps 限制不支持, 且pDynamicState->pDynamicStates中不含 VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR ,  VkPipelineFragmentShadingRateStateCreateInfoKHR::combinerOps 的元素必须为 VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR 或者 VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR
+	88.如果 pipeline 需要 fragment shader state 且pDynamicState->pDynamicStates中不含 VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR , VkPipelineFragmentShadingRateEnumStateCreateInfoNV::shadingRateType 必须是一个有效的VkFragmentShadingRateTypeNV值
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	*/

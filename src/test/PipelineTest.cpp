@@ -608,26 +608,125 @@ void PipelineTest::GraphicPipelineCreateTest()
 
 
 	87.如果 pipeline 需要 pre-rasterization shader state 或者 fragment shader state,  fragmentShadingRateNonTrivialCombinerOps 限制不支持, 且pDynamicState->pDynamicStates中不含 VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR ,  VkPipelineFragmentShadingRateStateCreateInfoKHR::combinerOps 的元素必须为 VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR 或者 VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR
-	88.如果 pipeline 需要 fragment shader state 且pDynamicState->pDynamicStates中不含 VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR , VkPipelineFragmentShadingRateEnumStateCreateInfoNV::shadingRateType 必须是一个有效的VkFragmentShadingRateTypeNV值
+	88.如果 pipeline 需要 fragment shader state 且pDynamicState->pDynamicStates中不含 VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR ,则（1） VkPipelineFragmentShadingRateEnumStateCreateInfoNV::shadingRateType 必须是一个有效的VkFragmentShadingRateTypeNV值
+																																	（2）则 VkPipelineFragmentShadingRateEnumStateCreateInfoNV::shadingRate必须是一个有效的 VkFragmentShadingRateNV 值
+																																	（3）则VkPipelineFragmentShadingRateEnumStateCreateInfoNV::combinerOps[0]，combinerOps[1] 必须是一个有效的 VkFragmentShadingRateCombinerOpKHR 值
+																																	（4）如果 fragmentShadingRateEnums 特性没有开启,VkPipelineFragmentShadingRateEnumStateCreateInfoNV::shadingRateType 必须为 VK_FRAGMENT_SHADING_RATE_TYPE_FRAGMENT_SIZE_NV
+																																	（5） 如果pipelineFragmentShadingRate 特性没有开启 ,则VkPipelineFragmentShadingRateEnumStateCreateInfoNV::shadingRate 必须等于 VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_PIXEL_NV
+																																	（6）如果 primitiveFragmentShadingRate 特性没有开启，则VkPipelineFragmentShadingRateEnumStateCreateInfoNV::combinerOps[0] 必须为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+																																	（7）如果 attachmentFragmentShadingRate 特性没有开启,则VkPipelineFragmentShadingRateEnumStateCreateInfoNV::combinerOps[1] 必须为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+	89.如果 pipeline 需要 fragment shader state, 且 fragmentShadingRateNonTrivialCombinerOps 限制不支持且pDynamicState->pDynamicStates中不包含VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR  , VkPipelineFragmentShadingRateEnumStateCreateInfoNV::combinerOps中的元素必须为 VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR 或者VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR
+	90.如果 pipeline 需要 fragment shader state, 且 supersampleFragmentShadingRates特性没有开启, VkPipelineFragmentShadingRateEnumStateCreateInfoNV::shadingRate不能等于 VK_FRAGMENT_SHADING_RATE_2_INVOCATIONS_PER_PIXEL_NV,VK_FRAGMENT_SHADING_RATE_4_INVOCATIONS_PER_PIXEL_NV,VK_FRAGMENT_SHADING_RATE_8_INVOCATIONS_PER_PIXEL_NV, 或者VK_FRAGMENT_SHADING_RATE_16_INVOCATIONS_PER_PIXEL_NV
+	91.如果 pipeline 需要 fragment shader state, 且 noInvocationFragmentShadingRates特性没有开启, VkPipelineFragmentShadingRateEnumStateCreateInfoNV::shadingRate 不能等于 VK_FRAGMENT_SHADING_RATE_NO_INVOCATIONS_NV
+	92.pDynamicState的pDynamicStates的所有元素不能为VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR
+	93.如果 pipeline 需要 pre-rasterization shader state 且 vertexInputDynamicState特性没有开启, pDynamicState的pDynamicStates中不能有VK_DYNAMIC_STATE_VERTEX_INPUT_EXT
+	94.如果 pipeline 需要 pre-rasterization shader state, 且包含一个 mesh shader, 则pDynamicState的pDynamicStates中不能有VK_DYNAMIC_STATE_VERTEX_INPUT_EXT
+	95.如果 colorWriteEnable 特性没有开启, 则pDynamicState的pDynamicStates中不能有 VK_DYNAMIC_STATE_COLOR_WRITE_ENABLE_EXT
+	96.如果pipeline 需要 fragment shader state, 且VK_QCOM_render_pass_shader_resolve 拓展开启,则（1） rasterizationSamples 不是动态的, 且如果 subpass 有任何 input attachments, 以及如果  subpass description 包含 VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM, 则 input attachments的采样数必须等于 rasterizationSamples
+																								（2）如果 the subpass description包含 VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM, 则 sampleShadingEnable必须为 false
+	97.如果 flags 包含 VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM, 则（1） subpass 必须是subpass 依赖链中的最后一个subpass
+																		 （2）且如果pResolveAttachments 为 NULL, 则每一个 resolve attachment 必须为VK_ATTACHMENT_UNUSED
+	
+	98.如果 dynamicRendering 特性没有开启且 pipeline 需要 pre-rasterization shader state, fragment shader state, 或者 fragment output interface state, 则renderPass 不能为 VK_NULL_HANDLE
+	99.如果multiview 特性没有开启,  pipeline 需要 pre-rasterization shader state, fragment shader state, 或者 fragment output interface state, 且 renderPass 为VK_NULL_HANDLE, 则VkPipelineRenderingCreateInfo::viewMask 必须是 0
+	100.如果 pipeline 需要 pre-rasterization shader state, fragment shader state, 或者 fragmentoutput interface state, 且 renderPass 为 VK_NULL_HANDLE, 则VkPipelineRenderingCreateInfo::viewMask有效位的索引必须小于maxMultiviewViewCount
+	101.如果 pipeline 需要 fragment output interface state, 且 renderPass 为 VK_NULL_HANDLE, 则（1）如果 VkPipelineRenderingCreateInfo::colorAttachmentCount 不为 0,则VkPipelineRenderingCreateInfo::pColorAttachmentFormats 必须是 colorAttachmentCount个有效的 VkFormat值的数组首地址
+																							   （2）则 VkPipelineRenderingCreateInfo::pColorAttachmentFormats 中的每个元素必须是有效的 VkFormat 值
+																							   （3）VkPipelineRenderingCreateInfo::pColorAttachmentFormats中任何不是VK_FORMAT_UNDEFINED的值必须是一个potential format features VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT 或者 VK_FORMAT_FEATURE_2_LINEAR_COLOR_ATTACHMENT_BIT_NV的format
+																							   （4）则VkPipelineRenderingCreateInfo::depthAttachmentFormat必须为一个有效的VkFormat值
+																							   （5） VkPipelineRenderingCreateInfo::stencilAttachmentFormat必须为一个有效的VkFormat值
+																							   （6）如果 VkPipelineRenderingCreateInfo::depthAttachmentFormat 不是 VK_FORMAT_UNDEFINED,则其必须是一个potential format features含有VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT的format值
+																							   （7）如果 VkPipelineRenderingCreateInfo::stencilAttachmentFormat 不是 VK_FORMAT_UNDEFINED,则其必须是一个potential format features含有VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT的format值
+																							   （8）如果 VkPipelineRenderingCreateInfo::depthAttachmentFormat 不为 VK_FORMAT_UNDEFINED, 其 format 必须包含 depth component
+																							   （9）如果 VkPipelineRenderingCreateInfo::stencilAttachmentFormat 不为 VK_FORMAT_UNDEFINED,其 format 必须包含一个 stencil component
+																							   （10）如果VkPipelineRenderingCreateInfo::depthAttachmentFormat 不为 VK_FORMAT_UNDEFINED, 且VkPipelineRenderingCreateInfo::stencilAttachmentFormat 不为 VK_FORMAT_UNDEFINED,depthAttachmentFormat 必须等于 stencilAttachmentFormat
+	102.如果 renderPass 为 VK_NULL_HANDLE,  pipeline 以 fragment shader state和 fragment output interface state创建, 且  VkPipelineRenderingCreateInfo::depthAttachmentFormat 或者 VkPipelineRenderingCreateInfo::stencilAttachmentFormat 两者其一不为 VK_FORMAT_UNDEFINED, 且 VK_EXT_extended_dynamic_state3 拓展没有开启 或者 VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE, VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE,
+																								VK_DYNAMIC_STATE_DEPTH_COMPARE_OP, VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE, VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE, VK_DYNAMIC_STATE_STENCIL_OP,或VK_DYNAMIC_STATE_DEPTH_BOUNDS dynamic states 任何之一没有设置, pDepthStencilState必须是一个有效的 VkPipelineDepthStencilStateCreateInfo 指针
+	103.如果 pDepthStencilState 不为 NULL就必须为一个有效的 VkPipelineDepthStencilStateCreateInfo 指针
+	104.如果 renderPass 为 VK_NULL_HANDLE,  pipeline 以 fragment shader state但不以 fragment output interface state创建, 且 VK_EXT_extended_dynamic_state3拓展没有开启, 或者 VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE,VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE, VK_DYNAMIC_STATE_DEPTH_COMPARE_OP,VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE, VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE,VK_DYNAMIC_STATE_STENCIL_OP, 
+																								或者 VK_DYNAMIC_STATE_DEPTH_BOUNDS dynamic states 任何之一没有设置, pDepthStencilState 必须是一个有效的 VkPipelineDepthStencilStateCreateInfo 指针
+	105.如果 pDepthStencilState 不为 NULL就必须为一个有效的 VkPipelineDepthStencilStateCreateInfo 指针
+	106.如果 renderPass 为 VK_NULL_HANDLE,  pipeline 以 fragment output interface state创建, 且VkPipelineRenderingCreateInfo::pColorAttachmentFormats的任何元素不是 VK_FORMAT_UNDEFINED, 且 VK_EXT_extended_dynamic_state3 拓展没有开启,或者是 VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXT, VK_DYNAMIC_STATE_LOGIC_OP_EXT, VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT, VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT,
+																								VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT, 或 VK_DYNAMIC_STATE_BLEND_CONSTANTS dynamic states 任何之一没有设置, pColorBlendState必须是一个有效的 VkPipelineColorBlendStateCreateInfo 指针
+	
+	
+	107.如果 pColorBlendState 不为 NULL 就必须为一个有效的VkPipelineColorBlendStateCreateInfo 指针
+	108.如果 renderPass 为 VK_NULL_HANDLE, pColorBlendState 不是动态的, 且 pipeline 以 fragment output interface state创建, 则pColorBlendState->attachmentCount 必须等于 VkPipelineRenderingCreateInfo::colorAttachmentCount
+	109.如果 renderPass 为 VK_NULL_HANDLE,  pipeline 以 pre-rasterization shader state创建, VkPipelineRenderingCreateInfo::viewMask 不为 0, 则（1）如果 multiviewTessellationShader 特性没有开启, 则 pStages不能包含 tessellation shaders
+																																			  （2）如果multiviewGeometryShader 特性没有开启, 则 pStages 不能包含一个 geometry shader
+																																			  （3）管线中所有shaders的interfaces不能含有以Layer built-in decoration修饰的变量
+																																			  （4）如果 multiviewMeshShader 没有开启, 则 pStages 不能包含一个 mesh shader
+	110.如果 dynamicRenderingLocalRead 特性没有开启,  pipeline 需要 fragmentshader state, 且 renderPass 为 VK_NULL_HANDLE, pStages的fragment shaders不能包含 InputAttachment capability
+	111.如果 pipeline 需要 fragment shader state 且 renderPass 不是 VK_NULL_HANDLE, pStages的fragment shaders 不能包含任何 TileImageColorReadAccessEXT, TileImageDepthReadAccessEXT, 或者 TileImageStencilReadAccessEXT capabilities
+	112.如果 pipeline 需要 fragment output interface state 且 renderPass 为VK_NULL_HANDLE, 则（1）VkPipelineRenderingCreateInfo的pColorAttachmentFormats定义的每一个 color attachment format 如果其  potentialformat features 不包含 VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT, 则对应到pAttachments的pColorBlendState的 blendEnable 必须为 VK_FALSE
+																							 （2）如果 pNext 中包含 VkAttachmentSampleCountInfoAMD 或者 VkAttachmentSampleCountInfoNV, 则其 colorAttachmentCount 必须等于 VkPipelineRenderingCreateInfo::colorAttachmentCount
+	113.如果 pStages 包含一个 fragment shader stage, 且 fragment shader 声明了 EarlyFragmentTests execution mode, 则 VkPipelineDepthStencilStateCreateInfo的flags 不能包含 VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT 或者 VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT
+	114.如果 dynamicRenderingLocalRead 特性没有开启,  pipeline 需要 fragment output interface state, 则（1）如果VkPipelineColorBlendStateCreateInfo的  flags包含 VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT, 则renderPass 不能为 VK_NULL_HANDLE
+																									   （2）如果VkPipelineDepthStencilStateCreateInfo的 flags包含VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT 或者VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT, renderPass 不能为 VK_NULL_HANDLE
+	115.如果 pipeline 需要 fragment output interface state,则（1） VkAttachmentSampleCountInfoAMD 或者 VkAttachmentSampleCountInfoNV的pColorAttachmentSamples的元素必须是有效的 VkSampleCountFlagBits 值
+															 （2）如果VkAttachmentSampleCountInfoAMD 或者 VkAttachmentSampleCountInfoNV的 depthStencilAttachmentSamples 不为 0, 则其必须是一个有效的 VkSampleCountFlagBits 值
+															 （3）如果 renderPass 不为 VK_NULL_HANDLE, VkPipelineColorBlendStateCreateInfo的 flags 包含 VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT 则subpass 必须以 VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_EXT创建
 	
 	
 	
+	116.如果 pipeline 需要 fragment shader state, renderPass 不为 VK_NULL_HANDLE, 则（1）如果VkPipelineDepthStencilStateCreateInfo的 flags 包含 VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT, subpass 必须以 VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT创建
+																					（2）如果VkPipelineDepthStencilStateCreateInfo的 flags包含VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT, subpass 必须以 VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT创建
+	117.如果 VkPipelineCreationFeedbackCreateInfo::pipelineStageCreationFeedbackCount不为 0, 则必须等于stageCount
+	118.如果 renderPass 为 VK_NULL_HANDLE,  pipeline 以 pre-rasterization shader state 或者 fragment shader state创建, 且 VkMultiviewPerViewAttributesInfoNVX::perViewAttributesPositionXOnly 为 VK_TRUE 则 VkMultiviewPerViewAttributesInfoNVX::perViewAttributes 也要 VK_TRUE
+	119.如果 VkGraphicsPipelineLibraryCreateInfoEXT::flags 只包含 VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT 或者 VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT其中一个,且  VkPipelineLibraryCreateInfoKHR::pLibraries的一个元素包含另外一个,则（1）在pipeline以及library中指定的 VkMultiviewPerViewAttributesInfoNVX::perViewAttributes 必须相同
+						（2）																																																											  （2）在pipeline以及library中指定的 VkMultiviewPerViewAttributesInfoNVX::perViewAttributesPositionXOnly 必须相同								
+	120. 如果 VkPipelineLibraryCreateInfoKHR::pLibraries的一个元素 包含 VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT 且其他的元素包含  VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT, 则（1）这些libraries中指定的 VkMultiviewPerViewAttributesInfoNVX::perViewAttributes必须相同
+																																																				 （2）这些libraries中指定的 VkMultiviewPerViewAttributesInfoNVX::perViewAttributesPositionXOnly必须相同
 	
+	121.如果 pipeline 需要 pre-rasterization shader state 或者 fragment shader state,则 pStages 必须是 stageCount个有效的 VkPipelineShaderStageCreateInfo 的数组首地址
+
+	122.如果 pipeline 不需要 pre-rasterization shader state 或者 fragment shader state, 则stageCount 必须为 zero
+	123.如果 VkGraphicsPipelineLibraryCreateInfoEXT::flags 包含 VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT, 且 VK_EXT_extended_dynamic_state3 拓展没有开启, 或者 VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT, VK_DYNAMIC_STATE_SAMPLE_MASK_EXT, 或 VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXT dynamic states 
+														任何之一没有设置, 或者 alphaToOne 在 device 上启用但 VK_DYNAMIC_STATE_ALPHA_TO_ONE_ENABLE_EXT 没有设置, 则 pMultisampleState 必须是有效的 VkPipelineMultisampleStateCreateInfo 指针
+	124.如果 pRasterizationState 不为 NULL 就必须是有效的 VkPipelineRasterizationStateCreateInfo 指针
+	125.如果 pipeline 需要 fragment shader state 或者 pre-rasterization shader state, layout必须是有效的 VkPipelineLayout 句柄
+	126.如果 pipeline 需要 pre-rasterization shader state, fragment shader state, 或者 fragment output state, 且 renderPass 不为 VK_NULL_HANDLE, renderPass 必须是有效的 VkRenderPass 句柄
+	127.如果  pipeline 需要 pre-rasterization shader state, stageCount 必须大于 0 
+	128.如果 graphicsPipelineLibrary 特性未开启, flags 不能包含 VK_PIPELINE_CREATE_LIBRARY_BIT_KHR
+	129.如果 pipeline 定义, 或者以 libraries包含, 所有的完整的pipeline所需的 state subsets required, flags 不能包含 VK_PIPELINE_CREATE_LIBRARY_BIT_KHR
+	130.如果 flags 包含 VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT, 通过 VkPipelineLibraryCreateInfoKHR 包含的pipeline libraries 必须以 VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT创建
+	131.如果 flags 包含 VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT, 则（1）flags就不能包含 VK_PIPELINE_CREATE_LIBRARY_BIT_KHR
+																						 （2） 通过 VkPipelineLibraryCreateInfoKHR 包含的 pipeline libraries 必须以 VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT创建
+		
+	132.任何通过 VkPipelineLibraryCreateInfoKHR::pLibraries 包含的 pipeline libraries 不能包含任何已经被VkGraphicsPipelineCreateInfo定义的或者在其他的VkPipelineLibraryCreateInfoKHR::pLibraries的 pipeline library的state subset 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	133.如果 VkGraphicsPipelineLibraryCreateInfoEXT::flags 只包含VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT 或者VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT其中一个, VkPipelineLibraryCreateInfoKHR::pLibraries 的一个元素包含另外一个, 则（1）如果 layout 不以 VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT创建, 则pipeline 和 library 用的 layout必须是相同定义的
+																																																																	   （2）如果 layout 以 VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT创建的 ，则被library使用的layout也需要以VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT创建
+																																																																	   （3）如果 layout 以VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT创建, pSetLayouts中的不是VK_NULL_HANDLE的创建的元素必须是和创建library的pSetLayouts相同索引的元素相同定义的 
+																																																																	   （4） 任何在pipeline以及library中包含每一个shader stage对bindings访问的layout中指定的 descriptor set layout N 必须是相同定义的
+																																																																	   （5）在pipeline和library中可以被每一个shader stages访问的layout中的 push constants必须是相同定义的
+																																																																	   （6）任何用pSetLayouts 中创建的layout以及用来创建library的layout的pSetLayouts中的对应元素都不能同时为 VK_NULL_HANDLE
+																																																																	   （7） 如果pSetLayouts的任何元素创建为VK_NULL_HANDLE，则用来创建其他library的layout的pSetLayouts中的对应元素在其他的subset中的shaders中不能有shader bindings
+																																																																	   （8）如果用来创建library的layout的pSetLayouts的任何元素为VK_NULL_HANDLE，则用来创建pipeline的layout的pSetLayouts中的对应元素在其他的subset中的shaders中不能有shader bindings
+	134.如果VkPipelineLibraryCreateInfoKHR::pLibraries的一个元素 包含 VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT且其他的元素包含  VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT, 则（1）如果 这些 library 指定的 layout 不以 VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT创建, 则每个library使用的 layout必须是相同定义的
+																																																			  （2）如果 不是这些 library 指定的 layout 以 VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT创建, 则这些 library使用的 layout也需要以VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT创建
+																																																			  （3）如果 不是这些 library 指定的 layout 以 VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT创建，则pSetLayouts中的不是VK_NULL_HANDLE的创建的元素必须是和创建library的pSetLayouts相同索引的元素相同定义的
+																																																			  （4） 任何在这些library中包含每一个shader stage对bindings访问的layout中指定的 descriptor set layout N 必须是相同定义的 any descriptor set layout
+																																																			  （5）在pipeline和library中可以被每一个shader stages访问的layout中的 push constants必须是相同定义的
+																																																			  （6）任何用pSetLayouts 中用来创建每个library的layout不为VK_NULL_HANDLE，则用来创建其他library的pSetLayouts中的对应元素也不能为 VK_NULL_HANDLE
+																																																			  （7）如果用来创建每个library的layout的pSetLayouts的任何元素为VK_NULL_HANDLE，则用来创建其他library的layout的pSetLayouts中的对应元素在其他的subset中的shaders中不能有shader bindings
+
+
+	135.如果 VkGraphicsPipelineLibraryCreateInfoEXT::flags 同时包含VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT 以及VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT, layout 创建时的 pSetLayouts 中没有元素为 VK_NULL_HANDLE
+	136.如果VkGraphicsPipelineLibraryCreateInfoEXT::flags 包含 VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT 且 pRasterizationState->rasterizerDiscardEnable 为 VK_TRUE,  layout 创建时的 pSetLayouts 中没有元素为 VK_NULL_HANDLE
+	137.如果 VkGraphicsPipelineLibraryCreateInfoEXT::flags 包含至少一个且不超过两个的 VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT, VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT, 或者 VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_OUTPUT_INTERFACE_BIT_EXT, VkPipelineLibraryCreateInfoKHR::pLibraries的一个元素包含另外的flags中的一个, 则 （1）subpass 必须等于用来创建 library的值
+																																																																																								 （2）如果renderpass不为VK_NULL_HANDLE，renderPass就必须和用来创建library的renderpass兼容
+																																																																																								 （3）如果renderpass为VK_NULL_HANDLE，则用来创建library的renderpass也必须为VK_NULL_HANDLE
+																																																																																								 （4）如果renderpass为VK_NULL_HANDLE，则pipeline使用的VkPipelineRenderingCreateInfo::viewMask值必须等于 library 中指定的该值
+	138.如果  VkPipelineLibraryCreateInfoKHR::pLibraries 的一个元素包含至少一个且不超过两个的VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT,VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT, 或者 VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_OUTPUT_INTERFACE_BIT_EXT, 且VkPipelineLibraryCreateInfoKHR::pLibraries的另外一个元素包含这些flags中的另外一个 ,  则：
+																																																																																							（1） 用来创建每一个library的 subpass 必须相等
+																																																																																							（2）如果这些libraries的renderpass为VK_NULL_HANDLE，则每一个library的VkPipelineRenderingCreateInfo::viewMask必须是相同的
+																																																																																							（3）则同来创建每一个library的renderPass必须是兼容的或者全部为VK_NULL_HANDLE
+
+
+
+
+
 	*/
 
 

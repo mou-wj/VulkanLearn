@@ -20,8 +20,44 @@ typedef struct VkComputePipelineIndirectBufferInfoNV {
 	VkDeviceAddress pipelineDeviceAddressCaptureReplay;
 } VkComputePipelineIndirectBufferInfoNV;
 
+// Provided by VK_ANDROID_external_memory_android_hardware_buffer
+typedef struct VkExternalFormatANDROID {
+	VkStructureType    sType;
+	void* pNext;
+	uint64_t           externalFormat;
+} VkExternalFormatANDROID;
+typedef VkFlags VkPipelineCreateFlags2KHR;
+// Provided by VK_KHR_maintenance5
+typedef struct VkPipelineCreateFlags2CreateInfoKHR {
+	VkStructureType              sType;
+	const void* pNext;
+	VkPipelineCreateFlags2KHR    flags;
+} VkPipelineCreateFlags2CreateInfoKHR;
+// Provided by VK_AMDX_shader_enqueue
+typedef struct VkPipelineShaderStageNodeCreateInfoAMDX {
+	VkStructureType    sType;
+	const void* pNext;
+	const char* pName;
+	uint32_t             index;
+} VkPipelineShaderStageNodeCreateInfoAMDX;
 
+// Provided by VK_KHR_dynamic_rendering_local_read
+typedef struct VkRenderingAttachmentLocationInfoKHR {
+	VkStructureType    sType;
+	const void* pNext;
+	uint32_t           colorAttachmentCount;
+	const uint32_t* pColorAttachmentLocations;
+} VkRenderingAttachmentLocationInfoKHR;
 
+// Provided by VK_KHR_dynamic_rendering_local_read
+typedef struct VkRenderingInputAttachmentIndexInfoKHR {
+	VkStructureType    sType;
+	const void* pNext;
+	uint32_t           colorAttachmentCount;
+	const uint32_t* pColorAttachmentInputIndices;
+	const uint32_t* pDepthInputAttachmentIndex;
+	const uint32_t* pStencilInputAttachmentIndex;
+} VkRenderingInputAttachmentIndexInfoKHR;
 
 PipelineTest::PipelineTest()
 {
@@ -62,11 +98,11 @@ struct ComputePipelineCreateInfoExt {
 		Init();
 	}
 	void Init() {
-		computePipelineIndirectBufferInfoNV.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_INDIRECT_BUFFER_INFO_NV;
+		computePipelineIndirectBufferInfoNV.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_INDIRECT_BUFFER_INFO_NV
 		computePipelineIndirectBufferInfoNV.pNext = &computePipelineControlCreateInfoAMD;
 		computePipelineControlCreateInfoAMD.sType = VK_STRUCTURE_TYPE_PIPELINE_COMPILER_CONTROL_CREATE_INFO_AMD;
 		computePipelineControlCreateInfoAMD.pNext = &pipelineCreateFlags2CreateInfoKHR;
-		pipelineCreateFlags2CreateInfoKHR.sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO_KHR;
+		pipelineCreateFlags2CreateInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO_KHR
 		pipelineCreateFlags2CreateInfoKHR.pNext = &pipelineCreationFeedbackCreateInfo;
 		pipelineCreationFeedbackCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO;
 		pipelineCreationFeedbackCreateInfo.pNext = &pipelineRobustnessCreateInfoEXT;
@@ -96,7 +132,7 @@ struct PipelineShaderStageCreateInfoExt {
 		pipelineRobustnessCreateInfoEXT.pNext = &pipelineShaderStageModuleIdentifierCreateInfoEXT;
 		pipelineShaderStageModuleIdentifierCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_MODULE_IDENTIFIER_CREATE_INFO_EXT;
 		pipelineShaderStageModuleIdentifierCreateInfoEXT.pNext = &pipelineShaderStageNodeCreateInfoAMDX;
-		pipelineShaderStageNodeCreateInfoAMDX.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_NODE_CREATE_INFO_AMDX;
+		pipelineShaderStageNodeCreateInfoAMDX.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_NODE_CREATE_INFO_AMDX
 		pipelineShaderStageNodeCreateInfoAMDX.pNext = &pipelineShaderStageRequiredSubgroupSizeCreateInfo;
 		pipelineShaderStageRequiredSubgroupSizeCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO;
 		pipelineShaderStageRequiredSubgroupSizeCreateInfo.pNext = &shaderModuleCreateInfo;
@@ -254,9 +290,9 @@ void PipelineTest::ComputePipelineCreateTest()
 
 		//VkPipelineCreateFlags2CreateInfoKHR
 		VkPipelineCreateFlags2CreateInfoKHR& pipelineCreateFlags2CreateInfoKHR = computePipelineCreateInfoExt.pipelineCreateFlags2CreateInfoKHR;
-		pipelineCreateFlags2CreateInfoKHR.sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO_KHR;
+		pipelineCreateFlags2CreateInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO_KHR
 		//pipelineCreateFlags2CreateInfoKHR.pNext = nullptr;//已经链接好了这里不再设置
-		pipelineCreateFlags2CreateInfoKHR.flags = VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES_BIT_KHR;
+		pipelineCreateFlags2CreateInfoKHR.flags = 0;//没有定义VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES_BIT_KHR
 
 		//VkSubpassShadingPipelineCreateInfoHUAWEI
 		// subpass shading pipeline是一个compute pipeline，只能在subpass的render area范围内调用，允许访问在调用subpass中指定的输入附件，创建一个subpass shading pipeline需要在创建compute pipeline的时候的vkCreateComputePipelines.pNext这个中包含这个结构体
@@ -362,6 +398,72 @@ void PipelineTest::ComputePipelineCreateTest()
 	vkDestroyPipeline(device, computePipeline, nullptr);
 }
 
+
+struct GraphicsPipelineCreateInfoExt {
+	VkAttachmentSampleCountInfoAMD attachmentSampleCountInfoAMD{};
+	VkExternalFormatANDROID  externalFormatANDROID{};
+	VkGraphicsPipelineLibraryCreateInfoEXT pipelineLibraryCreateInfoEXT{};
+	VkGraphicsPipelineShaderGroupsCreateInfoNV pipelineShaderGroupsCreateInfoNV{};
+	VkMultiviewPerViewAttributesInfoNVX multiviewPerViewAttributesInfoNVX{};
+	VkPipelineCompilerControlCreateInfoAMD pipelineCompilerControlCreateInfoAMD{};
+	VkPipelineCreateFlags2CreateInfoKHR  pipelineCreateFlags2CreateInfoKHR{};
+	VkPipelineCreationFeedbackCreateInfo pipelineCreationFeedbackCreateInfo{};
+	VkPipelineDiscardRectangleStateCreateInfoEXT pipelineDiscardRectangleStateCreateInfoEXT{};
+	VkPipelineFragmentShadingRateEnumStateCreateInfoNV pipelineFragmentShadingRateEnumStateCreateInfoNV{};
+	VkPipelineFragmentShadingRateStateCreateInfoKHR pipelineFragmentShadingRateStateCreateInfoKHR{};
+	VkPipelineLibraryCreateInfoKHR pipelineLibraryCreateInfoKHR{};
+	VkPipelineRenderingCreateInfo pipelineRenderingCreateInfo{};
+	VkPipelineRepresentativeFragmentTestStateCreateInfoNV pipelineRepresentativeFragmentTestStateCreateInfoNV{};
+	VkPipelineRobustnessCreateInfoEXT pipelineRobustnessCreateInfoEXT{};
+	VkRenderingAttachmentLocationInfoKHR	renderingAttachmentLocationInfoKHR{};
+	VkRenderingInputAttachmentIndexInfoKHR renderingInputAttachmentIndexInfoKHR{};
+	GraphicsPipelineCreateInfoExt() {
+		Init();
+	}
+	void Init() {
+		attachmentSampleCountInfoAMD.sType = VK_STRUCTURE_TYPE_ATTACHMENT_SAMPLE_COUNT_INFO_AMD;
+		attachmentSampleCountInfoAMD.pNext = &externalFormatANDROID;
+		externalFormatANDROID.sType = VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID;
+		externalFormatANDROID.pNext = &pipelineLibraryCreateInfoEXT;
+		pipelineLibraryCreateInfoEXT.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT;
+		pipelineLibraryCreateInfoEXT.pNext = &pipelineShaderGroupsCreateInfoNV;
+		pipelineShaderGroupsCreateInfoNV.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_SHADER_GROUPS_CREATE_INFO_NV;
+		pipelineShaderGroupsCreateInfoNV.pNext = &multiviewPerViewAttributesInfoNVX;
+		multiviewPerViewAttributesInfoNVX.sType = VK_STRUCTURE_TYPE_MULTIVIEW_PER_VIEW_ATTRIBUTES_INFO_NVX;
+		multiviewPerViewAttributesInfoNVX.pNext = &pipelineCompilerControlCreateInfoAMD;
+		pipelineCompilerControlCreateInfoAMD.sType = VK_STRUCTURE_TYPE_PIPELINE_COMPILER_CONTROL_CREATE_INFO_AMD;
+		pipelineCompilerControlCreateInfoAMD.pNext = &pipelineCreateFlags2CreateInfoKHR;
+		pipelineCreateFlags2CreateInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO_KHR未定义
+		pipelineCreateFlags2CreateInfoKHR.pNext = &pipelineCreationFeedbackCreateInfo;
+		pipelineCreationFeedbackCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO;
+		pipelineCreationFeedbackCreateInfo.pNext = &pipelineDiscardRectangleStateCreateInfoEXT;
+		pipelineDiscardRectangleStateCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT;
+		pipelineDiscardRectangleStateCreateInfoEXT.pNext = &pipelineFragmentShadingRateEnumStateCreateInfoNV;
+		pipelineFragmentShadingRateEnumStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_ENUM_STATE_CREATE_INFO_NV;
+		pipelineFragmentShadingRateEnumStateCreateInfoNV.pNext = &pipelineFragmentShadingRateStateCreateInfoKHR;
+		pipelineFragmentShadingRateStateCreateInfoKHR.sType = VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_STATE_CREATE_INFO_KHR;
+		pipelineFragmentShadingRateStateCreateInfoKHR.pNext = &pipelineLibraryCreateInfoKHR;
+		pipelineLibraryCreateInfoKHR.sType = VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR;
+		pipelineLibraryCreateInfoKHR.pNext = &pipelineRenderingCreateInfo;
+		pipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+		pipelineRenderingCreateInfo.pNext = &pipelineRepresentativeFragmentTestStateCreateInfoNV;
+		pipelineRepresentativeFragmentTestStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV;
+		pipelineRepresentativeFragmentTestStateCreateInfoNV.pNext = &pipelineRobustnessCreateInfoEXT;
+		pipelineRobustnessCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_ROBUSTNESS_CREATE_INFO_EXT;
+		pipelineRobustnessCreateInfoEXT.pNext = &renderingAttachmentLocationInfoKHR;
+		renderingAttachmentLocationInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_LOCATION_INFO_KHR未定义
+		renderingAttachmentLocationInfoKHR.pNext = &renderingInputAttachmentIndexInfoKHR;
+		renderingInputAttachmentIndexInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//VK_STRUCTURE_TYPE_RENDERING_INPUT_ATTACHMENT_INDEX_INFO_KHR未定义
+		renderingInputAttachmentIndexInfoKHR.pNext = nullptr;
+
+	
+	
+	
+	}
+
+};
+
+
 void PipelineTest::GraphicPipelineCreateTest()
 {
 
@@ -432,14 +534,57 @@ void PipelineTest::GraphicPipelineCreateTest()
 	VkPipelineDepthStencilStateCreateInfo depthStencilState{};
 	VkPipelineColorBlendStateCreateInfo colorBlendState{};
 	VkPipelineDynamicStateCreateInfo dynamicState{};
+	dynamicState.dynamicStateCount = 0;//pDynamicStates中元素个数
+	dynamicState.pDynamicStates = VK_NULL_HANDLE;//是一个指向VkDynamicState值数组的指针，它指定哪些管道状态片段将使用来自dynamic state命令而不是来自管道创建时state信息的值。
+	dynamicState.flags = 0;//保留未来使用
+	//to do
 
 
+
+
+		GraphicsPipelineCreateInfoExt pipelineCreateInfoExt{};
 
 
 	graphicPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	graphicPipelineCreateInfo.pNext = nullptr;
+	graphicPipelineCreateInfo.pNext = &pipelineCreateInfoExt.attachmentSampleCountInfoAMD;
 	graphicPipelineCreateInfo.stageCount = 1;
-	graphicPipelineCreateInfo.pStages = &shaderStages;//指明管线所涉及的着色器状态
+	graphicPipelineCreateInfo.pStages = &shaderStages;/*指明管线所涉及的着色器状态
+
+	VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT :    指明管线创建不会优化，这会加快管道创建
+    VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT :    指定要创建的管道允许是将在后续的管道创建调用中创建的管道的父管道
+    VK_PIPELINE_CREATE_DERIVATIVE_BIT :    指定要创建的管道将是以前创建的父管道的子管道
+    VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT :   指定任何以 ViewIndex修饰的着色器输入变量将被分配值，就像它们被修饰为DeviceIndex.一样。
+	VK_PIPELINE_CREATE_DISPATCH_BASE :   指定计算管道可以与非零基工作组的vkCmdDispatchBase一起使用
+    VK_PIPELINE_CREATE_DEFER_COMPILE_BIT_NV :    指定创建所有着色器处于延迟状态的的管道。在使用管道之前，应用程序必须在使用管道之前对管道中的每个着色器只调用vkCompileDeferredNV一次。 
+    VK_PIPELINE_CREATE_CAPTURE_STATISTICS_BIT_KHR :    指定着色器编译器应该捕获由编译过程产生的管道可执行文件的统计信息，稍后可以通过调用vkGetPipelineExecutableStatisticsKHR.来检索这些信息，启用此标志不能影响最终编译的管道，但可能会禁用管道缓存或以其他方式影响管道创建时间。
+    VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR :    指定着色器编译器应该捕获由编译过程产生的管道可执行文件的内部表示，稍后可以通过调用 vkGetPipelineExecutableInternalRepresentationsKHR.来检索启用此标志不能影响最终编译的管道，但可能会禁用管道缓存或以其他方式影响管道创建时间。当从使用管道库创建的管道中捕获IR时，并不能保证可以从链接的管道中检索到库中的IR。应用程序应该分别从每个库和任何链接的管道中检索IR
+    VK_PIPELINE_CREATE_LIBRARY_BIT_KHR :    指定不能直接使用管道，而是定义了一个可以使用VkPipelineLibraryCreateInfoKHR结构与其他管道组合的 pipeline library 。这可以在光线追踪和图形管道中使用。
+    VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR :    指定在执行any-hit着色器时，将始终存在any-hit着色器。一个NULL any-hit的着色器是一个有效的是VK_SHADER_UNUSED_KHR的 any-hit 的着色器，例如来自一个完全由零组成的着色器组。 
+    VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR :   指定在执行closest hit着色器时，将始终存在closest hit着色器。一个NULL closest hit 着色器是一个有效的VK_SHADER_UNUSED_KHR的closest hit 着色器，例如从一个完全由零组成的着色器组 
+    VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR :    指定在执行miss shader 时，将始终存在miss shader。一个NULL miss shader是一个有效的VK_SHADER_UNUSED_KHR miss shader，例如从一个完全由零组成的着色器组。
+    VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR :   指定在执行intersection shader 时，将始终存在intersection shader。一个NULL intersection shader是一个有效的VK_SHADER_UNUSED_KHR intersection shader，例如从一个完全由零组成的着色器组。  
+    VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR :    指定在使用管道跟踪射线指令遍历期间将跳过三角形图元。
+    VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR :    指定在使用管道跟踪射线指令遍历期间将跳过AABB primitives。
+    VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR :     指定着色器组句柄可以在后续的运行中被保存和重用（例如，用于跟踪捕获和重播）。
+    VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV :    指定管道可以与Device-Generated的命令结合使用  
+	VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT :    指定如果需要编译来创建一个有效的VkPipeline，则管道创建将失败；管道创建将返回VK_PIPELINE_COMPILE_REQUIRED，并且VkPipeline将被设置为VK_NULL_HANDLE。 
+	VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT: 指定如果任何单个管道返回一个不是VK_SUCCESS的结果，则不再继续创建额外的管道，而是将控制权返回给应用程序。
+    VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV :    指定管道可以使用 OpTraceRayMotionNV.
+	VK_PIPELINE_CREATE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR :     指定管道将与一个 fragment shading rate attachment 一起使用。
+    VK_PIPELINE_CREATE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT :   指定管道将与一个 fragment density map attachment 一起使用
+    VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT :   指定要链接到此库中的管道库应该已应用了链接时间优化。如果省略了这个位，那么实现应该尽可能快地执行链接。
+    VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT :  指定管道库应该保留以后与VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT.执行最佳链接所需的任何信息
+    VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT :    指定管道将与descriptor buffers一起使用，而不是使用descriptor sets。
+	VK_PIPELINE_CREATE_COLOR_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT :  指定管道可以与feedback loop color attachment一起使用。如果pDynamicStates设置了VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT，则该位会被忽略  
+	VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT :   指定管道可以与feedback loop depth-stencil attachment一起使用。如果pDynamicStates设置了VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT，则该位会被忽略      
+	VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT :   指定光线跟踪管道可与引用不透明度微映射阵列的加速结构一起使用。
+    VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV :    指定光线追踪管道可以与参考位移微映射阵列的加速结构一起使用
+    VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT :    指定管道不能绑定到受保护的命令缓冲区。
+    VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT :    指定管道不能绑定到未受保护的命令缓冲区
+	
+	
+	
+	*/
 	graphicPipelineCreateInfo.pVertexInputState = &vertexInputState;//指明顶点输入，如果管线包含mesh shader则可以被忽略，如果管线以VK_DYNAMIC_STATE_VERTEX_INPUT_EXT动态状态创建则该可以为NULL
 	graphicPipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;//是一个指向VkPipelineInputAssemblyStateCreateInfo结构的指针，它决定了顶点着色的输入装配行为，如图形命令中所述。如果启用了VK_EXT_extended_dynamic_state3扩展，如果管道是使用VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE创建的，并且VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY动态状态集，动态原始拓扑不受限制为VK_TRUE，则可以为NULL。如果管道包含一个网格着色器阶段，则会忽略它。
 	graphicPipelineCreateInfo.pTessellationState = &tessellationState;//是一个指向VkPipelineTessellationStateCreateInfo结构的指针，定义tessellation shader的tessellation stage使用。如果管道是使用VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT动态状态集创建的，则可以为NULL。
@@ -884,8 +1029,68 @@ void PipelineTest::GraphicPipelineCreateTest()
 
 
 
+	/*
+	VkPipelineRenderingCreateInfo这个包含在VkGraphicsPipelineCreateInfo的pNext中，如果pipeline创建没有renderPass,则 该结构体用于描述渲染相关的状态，如viewMask、colorAttachmentCount、pColorAttachmentFormats、depthAttachmentFormat、stencilAttachmentFormat等。如果pipeline创建有renderPass，则该结构体会被忽略
+	如果format为VK_FORMAT_UNDEFINED则指明该附件在渲染中没有被使用
+	*/
+	VkPipelineRenderingCreateInfo& renderingCreateInfo = pipelineCreateInfoExt.pipelineRenderingCreateInfo;
+	renderingCreateInfo.viewMask = 0;
+	renderingCreateInfo.colorAttachmentCount = 0;
+	renderingCreateInfo.pColorAttachmentFormats = VK_NULL_HANDLE;//指明pipeline中color attachment的格式
+	renderingCreateInfo.depthAttachmentFormat = VK_FORMAT_UNDEFINED;//指明pipeline中depth attachment的格式
+	renderingCreateInfo.stencilAttachmentFormat = VK_FORMAT_UNDEFINED;//指明pipeline中stencil attachment的格式
 
 
+	/*VkPipelineCreateFlags2CreateInfoKHR*/
+	VkPipelineCreateFlags2CreateInfoKHR& flags2CreateInfo = pipelineCreateInfoExt.pipelineCreateFlags2CreateInfoKHR;
+	flags2CreateInfo.flags = 0;/*指明管线如何被创建
+    VK_PIPELINE_CREATE_2_DISABLE_OPTIMIZATION_BIT_KHR :   指明管线创建不会优化，这会加快管道创建
+    VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES_BIT_KHR :   指定要创建的管道允许是将在后续的管道创建调用中创建的管道的父管道
+    VK_PIPELINE_CREATE_2_DERIVATIVE_BIT_KHR :    指定要创建的管道将是以前创建的父管道的子管道
+    VK_PIPELINE_CREATE_2_VIEW_INDEX_FROM_DEVICE_INDEX_BIT_KHR :  指定任何以 ViewIndex修饰的着色器输入变量将被分配值，就像它们被修饰为DeviceIndex.一样。
+    VK_PIPELINE_CREATE_2_DISPATCH_BASE_BIT_KHR :    指定计算管道可以与非零基工作组的vkCmdDispatchBase一起使用
+    VK_PIPELINE_CREATE_2_DEFER_COMPILE_BIT_NV :   指定创建所有着色器处于延迟状态的的管道。在使用管道之前，应用程序必须在使用管道之前对管道中的每个着色器只调用vkCompileDeferredNV一次。 
+    VK_PIPELINE_CREATE_2_CAPTURE_STATISTICS_BIT_KHR :    指定着色器编译器应该捕获由编译过程产生的管道可执行文件的统计信息，稍后可以通过调用vkGetPipelineExecutableStatisticsKHR.来检索这些信息，启用此标志不能影响最终编译的管道，但可能会禁用管道缓存或以其他方式影响管道创建时间。
+    VK_PIPELINE_CREATE_2_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR :   指定着色器编译器应该捕获由编译过程产生的管道可执行文件的内部表示，稍后可以通过调用 vkGetPipelineExecutableInternalRepresentationsKHR.来检索启用此标志不能影响最终编译的管道，但可能会禁用管道缓存或以其他方式影响管道创建时间。当从使用管道库创建的管道中捕获IR时，并不能保证可以从链接的管道中检索到库中的IR。应用程序应该分别从每个库和任何链接的管道中检索IR
+    VK_PIPELINE_CREATE_2_LIBRARY_BIT_KHR :    指定不能直接使用管道，而是定义了一个可以使用VkPipelineLibraryCreateInfoKHR结构与其他管道组合的 pipeline library 。这可以在光线追踪和图形管道中使用。
+    VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR :   指定在执行any-hit着色器时，将始终存在any-hit着色器。一个NULL any-hit的着色器是一个有效的是VK_SHADER_UNUSED_KHR的 any-hit 的着色器，例如来自一个完全由零组成的着色器组。 
+    VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR : 指定在执行closest hit着色器时，将始终存在closest hit着色器。一个NULL closest hit 着色器是一个有效的VK_SHADER_UNUSED_KHR的closest hit 着色器，例如从一个完全由零组成的着色器组 
+    VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR :  指定在执行miss shader 时，将始终存在miss shader。一个NULL miss shader是一个有效的VK_SHADER_UNUSED_KHR miss shader，例如从一个完全由零组成的着色器组。
+    VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR :  指定在执行intersection shader 时，将始终存在intersection shader。一个NULL intersection shader是一个有效的VK_SHADER_UNUSED_KHR intersection shader，例如从一个完全由零组成的着色器组。  
+    VK_PIPELINE_CREATE_2_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR :    指定在使用管道跟踪射线指令遍历期间将跳过三角形图元。
+    VK_PIPELINE_CREATE_2_RAY_TRACING_SKIP_AABBS_BIT_KHR :    指定在使用管道跟踪射线指令遍历期间将跳过AABB primitives。
+    VK_PIPELINE_CREATE_2_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR :    指定着色器组句柄可以在后续的运行中被保存和重用（例如，用于跟踪捕获和重播）。
+    VK_PIPELINE_CREATE_2_INDIRECT_BINDABLE_BIT_NV :  指定管道可以与Device-Generated的命令结合使用  
+	VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_KHR :   指定如果需要编译来创建一个有效的VkPipeline，则管道创建将失败；管道创建将返回VK_PIPELINE_COMPILE_REQUIRED，并且VkPipeline将被设置为VK_NULL_HANDLE。 
+    VK_PIPELINE_CREATE_2_EARLY_RETURN_ON_FAILURE_BIT_KHR:   指定如果任何单个管道返回一个不是VK_SUCCESS的结果，则不再继续创建额外的管道，而是将控制权返回给应用程序。
+	VK_PIPELINE_CREATE_2_RAY_TRACING_ALLOW_MOTION_BIT_NV :   指定管道可以使用 OpTraceRayMotionNV.
+    VK_PIPELINE_CREATE_2_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR :   指定管道将与一个 fragment shading rate attachment 一起使用。
+    VK_PIPELINE_CREATE_2_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT :     指定管道将与一个 fragment density map attachment 一起使用
+    VK_PIPELINE_CREATE_2_LINK_TIME_OPTIMIZATION_BIT_EXT :    指定要链接到此库中的管道库应该已应用了链接时间优化。如果省略了这个位，那么实现应该尽可能快地执行链接。
+    VK_PIPELINE_CREATE_2_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT :    指定管道库应该保留以后与VK_PIPELINE_CREATE_2_LINK_TIME_OPTIMIZATION_BIT_EXT.执行最佳链接所需的任何信息
+	VK_PIPELINE_CREATE_2_DESCRIPTOR_BUFFER_BIT_EXT :   指定管道将与descriptor buffers一起使用，而不是使用descriptor sets。
+	VK_PIPELINE_CREATE_2_COLOR_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT :  指定管道可以与feedback loop color attachment一起使用。 
+    VK_PIPELINE_CREATE_2_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT :    指定管道可以与feedback loop depth-stencil attachment一起使用。
+    VK_PIPELINE_CREATE_2_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT :    指定光线跟踪管道可与引用不透明度微映射阵列的加速结构一起使用。
+    VK_PIPELINE_CREATE_2_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV :    指定光线追踪管道可以与参考位移微映射阵列的加速结构一起使用
+    VK_PIPELINE_CREATE_2_NO_PROTECTED_ACCESS_BIT_EXT :    指定管道不能绑定到受保护的命令缓冲区。
+    VK_PIPELINE_CREATE_2_PROTECTED_ACCESS_ONLY_BIT_EXT :    指定管道不能绑定到未受保护的命令缓冲区
+    VK_PIPELINE_CREATE_2_ENABLE_LEGACY_DITHERING_BIT_EXT :    指定将在以VK_RENDERING_ENABLE_LEGACY_DITHERING_BIT_EXT开始的render pass中使用该管道。
+	
+	*/
+
+
+	/*
+	如果一个VkGraphicsPipelineLibraryCreateInfoEXT结构包含在VkGraphicsPipelineCreateInfo的pNext链中，则它将指定正在被创建的图形管道的子集，排除开任何linked pipeline libraries中的子集。如果管道是用管道库创建的，那么从这些库中获得的state将与所述子集进行聚合。
+	如果省略此结构，并且VkGraphicsPipelineCreateInfo：：flags包含VK_PIPELINE_CREATE_LIBRARY_BIT_KHR或VkGraphicsPipelineCreateInfo：：pNext链包含一个库计数大于0的VkPipelineLibraryCreateInfoKHR结构，则表示标志为0。否则，如果省略此结构，就好像标志包含了图形管道的所有可能的子集（即一个完整的图形管道）
+	*/
+	VkGraphicsPipelineLibraryCreateInfoEXT& pipelineLibraryCreateInfo = pipelineCreateInfoExt.pipelineLibraryCreateInfoEXT;
+	pipelineLibraryCreateInfo.flags = VK_GRAPHICS_PIPELINE_LIBRARY_VERTEX_INPUT_INTERFACE_BIT_EXT;/*指定正在被编译的图形管道的子集。
+	VK_GRAPHICS_PIPELINE_LIBRARY_VERTEX_INPUT_INTERFACE_BIT_EXT:  指明一个 pipeline 将包含 vertex input interface state. 
+	VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT:  指明一个 pipeline 将包含  pre-rasterization shader state.
+	VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT:  指明一个 pipeline 将包含  fragment shader state.
+	VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_OUTPUT_INTERFACE_BIT_EXT:   指明一个 pipeline 将包含 fragment output interface state
+	*/
 
 
 	vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &graphicPipelineCreateInfo, nullptr, &graphicPipeline);

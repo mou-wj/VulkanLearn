@@ -537,7 +537,142 @@ void PipelineTest::GraphicPipelineCreateTest()
 	dynamicState.dynamicStateCount = 0;//pDynamicStates中元素个数
 	dynamicState.pDynamicStates = VK_NULL_HANDLE;//是一个指向VkDynamicState值数组的指针，它指定哪些管道状态片段将使用来自dynamic state命令而不是来自管道创建时state信息的值。
 	dynamicState.flags = 0;//保留未来使用
-	//to do
+	/*
+	VkDynamicState值:
+    VK_DYNAMIC_STATE_VIEWPORT:    指定VkPipelineViewportStateCreateInfo中的pViewports将会被忽略，且必须调用vkCmdSetViewport动态的在绘制命令前进行指定，不过pipeline 使用的viewports数量任然是通过VkPipelineViewportStateCreateInfo的viewportCount进行指定
+    VK_DYNAMIC_STATE_SCISSOR:    指定VkPipelineViewportStateCreateInfo中的pScissors将会被忽略，且必须调用vkCmdSetScissor动态的在绘制命令前进行指定，不过pipeline 使用的scissor rectangles数量任然是通过VkPipelineViewportStateCreateInfo的scissorCount进行指定
+    VK_DYNAMIC_STATE_LINE_WIDTH:    指定将忽略VkPipelineRasterizationStateCreateInfo中的lineWidth状态，并且必须在为光栅化器生成line primitives的任何绘图命令之前使用vkCmdSetLineWidth动态设置。
+    VK_DYNAMIC_STATE_DEPTH_BIAS:    指定包含在VkPipelineRasterizationStateCreateInfo的pNext中的VkDepthBiasRepresentationInfoEXT实例以及VkPipelineRasterizationStateCreateInfo中的depthBiasConstantFactor, depthBiasClamp 以及 depthBiasSlopeFactor states都将被会略，如果 depth bias启用则在任何绘制命令前必须动态的调用vkCmdSetDepthBias 或者 vkCmdSetDepthBias2EXT进行设置
+    VK_DYNAMIC_STATE_BLEND_CONSTANTS:   指定VkPipelineColorBlendStateCreateInfo中的blendConstants state将被忽略，如果pipeline的VkPipelineColorBlendAttachmentState的blendEnable为VK_TRUE且任何 blend 函数使用一个constant blend color,则 必须在任何绘制命令前使用vkCmdSetBlendConstants动态设置
+    VK_DYNAMIC_STATE_DEPTH_BOUNDS:   在VkPipelineDepthStencilStateCreateInfo 中指定的minDepthBounds 和 maxDepthBounds states将被忽略，如果pipeline的VkPipelineDepthStencilStateCreateInfo的 depthBoundsTestEnable 为 VK_TRUE, 必须在任何绘制命令前使用vkCmdSetDepthBounds动态设置
+    VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK:    指定VkPipelineDepthStencilStateCreateInfo中正反面的compareMask都会被忽略，如果pipeline的VkPipelineDepthStencilStateCreateInfo的 stencilTestEnable 为 VK_TRUE, 必须在任何绘制命令前使用vkCmdSetStencilCompareMask动态设置
+    VK_DYNAMIC_STATE_STENCIL_WRITE_MASK:    指定VkPipelineDepthStencilStateCreateInfo中正反面的writeMask都会被忽略，如果pipeline的VkPipelineDepthStencilStateCreateInfo的 stencilTestEnable 为 VK_TRUE, 必须在任何绘制命令前使用vkCmdSetStencilWriteMask动态设置
+    VK_DYNAMIC_STATE_STENCIL_REFERENCE:    指定VkPipelineDepthStencilStateCreateInfo中正反面的reference state都会被忽略，如果pipeline的VkPipelineDepthStencilStateCreateInfo的 stencilTestEnable 为 VK_TRUE, 必须在任何绘制命令前使用vkCmdSetStencilReference动态设置
+    VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV:   指定VkPipelineViewportWScalingStateCreateInfoNV中的pViewportWScalings state都会被忽略，如果pipeline的VkPipelineViewportWScalingStateCreateInfoNV的 viewportScalingEnable 为 VK_TRUE, 必须在任何绘制命令前使用vkCmdSetViewportWScalingNV动态设置 
+    VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT:    指定VkPipelineDiscardRectangleStateCreateInfoEXT中的pDiscardRectangles state都会被忽略，, 必须在任何绘制或者清除命令前使用vkCmdSetDiscardRectangleEXT动态设置
+    VK_DYNAMIC_STATE_DISCARD_RECTANGLE_ENABLE_EXT:    指定VkGraphicsPipelineCreateInfo的pNext中的discardRectangleCount大于0的VkPipelineDiscardRectangleStateCreateInfoEXT中的presence state不能隐式开启 discard rectangles, 必须在任何绘制命令前使用vkCmdSetDiscardRectangleEnableEXT动态设置，且只在支持VK_EXT_discard_rectangles的specVersion 至少为2的实现上才可以启用
+	
+    VK_DYNAMIC_STATE_DISCARD_RECTANGLE_MODE_EXT:    指定VkPipelineDiscardRectangleStateCreateInfoEXT的discardRectangleMode state会被忽略，必须在任何绘制命令前使用vkCmdSetDiscardRectangleModeEXT动态设置,且只在支持VK_EXT_discard_rectangles的specVersion 至少为2的实现上才可以启用
+    VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT:     指定 VkPipelineSampleLocationsStateCreateInfoEXT 的 sampleLocationsInfo state 会被忽略，必须在任何绘制或清除命令前使用 vkCmdSetSampleLocationsEXT 动态设置，启用自定义的 sample locations 也需要VkPipelineSampleLocationsStateCreateInfoEXT的sampleLocationsEnable指明
+
+    VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NV:     指定 VkPipelineViewportExclusiveScissorStateCreateInfoNV 的 pExclusiveScissors state 会被忽略，必须在任何绘制命令前使用 vkCmdSetExclusiveScissorNV 动态设置
+
+    VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_ENABLE_NV:     指定 exclusive scissors 必须被vkCmdSetExclusiveScissorEnableNV 显式指定 且 VkPipelineViewportExclusiveScissorStateCreateInfoNV的 exclusiveScissorCount不会隐式开启它们， 且只在支持VK_NV_scissor_exclusive的specVersion 至少为2的实现上才可以启用
+
+    VK_DYNAMIC_STATE_VIEWPORT_SHADING_RATE_PALETTE_NV:    指定 VkPipelineViewportShadingRateImageStateCreateInfoNV 的 pShadingRatePalettes state 会被忽略，必须在任何绘制命令前使用 vkCmdSetViewportShadingRatePaletteNV 动态设置 
+
+    VK_DYNAMIC_STATE_VIEWPORT_COARSE_SAMPLE_ORDER_NV:     指定 VkPipelineViewportCoarseSampleOrderStateCreateInfoNV 的 coarse sample order state 会被忽略，必须在任何绘制命令前使用 vkCmdSetCoarseSampleOrderNV 动态设置
+
+    VK_DYNAMIC_STATE_LINE_STIPPLE_EXT:     指定 VkPipelineRasterizationLineStateCreateInfoKHR 的 lineStippleFactor 和 lineStipplePattern state会被忽略，如果pipeline的 VkPipelineRasterizationLineStateCreateInfoKHR 的 stippledLineEnable 为 VK_TRUE ,则必须在任何绘制命令前使用 vkCmdSetLineStippleKHR 动态设置
+
+    VK_DYNAMIC_STATE_CULL_MODE:     指定 VkPipelineRasterizationStateCreateInfo 的 cullMode state 会被忽略，必须在任何绘制命令前使用 vkCmdSetCullMode 动态设置
+
+    VK_DYNAMIC_STATE_FRONT_FACE:     指定 VkPipelineRasterizationStateCreateInfo 的 frontFace state 会被忽略 ,必须在任何绘制命令前使用 vkCmdSetFrontFace 动态设置
+
+    VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY:    指明 VkPipelineInputAssemblyStateCreateInfo 的 topology state 只指明topology class，，必须在任何绘制命令前使用 vkCmdSetPrimitiveTopology 动态设置来指明 特殊的 topology order 以及 adjacency
+
+    VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT:     指定 VkPipelineViewportStateCreateInfo 的 viewportCount 以及 pViewports state 会被忽略，必须在任何绘制命令前使用 vkCmdSetViewportWithCount 动态设置
+	
+    VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT:     指定 VkPipelineViewportStateCreateInfo 的 scissorCount 以及 pScissors state 会被忽略，必须在任何绘制命令前使用 vkCmdSetScissorWithCount 动态设置
+	
+    VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE:     指定 VkVertexInputBindingDescription 的 stride state 会被忽略，必须在任何绘制命令前使用 vkCmdBindVertexBuffers2 动态设置
+
+    VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE:     指定 VkPipelineDepthStencilStateCreateInfo 的 depthTestEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetDepthTestEnable 动态设置
+
+    VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE:     指定 VkPipelineDepthStencilStateCreateInfo 的 depthWriteEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetDepthWriteEnable 动态设置
+
+    VK_DYNAMIC_STATE_DEPTH_COMPARE_OP:     指定 VkPipelineDepthStencilStateCreateInfo 的 depthCompareOp state 会被忽略，必须在任何绘制命令前使用 vkCmdSetDepthCompareOp 动态设置
+
+    VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE:     指定 VkPipelineDepthStencilStateCreateInfo 的 depthBoundsTestEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetDepthBoundsTestEnable 动态设置
+
+    VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE:     指定 VkPipelineDepthStencilStateCreateInfo 的 stencilTestEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetStencilTestEnable 动态设置
+
+    VK_DYNAMIC_STATE_STENCIL_OP:     指定 VkPipelineDepthStencilStateCreateInfo 对图元正反面的 failOp, passOp, depthFailOp, 以及 compareOp states 会被忽略，如果pipeline的 VkPipelineDepthStencilStateCreateInfo 的 stencilTestEnable 为 VK_TRUE ,则必须在任何绘制命令前使用 vkCmdSetStencilOp 动态设置
+
+    VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT:     指定 VkPipelineTessellationStateCreateInfo 的 patchControlPoints state 会被忽略，必须在任何绘制命令前使用 vkCmdSetPatchControlPointsEXT 动态设置
+
+    VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE:     指定 VkPipelineRasterizationStateCreateInfo 的 rasterizerDiscardEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetRasterizerDiscardEnable 动态设置
+	
+    VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE:     指定 VkPipelineRasterizationStateCreateInfo 的 depthBiasEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetDepthBiasEnable 动态设置
+
+    VK_DYNAMIC_STATE_LOGIC_OP_EXT:     指定 VkPipelineColorBlendStateCreateInfo 的 logicOp state 会被忽略，必须在任何绘制命令前使用 vkCmdSetLogicOpEXT 动态设置
+
+    VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE:     指定 VkPipelineInputAssemblyStateCreateInfo 的 primitiveRestartEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetPrimitiveRestartEnable 动态设置
+
+    VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR:     指定在 VkPipelineFragmentShadingRateStateCreateInfoKHR 和 VkPipelineFragmentShadingRateEnumStateCreateInfoNV 的 state 会被忽略，必须在任何绘制命令前使用 vkCmdSetFragmentShadingRateKHR 或者 vkCmdSetFragmentShadingRateEnumNV 动态设置
+
+    VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR:    指定 pipeline 的 默认 stack size computation 会被忽略，必须在任何ray tracing调用前命令前使用 vkCmdSetRayTracingPipelineStackSizeKHR 动态设置 
+
+    VK_DYNAMIC_STATE_VERTEX_INPUT_EXT:     指定 pVertexInputState state 会被忽略，必须在任何绘制命令前使用 vkCmdSetVertexInputEXT 动态设置
+
+    VK_DYNAMIC_STATE_COLOR_WRITE_ENABLE_EXT:     指定 VkPipelineColorWriteCreateInfoEXT 的 pColorWriteEnables 会被忽略，必须在任何绘制命令前使用 vkCmdSetColorWriteEnableEXT 动态设置
+
+    VK_DYNAMIC_STATE_TESSELLATION_DOMAIN_ORIGIN_EXT:     指定 VkPipelineTessellationDomainOriginStateCreateInfo 的 domainOrigin state 会被忽略，必须在任何绘制命令前使用 vkCmdSetTessellationDomainOriginEXT 动态设置
+
+    VK_DYNAMIC_STATE_DEPTH_CLAMP_ENABLE_EXT:     指定 VkPipelineRasterizationStateCreateInfo 的 depthClampEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetDepthClampEnableEXT 动态设置
+
+    VK_DYNAMIC_STATE_POLYGON_MODE_EXT:     指定 VkPipelineRasterizationStateCreateInfo 的 polygonMode state 会被忽略，必须在任何绘制命令前使用 vkCmdSetPolygonModeEXT 动态设置
+
+    VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT:     指定 VkPipelineMultisampleStateCreateInfo 的 rasterizationSamples state 会被忽略，必须在任何绘制命令前使用 vkCmdSetRasterizationSamplesEXT 动态设置
+
+    VK_DYNAMIC_STATE_SAMPLE_MASK_EXT:     指定 VkPipelineMultisampleStateCreateInfo 的 pSampleMask state 会被忽略，必须在任何绘制命令前使用 vkCmdSetSampleMaskEXT 动态设置
+
+    VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXT:     指定 VkPipelineMultisampleStateCreateInfo 的 alphaToCoverageEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetAlphaToCoverageEnableEXT 动态设置
+
+    VK_DYNAMIC_STATE_ALPHA_TO_ONE_ENABLE_EXT:     指定 VkPipelineMultisampleStateCreateInfo 的 alphaToOneEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetAlphaToOneEnableEXT 动态设置
+
+    VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXT:     指定 VkPipelineColorBlendStateCreateInfo 的 logicOpEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetLogicOpEnableEXT 动态设置
+
+    VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT:     指定 VkPipelineColorBlendAttachmentState 的  blendEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetColorBlendEnableEXT 动态设置
+
+    VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT:     指定 VkPipelineColorBlendAttachmentState 的 srcColorBlendFactor, dstColorBlendFactor, colorBlendOp, srcAlphaBlendFactor, dstAlphaBlendFactor, 和 alphaBlendOp states 会被忽略，必须在任何绘制命令前使用 vkCmdSetColorBlendEquationEXT 动态设置
+
+    VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT:     指定 VkPipelineColorBlendAttachmentState 的 colorWriteMask state 会被忽略，必须在任何绘制命令前使用 vkCmdSetColorWriteMaskEXT 动态设置
+
+    VK_DYNAMIC_STATE_RASTERIZATION_STREAM_EXT:     指定 VkPipelineRasterizationStateStreamCreateInfoEXT 的 rasterizationStream state 会被忽略，必须在任何绘制命令前使用 vkCmdSetRasterizationStreamEXT 动态设置
+
+    VK_DYNAMIC_STATE_CONSERVATIVE_RASTERIZATION_MODE_EXT:     指定 VkPipelineRasterizationConservativeStateCreateInfoEXT 的 conservativeRasterizationMode state 会被忽略，必须在任何绘制命令前使用 vkCmdSetConservativeRasterizationModeEXT 动态设置
+
+    VK_DYNAMIC_STATE_EXTRA_PRIMITIVE_OVERESTIMATION_SIZE_EXT:     指定 VkPipelineRasterizationConservativeStateCreateInfoEXT 的 extraPrimitiveOverestimationSize state 会被忽略，必须在任何绘制命令前使用 vkCmdSetExtraPrimitiveOverestimationSizeEXT 动态设置
+
+    VK_DYNAMIC_STATE_DEPTH_CLIP_ENABLE_EXT:     指定 VkPipelineRasterizationDepthClipStateCreateInfoEXT 的 depthClipEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetDepthClipEnableEXT 动态设置
+
+    VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT:     指定 VkPipelineSampleLocationsStateCreateInfoEXT 的 sampleLocationsEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetSampleLocationsEnableEXT 动态设置
+
+    VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT:     指定 VkPipelineColorBlendAttachmentState 的 colorBlendOp state， 以及 VkPipelineColorBlendAdvancedStateCreateInfoEXT中srcPremultiplied, dstPremultiplied, 和 blendOverlap states 会被忽略，必须在任何绘制命令前使用 vkCmdSetColorBlendAdvancedEXT 动态设置
+
+    VK_DYNAMIC_STATE_PROVOKING_VERTEX_MODE_EXT:     指定 VkPipelineRasterizationProvokingVertexStateCreateInfoEXT 的 provokingVertexMode state 会被忽略，必须在任何绘制命令前使用 vkCmdSetProvokingVertexModeEXT 动态设置
+	
+    VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT:     指定 VkPipelineRasterizationLineStateCreateInfoKHR 的 lineRasterizationMode state 会被忽略，必须在任何绘制命令前使用 vkCmdSetLineRasterizationModeEXT 动态设置
+	
+    VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT:     指定 VkPipelineRasterizationLineStateCreateInfoKHR 的 stippledLineEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetLineStippleEnableEXT 动态设置
+
+    VK_DYNAMIC_STATE_DEPTH_CLIP_NEGATIVE_ONE_TO_ONE_EXT:     指定 VkPipelineViewportDepthClipControlCreateInfoEXT 的 negativeOneToOne state  会被忽略，必须在任何绘制命令前使用 vkCmdSetDepthClipNegativeOneToOneEXT 动态设置
+
+    VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_ENABLE_NV:     指定 VkPipelineViewportWScalingStateCreateInfoNV 的 viewportWScalingEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetViewportWScalingEnableNV 动态设置
+
+    VK_DYNAMIC_STATE_VIEWPORT_SWIZZLE_NV:     指定 viewportCount 以及 VkPipelineViewportSwizzleStateCreateInfoNV 的 pViewportSwizzles states会被忽略，必须在任何绘制命令前使用 vkCmdSetViewportSwizzleNV 动态设置
+
+    VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_ENABLE_NV:     指定 VkPipelineCoverageToColorStateCreateInfoNV 的 coverageToColorEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetCoverageToColorEnableNV 动态设置
+
+    VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_LOCATION_NV:     指定 VkPipelineCoverageToColorStateCreateInfoNV 的 coverageToColorLocation state 会被忽略，必须在任何绘制命令前使用 vkCmdSetCoverageToColorLocationNV 动态设置
+	
+    VK_DYNAMIC_STATE_COVERAGE_MODULATION_MODE_NV:     指定 VkPipelineCoverageModulationStateCreateInfoNV 的 coverageModulationMode state 会被忽略，必须在任何绘制命令前使用 vkCmdSetCoverageModulationModeNV 动态设置
+
+    VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_ENABLE_NV:     指定 VkPipelineCoverageModulationStateCreateInfoNV 的 coverageModulationTableEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetCoverageModulationTableEnableNV 动态设置
+
+    VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_NV:     指定 coverageModulationTableCount，以及  VkPipelineCoverageModulationStateCreateInfoNV 的 pCoverageModulationTable states 会被忽略，必须在任何绘制命令前使用 vkCmdSetCoverageModulationTableNV 动态设置
+
+    VK_DYNAMIC_STATE_SHADING_RATE_IMAGE_ENABLE_NV:     指定 VkPipelineViewportShadingRateImageStateCreateInfoNV 的 shadingRateImageEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetShadingRateImageEnableNV 动态设置
+
+    VK_DYNAMIC_STATE_REPRESENTATIVE_FRAGMENT_TEST_ENABLE_NV:     指定 VkPipelineRepresentativeFragmentTestStateCreateInfoNV 的 representativeFragmentTestEnable state 会被忽略，必须在任何绘制命令前使用 vkCmdSetRepresentativeFragmentTestEnableNV 动态设置
+
+    VK_DYNAMIC_STATE_COVERAGE_REDUCTION_MODE_NV:     指定 VkPipelineCoverageReductionStateCreateInfoNV 的  coverageReductionMode state 会被忽略，必须在任何绘制命令前使用 vkCmdSetCoverageReductionModeNV 动态设置
+
+    VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT:     指定 VK_PIPELINE_CREATE_COLOR_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT 和 VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT flags 会被忽略，则必须在任何绘制命令前使用 vkCmdSetAttachmentFeedbackLoopEnableEXT 动态设置
+	
+	
+	*/
 
 
 

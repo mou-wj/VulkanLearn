@@ -302,7 +302,7 @@ void PipelineTest::ComputePipelineCreateTest()
 
 	//subpass shading pipeline的workgroup大小是一个二维向量，其宽度和高度的幂次数为2。宽度和高度的最大数量取决于实现，并且可能因渲染过程中不同的格式和附件的样本计数而有所不同，可以使用以下接口查询。
 	VkExtent2D maxWorkGroupSize;
-	vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI(device, VK_NULL_HANDLE, &maxWorkGroupSize);
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI, device, VK_NULL_HANDLE, &maxWorkGroupSize);
 
 
 
@@ -1243,14 +1243,752 @@ void PipelineTest::GraphicPipelineCreateTest()
 
 
 
+
+
+	//VkGraphicsPipelineShaderGroupsCreateInfoNV  图形管道可以包含多个可以单独绑定的着色器组。每个着色器组的行为就像它是一个使用着色器组的状态的管道一样。当管道通过常规方式绑定时，它的行为就好像组0的状态处于活动状态一样，请使用vkCmdBindPipelineShaderGroupNV绑定单个着色器组
+	VkGraphicsPipelineShaderGroupsCreateInfoNV shaderGroupsCreateInfo{};
+	shaderGroupsCreateInfo.sType =  VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_SHADER_GROUPS_CREATE_INFO_NV ;
+	shaderGroupsCreateInfo.pNext = nullptr;
+
+		//VkGraphicsShaderGroupCreateInfoNV结构为每个着色器组提供了状态覆盖。每个着色器组的行为都像从其状态以及其余父状态创建的管道
+		VkGraphicsShaderGroupCreateInfoNV shaderGroup0{};	
+		shaderGroup0.sType = VK_STRUCTURE_TYPE_GRAPHICS_SHADER_GROUP_CREATE_INFO_NV;
+		shaderGroup0.pNext = nullptr;
+		shaderGroup0.stageCount = 0;
+		shaderGroup0.pStages = &shaderStages;// 指定要包含在此着色器组中的着色器阶段的集
+		shaderGroup0.pTessellationState = &tessellationState;//如果着色器组不包括tessellation control shader stage 以及 tessellation evaluation shader stage.阶段，则将被忽略。
+		shaderGroup0.pVertexInputState = &vertexInputState;
+		/*
+		有效用法：
+		1. 对于stageCount，适用于与VkGraphicsPipelineCreateInfo::stageCount中相同的限制
+		2. 对于pStages，适用于与VkGraphicsPipelineCreateInfo::pStages中相同的限制
+		3. 对于pVertexInputState，适用于与VkGraphicsPipelineCreateInfo::pVertexInputState中相同的限制
+		4. 对于pTessellationState，适用于与VkGraphicsPipelineCreateInfo::pTessellationState中相同的限制
+		*/
+
+
+	shaderGroupsCreateInfo.groupCount = 1;
+	shaderGroupsCreateInfo.pGroups = &shaderGroup0;//是指向VkGraphicsShaderGroupCreateInfoNV结构数组的指针，指定每个着色器组覆盖的原始VkGraphicsPipelineCreateInfo的状态。
+	shaderGroupsCreateInfo.pipelineCount = 1;
+	shaderGroupsCreateInfo.pPipelines = &graphicPipeline;//是一个指向图形VkPipeline结构数组的指针，这些结构在创建的管道中被引用，包括它们的所有着色器组。
+	/*
+	当按索引引用着色器组时，在引用管道中定义的组被视为在pGroups中定义的附加条目。当定义这些管道时，它们按照出现在pPipelines数组和pGroups数组中的顺序附加。
+	有效用法：
+	1. 1 <= groupCount <= VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV::maxGraphicsShaderGroupCount
+	2. 包括从引用的管道pPipelines添加的组的groupCount总和也必须是最大VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV ：：maxGraphicsShaderGroupCount
+	3. pGroups的第一个元素的状态必须与父元素的VkGraphicsPipelineCreateInfo中的等效元素相匹配
+	4. pGroups的每个元素必须与管道状态的其余部分结合，生成一个有效的状态配置
+	5. pGroups的所有元素必须使用相同的着色器阶段组合，除非使用任何mesh shader 阶段，那么task和mesh的组合或只是mesh着色器都是有效的
+	6. mesh和常规的原始着色阶段不能跨pGroups混合
+	7. pPipelines中的每个元素都必须以与当前创建的管道相同的状态创建，除了可以被VkGraphicsShaderGroupCreateInfoNV覆盖的状态之外
+	8. deviceGeneratedCommands 特性必须开启
+
+	
+	*/
+}
+
+void PipelineTest::RayTracingPipelineCreateTest()
+{
+	//VK_SHADER_UNUSED_KHR是一种特殊的着色器索引，用于指示不使用ray generation, miss, 或者 callable shader的着色器成员。
+
+	
+	VkPipeline rayTracingPipeline = VK_NULL_HANDLE;
+	VkRayTracingPipelineCreateInfoNV rayTracingPipelineCreateInfoNV{};
+	rayTracingPipelineCreateInfoNV.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV;
+	rayTracingPipelineCreateInfoNV.pNext = nullptr; //可以含有VkPipelineCreateFlags2CreateInfoKHR 或者 VkPipelineCreationFeedbackCreateInfo
+	rayTracingPipelineCreateInfoNV.flags = 0;
+		VkPipelineShaderStageCreateInfo shaderStage{};//参考前面的compute pipeline以及graphic pipeline中该结构体的用法，只不过这里要使用在ray tracing pipeline中
+	rayTracingPipelineCreateInfoNV.stageCount = 1;
+	rayTracingPipelineCreateInfoNV.pStages = &shaderStage;
+		VkRayTracingShaderGroupCreateInfoNV rayTracingShaderGroupCreateInfoNV{};
+		rayTracingShaderGroupCreateInfoNV.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV;
+		rayTracingShaderGroupCreateInfoNV.pNext = nullptr;
+		rayTracingShaderGroupCreateInfoNV.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV;//是在此结构中指定的hit group的类型。
+		/*
+		VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR :  指明一个shader group只含有一个 VK_SHADER_STAGE_RAYGEN_BIT_KHR ，VK_SHADER_STAGE_RAYGEN_BIT_KHR, VK_SHADER_STAGE_MISS_BIT_KHR, 或者 VK_SHADER_STAGE_CALLABLE_BIT_KHR shader.
+		VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR  :  指明一个shader group只能含有 hits triangles shaders且不能含有 intersection shader, 只能为 closest hit 以及 any-hit shaders.
+		VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR :  指明一个shader group只和自定义的几何求交且必须含有一个intersection shader以及可能含有 closest hit 以及 any-hit shaders
+		
+		
+		*/
+		rayTracingShaderGroupCreateInfoNV.anyHitShader = VK_SHADER_UNUSED_KHR;//如果着色器组的类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV或VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV，和VK_SHADER_UNUSED_NV，则是组中的可选的 any hit shader在VkRayTracingPipelineCreateInfoNV：：pStages中的索引。
+		rayTracingShaderGroupCreateInfoNV.closestHitShader = VK_SHADER_UNUSED_KHR;//如果着色器组的类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV或VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV，和VK_SHADER_UNUSED_NV，则是组中的可选的 closest hit shader在VkRayTracingPipelineCreateInfoNV：：pStages中的索引。
+		rayTracingShaderGroupCreateInfoNV.intersectionShader = VK_SHADER_UNUSED_KHR;//如果着色器组的类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV，和VK_SHADER_UNUSED_NV，则是组中 intersection shader 在VkRayTracingPipelineCreateInfoNV：：pStages内的索引。
+		rayTracingShaderGroupCreateInfoNV.generalShader = VK_SHADER_UNUSED_KHR;//如果着色器组的类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV，则是组中的ray generation, miss 或者 callable shader在VkRayTracingPipelineCreateInfoNV：：pStages内的索引，否则为VK_SHADER_UNUSED_NV。
+		/*
+		VkRayTracingShaderGroupCreateInfoNV有效用法：
+		1.如果type 为VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV 则 generalShader 必须是有效的索引值，指向VkRayTracingPipelineCreateInfoNV::pStages中的一个着色器，其stage 为 VK_SHADER_STAGE_RAYGEN_BIT_NV, VK_SHADER_STAGE_MISS_BIT_NV, 或 VK_SHADER_STAGE_CALLABLE_BIT_NV，且 anyHitShader, closestHitShader, intersectionShader 必须是VK_SHADER_UNUSED_KHR
+		2.如果type 为VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV，则intersectionShader 必须是有效的索引值，指向VkRayTracingPipelineCreateInfoNV::pStages中的一个着色器, 其stage为 VK_SHADER_STAGE_INTERSECTION_BIT_NV 
+		
+		3.如果type 为VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV 则 intersectionShader 必须是 VK_SHADER_UNUSED_NV
+		4.closestHitShader必须为 VK_SHADER_UNUSED_NV 或者 指向VkRayTracingPipelineCreateInfoNV::pStages中的一个着色器, 其stage为 VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV
+		5.anyHitShader必须为 VK_SHADER_UNUSED_NV 或者 指向VkRayTracingPipelineCreateInfoNV::pStages中的一个着色器, 其stage为 VK_SHADER_STAGE_ANY_HIT_BIT_NV
+
+
+		
+		
+		*/
+
+
+	rayTracingPipelineCreateInfoNV.groupCount = 1;
+	rayTracingPipelineCreateInfoNV.pGroups = &rayTracingShaderGroupCreateInfoNV;//是指向VkRayTracingShaderGroupCreateInfoNV结构数组的指针，这些结构描述了要包含在光线跟踪管道中每个着色器组中的着色器阶段集。
+		VkPipelineLayout layout{VK_NULL_HANDLE};
+	rayTracingPipelineCreateInfoNV.layout = layout;
+	rayTracingPipelineCreateInfoNV.maxRecursionDepth = 1;//是由此管道执行的着色器的最大递归深度。
+	rayTracingPipelineCreateInfoNV.basePipelineIndex = 0;
+	rayTracingPipelineCreateInfoNV.basePipelineHandle = VK_NULL_HANDLE;
+	/*
+	VkRayTracingPipelineCreateInfoNV有效用法：
+	1.如果pNext中不含一个VkPipelineCreateFlags2CreateInfoKHR，则flags必须是一个有效的VkPipelineCreateFlagBits值组合
+	2.如果 flags 包含 VK_PIPELINE_CREATE_DERIVATIVE_BIT 则:
+													（1）如果 basePipelineIndex 为 -1,basePipelineHandle 必须是一个有效的 graphics VkPipeline 句柄
+													（2）如果 basePipelineHandle 为VK_NULL_HANDLE, basePipelineIndex 必须是当前创建命令vkCreateComputePipelines中pCreateInfos 参数的一个有效的索引值
+													（3）basePipelineIndex 必须为 -1或者 basePipelineHandle 必须为 VK_NULL_HANDLE
+	3.如果push constant 块在shader中声明了,则layout中的 push constant的 range 必须和shader的 stage 以及 range匹配
+	4.如果 resource variables 在shader中声明了,则
+													（1）layout中的 descriptor slot 必须匹配shader stage
+													（2）如果layout中的 descriptor type不是VK_DESCRIPTOR_TYPE_MUTABLE_EXT,则 descriptor slot必须匹配 descriptor slot
+	5.如果 resource variables 在shader中声明为array，则layout中的 descriptor slot必须匹配 descriptor count
+
+
+
+
+	6.在pStages中定义的入口点的着色器代码以及 state 中剩下的其他的着色器代码必须符合Shader Interfaces章节定义的链接规则
+	7.在每一个 shader 阶段在layout声明的可以访问的资源数必须小于或等于VkPhysicalDeviceLimits::maxPerStageResources
+	8.flags不能包含VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV，VK_PIPELINE_CREATE_LIBRARY_BIT_KHR， VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR，VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR，
+										VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR，VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR，VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR， 
+										VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR， VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR， VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV，
+										VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT，VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV
+
+	9.如果pipelineCreationCacheControl 特性没有开启，则flags 不能包含VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT 或者 VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT
+	10. pStages中至少有一个元素的stage 为VK_SHADER_STAGE_RAYGEN_BIT_KHR 
+	11. maxRecursionDepth 必须小于等于 VkPhysicalDeviceRayTracingPropertiesNV::maxRecursionDepth
+	12.flags不能同时包含 VK_PIPELINE_CREATE_DEFER_COMPILE_BIT_NV 和 VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT
+	13.如果 VkPipelineCreationFeedbackCreateInfo::pipelineStageCreationFeedbackCount不为0则必须等于 stageCount
+	14. pStages中的元素的stage 只能是VK_SHADER_STAGE_RAYGEN_BIT_KHR, VK_SHADER_STAGE_ANY_HIT_BIT_KHR, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, VK_SHADER_STAGE_MISS_BIT_KHR, VK_SHADER_STAGE_INTERSECTION_BIT_KHR, 或者 VK_SHADER_STAGE_CALLABLE_BIT_KHR 其中一个
+		
+	
+	*/
+
+
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkCreateRayTracingPipelinesNV, device, VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfoNV, nullptr, &rayTracingPipeline);
+	/*
+	vkCreateRayTracingPipelinesNV有效用法
+	1.如果pCreateInfos中的某个元素的flags包含VK_PIPELINE_CREATE_DERIVATIVE_BIT，则
+													（1）如果其basePipelineIndex不为-1，则basePipelineIndex必须小于当前元素在pCreateInfos中的索引值
+													（1）basePipelineHandle的创建flags必须含有 VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT
+	2. flags不能包含VK_PIPELINE_CREATE_DISPATCH_BASE
+	3.如果pipelineCache 以 VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT标志创建,主机对 pipelineCache 必须要进行外部同步--如外部多线程同步等
+	4. pipelineCache 是VK_NULL_HANDLE，指示管道缓存被禁用，或者是有效的管道缓存对象的句柄，在这种情况下，在vkCreateRayTracingPipelinesNV命令期间启用了对该缓存的使用。
+	*/
+
+
+
+	VkDeferredOperationKHR deferredOperation = VK_NULL_HANDLE;
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkCreateDeferredOperationKHR, device,nullptr, &deferredOperation);
+	
+	VkRayTracingPipelineCreateInfoKHR rayTracingPipelineCreateInfoKHR{};
+	rayTracingPipelineCreateInfoKHR.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
+	rayTracingPipelineCreateInfoKHR.pNext = nullptr;//可以含有 VkPipelineCreateFlags2CreateInfoKHR, VkPipelineCreationFeedbackCreateInfo, 或者 VkPipelineRobustnessCreateInfoEXT
+	rayTracingPipelineCreateInfoKHR.flags = 0;
+
+	rayTracingPipelineCreateInfoKHR.stageCount = 1;
+	rayTracingPipelineCreateInfoKHR.pStages = &shaderStage;
+		VkRayTracingShaderGroupCreateInfoKHR rayTracingShaderGroupCreateInfoKHR{};
+		rayTracingShaderGroupCreateInfoKHR.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+		rayTracingShaderGroupCreateInfoKHR.pNext = nullptr;
+		rayTracingShaderGroupCreateInfoKHR.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;//是在此结构中指定的hit group的类型。
+		rayTracingShaderGroupCreateInfoKHR.anyHitShader = VK_SHADER_UNUSED_KHR;//如果着色器组的类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR或VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR，和VK_SHADER_UNUSED_KHR，则是组中的可选的 any hit shader在VkRayTracingPipelineCreateInfoKHR：：pStages中的索引。
+		rayTracingShaderGroupCreateInfoKHR.closestHitShader = VK_SHADER_UNUSED_KHR;//如果着色器组的类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR或VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR，和VK_SHADER_UNUSED_KHR，则是组中的可选的 closest hit shader在VkRayTracingPipelineCreateInfoKHR：：pStages中的索引。
+		rayTracingShaderGroupCreateInfoKHR.intersectionShader = VK_SHADER_UNUSED_KHR;//如果着色器组的类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR，和VK_SHADER_UNUSED_KHR，则是组中 intersection shader 在VkRayTracingPipelineCreateInfoKHR：：pStages内的索引。
+		rayTracingShaderGroupCreateInfoKHR.generalShader = VK_SHADER_UNUSED_KHR;//如果着色器组的类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR，则是组中的ray generation, miss 或者 callable shader在VkRayTracingPipelineCreateInfoKHR：：pStages内的索引，否则为VK_SHADER_UNUSED_KHR。
+			{/*见行1530 可以获取 pShaderGroupCaptureReplayHandle 所需要的句柄    */	}
+		rayTracingShaderGroupCreateInfoKHR.pShaderGroupCaptureReplayHandle = VK_NULL_HANDLE;//为 NULL 或用来回放从vkGetRayTracingCaptureReplayShaderGroupHandlesKHR 查询的此着色器组的信息的指针，如Ray Tracing Capture Replay中所述。如果VkPhysicalDeviceRayTracingPipelineFeaturesKHR ：：rayTracingPipelineShaderGroupHandleCaptureReplay是VK_FALSE则会忽略该参数。
+		/*
+		VkRayTracingShaderGroupCreateInfoKHR有效用法：
+		1.如果type 为VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR 则 generalShader 必须是有效的索引值，指向VkRayTracingPipelineCreateInfoKHR::pStages中的一个着色器，其stage 为 VK_SHADER_STAGE_RAYGEN_BIT_KHR, VK_SHADER_STAGE_MISS_BIT_KHR, 或 VK_SHADER_STAGE_CALLABLE_BIT_KHR，且 anyHitShader, closestHitShader, intersectionShader 必须是VK_SHADER_UNUSED_KHR
+		2.如果type 为VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR，则intersectionShader 必须是有效的索引值，指向VkRayTracingPipelineCreateInfoKHR::pStages中的一个着色器, 其stage为 VK_SHADER_STAGE_INTERSECTION_BIT_KHR
+		
+		3.如果type 为VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR 则 intersectionShader 必须是 VK_SHADER_UNUSED_NV
+		4.closestHitShader必须为 VK_SHADER_UNUSED_KHR 或者 指向VkRayTracingPipelineCreateInfoKHR::pStages中的一个着色器, 其stage为 VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR
+		5.anyHitShader必须为 VK_SHADER_UNUSED_KHR 或者 指向VkRayTracingPipelineCreateInfoKHR::pStages中的一个着色器, 其stage为 VK_SHADER_STAGE_ANY_HIT_BIT_KHR
+		6.如果VkPhysicalDeviceRayTracingPipelineFeaturesKHR ：：rayTracingPipelineShaderGroupHandleCaptureReplayMixed 是VK_FALSE，则（1）如果在先前的 ray tracing pipeline创建调用时候没有提供的化则pShaderGroupCaptureReplayHandle 就不能被提供
+																																	（2）调用者必须保证没有 含有pShaderGroupCaptureReplayHandle的ray tracing pipeline creation命令和不含有 pShaderGroupCaptureReplayHandle的ray tracing pipeline creation命令同时执行
+
+		*/
+
+	rayTracingPipelineCreateInfoKHR.groupCount = 1;
+	rayTracingPipelineCreateInfoKHR.pGroups = &rayTracingShaderGroupCreateInfoKHR;//是一个指向groupCount个VkRayTracingShaderGroupCreateInfoKHR数组的指针，描述了要包含在光线跟踪管道中的每个着色器组中的着色器阶段集
+	rayTracingPipelineCreateInfoKHR.layout = layout;
+	rayTracingPipelineCreateInfoKHR.pDynamicState = VK_NULL_HANDLE;//是指向VkPipelineDynamicStateCreateInfo结构的指针，用于指示管道状态对象的哪些属性是动态的，并且可以独立于管道状态进行更改。这可以是NULL，这意味着管道中没有任何状态被认为是动态状态
+		VkPipelineLibraryCreateInfoKHR pipelineLibraryCreateInfo{};//参考前面的compute pipeline以及graphic pipeline中该结构体的用法，只不过这里要使用在ray tracing pipeline中
+	rayTracingPipelineCreateInfoKHR.pLibraryInfo = &pipelineLibraryCreateInfo;// 是一个指向定义要包含的管道库的VkPipelineLibraryCreateInfoKHR结构的指针。
+		VkRayTracingPipelineInterfaceCreateInfoKHR rayTracingPipelineInterfaceCreateInfo{};
+		rayTracingPipelineInterfaceCreateInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_INTERFACE_CREATE_INFO_KHR;
+		rayTracingPipelineInterfaceCreateInfo.pNext = nullptr;
+		rayTracingPipelineInterfaceCreateInfo.maxPipelineRayPayloadSize = 0;//是管道中任何着色器使用的字节大小的最大有效载荷大小。以RayPayloadKHR 或者 IncomingRayPayloadKHR声明的块的最大值
+		rayTracingPipelineInterfaceCreateInfo.maxPipelineRayHitAttributeSize = 0;//是管道中任何着色器使用的字节大小的最大属性结构大小。以HitAttributeKHR声明的块的最大值，必须小于等于VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxRayHitAttributeSize
+	rayTracingPipelineCreateInfoKHR.pLibraryInterface = &rayTracingPipelineInterfaceCreateInfo;//是一个指向VkRayTracingPipelineInterfaceCreateInfoKHR结构的指针，在使用管道库时定义附加信息。
+
+
+	rayTracingPipelineCreateInfoKHR.maxPipelineRayRecursionDepth = 1;//是由此管道执行的着色器的最大递归深度。
+	rayTracingPipelineCreateInfoKHR.basePipelineIndex = 0;
+	rayTracingPipelineCreateInfoKHR.basePipelineHandle = VK_NULL_HANDLE;
+	/*
+	VkRayTracingPipelineCreateInfoKHR有效用法：
+	1.如果pNext中不含一个VkPipelineCreateFlags2CreateInfoKHR，则flags必须是一个有效的VkPipelineCreateFlagBits值组合
+	2.如果 flags 包含 VK_PIPELINE_CREATE_DERIVATIVE_BIT 则:
+													（1）如果 basePipelineIndex 为 -1,basePipelineHandle 必须是一个有效的 graphics VkPipeline 句柄
+													（2）如果 basePipelineHandle 为VK_NULL_HANDLE, basePipelineIndex 必须是当前创建命令vkCreateComputePipelines中pCreateInfos 参数的一个有效的索引值
+													（3）basePipelineIndex 必须为 -1或者 basePipelineHandle 必须为 VK_NULL_HANDLE
+	3.如果push constant 块在shader中声明了,则layout中的 push constant的 range 必须和shader的 stage 以及 range匹配
+	4.如果 resource variables 在shader中声明了,则
+													（1）layout中的 descriptor slot 必须匹配shader stage
+													（2）如果layout中的 descriptor type不是VK_DESCRIPTOR_TYPE_MUTABLE_EXT,则 descriptor slot必须匹配 descriptor slot
+	5.如果 resource variables 在shader中声明为array，则layout中的 descriptor slot必须匹配 descriptor count
+
+	6.在pStages中定义的入口点的着色器代码以及 state 中剩下的其他的着色器代码必须符合Shader Interfaces章节定义的链接规则
+	7.在每一个 shader 阶段在layout声明的可以访问的资源数必须小于或等于VkPhysicalDeviceLimits::maxPerStageResources
+	8.flags不能包含VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV
+
+	9.如果pipelineCreationCacheControl 特性没有开启，则flags 不能包含VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT 或者 VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT
+	10.如果flags 不包含 VK_PIPELINE_CREATE_LIBRARY_BIT_KHR，则 pStages中的至少一个元素必须是VK_SHADER_STAGE_RAYGEN_BIT_KHR且包含隐式添加的pLibraryInfo
+	11.maxPipelineRayRecursionDepth 必须小于等于 VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxRayRecursionDepth
+	12.如果flags 包含VK_PIPELINE_CREATE_LIBRARY_BIT_KHR，pLibraryInterface必须为NULL
+	13.如果 pLibraryInfo 不为NULL且其libraryCount成员大于0，pLibraryInterface必须不为NULL
+	14.pLibraryInfo->pLibraries的每个元素必须以 maxPipelineRayRecursionDepth等于当前的pipeline的maxPipelineRayRecursionDepth创建
+	15.如果 pLibraryInfo 不为NULL，则其pLibraries的每个元素创建时候的layout必须兼容当前pipeline，其对应的pLibraryInterface的maxPipelineRayPayloadSize 以及 maxPipelineRayHitAttributeSize必须和当前pipeline相等
+	16.如果flags包含 VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR，则pLibraryInfo->pLibraries中的每个元素必须以VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR标志创建
+	17.如果flags包含 VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR，则pLibraryInfo->pLibraries中的每个元素必须以VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR标志创建
+	18.如果flags包含 VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR，则pLibraryInfo->pLibraries中的每个元素必须以VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR标志创建
+	19.如果flags包含 VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR，则pLibraryInfo->pLibraries中的每个元素必须以VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR标志创建
+	20.如果flags包含 VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR，则pLibraryInfo->pLibraries中的每个元素必须以VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR标志创建
+	21.如果flags包含 VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR，则pLibraryInfo->pLibraries中的每个元素必须以VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR标志创建
+	22.如果flags包含 VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR，则pLibraryInfo->pLibraries中的每个元素必须以VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR标志创建
+	23.如果VK_KHR_pipeline_library 拓展没有开启，则pLibraryInfo 以及 pLibraryInterface必须为NULL
+	24.如果flags 包含VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR，则pGroups 中任意类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR 或者 VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR的元素的 anyHitShader 必须为 VK_SHADER_UNUSED_KHR
+	25.如果flags 包含VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR，则pGroups 中任意类型为VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR 或者 VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR的元素的 closestHitShader 必须为 VK_SHADER_UNUSED_KHR
+	26.如果rayTraversalPrimitiveCulling 特性没有开启，则flags 不能包含VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR
+	27.如果rayTraversalPrimitiveCulling 特性没有开启，则flags 不能包含VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR
+	28.flags不能同时包含 VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR 和 VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR
+	29.如果flags 包含VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR，则rayTracingPipelineShaderGroupHandleCaptureReplay 必须开启
+	30.如果 VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay 为VK_TRUE, 且pGoups中任何元素的 pShaderGroupCaptureReplayHandle 成员不为NULL，则flags必须包含VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR
+	31.如果pLibraryInfo 或者 pLibraryInfo的libraryCount为0，则stageCount 必须不为0
+	32.如果flags 不包含VK_PIPELINE_CREATE_LIBRARY_BIT_KHR 且pLibraryInfo 为NULL或者 pLibraryInfo的libraryCount为0，groupCount不能为 0
+	33.pDynamicState的pDynamicStates的任何元素必须是VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR
+	34.如果VkPipelineCreationFeedbackCreateInfo::pipelineStageCreationFeedbackCount 不为0则必须等于 stageCount
+	35. pStages中的元素的stage 只能是VK_SHADER_STAGE_RAYGEN_BIT_KHR, VK_SHADER_STAGE_ANY_HIT_BIT_KHR, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, VK_SHADER_STAGE_MISS_BIT_KHR, VK_SHADER_STAGE_INTERSECTION_BIT_KHR, 或者 VK_SHADER_STAGE_CALLABLE_BIT_KHR 其中一个
+	36. 如果flags包含 VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT，则pLibraryInfo->pLibraries中的每个元素必须以VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT标志创建
+	37. 如果flags包含 VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV，则pLibraryInfo->pLibraries中的每个元素必须以VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV标志创建
+
+	10. pStages中至少有一个元素的stage 为VK_SHADER_STAGE_RAYGEN_BIT_KHR 
+	11. maxRecursionDepth 必须小于等于 VkPhysicalDeviceRayTracingPropertiesNV::maxRecursionDepth
+	12.flags不能同时包含 VK_PIPELINE_CREATE_DEFER_COMPILE_BIT_NV 和 VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT
+	13.如果 VkPipelineCreationFeedbackCreateInfo::pipelineStageCreationFeedbackCount不为0则必须等于 stageCount
+	14. pStages中的元素的stage 只能是VK_SHADER_STAGE_RAYGEN_BIT_KHR, VK_SHADER_STAGE_ANY_HIT_BIT_KHR, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, VK_SHADER_STAGE_MISS_BIT_KHR, VK_SHADER_STAGE_INTERSECTION_BIT_KHR, 或者 VK_SHADER_STAGE_CALLABLE_BIT_KHR 其中一个
+	
+
+	*/
+
+
+
+
+	//如果在启用VkPhysicalDeviceRayTracingPipelineFeaturesKHR ：：rayTracingPipelineShaderGroupHandleCaptureReplay时，实现无法重用VkRayTracingShaderGroupCreateInfoKHR ：：pShaderGroupCaptureReplayHandle中提供的shader group句柄，则将返回VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS错误。
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkCreateRayTracingPipelinesKHR, device, deferredOperation, VK_NULL_HANDLE, 1, &rayTracingPipelineCreateInfoKHR, nullptr, &rayTracingPipeline);
+	/*
+	vkCreateRayTracingPipelinesKHR有效用法：
+	1.如果pCreateInfos中的某个元素的flags包含VK_PIPELINE_CREATE_DERIVATIVE_BIT，则
+													（1）如果其basePipelineIndex不为-1，则basePipelineIndex必须小于当前元素在pCreateInfos中的索引值
+													（1）basePipelineHandle的创建flags必须含有 VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT
+	2. flags不能包含VK_PIPELINE_CREATE_DISPATCH_BASE
+	3.如果pipelineCache 以 VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT标志创建,主机对 pipelineCache 必须要进行外部同步--如外部多线程同步等
+	4. pipelineCache 是VK_NULL_HANDLE，指示管道缓存被禁用，或者是有效的管道缓存对象的句柄，在这种情况下，在vkCreateRayTracingPipelinesKHR命令期间启用了对该缓存的使用。
+	5. 与deferredOperation关联的任何先前的延迟操作操作必须完成
+	6. rayTracingPipeline 特性必须开启
+	7. 如果deferredOperation操作不是VK_NULL_HANDLE，则ppCreateInfos 的元素的flags 成员不能包括VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT
+
+	*/
+
+
+
+
+	//查询ray tracing pipeline的着色器的不透明句柄：
+	std::vector<char> data;
+	uint32_t dataSize = 0;//指明data的大小
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetRayTracingShaderGroupHandlesKHR, device, rayTracingPipeline, 0, 1, dataSize, data.data());
+	/*
+	vkGetRayTracingShaderGroupHandlesKHR有效用法：
+	1.firstGroup是从VkRayTracingPipelineCreateInfoKHR：：pGroups或VkRayTracingPipelineCreateInfoNV：：pGroups数组中检索句柄的第一个组的索引。
+	2.pipeline 必须为ray tracing pipeline
+	3.firstGroup必须小于pipeline中包含的shader group的数量
+	4.firstGroup + groupCount 必须小于或等于pipeline中包含的shader group的数量
+	5.dataSize必须至少为VkPhysicalDeviceRayTracingPipelinePropertiesKHR：：shaderGroupHandleSize × groupCount
+	6.如果pipelineLibraryGroupHandles 特性没有开启，则pipeline 必须不以VK_PIPELINE_CREATE_LIBRARY_BIT_KHR创建
+
+	*/
+
+	//查询 ray tracing pipeline的 opaque capture 数据
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetRayTracingCaptureReplayShaderGroupHandlesKHR, device, rayTracingPipeline, 0, 1, dataSize, data.data());
+	/*
+	vkGetRayTracingCaptureReplayShaderGroupHandlesKHR有效用法：
+	1.firstGroup是从VkRayTracingPipelineCreateInfoKHR：：pGroups数组中获取句柄的第一个组的索引
+	2.pipeline 必须为ray tracing pipeline
+	3.firstGroup必须小于pipeline中包含的shader group的数量
+	4.firstGroup + groupCount 必须小于或等于pipeline中包含的shader group的数量
+	5.dataSize必须至少为VkPhysicalDeviceRayTracingPipelinePropertiesKHR：：shaderGroupHandleCaptureReplaySize × groupCount
+	6.VkPhysicalDeviceRayTracingPipelineFeaturesKHR::rayTracingPipelineShaderGroupHandleCaptureReplay必须开启
+	7.pipeline 必须以VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR创建
+	8.如果pipelineLibraryGroupHandles 特性没有开启，则pipeline 必须不以VK_PIPELINE_CREATE_LIBRARY_BIT_KHR创建
+
+
+	*/
+
+
+	//光线跟踪管道可以包含比图形或计算管道更多的着色器，因此，为了允许在管道中并行编译着色器，应用程序可以选择将编译推迟到稍后的时间点。要在管道调用中编译延迟的着色器：
+	VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkCompileDeferredNV, device, rayTracingPipeline, 0);
+	/*
+	vkCompileDeferredNV有效用法：
+	1.pipeline 必须为ray tracing pipeline
+	2.pipeline 必须以 VK_PIPELINE_CREATE_DEFER_COMPILE_BIT_NV 创建
+	3.在之前shader不能被vkCompileDeferredNV调用
+	*/
+
+	//要查询光线跟踪管道中的着色器组中的着色器的管道堆栈大小
+	VkDeviceSize stackSize = VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetRayTracingShaderGroupStackSizeKHR, device, rayTracingPipeline, 0, VK_SHADER_GROUP_SHADER_GENERAL_KHR);//group 为需要查询的 shader group. groupShader 为需要查询的 shader 类型
+	/*
+	vkGetRayTracingShaderGroupStackSizeKHR有效用法：（返回值为获取的堆栈大小）
+	1.pipeline 必须为ray tracing pipeline
+	2.group 必须小于pipeline中包含的shader group的数量
+	3.group中定义的groupShader指定的shader不能是 VK_SHADER_UNUSED_KHR
+	4.VK_SHADER_GROUP_SHADER_GENERAL_KHR 使用在group中指定为VkRayTracingShaderGroupCreateInfoKHR::generalShader的shader
+	5.VK_SHADER_GROUP_SHADER_CLOSEST_HIT_KHR 使用在group中指定为VkRayTracingShaderGroupCreateInfoKHR::closestHitShader的shader 
+	6.VK_SHADER_GROUP_SHADER_ANY_HIT_KHR 使用在group中指定为VkRayTracingShaderGroupCreateInfoKHR::anyHitShader的shader
+	7.VK_SHADER_GROUP_SHADER_INTERSECTION_KHR 使用在group中指定为VkRayTracingShaderGroupCreateInfoKHR::intersectionShader的shader
+
+	*/
+	//要动态设置光线跟踪管道的堆栈大小：
+	{
+		VkCommandBuffer cmdbuf;
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkCmdSetRayTracingPipelineStackSizeKHR, cmdbuf, stackSize);
+		//当在VkPipelineDynamicStateCreateInfo：：pDynamicStates.中设置VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR创建光线跟踪管道时，此命令设置后续光线跟踪命令的堆栈大小否则，将按照光线跟踪管道堆栈中所述的方法计算堆栈大小
+		//管道堆栈大小必须足够大，以便通过后续跟踪调用所使用的光线跟踪管道中的着色器进行任何动态执行
+	}
+
+	vkDestroyPipeline(device, rayTracingPipeline, nullptr);//销毁光线跟踪管道
+
 }
 
 
 
 
+/*
+pipeline的派生创建：
+可以减少创建pipeline的开销，basePipelineHandle和basePipelineIndex只能使用其一，使用basePipelineHandle 必须保证所指的pipeline已经被创建，使用basePipelineIndex 必须保证所指的pipeline已经在pCreateInfos中且小于当前的索引。
+如果不使用basePipelineHandle则设置为VK_NULL_HANDLE,如果不使用basePipelineIndex则设置为-1。
+
+*/
 
 
 
+void PipelineTest::OtherPipelineOperationTest()
+{
+	//pipeline cache：
+	{
+
+		//创建pipeline缓存
+		/*
+		管道缓存对象允许在管道之间和应用程序的运行之间重用管道构造的结果。在创建多个相关管道时，通过传递相同的管道缓存对象来实现管道之间的重用。
+		应用程序的跨运行是通过检索应用程序一次运行中的管道缓存内容、保存内容并在后续运行时预初始化管道缓存来实现跨运行重用。管道缓存对象的内容由实现进行管理。
+		应用程序可以管理管道缓存对象所消耗的主机内存，并控制从管道缓存对象中检索到的数据量。
+		*/
+		VkPipelineCache pipelineCache{ VK_NULL_HANDLE };
+		VkPipelineCacheCreateInfo pipelineCacheCreateInfo{};
+		pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+		pipelineCacheCreateInfo.pNext = nullptr;
+		pipelineCacheCreateInfo.flags = 0;/*
+		
+		VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT： 指定修改已创建的虚拟管道缓存的所有命令都将在外部同步。当设置时，实现可以跳过任何不必要的处理以此来支持允许多个线程同时修改。
+		
+		*/
+		pipelineCacheCreateInfo.initialDataSize = 0;//是pInitialData中的字节数。如果初始化数据大小为零，则pipeline cache最初将为空。
+		pipelineCacheCreateInfo.pInitialData = nullptr;//是一个指向以前检索到的pipeline cache数据的指针。如果管道缓存数据与设备不兼容（如下定义），则pipeline cache最初将为空。如果初始化数据大小为零，则会忽略pInitialData
+
+		/*
+		VkPipelineCacheCreateInfo有效用法：
+		1.如果initialDataSize 不为0，则必须等于从vkGetPipelineCacheData中获取的pInitialData的大小
+		2.如果pipelineCreationCacheControl 特性没有开启，则flags 必须不包含VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT
+
+		*/
+
+		vkCreatePipelineCache(device, &pipelineCacheCreateInfo, nullptr, &pipelineCache);
+		/*
+		一旦创建，管道缓存可以传递到vkCreateGraphicsPipelines,vkCreateRayTracingPipelinesKHR，vkCreateRayTracingPipelinesNV，和 vkCreateComputePipelines命令。
+		如果传递到这些命令的管道缓存不是VK_NULL_HANDLE，则实现将查询它是否可能的重用机会，并使用新内容更新它。
+		在这些命令中对管道缓存对象的841使用是内部同步的，并且相同的管道缓存对象可以同时在多个线程中使用。
+		如果pCreateInfo的flags包含VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT，那么所有修改返回的管道缓存对象的命令都必须在外部同步。
+
+
+		*/
+
+
+
+
+		//融合Pipeline cache
+		vkMergePipelineCaches(device, pipelineCache, 1, &pipelineCache);
+		/*
+		有效用法：
+		1.dstCache 必须是有效的VkPipelineCache对象
+		2.	pSrcCaches 必须是srcCacheCount 个有效的VkPipelineCache对象数组
+		3.srcCacheCount 必须大于0
+		4.dstCache 必须是从device中被创建，分配或者获取
+		5.pSrcCaches 中的所有对象必须从device中被创建，分配或者获取
+
+		
+		*/
+
+
+
+		//获取pipeline cache中的数据
+		size_t dataSize = 0;//用于存储pipeline cache数据的大小
+		std::vector<char> data;//用于存储pipeline cache数据
+		vkGetPipelineCacheData(device, pipelineCache, &dataSize, nullptr);
+		data.resize(dataSize);
+		vkGetPipelineCacheData(device, pipelineCache, &dataSize, data.data());//获取后的数据是有效的，可以作为VkPipelineCacheCreateInfo结构的pInitialData成员传递给vkCreatePipelineCache。
+		/*
+		vkGetPipelineCacheData有效用法：
+		1.pipelineCache 必须是从device中被创建，分配或者获取
+		
+		*/
+
+		//pipeline cache数据头，为了便于应用检查pipeline cache是否与当前的device兼容，其vkGetPipelineCacheData获取的数据头部中包含信息,
+		/*
+		数据头格式为：
+		// Provided by VK_VERSION_1_0
+		typedef struct VkPipelineCacheHeaderVersionOne {
+		  uint32_t headerSize;
+		  VkPipelineCacheHeaderVersion headerVersion; //VK_PIPELINE_CACHE_HEADER_VERSION_ONE 指明pipeline cache使用版本 1
+		  uint32_t vendorID;
+		  uint32_t deviceID;
+		  uint8_t pipelineCacheUUID[VK_UUID_SIZE];
+		} VkPipelineCacheHeaderVersionOne;
+		*/
+		VkPipelineCacheHeaderVersion headerVersion = *(VkPipelineCacheHeaderVersion*)data.data();
+
+
+
+		//销毁pipeline cache
+		vkDestroyPipelineCache(device, pipelineCache, nullptr);
+	}
+
+
+	// specialization constants 
+	{
+		/*
+		specialization constants 是一种机制，在SPIR-V模块中的常数可以在创建VkPiplel时指定其常量值。这允许SPIR-V模块在执行使用Vulkan API的应用程序时具有可以修改的常量。
+		每个VkPipelineShaderStageCreateInfo结构都包含一个 pSpecializationInfo，它可以用NULL表示没有指定常量，或者指向一个 VkSpecializationInfo。
+		示例用法见p851
+		*/
+		VkSpecializationInfo specializationInfo{};
+		specializationInfo.dataSize = 0;//指定pData的大小，以字节为单位。
+		specializationInfo.pData = VK_NULL_HANDLE;//包含specialization constants指定的常量值数据
+		specializationInfo.mapEntryCount = 1;
+			VkSpecializationMapEntry mapEntry{};
+			mapEntry.constantID = 0;//是SPIR-V中的specialization constants的ID，如果constantID指定常数的类型为boolean，则size必须为 VkBool32的字节数
+			mapEntry.offset = 0;//是pData中该specialization constants常量的起始偏移量，必须小于VkSpecializationInfo.dataSize
+			mapEntry.size = sizeof(float);//是该specialization constants常量的大小，以字节为单位,必须小于等于VkSpecializationInfo.dataSize - offset
+		specializationInfo.pMapEntries = &mapEntry;//是一个指向 VkSpecializationMapEntry结构数组的指针，它将constantID映射到pData中的偏移量
+
+	}
+
+
+	//pipeline libraries
+	{
+		/*
+		管道库是使用VK_PIPELINE_CREATE_LIBRARY_BIT_KHR创建的特殊管道，不能绑定，而它定义了一组可以链接到其他管道的管道状态。对于光线跟踪管道，这包括着色器和着色器组。对于图形管道，这包括由VkGraphicsPipelineLibraryFlagBitsEXT定义的不同的库类型
+		这个结构体在创建图形管道时使用，在创建光线跟踪管道时使用，创建计算管道的时候使用。
+		*/
+		VkPipelineLibraryCreateInfoKHR pipelineLibraryCreateInfo{};
+		pipelineLibraryCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR;
+		pipelineLibraryCreateInfo.pNext = nullptr;
+		pipelineLibraryCreateInfo.libraryCount = 1;//是pLibraries中管线的数量。
+			VkPipeline libraryPipeline;
+		pipelineLibraryCreateInfo.pLibraries = &libraryPipeline;//是指向 VkPipeline结构数组的指针，指定创建管道时使用的管道库。
+		/*
+		VkPipelineLibraryCreateInfoKHR有效用法：
+		1.pLibraries 中的每个元素必须以VK_PIPELINE_CREATE_LIBRARY_BIT_KHR
+		2.pLibraries 中如果有VkPipeline元素创建时候含有identifierSize不为0的VkPipelineShaderStageModuleIdentifierCreateInfoEXT，则对VkPipelineLibraryCreateInfoKHR需要创建的pipeline必须以VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT标志创建
+		3.如果pLibraries中的任何元素以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建时，则pLibraries所有元素都必须以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建
+		4.如果pLibraries中的任何元素以VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT创建时，则pLibraries所有元素都必须以VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT创建
+		5.如果对VkPipelineLibraryCreateInfoKHR需要创建的pipeline不以VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT创建，则pLibraries所有元素都不以VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT创建
+		6.如果对VkPipelineLibraryCreateInfoKHR需要创建的pipeline以VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT创建，则pLibraries所有元素都以VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT创建
+		7.如果对VkPipelineLibraryCreateInfoKHR需要创建的pipeline不以VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT创建，则pLibraries所有元素都不以VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT创建
+		*/
+	
+	
+	}
+
+
+	//pipeline 绑定
+	{
+		//在命令缓冲区中绑定管道
+		VkCommandBuffer commandBuffer;
+		VkPipeline graphicsPipeline;
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);/*pipelineBindPoint是指定管道绑定到的绑定点。绑定其中一个不会影响到另外一个绑定点。
+			VK_PIPELINE_BIND_POINT_COMPUTE: 指明作为 compute pipeline绑定.
+			VK_PIPELINE_BIND_POINT_GRAPHICS: 指明作为 graphics pipeline绑定.
+			VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR: 指明作为 ray tracing pipeline绑定.
+			VK_PIPELINE_BIND_POINT_SUBPASS_SHADING_HUAWEI: 指明作为 subpass shading pipeline绑定.
+			VK_PIPELINE_BIND_POINT_EXECUTION_GRAPH_AMDX: 指明作为 execution graph pipeline绑定.
+		*/
+		
+		/*
+		vkCmdBindPipeline有效用法：
+		1.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_COMPUTE，则commandBuffer 所在的VkCommandPool创建时的queueFamilyIndex必须支持compute operations
+		2.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_GRAPHICS，则commandBuffer 所在的VkCommandPool创建时的queueFamilyIndex必须支持graphics operations
+		3.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_COMPUTE,则pipeline 必须是compute pipeline
+		4.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_GRAPHICS,则pipeline 必须是graphics pipeline
+		5.如果variableMultisampleRate 特性不支持，pipeline为graphics pipeline,当前subpass没有任何attachment,并且不是在当前subpass的第一个调用vkCmdBindPipeline时使用graphics pipeline,则pipeline指定的sample count必须与之前的pipeline指定的sample count相同。
+		6.如果VkPhysicalDeviceSampleLocationsPropertiesEXT::variableSampleLocations 为 VK_FALSE, pipeline为graphics pipeline且创建时带有sampleLocationsEnable为VK_TRUE的VkPipelineSampleLocationsStateCreateInfoEXT,并且VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT没有开启,则
+						当前的subpass 示例开始前必须指定一个pPostSubpassSampleLocations包含了一个subpassIndex对应当前subpass且sampleLocationsInfo和创建pipeline时的VkPipelineSampleLocationsStateCreateInfoEXT的sampleLocationsInfo相兼容的VkRenderPassSampleLocationsBeginInfoEXT 。
+		7.这个命令不能在transform feedback激活条件下被记录
+		8.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,则commandBuffer 所在的VkCommandPool创建时的queueFamilyIndex必须支持compute operations
+		9.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,则pipeline 必须是ray tracing pipeline
+		10.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_RAY_TRACING_NV,则commandBuffer 不能是一个 protected command buffer
+		11.如果pipelineProtectedAccess 特性开启，且commandBuffer 是一个protected command buffer,则pipeline 必须是创建时不能带有VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT标志
+		12.如果pipelineProtectedAccess 特性开启，且commandBuffer 不是一个protected command buffer,则pipeline 必须是创建时不能带有VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT标志
+		13.pipeline不能以VK_PIPELINE_CREATE_LIBRARY_BIT_KHR创建
+		14.如果commandBuffer是一个secondary command buffer 且VkCommandBufferInheritanceViewportScissorInfoNV::viewportScissor2D开启且pipelineBindPoint 为VK_PIPELINE_BIND_POINT_GRAPHICS,则pipeline 必须是创建时带有VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT 或 VK_DYNAMIC_STATE_VIEWPORT,且VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT 或 VK_DYNAMIC_STATE_SCISSOR 需要开启
+		15.如果commandBuffer是一个secondary command buffer 且VkCommandBufferInheritanceViewportScissorInfoNV::viewportScissor2D开启且pipelineBindPoint 为VK_PIPELINE_BIND_POINT_GRAPHICS,则pipeline 创建时候带有一个discardRectangleCount不为0的VkPipelineDiscardRectangleStateCreateInfoEXT，或者是pipeline创建时候VK_DYNAMIC_STATE_DISCARD_RECTANGLE_ENABLE_EXT 开启，则pipeline 必须是创建时有VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT 开启
+		16.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_GRAPHICS且provokingVertexModePerPipeline限制为VK_FALSE,则当前 pipeline 创建时候的VkPipelineRasterizationProvokingVertexStateCreateInfoEXT::provokingVertexMode 必须与之前包含现在为相同subpass 实例的绑定到绑定点pipeline创建时的VkPipelineRasterizationProvokingVertexStateCreateInfoEXT::provokingVertexMode相同。
+		17.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_SUBPASS_SHADING_HUAWEI,则commandBuffer 所在的VkCommandPool创建时的queueFamilyIndex必须支持compute operations
+		18.如果pipelineBindPoint 为VK_PIPELINE_BIND_POINT_SUBPASS_SHADING_HUAWEI,则pipeline 必须是subpass shading pipeline
+		
+		*/
+
+
+		//对于在支持多个着色器组时创建的管道，绑定着色器组，默认绑定0号着色器组
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkCmdBindPipelineShaderGroupNV, commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_NV, graphicsPipeline, 0);
+		/*
+		vkCmdBindPipelineShaderGroupNV有效用法：
+		1.groupIndex 必须是0或小于有效的包含在应用pipeline的VkGraphicsPipelineShaderGroupsCreateInfoNV::groupCount,
+		2.pipelineBindPoint 必须是VK_PIPELINE_BIND_POINT_GRAPHICS
+		3.调用了vkCmdBindPipelineShaderGroupNV使用vkCmdBindPipeline绑定该pipeline所有的约束就和这个pipeline只以当前groupIndex组创建的约束一样
+		4.deviceGeneratedCommands特性必须开启
+
+		
+		
+		*/
+	}
+
+
+	//dynamic state
+
+
+	//pipeline properties 和 shader information
+	{
+		/*
+		当创建管道时，它的状态和着色器被编译成零个或多个特定于设备的可执行文件，这些文件在对该管道执行命令时使用。
+		查询这些管道可执行文件的属性：
+		*/
+		VkPipelineInfoKHR pipelineInfo{};
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INFO_KHR;
+		pipelineInfo.pNext = nullptr;
+			VkPipeline graphicPipeline;
+		pipelineInfo.pipeline = graphicPipeline;//指明查询的pipeline
+
+
+
+		uint32_t pipelineCount = 0;
+		std::vector<VkPipelineExecutablePropertiesKHR> pipelineExeProperties;
+			VkPipelineExecutablePropertiesKHR tmpExeProp;
+			tmpExeProp.sType = VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_PROPERTIES_KHR;
+			tmpExeProp.pNext = nullptr;
+			tmpExeProp.stages;//是一个零或多个VkShader阶段的位掩码，指示哪个着色器阶段（如果有的话）主要用作编译这个管道可执行文件的输入。
+			tmpExeProp.name;//是一个VK_MAX_DESCRIPTION_SIZE个char的数组，包含一个以空结尾的UTF-8字符串，它是这个管道可执行文件的一个简短的人类可读名称。
+			tmpExeProp.description;//是一个VK_MAX_DESCRIPTION_SIZE个char数组，其中包含一个以空结尾的UTF-8字符串，它是这个管道可执行文件的人类可读描述。
+			tmpExeProp.subgroupSize; //是此pipeline的可执行文件可分派的子组大小。
+
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetPipelineExecutablePropertiesKHR, device, &pipelineInfo, &pipelineCount, nullptr);
+		pipelineExeProperties.resize(pipelineCount);
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetPipelineExecutablePropertiesKHR,device, &pipelineInfo, &pipelineCount, pipelineExeProperties.data());
+
+	
+		//查询pipeline properties
+
+
+		VkPipelinePropertiesIdentifierEXT	pipelineIndentifier;		
+		pipelineIndentifier.sType = VK_STRUCTURE_TYPE_PIPELINE_PROPERTIES_IDENTIFIER_EXT;
+		pipelineIndentifier.pNext = nullptr;
+		pipelineIndentifier.pipelineIdentifier;//待查询的pipeline的标识符，是一个VK_UUID_SIZE uint8_t值的数组，其中将写入管道标识符。
+
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetPipelinePropertiesEXT, device, &pipelineInfo, (VkBaseOutStructure*)& pipelineIndentifier);
+		/*
+		vkGetPipelinePropertiesEXT有效用法：
+		1.pPipelineProperties必须是指向VkPipelinePropertiesIdentifierEXT结构的有效指针
+		2.pipelinePropertiesIdentifier 特性必须开启
+		*/
+
+
+
+
+		/*
+		每个管道可执行文件可能有一组与管道编译过程生成的相关联的统计信息。这些统计数据可能包括指令计数、溢出量（如果有的话）、同时出现的线程的最大数量，或者任何其他可能有助于开发人员评估着色器的预期性能的东西。
+		要查询与管道可执行文件相关联的编译时统计信息：
+		*/
+		VkPipelineExecutableInfoKHR pipelineExeInfo{};
+		pipelineExeInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_INFO_KHR;
+		pipelineExeInfo.pNext = nullptr;
+		pipelineExeInfo.pipeline = graphicPipeline;//待查询的pipeline
+		pipelineExeInfo.executableIndex = 0;//是在vkGetPipelineExecutablePropertiesKHR.返回的可执行属性数组中查询的管道可执行文件的索引
+		/*
+		1.executableIndex必须小于pipeline对于vkGetPipelineExecutablePropertiesKHR调用返回的pExecutableCount
+		
+		*/
+
+		uint32_t pipelineStaticPropertiesCount = 0;
+		std::vector<VkPipelineExecutableStatisticKHR> pipelineStaticProperties;
+		VkPipelineExecutableStatisticKHR tmpStaticProp;
+		tmpStaticProp.sType = VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_STATISTIC_KHR;
+		tmpStaticProp.pNext = nullptr;
+		tmpStaticProp.name;//是一个VK_MAX_DESCRIPTION_SIZE个char的数组，包含一个以空结尾的UTF-8字符串，它是这个静态属性的一个人类可读的短名称。
+		tmpStaticProp.description;//是一个VK_MAX_DESCRIPTION_SIZE个char的数组，包含一个以空结尾的UTF-8字符串，它是这个静态属性的人类可读描述。
+		tmpStaticProp.format;/*是一个VkPipelineExecutableStatisticFormatKHR值，它指定在value中找到的数据的格式。
+			VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_BOOL32_KHR:指明静态属性作为一个32-bit boolean的值返回，为VK_TRUE或者VK_FALSE且从VkPipelineExecutableStatisticValueKHR类型的value的b32字段读取。
+			VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_INT64_KHR:指明静态属性作为一个64-bit signed integer值返回，从VkPipelineExecutableStatisticValueKHR类型的value的i64字段读取。
+			VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_UINT64_KHR:指明静态属性作为一个64-bit unsigned integer值返回，从VkPipelineExecutableStatisticValueKHR类型的value的u64字段读取。
+			VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_FLOAT64_KHR:指明静态属性作为一个64-bit floating-point值返回，从VkPipelineExecutableStatisticValueKHR类型的value的f64字段读取。
+		
+		*/
+		tmpStaticProp.value;/*是这个静态属性的值,为一个union结构体。
+		b32是 32-bit boolean 值，如果VkPipelineExecutableStatisticFormatKHR是VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_BOOL32_KHR。
+		i64是 64-bit signed integer 值，如果VkPipelineExecutableStatisticFormatKHR是VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_INT64_KHR。
+		u64是 64-bit unsigned integer 值，如果VkPipelineExecutableStatisticFormatKHR是VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_UINT64_KHR。
+		f64是 64-bit floating-point 值，如果VkPipelineExecutableStatisticFormatKHR是VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_FLOAT64_KHR。
+
+		*/
+
+
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device,vkGetPipelineExecutableStatisticsKHR,device, &pipelineExeInfo, &pipelineStaticPropertiesCount, nullptr);
+		pipelineStaticProperties.resize(pipelineStaticPropertiesCount);
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetPipelineExecutableStatisticsKHR, device, &pipelineExeInfo, &pipelineStaticPropertiesCount, pipelineStaticProperties.data());
+		/*
+		vkGetPipelineExecutableStatisticsKHR有效用法：
+		1.pExecutableInfo 中的pipeline必须是由VK_PIPELINE_CREATE_CAPTURE_STATISTICS_BIT_KHR创建的
+		*/
+
+
+
+		/*
+		每个管道可执行文件可以有一个或多个与之相关联的文本或二进制内部表示，这些表示是作为编译过程的一部分生成的。这些可能包括最终的着色器组件、编译的着色器的二进制形式，或在任意数量的中间编译步骤中的着色器编译器的内部表示。
+		查询与管道可执行文件关联的内部表示方式：
+		
+		*/
+		uint32_t pipelineInternalRepresentationsCount = 0;
+		std::vector<VkPipelineExecutableInternalRepresentationKHR> pipelineInternalRepresentations;
+		VkPipelineExecutableInternalRepresentationKHR tmpInternalRep;
+		tmpInternalRep.sType = VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_INTERNAL_REPRESENTATION_KHR;
+		tmpInternalRep.pNext = nullptr;
+		tmpInternalRep.name;//是一个VK_MAX_DESCRIPTION_SIZE个char的数组，包含一个以空结尾的UTF-8字符串，它是这个内部表示的名称。
+		tmpInternalRep.description;//是一个VK_MAX_DESCRIPTION_SIZE个char的数组，包含一个以空结尾的UTF-8字符串，它是这个内部表示的描述。
+		tmpInternalRep.isText;//指定返回的数据是文本数据还是不透明数据。如果isText是VK_TRUE，那么在pData中返回的数据是文本的，并保证是一个以空结尾的UTF-8字符串。
+		tmpInternalRep.dataSize;//是与内部表示数据的大小、字节数相关的整数，如下所述
+		tmpInternalRep.pData;//是NULL或者是指向实现将写入内部表示的数据块的指针
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetPipelineExecutableInternalRepresentationsKHR, device, &pipelineExeInfo, &pipelineInternalRepresentationsCount, nullptr);
+		pipelineInternalRepresentations.resize(pipelineInternalRepresentationsCount);
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetPipelineExecutableInternalRepresentationsKHR, device, &pipelineExeInfo, &pipelineInternalRepresentationsCount, pipelineInternalRepresentations.data());
+		/*
+		vkGetPipelineExecutableStatisticsKHR有效用法：
+		1.pExecutableInfo 中的pipeline必须是由VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR创建的
+		*/
+
+
+		//可以提取有关已编译为管道对象的一部分的特定着色器的信息
+		size_t shaderInfoSize = 0;
+		std::vector<char> shaderInfo;
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetShaderInfoAMD, device, graphicPipeline, VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD, &shaderInfoSize,nullptr);
+		shaderInfo.resize(shaderInfoSize);
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetShaderInfoAMD, device, graphicPipeline, VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD, &shaderInfoSize, shaderInfo.data());
+
+		VkShaderStatisticsInfoAMD shaderStatisticsInfo{};
+		shaderStatisticsInfo.computeWorkGroupSize;//是在{X、Y、Z}维度中此着色器的local workgroup大小。
+		shaderStatisticsInfo.numAvailableSgprs;//是提供给着色器编译器的SGPRs的最大限制。
+		shaderStatisticsInfo.numAvailableVgprs;//是提供给着色器编译器的VGPRs的最大限制。
+		shaderStatisticsInfo.numPhysicalSgprs;//是物理设备可用的标量指令通用寄存器（SGPRs）的最大数量。
+		shaderStatisticsInfo.numPhysicalVgprs;//是物理设备可用的向量指令通用寄存器（VGPRs）的最大数量。
+		shaderStatisticsInfo.resourceUsage;//是一个描述这个着色器使用的内部设备资源的VkShaderResourceUsageAMD 的结构体对象
+			{
+			shaderStatisticsInfo.resourceUsage.ldsSizePerLocalWorkGroup;//是每个workgroup的最大本地数据存储大小，单位为字节
+			shaderStatisticsInfo.resourceUsage.ldsUsageSizeInBytes;//是此着色器对每个workgroup的本地数据使用量大小
+			shaderStatisticsInfo.resourceUsage.numUsedSgprs;//是此着色器使用的标量指令通用寄存器的数量。
+			shaderStatisticsInfo.resourceUsage.numUsedVgprs;//是此着色器使用的矢量指令通用寄存器的数量。
+			shaderStatisticsInfo.resourceUsage.scratchMemUsageInBytes;//是此着色器以字节为单位表示的scratch内存使用量。
+			}
+
+
+		shaderStatisticsInfo.shaderStageMask;//是包含在此着色器中的逻辑着色器阶段的组合。
+		VK_DEVICE_FUNCTION_GET_AND_CALL(device, vkGetShaderInfoAMD, device, graphicPipeline, VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_INFO_TYPE_STATISTICS_AMD, nullptr, &shaderStatisticsInfo);
+		/*
+		 VkShaderStatisticsInfoAMD有效用法：
+		 1.如果infoType为VK_SHADER_INFO_TYPE_STATISTICS_AMD，则pInfo将返回一个VkShaderStatisticsInfoAMD结构体的数据。指明查询shader使用的设备资源的信息
+		 2.如果infoType为VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD，则pInfo将返回一个以空结尾的UTF-8字符串的 disassembly数据。指明查询着色器的可读的disassembly
+		 3.如果infoType为VK_SHADER_INFO_TYPE_BINARY_AMD，则pInfo返回的二进制数据留给供应商去指定，这里不明确说明。指明查询设备实现的信息
+		*/
+
+	}
+
+
+	//pipeline control
+	{
+		/*
+		管道的编译可以通过向VkGraphicsPipelineCreateInfo或VkComputePipelineCreateInfo.的pNext链中添加一个VkPipelineCompilerControlCreateInfoAMD结构来进行调整控制
+		*/
+		VkPipelineCompilerControlCreateInfoAMD compilerControlInfo{};
+		compilerControlInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COMPILER_CONTROL_CREATE_INFO_AMD;
+		compilerControlInfo.pNext = nullptr;
+		compilerControlInfo.compilerControlFlags = 0;//是一个VkPipelineCompilerControlFlagBitsAMD类型的位掩码，用于控制着色器编译器的行为。必须为0，这个将在将来扩展。目前没有进行使用
+	
+	}
+
+
+	//pipeline feedback
+	{
+		/*
+		通过向VkGraphicsPipelineCreateInfo，VkRayTracingPipelineCreateInfoKHR，VkRayTracingPipelineCreateInfoNV，或VkComputePipelineCreateInfo.的pNext链中添加一个VkPipelineCreationFeedbackCreateInfo结构，
+		可以获得关于创建特定管道对象的反馈信息,pipeline必须以
+		
+		*/
+		VkPipelineCreationFeedback pipelineCreateFeedback{};
+		pipelineCreateFeedback.duration;//是一个uint64_t值，表示创建管道所花费的时间，单位为纳秒。
+		pipelineCreateFeedback.flags;/*是VkPipelineCreationFeedbackFlagBits的一个位掩码，提供关于创建管道或管道阶段的反馈。
+		VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT:  指明反馈的信息是有效的
+		VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT:  指明表示在应用程序在管道创建命令中指定的管道缓存中找到了一个易于使用的管道或管道阶段。
+		VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT:	指明表示由Vk*PipelineCreateInfo结构的basePipelineHandle或basePipelineIndex指定的基本管道被用来加速管道的创建。
+
+		*/
+		VkPipelineCreationFeedback shaderStageFeedback{};
+
+		VkPipelineCreationFeedbackCreateInfo feedbackCreateInfo{};
+		feedbackCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO_EXT;
+		feedbackCreateInfo.pNext = nullptr;
+		feedbackCreateInfo.pPipelineCreationFeedback = &pipelineCreateFeedback;//是一个指针，指向一个VkPipelineCreationFeedbackEXT结构体，将被填充以提供关于创建管道对象的反馈信息。如果pPipelineCreationFeedback为NULL，则不会填充任何信息。
+		feedbackCreateInfo.pipelineStageCreationFeedbackCount = 1;//是一个整数，表示要填充的VkPipelineCreationFeedbackEXT结构体的数量。如果pipelineStageCreationFeedbackCount为0，则不会填充任何信息。
+		feedbackCreateInfo.pPipelineStageCreationFeedbacks = &shaderStageFeedback;//是一个指针，指向一个数组，包含要填充的VkPipelineCreationFeedbackEXT结构体的指针。如果pPipelineStageCreationFeedbacks为NULL，则不会填充任何信息。
+		/*
+		有效用法说明：
+		1.当链接到VkRayTracingPipelineCreateInfoKHR，VkRayTracingPipelineCreateInfoNV，或VkGraphicsPipelineCreateInfo，时，则
+						pPipelineStageCreationFeedbacks的第i个元素对应于VkRayTracingPipelineCreateInfoKHR：：pStages，VkRayTracingPipelineCreateInfoNV ：：pStages；
+						或VkGraphicsPipelineCreateInfo：：pStages.的第i个元素；
+						当链接到VkComputePipelineCreateInfo，时，pPipelineStageCreationFeedbacks的第一个元素对应于VkComputePipelineCreateInfo：：stage.
+		
+		
+		*/
+
+
+	
+	}
+
+
+}
 
 
 

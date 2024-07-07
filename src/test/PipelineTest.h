@@ -15,6 +15,8 @@ public:
 private:
 	void ComputePipelineCreateTest();
 	void GraphicPipelineCreateTest();
+	void RayTracingPipelineCreateTest();
+	void OtherPipelineOperationTest();
 private:
 
 };

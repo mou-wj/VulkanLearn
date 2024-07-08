@@ -14,7 +14,8 @@ public:
 
 
 private:
-
+	void HostAllocationCallbacksTest();
+	void DeviceMemoryTest();
 };
 TEST_REGISTER(MemoryAllocationTest)
 

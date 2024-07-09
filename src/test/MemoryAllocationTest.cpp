@@ -1,6 +1,21 @@
 #include "MemoryAllocationTest.h"
-
+#include <Windows.h>
+#include <vulkan/vulkan_win32.h>
+#include <winnt.h>
+#include <vulkan/vulkan_metal.h>
+#include <vulkan/vulkan_android.h>
+typedef uint32_t zx_handle_t;//因为zx_handle_t 是google的开源操作系统fuchsia的句柄类型，所以这里定义一个uint32_t类型的句柄类型zx_handle_t，不起实际作用只是为了通过编译
+#include <vulkan/vulkan_fuchsia.h>
+#include <vulkan/vulkan_screen.h>
 NS_TEST_BEGIN
+
+
+
+
+
+
+
+
 
 
 MemoryAllocationTest::MemoryAllocationTest()
@@ -264,7 +279,8 @@ void MemoryAllocationTest::DeviceMemoryTest()
 	VkDeviceMemory deviceMemory{VK_NULL_HANDLE};
 	VkMemoryAllocateInfo memoryAllocateInfo{};
 	memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	memoryAllocateInfo.pNext = nullptr;
+		MemoryAllocateInfoEXT memoryAllocateInfoEXT{};
+	memoryAllocateInfo.pNext = &memoryAllocateInfoEXT.dedicatedAllocationMemoryAllocateInfoNV;
 	memoryAllocateInfo.allocationSize = 1;//只需要分配的内存的字节数
 	memoryAllocateInfo.memoryTypeIndex = 0;//是从vkGetPhysicalDeviceMemoryProperties获取的VkPhysicalDeviceMemoryProperties结构的memoryTypes数组中的内存类型的索引。
 	/*
@@ -329,9 +345,241 @@ void MemoryAllocationTest::DeviceMemoryTest()
 	*/
 	
 	
+
+
+
+	//VkMemoryDedicatedAllocateInfo  
+	//如果在VkMemoryAllocateInfo的pNext中包含，则该结构体必须含有一个单独的内存所绑定的buffer或者image 对象指针
+	VkMemoryDedicatedAllocateInfo& memoryDedicatedAllocateInfo = memoryAllocateInfoEXT.memoryDedicatedAllocateInfo;
+	memoryDedicatedAllocateInfo.buffer = VK_NULL_HANDLE; //是VK_NULL_HANDLE或此内存将被绑定到的VkBuffer的句柄。
+	memoryDedicatedAllocateInfo.image = VK_NULL_HANDLE;//是VK_NULL_HANDLE或此内存将被绑定到的VkImage的句柄。
+	/*
+	VkMemoryDedicatedAllocateInfo有效用法:
+	1.image 和buffer 至少一个为VK_NULL_HANDLE
+	2.如果 image 不为VK_NULL_HANDLE 则（1）如果memory 不是一个引入的 Android Hardware Buffer或者QNX Screen buffer ,则VkMemoryAllocateInfo::allocationSize 必须等于 image的 VkMemoryRequirements::size
+						              （2）image创建时候的VkImageCreateInfo::flags 不能含有 VK_IMAGE_CREATE_SPARSE_BINDING_BIT，VK_IMAGE_CREATE_DISJOINT_BIT
+									  （3）如果VkMemoryAllocateInfo定义了一个memory import operation，且其handle类型为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT, 
+									  		    或者 VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT，且该外部handle是由Vulkan API创建的，则被引入的 memory必须是一个 dedicated image分配的（即该内存只被image所拥有），且image要和该memory 所关联的VkImage相同
+									  （4）如果VkMemoryAllocateInfo定义了一个memory import operation，且其handle类型为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT ，VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA，则被引入的 memory必须是一个 dedicated image分配的（即该内存只被image所拥有），且image要和该memory 所关联的VkImage相同
+
+	3.如果 buffer 不为VK_NULL_HANDLE 则（1）如果memory 不是一个引入的 Android Hardware Buffer或者QNX Screen buffer ,则VkMemoryAllocateInfo::allocationSize 必须等于 buffer 的 VkMemoryRequirements::size
+									   （2）buffer 创建时候的VkBufferCreateInfo::flags 不能含有 VK_BUFFER_CREATE_SPARSE_BINDING_BIT
+									   （3）如果VkMemoryAllocateInfo定义了一个memory import operation，且其handle类型为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT,
+												或者 VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT，且该外部handle是由Vulkan API创建的，则被引入的 memory必须是一个 dedicated buffer分配的（即该内存只被buffer 所拥有），且buffer要和该memory 所关联的VkBuffer相同
+									   （4）如果VkMemoryAllocateInfo定义了一个memory import operation，且其handle类型为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT ，VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA，则被引入的 memory必须是一个 dedicated buffer分配的（即该内存只被buffer 所拥有），且buffer要和该memory 所关联的VkBuffer相同
+
+	*/
+
+
+	// VkDedicatedAllocationMemoryAllocateInfoNV,功能和VkMemoryDedicatedAllocateInfo 相似
+	//如果在VkMemoryAllocateInfo的pNext中包含，则该结构体必须含有一个单独的内存所绑定的buffer或者image 对象指针
+	VkDedicatedAllocationMemoryAllocateInfoNV& memoryDedicatedAllocateInfoNV = memoryAllocateInfoEXT.dedicatedAllocationMemoryAllocateInfoNV;
+	memoryDedicatedAllocateInfo.buffer = VK_NULL_HANDLE; //是VK_NULL_HANDLE或此内存将被绑定到的VkBuffer的句柄。
+	memoryDedicatedAllocateInfo.image = VK_NULL_HANDLE;//是VK_NULL_HANDLE或此内存将被绑定到的VkImage的句柄。
+	/*
+	VkDedicatedAllocationMemoryAllocateInfoNV有效用法：
+	1.image 和buffer 至少一个为VK_NULL_HANDLE
+	2.如果 image 不为VK_NULL_HANDLE 则（1）image必须以 VkDedicatedAllocationImageCreateInfoNV::dedicatedAllocation为VK_TRUE创建
+									  （2）VkMemoryAllocateInfo::allocationSize 必须等于 image的 VkMemoryRequirements::size
+									  （3）如果VkMemoryAllocateInfo定义了一个memory import operation，则被引入的 memory必须是一个 dedicated image分配的（即该内存只被image所拥有），且image要和该memory 所关联的VkImage相同
+									  
+
+	3.如果 buffer 不为VK_NULL_HANDLE 则（1）buffer必须以 VkDedicatedAllocationImageCreateInfoNV::dedicatedAllocation为VK_TRUE创建
+									   （2）VkMemoryAllocateInfo::allocationSize 必须等于 buffer 的 VkMemoryRequirements::size
+									   （3）如果VkMemoryAllocateInfo定义了一个memory import operation，则被引入的 memory必须是一个 dedicated buffer分配的（即该内存只被buffer 所拥有），且buffer要和该memory 所关联的VkBuffer相同
+									   
+	
+	*/
+
+	// VkMemoryPriorityAllocateInfoEXT
+	//如果在VkMemoryAllocateInfo的pNext中包含,则该结构体表示该内存的优先级
+
+	VkMemoryPriorityAllocateInfoEXT& memoryPriorityAllocateInfoEXT = memoryAllocateInfoEXT.memoryPriorityAllocateInfoEXT;
+	memoryPriorityAllocateInfoEXT.priority = 0;//是介于0到1之间的浮点值，指示分配相对于其他内存分配的优先级。值越大，优先级就越高。优先级的粒度依赖于实现。
+		{
+		//改变现有memory的优先级
+		vkSetDeviceMemoryPriorityEXT(device, deviceMemory, 0);
+		}
+	
+	//VkExportMemoryAllocateInfo
+	//如果在VkMemoryAllocateInfo的pNext中包含一个,则该结构体表示该内存的payload可以导入到其他程序 或者Vulkan Instance使用
+	VkExportMemoryAllocateInfo& exportMemoryAllocateInfo = memoryAllocateInfoEXT.exportMemoryAllocateInfo;
+	exportMemoryAllocateInfo.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;//是 0 或一个或多个VkExternalMemoryHandleTypeFlagBits的位掩码组合，指定应用程序可以从结果分配中导出的一个或多个内存句柄类型。该应用程序可以为相同的分配请求多个句柄类型。句柄类型必须是被支持的，参见VkExternalImageFormatProperties 或者 VkExternalBufferProperties
+	
+	
+	//VkExportMemoryAllocateInfoNV,功能和VkExportMemoryAllocateInfo类似
+	//如果在VkMemoryAllocateInfo的pNext中包含一个,则该结构体表示该内存的payload可以导入到其他程序 或者Vulkan Instance使用
+	VkExportMemoryAllocateInfoNV& exportMemoryAllocateInfoNV = memoryAllocateInfoEXT.exportMemoryAllocateInfoNV;
+	exportMemoryAllocateInfoNV.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;//是VkExternalMemoryHandleTypeFlagBitsNV的一个或者多个位掩码组合，指定一个或多个可以导出的内存句柄类型。同一分配所需的多个handle type必须是兼容的，参见vkGetPhysicalDeviceExternalImageFormatPropertiesNV 中获取的参数
+
+
+	VkDeviceMemory allocatedMemory;
+	//win32 handle 导出导入memory操作
+	HANDLE handle;
+	{
+		//VkExportMemoryWin32HandleInfoKHR
+		//如果在VkMemoryAllocateInfo的pNext中包含一个(需要VkMemoryAllocateInfo的pNext中含有一个 handleTypes包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT的VkExportMemoryAllocateInfo 才有效,如果不包含则也不能包含该结构体 ),
+		// 则该结构体表示指明从memory 对象中导出的NT handle的额外的其他属性
+		VkExportMemoryWin32HandleInfoKHR& exportMemoryWin32HandleInfoKHR = memoryAllocateInfoEXT.exportMemoryWin32HandleInfoKHR;
+		exportMemoryWin32HandleInfoKHR.name = L"name";//是一个以空结尾的UTF-16字符串，要与从创建的内存导出的NT handle引用的有效负载关联。
+		exportMemoryWin32HandleInfoKHR.dwAccess;//是一个指定对该句柄的访问权限的DWORD。
+		exportMemoryWin32HandleInfoKHR.pAttributes = nullptr;//是指向指定句柄安全属性的Windows SECURITY_ATTRIBUTES结构的指针。
+
+
+		//VkImportMemoryWin32HandleInfoKHR
+		//如果在VkMemoryAllocateInfo的pNext中包含,则表示引入一个windows handle的 内存
+		//引入Windows handles中的payload 不会将payload的所有权转移给vulkan（只是引用并非转移），所以如果不需要了需要调用系统命令CloaseHandle来关闭
+		VkImportMemoryWin32HandleInfoKHR& importMemoryWin32HandleInfoKHR = memoryAllocateInfoEXT.importMemoryWin32HandleInfoKHR;
+		importMemoryWin32HandleInfoKHR.handle = nullptr;//为NULL或要导入的外部句柄。
+		importMemoryWin32HandleInfoKHR.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT;//是一个指定handle 或name的类型的VkExternalMemoryHandleTypeFlagBits值
+		importMemoryWin32HandleInfoKHR.name = L"name";//为NULL或为要导入的以空字符串结尾的UTF-16 payload的名字。
+		/*
+		VkImportMemoryWin32HandleInfoKHR有效用法:
+		1.如果handleType 不为0， 则（1）必须是支持引入的，参见VkExternalImageFormatProperties 或者 VkExternalBufferProperties
+								   （2）其必须定义为 NT handle或者是global shader handle
+								   （3）如果handle为NULL，则name 必须是一个指定的handleType的有效的memory 资源
+								   （4）如果handle为NULL，则handle 必须是一个指定的handleType的有效的handle
+		2.从handle中导出的或者是以name 命名的memory 必须和当前device是在同一个底层physical device上创建的
+		3.如果handleType 不为VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT, 或者 VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT，则 name必须为NULL
+		4.如果handle 不为0，则（1）name必须为NULL
+							  （2）其必须遵守罗列在external memory handle types compatibility中的要求
+
+		5.如果name 不为NULL，则其必须遵守罗列在external memory handle types compatibility中的要求
+		*/
+
+
+		//导出handle
+		{
+			//从一个vulkan device memory 对象中导出一个表示payload的 window handle，调用
+
+			VkMemoryGetWin32HandleInfoKHR memoryGetWin32HandleInfoKHR;
+			memoryGetWin32HandleInfoKHR.sType = VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR;
+			memoryGetWin32HandleInfoKHR.pNext = nullptr;
+			memoryGetWin32HandleInfoKHR.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT;//是一个指定所请求的句柄类型的VkExternalMemoryHandleTypeFlagBits值。
+			memoryGetWin32HandleInfoKHR.memory = allocatedMemory;//是即将从中导出句柄的memory 对象。
+			/*
+			VkMemoryGetWin32HandleInfoKHR有效用法:
+			1.handleType 必须包含在memory 创建时的VkExportMemoryAllocateInfo::handleTypes中
+			2.如果handleType 定义为一个 NT handle，则vkGetMemoryWin32HandleKHR 对于每一个单独的memory和 handleType的组合只能调用一次
+			3.handleType 必须定义为一个 NT handle 或者 global share handle
+
+			*/
+
+			vkGetMemoryWin32HandleKHR(device, &memoryGetWin32HandleInfoKHR, &handle);
+			//该结构获取的NT handle归属权属于 application， 如果不在需要也需要调用CloseHandle，得在接口中VkMemoryGetWin32HandleInfoKHR.memory对象分配后才能调用
+
+
+			VkMemoryWin32HandlePropertiesKHR memoryWin32HandlePropertiesKHR{};
+			memoryWin32HandlePropertiesKHR.sType = VK_STRUCTURE_TYPE_MEMORY_WIN32_HANDLE_PROPERTIES_KHR;
+			memoryWin32HandlePropertiesKHR.pNext = nullptr;
+			memoryWin32HandlePropertiesKHR.memoryTypeBits;//是一个比特掩码对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 window handle可以被引入为的类型 .
+			//和vulkan兼容的window handle可能是由非vulkan api创建的，为了正确使用这些handle可以查询其属性：
+			vkGetMemoryWin32HandlePropertiesKHR(device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT, handle, &memoryWin32HandlePropertiesKHR);//handleType 不能是定义为opaque的 handle types
+
+
+
+		}
+
+		//VkExportMemoryWin32HandleInfoNV
+		//如果在VkMemoryAllocateInfoNV的pNext中包含一个(需要VkMemoryAllocateInfoNV的pNext中含有一个 handleTypes包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV的VkExportMemoryAllocateInfoNV 才有效,如果不包含则也不能包含该结构体 ),
+		// 则该结构体表示为memory对象的external handle指定安全属性和访问权限
+		VkExportMemoryWin32HandleInfoNV& exportMemoryWin32HandleInfoNV = memoryAllocateInfoEXT.exportMemoryWin32HandleInfoNV;
+		exportMemoryWin32HandleInfoNV.dwAccess;//是一个指定对该句柄的访问权限的DWORD。
+		exportMemoryWin32HandleInfoNV.pAttributes;//是指向指定句柄安全属性的Windows SECURITY_ATTRIBUTES结构的指针。
+
+
+		//VkImportMemoryWin32HandleInfoNV
+		//如果在VkMemoryAllocateInfoNV的pNext中包含一个,表示引入非当前Vulkan Instance但是底层的physical device是相同的instance创建的mmemory 
+		VkImportMemoryWin32HandleInfoNV& importMemoryWin32HandleInfoNV = memoryAllocateInfoEXT.importMemoryWin32HandleInfoNV;
+		importMemoryWin32HandleInfoNV.handle = handle;//是一个指内存的Windows句柄。必须是vkGetMemoryWin32HandleNV 指定相同handleType获取来的
+		importMemoryWin32HandleInfoNV.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT;/*是0或一个指定句柄中的内存句柄类型的VkExternalMemoryHandleTypeFlagBitsNV值。只能设置一个位
+		VkExternalMemoryHandleTypeFlagBitsNV：
+		VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV: 指定这个memory的 handle是由 vkGetMemoryWin32HandleNV 返回的
+		VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV: 指定这个memory的 handle是由 vkGetMemoryWin32HandleNV 返回的 或者是用 DuplicateHandle() 复制的一个vkGetMemoryWin32HandleNV返回的 handle
+		VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV:  指定这个memory的有效的NT handle是由 IDXGIResource1::CreateSharedHandle 返回的， 或者是用 DuplicateHandle() 复制的一个IDXGIResource1::CreateSharedHandle 返回的 handle
+		VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV: 指定这个memory的 handle是由 IDXGIResource::GetSharedHandle() 返回的
+
+		*/
+
+
+		//获取handle NV
+		{
+
+			vkGetMemoryWin32HandleNV(device, allocatedMemory, VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV, &handle);
+			//在分配内存时，handleType必须是在VkExportMemoryAllocateInfoNV：：handleTypes中指定的标志，得在接口中memory对象分配后才能调用
+		}
 	
 	
 	
+	
+	
+	}
+
+	int fd;
+	//POSIX file descriptor handle导出导入memory操作
+	{
+		//VkImportMemoryFdInfoKHR
+		//如果在VkMemoryAllocateInfo的pNext中包含一个，表示从一个POSIX file descriptor handle中导入memory
+		//从file descriptor 导入memory会将file descriptor 所有权从应用转移到vulkan，在成功导入后，应用程序不能对file descriptor执行任何操作，导入的memory 对象拥有其payload的引用，应用程序可以将相同的payload多次导入到Vulkan Instance中
+		VkImportMemoryFdInfoKHR& importMemoryFdInfoKHR = memoryAllocateInfoEXT.importMemoryFdInfoKHR;
+		importMemoryFdInfoKHR.fd = 0;//是要导入的外部句柄。
+		importMemoryFdInfoKHR.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;//是一个指定fd的句柄类型的VkExternalMemoryHandleTypeFlagBits值。
+		/*
+		VkImportMemoryFdInfoKHR有效用法：
+		1.如果handleType 不为0， 则（1）其必须是支持引入的，参见VkExternalImageFormatProperties 或者 VkExternalBufferProperties
+								   （2）则其必须为VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT 或VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT
+								   （3）fd必须是handleType 指定的有效的 handle
+
+		2.从fd 中导出的的memory 必须和当前device是在同一个底层physical device上创建的
+		3.fd 表示的memory 必须在和当前device以及 handleType兼容的相同底层physical device或者驱动上创建的，参见external memory handle types compatibility中的要求
+		4.fd 必须遵守罗列在external memory handle types compatibility中的要求
+		*/
+	
+
+		VkMemoryGetFdInfoKHR getMemoryFdInfoKHR{};
+		getMemoryFdInfoKHR.sType = VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR;
+		getMemoryFdInfoKHR.pNext = nullptr;
+		getMemoryFdInfoKHR.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;//是一个指定所请求的句柄类型的VkExternalMemoryHandleTypeFlagBits值。
+		getMemoryFdInfoKHR.memory = allocatedMemory;// 是将从中导出句柄的内存对象。
+		/*
+		VkMemoryGetFdInfoKHR有效用法：
+		1.handleType 必须包含在创建memory的 VkExportMemoryAllocateInfo::handleTypes中
+		2.handleType 必须为VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT 或 VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT
+		*/
+
+
+		//导出一个 引用到vulkan的memory 对象的payload的 POSIX file descriptor
+		vkGetMemoryFdKHR(device, &getMemoryFdInfoKHR, &fd);
+		//每次调用vkGetMemoryFdKHR都会创建一个新的引用到该memory的payload的file descriptor且将所有权交给应用程序，不再需要用的时候需要调用close（fd）,这个导入的内存大小可能会超过VkMemoryAllocateInfo::allocationSize.，如果handleType为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,可以调用lseek查询外部文件大小
+	
+
+
+		VkMemoryFdPropertiesKHR memoryFdPropertiesKHR{};
+		memoryFdPropertiesKHR.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
+		memoryFdPropertiesKHR.pNext = nullptr;
+		memoryFdPropertiesKHR.memoryTypeBits;//是一个比特掩码对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 POSIX file descriptor可以被引入为的类型 .
+		//和vulkan兼容的POSIX file descriptor可能是由非vulkan api创建的，为了正确使用这些handle可以查询其属性：
+		vkGetMemoryFdPropertiesKHR(device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT, fd, &memoryFdPropertiesKHR);//handleType 不能是定义为opaque的 handle types
+		//handleType不能为VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT
+
+
+
+
+
+
+	}
+
+
+
+
+	//host memory
+	{
+		//to do
+	}
+	
+
+
+
 	vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &deviceMemory);
 	/*
 	vkAllocateMemory有效用法:

@@ -472,7 +472,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 			VkMemoryWin32HandlePropertiesKHR memoryWin32HandlePropertiesKHR{};
 			memoryWin32HandlePropertiesKHR.sType = VK_STRUCTURE_TYPE_MEMORY_WIN32_HANDLE_PROPERTIES_KHR;
 			memoryWin32HandlePropertiesKHR.pNext = nullptr;
-			memoryWin32HandlePropertiesKHR.memoryTypeBits;//是一个比特掩码对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 window handle可以被引入为的类型 .
+			memoryWin32HandlePropertiesKHR.memoryTypeBits;//是一个比特掩码，对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 window handle可以被引入为的类型 .
 			//和vulkan兼容的window handle可能是由非vulkan api创建的，为了正确使用这些handle可以查询其属性：
 			vkGetMemoryWin32HandlePropertiesKHR(device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT, handle, &memoryWin32HandlePropertiesKHR);//handleType 不能是定义为opaque的 handle types
 
@@ -557,7 +557,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		VkMemoryFdPropertiesKHR memoryFdPropertiesKHR{};
 		memoryFdPropertiesKHR.sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR;
 		memoryFdPropertiesKHR.pNext = nullptr;
-		memoryFdPropertiesKHR.memoryTypeBits;//是一个比特掩码对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 POSIX file descriptor可以被引入为的类型 .
+		memoryFdPropertiesKHR.memoryTypeBits;//是一个比特掩码，对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 POSIX file descriptor可以被引入为的类型 .
 		//和vulkan兼容的POSIX file descriptor可能是由非vulkan api创建的，为了正确使用这些handle可以查询其属性：
 		vkGetMemoryFdPropertiesKHR(device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT, fd, &memoryFdPropertiesKHR);//handleType 不能是定义为opaque的 handle types
 		//handleType不能为VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT
@@ -571,12 +571,112 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 
 
-
+	void* hostPointer;
 	//host memory
 	{
-		//to do
+		//VkImportMemoryHostPointerInfoEXT
+		//如果在VkMemoryAllocateInfo的pNext中包含一个，表示从一个host pointer中导入memory
+		//引入host pointer将在host和vulkan实现间共享memory 的所有权，应用程序任然可以通过host pointer访问该内存，只是需要应用程序进行device和 non-device的内存访问同步
+		//host pointer可以多次导入到vulkan instance，但可能因为平台的限制而导致导入失败
+		VkImportMemoryHostPointerInfoEXT& importMemoryHostPointerInfoEXT = memoryAllocateInfoEXT.importMemoryHostPointerInfoEXT;
+		importMemoryHostPointerInfoEXT.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT;//是一个指定句柄类型的VkExternalMemoryHandleTypeFlagBits值。
+		importMemoryHostPointerInfoEXT.pHostPointer = nullptr;//是要从中导入memory 的host pointer
+		/*
+		VkImportMemoryHostPointerInfoEXT有效用法：
+		1.如果handleType 不为0，则（1）其必须支持导入，参见VkExternalMemoryProperties
+								  （2）其必须为VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT 或者 VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT
+		
+		2.pHostPointer 所指必须对齐到整数倍的 VkPhysicalDeviceExternalMemoryHostPropertiesEXT::minImportedHostPointerAlignment
+		3.如果handleType 为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT，pHostPointer必须是一个大小为VkMemoryAllocateInfo.allocationSize 的host memory的指针
+		4.如果handleType为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT，pHostPointer必须是一个大小为VkMemoryAllocateInfo.allocationSize 的host mapped foreign memory的指针
+
+		*/
+
+
+
+		VkMemoryHostPointerPropertiesEXT memoryHostPointerPropertiesEXT{};
+		memoryHostPointerPropertiesEXT.sType = VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT;
+		memoryHostPointerPropertiesEXT.pNext = nullptr;
+		memoryHostPointerPropertiesEXT.memoryTypeBits;//是一个比特掩码，对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 host pointer可以被引入为的类型 .只包含host 可见的memory type
+		
+		//为了导入host pointer时检查参数是否正确，可以调用函数查询属性
+		vkGetMemoryHostPointerPropertiesEXT(device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT, hostPointer, &memoryHostPointerPropertiesEXT);
+		/*
+		vkGetMemoryHostPointerPropertiesEXT有效用法:
+		1.handleType 必须为VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT 或者 VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT
+		2.pHostPointer必须时有效的对齐到整数倍VkPhysicalDeviceExternalMemoryHostPropertiesEXT::minImportedHostPointerAlignment的指针
+		3.如果handleType 为VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT，pHostPointer 必须是host memory的指针
+		4.如果handleType 为VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT，pHostPointer 必须是host mapped foreign memory的指针
+		*/
+
+
 	}
 	
+	AHardwareBuffer* androidBuffer;
+	// android hardware buffer external memory
+	{
+		// VkImportAndroidHardwareBufferInfoANDROID
+		//如果在VkMemoryAllocateInfo的pNext中包含一个，表示从一个vulkan instalce 外部的 android hardware buffer中导入memory
+		VkImportAndroidHardwareBufferInfoANDROID& importAndroidHardwareBufferInfoANDROID = memoryAllocateInfoEXT.importAndroidHardwareBufferInfoANDROID;
+		importAndroidHardwareBufferInfoANDROID.buffer = androidBuffer;//是要导入的android hardware buffer
+		/*
+		VkImportAndroidHardwareBufferInfoANDROID有效用法：
+		1.如果 buffer不为 NULL，则（1） android hardware buffer必须支持导入，参见VkExternalImageFormatProperties 或者 VkExternalBufferProperties
+								  （2）buffer必须为一个在Android Hardware Buffers中描述的 AHardwareBuffer_Desc::usage 和vulkan 兼容的对象
+
+		*/
+	
+
+		VkMemoryGetAndroidHardwareBufferInfoANDROID memoryGetAndroidHardwareBufferInfoANDROID{};
+		memoryGetAndroidHardwareBufferInfoANDROID.sType = VK_STRUCTURE_TYPE_MEMORY_GET_ANDROID_HARDWARE_BUFFER_INFO_ANDROID;
+		memoryGetAndroidHardwareBufferInfoANDROID.pNext = nullptr;
+		memoryGetAndroidHardwareBufferInfoANDROID.memory = allocatedMemory;//是将从中导出android hardware buffer的VkDeviceMemory对象。
+		/*
+		VkMemoryGetAndroidHardwareBufferInfoANDROID有效用法：
+		1.当创建memory 的时候VkExportMemoryAllocateInfo::handleTypes 中必须包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID 
+		2.如果创建memory的时候VkMemoryAllocateInfo 的pNext中含有一个image不为NULL的 VkMemoryDedicatedAllocateInfo，则该image 必须已经绑定到该memory了
+
+		*/
+
+
+
+
+		//从vulkan object中导出一个引用其payload的 android hardware buffer调用：
+		vkGetMemoryAndroidHardwareBufferANDROID(device, &memoryGetAndroidHardwareBufferInfoANDROID, &androidBuffer);
+		//调用vkGetMemoryAndroidHardwareBufferANDROID将返回一个新的android hardware buffer 引用到 VkDeviceMemory.传入相同的VkMemoryGetAndroidHardwareBufferInfoANDROID.memory将返回相同的引用
+
+		VkAndroidHardwareBufferPropertiesANDROID androidHardwareBufferPropertiesANDROID{};
+		androidHardwareBufferPropertiesANDROID.sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID;
+			//VkAndroidHardwareBufferPropertiesANDROID.pNext
+			{
+			VkAndroidHardwareBufferFormatProperties2ANDROID androidHardwareBufferFormatProperties2ANDROID{};
+			androidHardwareBufferFormatProperties2ANDROID.sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_2_ANDROID;
+			androidHardwareBufferFormatProperties2ANDROID.pNext = nullptr;
+			androidHardwareBufferFormatProperties2ANDROID.format;//是与android hardware buffer format对应的Vulkan format，如果没有等效的Vulkan format，则为VK_FORMAT_UNDEFINED。如果android hardware buffer 有一个format列举在 Format Equivalence table 中，则该值就为其对应format，否则为VK_FORMAT_UNDEFINED
+			androidHardwareBufferFormatProperties2ANDROID.externalFormat;//是一个实现定义的外部格式标识符，用于VkExternalFormatANDROID。不能为零。
+			androidHardwareBufferFormatProperties2ANDROID.formatFeatures;//描述了一个image 绑定到从buffer 中导入的memory时 该外部格式的能力。必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT以及至少包含 VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT 或 VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT中的一个，应该包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT 和 VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT.
+			//该参数只是用来只是使用 android hardware buffer 来创建一个 外部给是的image时候的 有效特性
+			androidHardwareBufferFormatProperties2ANDROID.samplerYcbcrConversionComponents;//应该用在VkSamplerYcbcrConversionCreateInfo中的component swizzle参数
+			androidHardwareBufferFormatProperties2ANDROID.suggestedYcbcrModel;//用在VkSamplerYcbcrConversionCreateInfo中的一个建议的color model
+			androidHardwareBufferFormatProperties2ANDROID.suggestedYcbcrRange;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议数值范围
+			androidHardwareBufferFormatProperties2ANDROID.suggestedXChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 X chroma offset
+			androidHardwareBufferFormatProperties2ANDROID.suggestedYChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 Y chroma offset
+			
+			}
+		androidHardwareBufferPropertiesANDROID.pNext = nullptr;//可以为NULL或者包含一个 有效的VkAndroidHardwareBufferFormatProperties2ANDROID, VkAndroidHardwareBufferFormatPropertiesANDROID, 或者VkAndroidHardwareBufferFormatResolvePropertiesANDROID
+		androidHardwareBufferPropertiesANDROID.allocationSize;//为外部memory的大小
+		androidHardwareBufferPropertiesANDROID.memoryTypeBits;//是一个比特掩码，对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 android hardware buffer可以被引入为的类型 .
+		//为了导入android hardware buffer时检查参数是否正确，可以调用函数查询属性
+		vkGetAndroidHardwareBufferPropertiesANDROID(device, androidBuffer, &androidHardwareBufferPropertiesANDROID);
+		//buffer 必须是一个在其AHardwareBuffer_Desc::usage至少包含一个AHARDWAREBUFFER_USAGE_GPU_* flags的有效的 android hardware buffer
+
+
+
+
+	}
+
+
+
 
 
 

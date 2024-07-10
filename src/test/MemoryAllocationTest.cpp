@@ -12,7 +12,12 @@ NS_TEST_BEGIN
 
 
 
-
+// Provided by VK_ANDROID_external_format_resolve
+typedef struct VkAndroidHardwareBufferFormatResolvePropertiesANDROID {
+	VkStructureType sType;
+	void* pNext;
+	VkFormat colorAttachmentFormat;
+} VkAndroidHardwareBufferFormatResolvePropertiesANDROID;
 
 
 
@@ -649,19 +654,38 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		androidHardwareBufferPropertiesANDROID.sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID;
 			//VkAndroidHardwareBufferPropertiesANDROID.pNext
 			{
-			VkAndroidHardwareBufferFormatProperties2ANDROID androidHardwareBufferFormatProperties2ANDROID{};
-			androidHardwareBufferFormatProperties2ANDROID.sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_2_ANDROID;
-			androidHardwareBufferFormatProperties2ANDROID.pNext = nullptr;
-			androidHardwareBufferFormatProperties2ANDROID.format;//是与android hardware buffer format对应的Vulkan format，如果没有等效的Vulkan format，则为VK_FORMAT_UNDEFINED。如果android hardware buffer 有一个format列举在 Format Equivalence table 中，则该值就为其对应format，否则为VK_FORMAT_UNDEFINED
-			androidHardwareBufferFormatProperties2ANDROID.externalFormat;//是一个实现定义的外部格式标识符，用于VkExternalFormatANDROID。不能为零。
-			androidHardwareBufferFormatProperties2ANDROID.formatFeatures;//描述了一个image 绑定到从buffer 中导入的memory时 该外部格式的能力。必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT以及至少包含 VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT 或 VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT中的一个，应该包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT 和 VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT.
+			//VkAndroidHardwareBufferFormatPropertiesANDROID
+			VkAndroidHardwareBufferFormatPropertiesANDROID androidHardwareBufferFormatPropertiesANDROID{};
+			androidHardwareBufferFormatPropertiesANDROID.sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID;
+			androidHardwareBufferFormatPropertiesANDROID.pNext = nullptr;
+			androidHardwareBufferFormatPropertiesANDROID.format;//是与android hardware buffer format对应的Vulkan format，如果没有等效的Vulkan format，则为VK_FORMAT_UNDEFINED。如果android hardware buffer 有一个format列举在 Format Equivalence table 中，则该值就为其对应format，否则为VK_FORMAT_UNDEFINED
+			androidHardwareBufferFormatPropertiesANDROID.externalFormat;//是一个实现定义的外部格式标识符，用于VkExternalFormatANDROID。不能为零。
+			androidHardwareBufferFormatPropertiesANDROID.formatFeatures;//描述了一个image 绑定到从buffer 中导入的memory时 该外部格式的能力。必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT以及至少包含 VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT 或 VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT中的一个，应该包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT 和 VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT.
 			//该参数只是用来只是使用 android hardware buffer 来创建一个 外部给是的image时候的 有效特性
+			androidHardwareBufferFormatPropertiesANDROID.samplerYcbcrConversionComponents;//应该用在VkSamplerYcbcrConversionCreateInfo中的component swizzle参数
+			androidHardwareBufferFormatPropertiesANDROID.suggestedYcbcrModel;//用在VkSamplerYcbcrConversionCreateInfo中的一个建议的color model
+			androidHardwareBufferFormatPropertiesANDROID.suggestedYcbcrRange;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议数值范围
+			androidHardwareBufferFormatPropertiesANDROID.suggestedXChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 X chroma offset
+			androidHardwareBufferFormatPropertiesANDROID.suggestedYChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 Y chroma offset
+			
+
+			//VkAndroidHardwareBufferFormatProperties2ANDROID
+			VkAndroidHardwareBufferFormatProperties2ANDROID androidHardwareBufferFormatProperties2ANDROID{};
+			androidHardwareBufferFormatProperties2ANDROID.pNext = nullptr;
+			androidHardwareBufferFormatProperties2ANDROID.sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_2_ANDROID;
+			androidHardwareBufferFormatProperties2ANDROID.format;//是与android hardware buffer format对应的Vulkan format，如果没有等效的Vulkan format，则为VK_FORMAT_UNDEFINED。
+			androidHardwareBufferFormatProperties2ANDROID.externalFormat;//是一个实现定义的外部格式标识符，用于VkExternalFormatANDROID。不能为零。
+			androidHardwareBufferFormatProperties2ANDROID.formatFeatures;//描述了一个image 绑定到从buffer 中导入的memory时 该外部格式的能力。必须包含VkAndroidHardwareBufferFormatPropertiesANDROID::formatFeatures中设置的bit
 			androidHardwareBufferFormatProperties2ANDROID.samplerYcbcrConversionComponents;//应该用在VkSamplerYcbcrConversionCreateInfo中的component swizzle参数
 			androidHardwareBufferFormatProperties2ANDROID.suggestedYcbcrModel;//用在VkSamplerYcbcrConversionCreateInfo中的一个建议的color model
 			androidHardwareBufferFormatProperties2ANDROID.suggestedYcbcrRange;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议数值范围
 			androidHardwareBufferFormatProperties2ANDROID.suggestedXChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 X chroma offset
 			androidHardwareBufferFormatProperties2ANDROID.suggestedYChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 Y chroma offset
 			
+			VkAndroidHardwareBufferFormatResolvePropertiesANDROID androidHardwareBufferFormatResolvePropertiesANDROID{};
+			androidHardwareBufferFormatResolvePropertiesANDROID.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义所以设置为非法值
+			androidHardwareBufferFormatResolvePropertiesANDROID.pNext = nullptr;
+			androidHardwareBufferFormatResolvePropertiesANDROID.colorAttachmentFormat = VK_FORMAT_UNDEFINED;//指定了为使用了external format的 color attachment image 做resolve 操作的 color VkFormat，如果支持external format的resolve操作，则为该格式调用vkGetPhysicalDeviceFormatProperties 返回的VkFormatProperties::optimalTilingFeatures 需要支持 VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT，如果不支持该format就必须设置为 VK_FORMAT_UNDIFIED
 			}
 		androidHardwareBufferPropertiesANDROID.pNext = nullptr;//可以为NULL或者包含一个 有效的VkAndroidHardwareBufferFormatProperties2ANDROID, VkAndroidHardwareBufferFormatPropertiesANDROID, 或者VkAndroidHardwareBufferFormatResolvePropertiesANDROID
 		androidHardwareBufferPropertiesANDROID.allocationSize;//为外部memory的大小
@@ -677,8 +701,66 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 
 
+	VkRemoteAddressNV remoteAddressNV{VK_NULL_HANDLE};
+	//导入一个可供remote device 访问的vulkan device 对象的payload 地址
+	{
+		VkMemoryGetRemoteAddressInfoNV memoryGetRemoteAddressInfoNV{};
+		memoryGetRemoteAddressInfoNV.sType = VK_STRUCTURE_TYPE_MEMORY_GET_REMOTE_ADDRESS_INFO_NV;
+		memoryGetRemoteAddressInfoNV.pNext = nullptr;
+		memoryGetRemoteAddressInfoNV.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR;//指明需要的hanle type，必须包含在memory创建时候的  VkExportMemoryAllocateInfo::handleTypes中
+		memoryGetRemoteAddressInfoNV.memory = allocatedMemory;//是将从中导出远程可访问地址的内存对象。
+
+		vkGetMemoryRemoteAddressNV(device, &memoryGetRemoteAddressInfoNV, &remoteAddressNV);
+
+	
+	}
+
+	zx_handle_t zxHandle;
+	//FUCHSIA external memory
+	{
+	
+		// Fuchsia上的外部内存将使用zx_handle_t类型的VMO句柄进行导入和导出。外部内存的VMO句柄通常是从 Fuchsia的Sysmem服务或从系统调用如zx_vmo_create（）中获得的。用于导入的VMO句柄也可以通过从另一个Vulkan实例导出它们来获得，如在导出 exporting fuchsia device memory中所述
+		//导入VMO handles 将把所有权从应用转移给Instance，且导入成功后应用就不能在对该handle 做任何操作，可以将handle 多次导入vulkan instance中
+		VkImportMemoryZirconHandleInfoFUCHSIA  importMemoryZirconHandleInfoFUCHSIA = memoryAllocateInfoEXT.importMemoryZirconHandleInfoFUCHSIA;
+		importMemoryZirconHandleInfoFUCHSIA.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;//是一个指定句柄类型的VkExternalMemoryHandleTypeFlagBits值。
+		importMemoryZirconHandleInfoFUCHSIA.handle = zxHandle;//是指向外部内存的zx_handle_t（Zircon）句柄。
+	
+		VkMemoryZirconHandlePropertiesFUCHSIA memoryZirconHandlePropertiesFUCHSIA{};
+		memoryZirconHandlePropertiesFUCHSIA.sType = VK_STRUCTURE_TYPE_MEMORY_ZIRCON_HANDLE_PROPERTIES_FUCHSIA;
+		memoryZirconHandlePropertiesFUCHSIA.pNext = nullptr;
+		memoryZirconHandlePropertiesFUCHSIA.memoryTypeBits;//是一个比特掩码，对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明该 handle可以被引入为的类型 .
+		//获取有用的属性信息
+		vkGetMemoryZirconHandlePropertiesFUCHSIA(device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA, zxHandle, &memoryZirconHandlePropertiesFUCHSIA);
+		//handleType 必须为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA
 
 
+		VkMemoryGetZirconHandleInfoFUCHSIA memoryGetZirconHandleInfoFUCHSIA{};
+		memoryGetZirconHandleInfoFUCHSIA.sType = VK_STRUCTURE_TYPE_MEMORY_GET_ZIRCON_HANDLE_INFO_FUCHSIA;
+		memoryGetZirconHandleInfoFUCHSIA.pNext = nullptr;
+		memoryGetZirconHandleInfoFUCHSIA.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;//是一个指定由vkGetMemoryZirconHandleFUCHSIA：：pZirconHandle.所指向的句柄的类型的VkExternalMemoryHandleTypeFlagBits值
+		memoryGetZirconHandleInfoFUCHSIA.memory = allocatedMemory;//被导出的VkDeviceMemory对象
+		/*
+		1.handleType 必须为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA
+		2.handleType 必须包含在创建memory的 VkExportMemoryAllocateInfo的 handleTypes中
+		*/
+		
+		
+		//与导入类似，从Vulkan导出一个VMO句柄会将该句柄的所有权从Vulkan Instance转移到应用程序。当不再使用时，应用程序负责使用zx_handle_close（）关闭该句柄。
+		vkGetMemoryZirconHandleFUCHSIA(device, &memoryGetZirconHandleInfoFUCHSIA, &zxHandle);
+
+	}
+
+	//metal object
+	{
+		//概述：
+		//Vulkan实现处于Apple 平台的Metal 上层，如果实现了VK_EXT_metal_objects扩展，则支持导入和导出与特定Vulkan对象相关联的底层Metal 对象的能力。
+		//从某些Vulkan对象中导出底层Metal 对象可以使用vkExportMetalObjectsEXT命令的VkExportMetalObjectsInfoEXT参数的pNext链。
+		//一个 VkDeviceMemory 可以基于一个已经存在的  MTLBuffer创建，只需在创建该内存时的 VkMemoryAllocateInfo的pNext 加入一个 VkImportMetalBufferInfoEXT 
+		//一个新的 VkImage 可以基于已经存在的 IOSurface或者一个或多个  Metal MTLTexture 上创建，只需在创建该image 时的  VkImageCreateInfo的pNext 加入一个  VkImportMetalIOSurfaceInfoEXT 或者 VkImportMetalTextureInfoEXT 
+		//如果要导出某个VkDeviceMemory的 Metal对象，则需要在对应创建命令的参数结构体的pNext中加入一个或多个 VkExportMetalObjectCreateInfoEXT，如VkInstanceCreateInfo,
+		//       VkMemoryAllocateInfo, VkImageCreateInfo, VkImageViewCreateInfo, VkBufferViewCreateInfo, VkSemaphoreCreateInfo, 或者 VkEventCreateInfo,
+	
+	}
 
 	vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &deviceMemory);
 	/*

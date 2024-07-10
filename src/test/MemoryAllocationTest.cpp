@@ -760,6 +760,161 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		//如果要导出某个VkDeviceMemory的 Metal对象，则需要在对应创建命令的参数结构体的pNext中加入一个或多个 VkExportMetalObjectCreateInfoEXT，如VkInstanceCreateInfo,
 		//       VkMemoryAllocateInfo, VkImageCreateInfo, VkImageViewCreateInfo, VkBufferViewCreateInfo, VkSemaphoreCreateInfo, 或者 VkEventCreateInfo,
 	
+		VkExportMetalObjectCreateInfoEXT exportMetalObjectCreateInfoEXT = memoryAllocateInfoEXT.exportMetalObjectCreateInfoEXT;
+		exportMetalObjectCreateInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT;
+		exportMetalObjectCreateInfoEXT.pNext = nullptr;
+		exportMetalObjectCreateInfoEXT.exportObjectType = VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT;/*是一个合法的VkExportMetalObjectTypeFlagBitsEXT值（如果不为0），指示应用程序可以请求从Vulkan对象导出的Metal 对象的类型。
+		VkExportMetalObjectTypeFlagBitsEXT：
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT : 指一个 Metal MTLDevice 可能被导出.
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_COMMAND_QUEUE_BIT_EXT :  指一个 Metal MTLCommandQueue 可能被导出.
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT :  指一个 Metal MTLBuffer 可能被导出. 
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT :  指一个 Metal MTLTexture 可能被导出. 
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT :  指一个 Metal IOSurface 可能被导出. 
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT :  指一个 Metal MTLSharedEvent 可能被导出. 
+		
+		*/
+
+
+		//导出vulkan 对象底层的Metal 对象
+		VkExportMetalObjectsInfoEXT exportMetalObjectsInfoEXT{};
+		exportMetalObjectsInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECTS_INFO_EXT;
+			//VkExportMetalObjectsInfoEXT.pNext
+			{
+			//可以包含在VkExportMetalObjectsInfoEXT.pNext中指明要导出的Metal 对象类型
+			struct ExportMetalObjectsInfoEXT {
+				VkExportMetalBufferInfoEXT exportMetalBufferInfoEXT{};
+				VkExportMetalCommandQueueInfoEXT exportMetalCommandQueueInfoEXT{};
+				VkExportMetalDeviceInfoEXT exportMetalDeviceInfoEXT{};
+				VkExportMetalIOSurfaceInfoEXT exportMetalIOSurfaceInfoEXT{};
+				VkExportMetalSharedEventInfoEXT	exportMetalSharedEventInfoEXT{};
+				VkExportMetalTextureInfoEXT  exportMetalTextureInfoEXT{};
+				ExportMetalObjectsInfoEXT() {
+					Init();
+				}
+				void Init() {
+					exportMetalBufferInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_BUFFER_INFO_EXT;
+					exportMetalBufferInfoEXT.pNext = nullptr;
+					exportMetalCommandQueueInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_COMMAND_QUEUE_INFO_EXT;
+					exportMetalCommandQueueInfoEXT.pNext = nullptr;
+					exportMetalDeviceInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_DEVICE_INFO_EXT;
+					exportMetalDeviceInfoEXT.pNext = nullptr;
+					exportMetalIOSurfaceInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_IO_SURFACE_INFO_EXT;
+					exportMetalIOSurfaceInfoEXT.pNext = nullptr;
+					exportMetalSharedEventInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_SHARED_EVENT_INFO_EXT;
+					exportMetalSharedEventInfoEXT.pNext = nullptr;
+					exportMetalTextureInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_TEXTURE_INFO_EXT;
+					exportMetalTextureInfoEXT.pNext = nullptr;
+
+				
+				}
+
+			};
+		
+
+
+			ExportMetalObjectsInfoEXT exportMetalObjectsInfoEXT{};
+
+			//导出关联到VkDevice的  VkPhysicalDevice 对象底层的 Metal MTLDevice object 对象
+			VkExportMetalDeviceInfoEXT& exportMetalDeviceInfoEXT = exportMetalObjectsInfoEXT.exportMetalDeviceInfoEXT;
+			exportMetalDeviceInfoEXT.mtlDevice;//是与调用中标识的VkDevice对象关联的VkPhysicalDevice 底层的Metal id<MTLDevice>对象。该实现将返回到此成员中的MTLDevice，或者如果在vkPhysicaDevice 对象下没有找到MTLDevice，则它将返回NULL
+
+
+			//导出Vulkan Queue对象底层的Metal MTLCommandQueue对象
+			VkExportMetalCommandQueueInfoEXT exportMetalCommandQueueInfoEXT = exportMetalObjectsInfoEXT.exportMetalCommandQueueInfoEXT;
+			exportMetalCommandQueueInfoEXT.queue = VkQueue{/*假设这里是一个有效的VkQueue对象*/};
+			exportMetalCommandQueueInfoEXT.mtlCommandQueue;//是与调用中标识的VkQueue对象关联的VkPhysicalDevice 底层的Metal id<MTLCommandQueue>对象。该实现将返回到此成员中的MTLCommandQueue，或者如果在 VkQueue 对象下没有找到MTLCommandQueue，则它将返回NULL
+			
+
+			//导出 VkDeviceMemory 对象底层的Metal MTLBuffer对象
+			VkExportMetalBufferInfoEXT& exportMetalBufferInfoEXT = exportMetalObjectsInfoEXT.exportMetalBufferInfoEXT;
+			exportMetalBufferInfoEXT.memory;
+			exportMetalBufferInfoEXT.mtlBuffer;//是与调用中标识的VkDeviceMemory对象memory 关联的VkPhysicalDevice 底层的Metal id<MTLBuffer>对象。该实现将返回到此成员中的MTLBuffer，或者如果在VkDeviceMemory 对象下没有找到MTLBuffer，则它将返回NULL
+		
+			//导入Metal MTLBuffer 对象到Vulkan VkDeviceMemory 对象，需要在VkMemoryAllocateInfo的pNext中加入VkImportMetalBufferInfoEXT
+			VkImportMetalBufferInfoEXT importMetalBufferInfoEXT{};
+			importMetalBufferInfoEXT.sType = VK_STRUCTURE_TYPE_IMPORT_METAL_BUFFER_INFO_EXT;
+			importMetalBufferInfoEXT.pNext = nullptr;
+			importMetalBufferInfoEXT.mtlBuffer = MTLBuffer_id{/*假设这是一个有效的MTLBuffer_id*/}; //是一个要导入到VkDeviceMemory底层的 Metal id<MTLBuffer> object 
+
+
+			//导出  VkImage, VkImageView, 或 VkBufferView对象底层的Metal MTLTexture 对象
+			VkExportMetalTextureInfoEXT& exportMetalTextureInfoEXT = exportMetalObjectsInfoEXT.exportMetalTextureInfoEXT;
+			exportMetalTextureInfoEXT.image = VkImage{/*假设这是一个有效的VkImage句柄*/};
+			exportMetalTextureInfoEXT.imageView = VK_NULL_HANDLE;
+			exportMetalTextureInfoEXT.bufferView = VK_NULL_HANDLE;
+			exportMetalTextureInfoEXT.mtlTexture;//是与调用中image，imageView 或 bufferView 标识的VkImage, VkImageView, 或 VkBufferView对象关联的底层的Metal id<MTLTexture>对象，plane 指定aspectMask。该实现将返回到此成员中的MTLTexture，或者如果在VkImage, VkImageView, 或 VkBufferView 对象下没有找到MTLTexture，则它将返回NULL
+			exportMetalTextureInfoEXT.plane = VK_IMAGE_ASPECT_PLANE_0_BIT; //指明  multi-planar的image 或 imageView的plane 参数
+
+
+
+			//导入一个或多个Metal MTLTexture 对象到Vulkan VkImage 对象，需要在VkImageCreateInfo的pNext中加入VkImportMetalTextureInfoEXT，每一个plane都要对应这样一个VkImportMetalTextureInfoEXT
+			VkImportMetalTextureInfoEXT importMetalTextureInfoEXT{};
+			importMetalTextureInfoEXT.sType = VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT;
+			importMetalTextureInfoEXT.pNext = nullptr;
+			importMetalTextureInfoEXT.mtlTexture = MTLTexture_id{/*假设这是一个有效的MTLTexture_id*/ }; //是一个要导入到 VkImage底层的 Metal id<MTLTexture> object
+			importMetalTextureInfoEXT.plane = VK_IMAGE_ASPECT_PLANE_0_BIT; //指明 这个Metal id<MTLTexture> object 要附加在 plane上
+			
+
+			//导出  VkImage 对象底层的Metal IOSurfaceRef 对象
+			VkExportMetalIOSurfaceInfoEXT& exportMetalIOSurfaceInfoEXT = exportMetalObjectsInfoEXT.exportMetalIOSurfaceInfoEXT;
+			exportMetalIOSurfaceInfoEXT.image = VkImage{/*假设这是一个有效的VkImage句柄*/ };
+			exportMetalIOSurfaceInfoEXT.ioSurface;//是与调用中image 标识的VkImage对象关联的底层的Metal IOSurfaceRef对象。该实现将返回到此成员中的IOSurfaceRef，或者如果在VkImage 对象下没有找到IOSurfaceRef，则它将返回NULL
+
+
+			//导入Metal IOSurfaceRef 对象到Vulkan VkImage 对象，需要在VkImageCreateInfo的pNext中加入VkImportMetalIOSurfaceInfoEXT
+			VkImportMetalIOSurfaceInfoEXT importMetalIOSurfaceInfoEXT{};
+			importMetalIOSurfaceInfoEXT.sType = VK_STRUCTURE_TYPE_IMPORT_METAL_IO_SURFACE_INFO_EXT;
+			importMetalIOSurfaceInfoEXT.pNext = nullptr;
+			importMetalIOSurfaceInfoEXT.ioSurface = IOSurfaceRef{/*假设这是一个有效的IOSurfaceRef*/ }; //是一个要导入到 VkImage底层的 Metal IOSurfaceRef object
+
+
+			//导出  VkSemaphore 或 VkEvent 对象底层的Metal MTLSharedEvent 对象
+			VkExportMetalSharedEventInfoEXT& exportMetalSharedEventInfoEXT = exportMetalObjectsInfoEXT.exportMetalSharedEventInfoEXT;
+			exportMetalSharedEventInfoEXT.semaphore = VkSemaphore{/*假设这是一个有效的VkSemaphore句柄*/ };
+			exportMetalSharedEventInfoEXT.event = VK_NULL_HANDLE;
+			exportMetalSharedEventInfoEXT.mtlSharedEvent;//是与调用中semaphore 或 event 标识的VkSemaphore 或 VkEvent对象关联的底层的Metal  id<MTLSharedEvent>对象。该实现将返回到此成员中的MTLSharedEvent，或者如果在VkSemaphore 或 VkEvent 对象下没有找到MTLSharedEvent，则它将返回NULL
+
+			//导入Metal MTLSharedEvent 对象到Vulkan VkSemaphore 或 VkEvent 对象，需要在VkSemaphoreCreateInfo 或 VkEventCreateInfo的pNext中加入VkImportMetalSharedEventInfoEXT
+			VkImportMetalSharedEventInfoEXT importMetalSharedEventInfoEXT{};
+			importMetalSharedEventInfoEXT.sType = VK_STRUCTURE_TYPE_IMPORT_METAL_SHARED_EVENT_INFO_EXT;
+			importMetalSharedEventInfoEXT.pNext = nullptr;
+			importMetalSharedEventInfoEXT.mtlSharedEvent = MTLSharedEvent_id{/*假设这是一个有效的MTLSharedEvent_id*/ }; //是一个要导入到 VkSemaphore 或 VkEvent底层的 Metal MTLSharedEvent object
+			//如果VkImportMetalSharedEventInfoEXT创建信息结构的pNext同时包含VkImportMetalSharedEventInfoEXT和VkSemaphoreTypeCreateInfo，，则导入的 id<MTLSharedEvent> 对象的 signaledValue 将被设置为VkSemaphoreTypeCreateInfo创建信息的 initialValue。
+
+
+
+			}
+		exportMetalObjectsInfoEXT.pNext = nullptr;//必须包含一些信息指明要导出的Metal 对象类型
+		/*
+		VkExportMetalObjectsInfoEXT有效用法
+		1.如果pNext包含一个VkExportMetalDeviceInfoEXT，则VkInstance必须在创建调用vkCreateInstance的时候在VkInstanceCreateInfo的pNext中包含一个 exportObjectType为 VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT的 VkExportMetalObjectCreateInfoEXT
+		2.如果pNext包含一个VkExportMetalCommandQueueInfoEXT，则VkInstance必须在创建调用vkCreateInstance的时候在VkInstanceCreateInfo的pNext中包含一个 exportObjectType为 VK_EXPORT_METAL_OBJECT_TYPE_METAL_COMMAND_QUEUE_BIT_EXT的 VkExportMetalObjectCreateInfoEXT
+		3.如果pNext包含一个VkExportMetalBufferInfoEXT，则该数据结构的memory的 VkDeviceMemory必须在创建调用vkAllocateMemory的时候在VkMemoryAllocateInfo的pNext中包含一个 exportObjectType为 VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT的 VkExportMetalObjectCreateInfoEXT
+		4.如果pNext包含一个VkExportMetalTextureInfoEXT，则该数据结构的image或imageView 或bufferView的一个不能为VK_NULL_HANDLE
+		5.如果pNext包含一个VkExportMetalTextureInfoEXT，则（1）如果其image不为VK_NULL_HANDLE，则该image 创建命令vkCreateImage 的VkImageCreateInfo的pNext中必须包含一个VkExportMetalObjectCreateInfoEXT，且其exportObjectType为VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT
+														  （2）如果其imageView或bufferView不为VK_NULL_HANDLE，则该imageView或bufferView 创建命令vkCreateImageView 或vkCreateBufferView 的VkImageCreateInfo或VkBufferViewCreateInfo 的pNext中必须包含一个VkExportMetalObjectCreateInfoEXT，且其exportObjectType为VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT
+		6.如果pNext包含一个VkExportMetalTextureInfoEXT，且如果该结构的的image 或imageView 不为VK_NULL_HANDLE,则该结构的 plane参数必须为VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT, 或 VK_IMAGE_ASPECT_PLANE_2_BIT
+		7.如果pNext包含一个VkExportMetalTextureInfoEXT，如果该结构体的image的VkImage 不含有一个multi-planar format，则该结构的 plane参数必须为VK_IMAGE_ASPECT_PLANE_0_BIT
+		8.如果pNext包含一个VkExportMetalTextureInfoEXT，如果该结构体的image的VkImage 含有一个只有两个plane的 multi-planar format，则该结构的 plane参数不能为 VK_IMAGE_ASPECT_PLANE_2_BIT
+		9.如果pNext包含一个VkExportMetalTextureInfoEXT，如果该结构体的imageView 的VkImageView 不含有一个multi-planar format，则该结构的 plane参数必须为VK_IMAGE_ASPECT_PLANE_0_BIT
+		10.如果pNext包含一个VkExportMetalTextureInfoEXT，如果该结构体的imageView的VkImageView 含有一个只有两个plane的 multi-planar format，则该结构的 plane参数不能为 VK_IMAGE_ASPECT_PLANE_2_BIT
+		11.如果pNext包含一个VkExportMetalIOSurfaceInfoEXT，则该结构体的image的VkImage 创建命令vkCreateImage 的VkImageCreateInfo的pNext中必须包含一个VkExportMetalObjectCreateInfoEXT，且其exportObjectType为VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT
+		12.如果pNext包含一个VkExportMetalSharedEventInfoEXT，则该结构体的semaphore或 event 有一个不为VK_NULL_HANDLE
+		13.如果pNext包含一个VkExportMetalSharedEventInfoEXT，则（1）如果该结构体的semaphore不为VK_NULL_HANDLE，则 该结构体的semaphore的VkSemaphore 创建命令VkSemaphoreCreateInfo 的VkSemaphoreCreateInfo的pNext中必须包含一个VkExportMetalObjectCreateInfoEXT，且其exportObjectType为VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT
+															   （2）如果该结构体的event不为VK_NULL_HANDLE，则 该结构体的event的VkEvent 创建命令vkCreateEvent 的VkEventCreateInfo的pNext中必须包含一个VkExportMetalObjectCreateInfoEXT，且其exportObjectType为VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT
+		
+		14.pNext中的sType必须是唯一的，除了  VkExportMetalBufferInfoEXT, VkExportMetalCommandQueueInfoEXT, VkExportMetalIOSurfaceInfoEXT, VkExportMetalSharedEventInfoEXT, 或VkExportMetalTextureInfoEXT
+		*/
+
+
+
+		vkExportMetalObjectsEXT(device, &exportMetalObjectsInfoEXT);
+
+
+
+
+
+
 	}
 
 	vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &deviceMemory);

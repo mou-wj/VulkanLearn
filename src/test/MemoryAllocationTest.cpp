@@ -256,35 +256,35 @@ void MemoryAllocationTest::DeviceMemoryTest()
 	- VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
 	- VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
 	- VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
-    - VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
-    - VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
-    - VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-    - VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-    - VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-    - VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-    - VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
-    - VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV
+	- VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+	- VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+	- VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+	- VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+	- VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+	- VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+	- VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+	- VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV
 	*/
 
 	//查询内存属性2，只是比VkPhysicalDeviceMemoryProperties多了些拓展信息
 	VkPhysicalDeviceMemoryProperties2 deviceMemoryProps2;
 	deviceMemoryProps2.memoryProperties;//是一个 VkPhysicalDeviceMemoryProperties 数据结构体
 	deviceMemoryProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2;
-		VkPhysicalDeviceMemoryBudgetPropertiesEXT deviceMemoryBudgetPropsEXT;
-		deviceMemoryBudgetPropsEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_BUDGET_PROPERTIES_EXT;
-		deviceMemoryBudgetPropsEXT.pNext = nullptr;
-		deviceMemoryBudgetPropsEXT.heapBudget;//是一个VK_MAX_MEMORY_HEAPS个 VkDeviceSize值的数组，其中返回内存预算，对应每一个堆。堆的预算是在分配可能失败或导致性能下降之前进程可以从堆分配多少内存的粗略估计。该预算包括当前分配的任何设备内存
-		deviceMemoryBudgetPropsEXT.heapUsage;//是一个VK_MAX_MEMORY_HEAPS个 VkDeviceSize值的数组，其中返回内存的使用量，对应每一个堆。堆的使用量是对进程当前在该堆中使用的内存量的估计。
+	VkPhysicalDeviceMemoryBudgetPropertiesEXT deviceMemoryBudgetPropsEXT;
+	deviceMemoryBudgetPropsEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_BUDGET_PROPERTIES_EXT;
+	deviceMemoryBudgetPropsEXT.pNext = nullptr;
+	deviceMemoryBudgetPropsEXT.heapBudget;//是一个VK_MAX_MEMORY_HEAPS个 VkDeviceSize值的数组，其中返回内存预算，对应每一个堆。堆的预算是在分配可能失败或导致性能下降之前进程可以从堆分配多少内存的粗略估计。该预算包括当前分配的任何设备内存
+	deviceMemoryBudgetPropsEXT.heapUsage;//是一个VK_MAX_MEMORY_HEAPS个 VkDeviceSize值的数组，其中返回内存的使用量，对应每一个堆。堆的使用量是对进程当前在该堆中使用的内存量的估计。
 	deviceMemoryProps2.pNext = &deviceMemoryBudgetPropsEXT;//这里可以包含一个 VkPhysicalDeviceMemoryBudgetPropertiesEXT
 	vkGetPhysicalDeviceMemoryProperties2(physicalDevice, &deviceMemoryProps2);
-	
+
 
 
 	//分配内存
-	VkDeviceMemory deviceMemory{VK_NULL_HANDLE};
+	VkDeviceMemory deviceMemory{ VK_NULL_HANDLE };
 	VkMemoryAllocateInfo memoryAllocateInfo{};
 	memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		MemoryAllocateInfoEXT memoryAllocateInfoEXT{};
+	MemoryAllocateInfoEXT memoryAllocateInfoEXT{};
 	memoryAllocateInfo.pNext = &memoryAllocateInfoEXT.dedicatedAllocationMemoryAllocateInfoNV;
 	memoryAllocateInfo.allocationSize = 1;//只需要分配的内存的字节数
 	memoryAllocateInfo.memoryTypeIndex = 0;//是从vkGetPhysicalDeviceMemoryProperties获取的VkPhysicalDeviceMemoryProperties结构的memoryTypes数组中的内存类型的索引。
@@ -308,7 +308,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 																					 （2）VkMemoryAllocateFlagsInfo指定的 device mask必须和被引入的payload创建时指定的参数相匹配。
 																					 （3）则传给vkAllocateMemory的 逻辑设备的 physical devices列表必须和被引入的payload分配时传入的physical devices列表相匹配。
 																					 （4）如果external handle的类型为VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT 或者VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT， 则allocationSize 和memoryTypeIndex 就必须和被引入的payload创建时指定的参数相匹配。
-	8.如果参数定义了一个import operation，且external handle 为Vulkan API外部创建 NT handle 或者一个的global share handle，则memoryTypeIndex 必须是vkGetMemoryWin32HandlePropertiesKHR 返回信息中对应参数中的一个的索引																
+	8.如果参数定义了一个import operation，且external handle 为Vulkan API外部创建 NT handle 或者一个的global share handle，则memoryTypeIndex 必须是vkGetMemoryWin32HandlePropertiesKHR 返回信息中对应参数中的一个的索引
 	9.如果参数定义了一个import operation，且external handle 类型为VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT，则allocationSize 必须和从被提取出的payload中创建Direct3D 12 heap payload时指定的参数相匹配。
 	10.如果参数定义了一个import operation，且external handle 是一个Vulkan API外创建的POSIX file descriptor，则memoryTypeIndex 必须是vkGetMemoryFdPropertiesKHR 返回信息中对应参数中的一个的索引
 	11.如果protectedMemory 特性没有开启，则VkMemoryAllocateInfo::memoryTypeIndex 不能指向一个含VK_MEMORY_PROPERTY_PROTECTED_BIT 类型的内存类型
@@ -316,7 +316,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 																					（2）allocationSize 必须是一个整数倍的VkPhysicalDeviceExternalMemoryHostPropertiesEXT::minImportedHostPointerAlignment
 																					（3）pNext中不能包含一个其image 或者 buffer 对象不为VK_NULL_HANDLE的VkDedicatedAllocationMemoryAllocateInfoNV结构体
 																					（4）pNext中不能包含一个其image 或者 buffer 对象不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo结构体
-	13.如果参数定义了一个 import operation，且external handle 类型为VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID	，则（1）对于Android hardware buffer，allocationSize必须是从vkGetAndroidHardwareBufferPropertiesANDROID 中返回的值																	
+	13.如果参数定义了一个 import operation，且external handle 类型为VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID	，则（1）对于Android hardware buffer，allocationSize必须是从vkGetAndroidHardwareBufferPropertiesANDROID 中返回的值
 																																			（2）如果pNext中不包含一个VkMemoryDedicatedAllocateInfo 或者VkMemoryDedicatedAllocateInfo::image为VK_NULL_HANDLE，Android hardware buffer 就必须有AHardwareBuffer_Desc::format为AHARDWAREBUFFER_FORMAT_BLOB 以及AHardwareBuffer_Desc::usage 包含AHARDWAREBUFFER_USAGE_GPU_DATA_BUFFER
 																																			（3）对于Android hardware buffer， memoryTypeIndex 必须是从vkGetAndroidHardwareBufferPropertiesANDROID 返回的参数中所对应参数的的索引
 	14.如果参数没有指定一个import operation，且pNext 中包含一个handleTypes包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID的 VkExportMemoryAllocateInfo，且pNext中包含一个image 不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo，则allocationSize 必须是0
@@ -324,11 +324,11 @@ void MemoryAllocationTest::DeviceMemoryTest()
 																															   （2）如果pNext中包含一个buffer为有效值的VkMemoryDedicatedAllocateInfo，则allocationSize 必须大于0
 
 	16.如果参数定义了一个import operation，且external handle 是一个Android hardware buffer，且pNext中包含一个image 不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo，则（1）Android hardware buffer的AHardwareBuffer::usage 至少要包含AHARDWAREBUFFER_USAGE_GPU_FRAMEBUFFER, AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE 或者 AHARDWAREBUFFER_USAGE_GPU_DATA_BUFFER 其中一个
-																																									    （2）对于Android hardware buffer， image的format必须为VK_FORMAT_UNDEFINED 或者通过vkGetAndroidHardwareBufferPropertiesANDROID返回的VkAndroidHardwareBufferFormatPropertiesANDROID::format
-																																									    （3）image的width, height, 以及 array layer 维数必须和 Android hardware buffer’s AHardwareBuffer_Desc中的对应参数相同
-																																									    （4）如果Android hardware buffer的 AHardwareBuffer::usage 包含AHARDWAREBUFFER_USAGE_GPU_MIPMAP_COMPLETE ，则image必须有一个完成的mipmap链（即mipmap一直到width和height都为1 ？）
-																																									    （5）如果Android hardware buffe的 AHardwareBuffer::usage不包含AHARDWAREBUFFER_USAGE_GPU_MIPMAP_COMPLETE，则iamge必须只有一个mipmap级别
-																																									    （6）每一个设置为image 的usage的比特位必须罗列在AHardwareBuffer Usage Equivalence 中，如果没有在该列表中，则该比特位必须包含在Android hardware buffer的 AHardwareBuffer_Desc::usage 中
+																																										（2）对于Android hardware buffer， image的format必须为VK_FORMAT_UNDEFINED 或者通过vkGetAndroidHardwareBufferPropertiesANDROID返回的VkAndroidHardwareBufferFormatPropertiesANDROID::format
+																																										（3）image的width, height, 以及 array layer 维数必须和 Android hardware buffer’s AHardwareBuffer_Desc中的对应参数相同
+																																										（4）如果Android hardware buffer的 AHardwareBuffer::usage 包含AHARDWAREBUFFER_USAGE_GPU_MIPMAP_COMPLETE ，则image必须有一个完成的mipmap链（即mipmap一直到width和height都为1 ？）
+																																										（5）如果Android hardware buffe的 AHardwareBuffer::usage不包含AHARDWAREBUFFER_USAGE_GPU_MIPMAP_COMPLETE，则iamge必须只有一个mipmap级别
+																																										（6）每一个设置为image 的usage的比特位必须罗列在AHardwareBuffer Usage Equivalence 中，如果没有在该列表中，则该比特位必须包含在Android hardware buffer的 AHardwareBuffer_Desc::usage 中
 
 	17.如果参数定义了一个import operation，且external handle 类型为VK_EXTERNAL_MEMORY_HANDLE_TYPE_SCREEN_BUFFER_BIT_QNX，则（1） VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX::screenBufferImport必须开启
 																														   （2）allocationSize 必须是为QNX Screen buffer调用 vkGetScreenBufferPropertiesQNX 返回的大小
@@ -348,8 +348,8 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 
 	*/
-	
-	
+
+
 
 
 
@@ -362,9 +362,9 @@ void MemoryAllocationTest::DeviceMemoryTest()
 	VkMemoryDedicatedAllocateInfo有效用法:
 	1.image 和buffer 至少一个为VK_NULL_HANDLE
 	2.如果 image 不为VK_NULL_HANDLE 则（1）如果memory 不是一个引入的 Android Hardware Buffer或者QNX Screen buffer ,则VkMemoryAllocateInfo::allocationSize 必须等于 image的 VkMemoryRequirements::size
-						              （2）image创建时候的VkImageCreateInfo::flags 不能含有 VK_IMAGE_CREATE_SPARSE_BINDING_BIT，VK_IMAGE_CREATE_DISJOINT_BIT
-									  （3）如果VkMemoryAllocateInfo定义了一个memory import operation，且其handle类型为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT, 
-									  		    或者 VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT，且该外部handle是由Vulkan API创建的，则被引入的 memory必须是一个 dedicated image分配的（即该内存只被image所拥有），且image要和该memory 所关联的VkImage相同
+									  （2）image创建时候的VkImageCreateInfo::flags 不能含有 VK_IMAGE_CREATE_SPARSE_BINDING_BIT，VK_IMAGE_CREATE_DISJOINT_BIT
+									  （3）如果VkMemoryAllocateInfo定义了一个memory import operation，且其handle类型为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT, VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT,
+												或者 VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT，且该外部handle是由Vulkan API创建的，则被引入的 memory必须是一个 dedicated image分配的（即该内存只被image所拥有），且image要和该memory 所关联的VkImage相同
 									  （4）如果VkMemoryAllocateInfo定义了一个memory import operation，且其handle类型为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT ，VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA，则被引入的 memory必须是一个 dedicated image分配的（即该内存只被image所拥有），且image要和该memory 所关联的VkImage相同
 
 	3.如果 buffer 不为VK_NULL_HANDLE 则（1）如果memory 不是一个引入的 Android Hardware Buffer或者QNX Screen buffer ,则VkMemoryAllocateInfo::allocationSize 必须等于 buffer 的 VkMemoryRequirements::size
@@ -387,13 +387,13 @@ void MemoryAllocationTest::DeviceMemoryTest()
 	2.如果 image 不为VK_NULL_HANDLE 则（1）image必须以 VkDedicatedAllocationImageCreateInfoNV::dedicatedAllocation为VK_TRUE创建
 									  （2）VkMemoryAllocateInfo::allocationSize 必须等于 image的 VkMemoryRequirements::size
 									  （3）如果VkMemoryAllocateInfo定义了一个memory import operation，则被引入的 memory必须是一个 dedicated image分配的（即该内存只被image所拥有），且image要和该memory 所关联的VkImage相同
-									  
+
 
 	3.如果 buffer 不为VK_NULL_HANDLE 则（1）buffer必须以 VkDedicatedAllocationImageCreateInfoNV::dedicatedAllocation为VK_TRUE创建
 									   （2）VkMemoryAllocateInfo::allocationSize 必须等于 buffer 的 VkMemoryRequirements::size
 									   （3）如果VkMemoryAllocateInfo定义了一个memory import operation，则被引入的 memory必须是一个 dedicated buffer分配的（即该内存只被buffer 所拥有），且buffer要和该memory 所关联的VkBuffer相同
-									   
-	
+
+
 	*/
 
 	// VkMemoryPriorityAllocateInfoEXT
@@ -401,17 +401,17 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 	VkMemoryPriorityAllocateInfoEXT& memoryPriorityAllocateInfoEXT = memoryAllocateInfoEXT.memoryPriorityAllocateInfoEXT;
 	memoryPriorityAllocateInfoEXT.priority = 0;//是介于0到1之间的浮点值，指示分配相对于其他内存分配的优先级。值越大，优先级就越高。优先级的粒度依赖于实现。
-		{
+	{
 		//改变现有memory的优先级
 		vkSetDeviceMemoryPriorityEXT(device, deviceMemory, 0);
-		}
-	
+	}
+
 	//VkExportMemoryAllocateInfo
 	//如果在VkMemoryAllocateInfo的pNext中包含一个,则该结构体表示该内存的payload可以导入到其他程序 或者Vulkan Instance使用
 	VkExportMemoryAllocateInfo& exportMemoryAllocateInfo = memoryAllocateInfoEXT.exportMemoryAllocateInfo;
 	exportMemoryAllocateInfo.handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;//是 0 或一个或多个VkExternalMemoryHandleTypeFlagBits的位掩码组合，指定应用程序可以从结果分配中导出的一个或多个内存句柄类型。该应用程序可以为相同的分配请求多个句柄类型。句柄类型必须是被支持的，参见VkExternalImageFormatProperties 或者 VkExternalBufferProperties
-	
-	
+
+
 	//VkExportMemoryAllocateInfoNV,功能和VkExportMemoryAllocateInfo类似
 	//如果在VkMemoryAllocateInfo的pNext中包含一个,则该结构体表示该内存的payload可以导入到其他程序 或者Vulkan Instance使用
 	VkExportMemoryAllocateInfoNV& exportMemoryAllocateInfoNV = memoryAllocateInfoEXT.exportMemoryAllocateInfoNV;
@@ -513,11 +513,11 @@ void MemoryAllocationTest::DeviceMemoryTest()
 			vkGetMemoryWin32HandleNV(device, allocatedMemory, VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV, &handle);
 			//在分配内存时，handleType必须是在VkExportMemoryAllocateInfoNV：：handleTypes中指定的标志，得在接口中memory对象分配后才能调用
 		}
-	
-	
-	
-	
-	
+
+
+
+
+
 	}
 
 	int fd;
@@ -539,7 +539,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		3.fd 表示的memory 必须在和当前device以及 handleType兼容的相同底层physical device或者驱动上创建的，参见external memory handle types compatibility中的要求
 		4.fd 必须遵守罗列在external memory handle types compatibility中的要求
 		*/
-	
+
 
 		VkMemoryGetFdInfoKHR getMemoryFdInfoKHR{};
 		getMemoryFdInfoKHR.sType = VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR;
@@ -556,7 +556,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		//导出一个 引用到vulkan的memory 对象的payload的 POSIX file descriptor
 		vkGetMemoryFdKHR(device, &getMemoryFdInfoKHR, &fd);
 		//每次调用vkGetMemoryFdKHR都会创建一个新的引用到该memory的payload的file descriptor且将所有权交给应用程序，不再需要用的时候需要调用close（fd）,这个导入的内存大小可能会超过VkMemoryAllocateInfo::allocationSize.，如果handleType为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,可以调用lseek查询外部文件大小
-	
+
 
 
 		VkMemoryFdPropertiesKHR memoryFdPropertiesKHR{};
@@ -590,7 +590,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		VkImportMemoryHostPointerInfoEXT有效用法：
 		1.如果handleType 不为0，则（1）其必须支持导入，参见VkExternalMemoryProperties
 								  （2）其必须为VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT 或者 VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT
-		
+
 		2.pHostPointer 所指必须对齐到整数倍的 VkPhysicalDeviceExternalMemoryHostPropertiesEXT::minImportedHostPointerAlignment
 		3.如果handleType 为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT，pHostPointer必须是一个大小为VkMemoryAllocateInfo.allocationSize 的host memory的指针
 		4.如果handleType为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT，pHostPointer必须是一个大小为VkMemoryAllocateInfo.allocationSize 的host mapped foreign memory的指针
@@ -603,7 +603,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		memoryHostPointerPropertiesEXT.sType = VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT;
 		memoryHostPointerPropertiesEXT.pNext = nullptr;
 		memoryHostPointerPropertiesEXT.memoryTypeBits;//是一个比特掩码，对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 host pointer可以被引入为的类型 .只包含host 可见的memory type
-		
+
 		//为了导入host pointer时检查参数是否正确，可以调用函数查询属性
 		vkGetMemoryHostPointerPropertiesEXT(device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT, hostPointer, &memoryHostPointerPropertiesEXT);
 		/*
@@ -616,7 +616,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 
 	}
-	
+
 	AHardwareBuffer* androidBuffer;
 	// android hardware buffer external memory
 	{
@@ -630,7 +630,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 								  （2）buffer必须为一个在Android Hardware Buffers中描述的 AHardwareBuffer_Desc::usage 和vulkan 兼容的对象
 
 		*/
-	
+
 
 		VkMemoryGetAndroidHardwareBufferInfoANDROID memoryGetAndroidHardwareBufferInfoANDROID{};
 		memoryGetAndroidHardwareBufferInfoANDROID.sType = VK_STRUCTURE_TYPE_MEMORY_GET_ANDROID_HARDWARE_BUFFER_INFO_ANDROID;
@@ -638,7 +638,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		memoryGetAndroidHardwareBufferInfoANDROID.memory = allocatedMemory;//是将从中导出android hardware buffer的VkDeviceMemory对象。
 		/*
 		VkMemoryGetAndroidHardwareBufferInfoANDROID有效用法：
-		1.当创建memory 的时候VkExportMemoryAllocateInfo::handleTypes 中必须包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID 
+		1.当创建memory 的时候VkExportMemoryAllocateInfo::handleTypes 中必须包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID
 		2.如果创建memory的时候VkMemoryAllocateInfo 的pNext中含有一个image不为NULL的 VkMemoryDedicatedAllocateInfo，则该image 必须已经绑定到该memory了
 
 		*/
@@ -652,8 +652,8 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 		VkAndroidHardwareBufferPropertiesANDROID androidHardwareBufferPropertiesANDROID{};
 		androidHardwareBufferPropertiesANDROID.sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID;
-			//VkAndroidHardwareBufferPropertiesANDROID.pNext
-			{
+		//VkAndroidHardwareBufferPropertiesANDROID.pNext
+		{
 			//VkAndroidHardwareBufferFormatPropertiesANDROID
 			VkAndroidHardwareBufferFormatPropertiesANDROID androidHardwareBufferFormatPropertiesANDROID{};
 			androidHardwareBufferFormatPropertiesANDROID.sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID;
@@ -667,7 +667,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 			androidHardwareBufferFormatPropertiesANDROID.suggestedYcbcrRange;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议数值范围
 			androidHardwareBufferFormatPropertiesANDROID.suggestedXChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 X chroma offset
 			androidHardwareBufferFormatPropertiesANDROID.suggestedYChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 Y chroma offset
-			
+
 
 			//VkAndroidHardwareBufferFormatProperties2ANDROID
 			VkAndroidHardwareBufferFormatProperties2ANDROID androidHardwareBufferFormatProperties2ANDROID{};
@@ -681,12 +681,12 @@ void MemoryAllocationTest::DeviceMemoryTest()
 			androidHardwareBufferFormatProperties2ANDROID.suggestedYcbcrRange;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议数值范围
 			androidHardwareBufferFormatProperties2ANDROID.suggestedXChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 X chroma offset
 			androidHardwareBufferFormatProperties2ANDROID.suggestedYChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 Y chroma offset
-			
+
 			VkAndroidHardwareBufferFormatResolvePropertiesANDROID androidHardwareBufferFormatResolvePropertiesANDROID{};
 			androidHardwareBufferFormatResolvePropertiesANDROID.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义所以设置为非法值
 			androidHardwareBufferFormatResolvePropertiesANDROID.pNext = nullptr;
 			androidHardwareBufferFormatResolvePropertiesANDROID.colorAttachmentFormat = VK_FORMAT_UNDEFINED;//指定了为使用了external format的 color attachment image 做resolve 操作的 color VkFormat，如果支持external format的resolve操作，则为该格式调用vkGetPhysicalDeviceFormatProperties 返回的VkFormatProperties::optimalTilingFeatures 需要支持 VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT，如果不支持该format就必须设置为 VK_FORMAT_UNDIFIED
-			}
+		}
 		androidHardwareBufferPropertiesANDROID.pNext = nullptr;//可以为NULL或者包含一个 有效的VkAndroidHardwareBufferFormatProperties2ANDROID, VkAndroidHardwareBufferFormatPropertiesANDROID, 或者VkAndroidHardwareBufferFormatResolvePropertiesANDROID
 		androidHardwareBufferPropertiesANDROID.allocationSize;//为外部memory的大小
 		androidHardwareBufferPropertiesANDROID.memoryTypeBits;//是一个比特掩码，对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 android hardware buffer可以被引入为的类型 .
@@ -701,7 +701,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 
 
-	VkRemoteAddressNV remoteAddressNV{VK_NULL_HANDLE};
+	VkRemoteAddressNV remoteAddressNV{ VK_NULL_HANDLE };
 	//导入一个可供remote device 访问的vulkan device 对象的payload 地址
 	{
 		VkMemoryGetRemoteAddressInfoNV memoryGetRemoteAddressInfoNV{};
@@ -712,19 +712,19 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 		vkGetMemoryRemoteAddressNV(device, &memoryGetRemoteAddressInfoNV, &remoteAddressNV);
 
-	
+
 	}
 
 	zx_handle_t zxHandle;
 	//FUCHSIA external memory
 	{
-	
+
 		// Fuchsia上的外部内存将使用zx_handle_t类型的VMO句柄进行导入和导出。外部内存的VMO句柄通常是从 Fuchsia的Sysmem服务或从系统调用如zx_vmo_create（）中获得的。用于导入的VMO句柄也可以通过从另一个Vulkan实例导出它们来获得，如在导出 exporting fuchsia device memory中所述
 		//导入VMO handles 将把所有权从应用转移给Instance，且导入成功后应用就不能在对该handle 做任何操作，可以将handle 多次导入vulkan instance中
 		VkImportMemoryZirconHandleInfoFUCHSIA  importMemoryZirconHandleInfoFUCHSIA = memoryAllocateInfoEXT.importMemoryZirconHandleInfoFUCHSIA;
 		importMemoryZirconHandleInfoFUCHSIA.handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;//是一个指定句柄类型的VkExternalMemoryHandleTypeFlagBits值。
 		importMemoryZirconHandleInfoFUCHSIA.handle = zxHandle;//是指向外部内存的zx_handle_t（Zircon）句柄。
-	
+
 		VkMemoryZirconHandlePropertiesFUCHSIA memoryZirconHandlePropertiesFUCHSIA{};
 		memoryZirconHandlePropertiesFUCHSIA.sType = VK_STRUCTURE_TYPE_MEMORY_ZIRCON_HANDLE_PROPERTIES_FUCHSIA;
 		memoryZirconHandlePropertiesFUCHSIA.pNext = nullptr;
@@ -743,8 +743,8 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		1.handleType 必须为 VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA
 		2.handleType 必须包含在创建memory的 VkExportMemoryAllocateInfo的 handleTypes中
 		*/
-		
-		
+
+
 		//与导入类似，从Vulkan导出一个VMO句柄会将该句柄的所有权从Vulkan Instance转移到应用程序。当不再使用时，应用程序负责使用zx_handle_close（）关闭该句柄。
 		vkGetMemoryZirconHandleFUCHSIA(device, &memoryGetZirconHandleInfoFUCHSIA, &zxHandle);
 
@@ -759,7 +759,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		//一个新的 VkImage 可以基于已经存在的 IOSurface或者一个或多个  Metal MTLTexture 上创建，只需在创建该image 时的  VkImageCreateInfo的pNext 加入一个  VkImportMetalIOSurfaceInfoEXT 或者 VkImportMetalTextureInfoEXT 
 		//如果要导出某个VkDeviceMemory的 Metal对象，则需要在对应创建命令的参数结构体的pNext中加入一个或多个 VkExportMetalObjectCreateInfoEXT，如VkInstanceCreateInfo,
 		//       VkMemoryAllocateInfo, VkImageCreateInfo, VkImageViewCreateInfo, VkBufferViewCreateInfo, VkSemaphoreCreateInfo, 或者 VkEventCreateInfo,
-	
+
 		VkExportMetalObjectCreateInfoEXT exportMetalObjectCreateInfoEXT = memoryAllocateInfoEXT.exportMetalObjectCreateInfoEXT;
 		exportMetalObjectCreateInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT;
 		exportMetalObjectCreateInfoEXT.pNext = nullptr;
@@ -767,19 +767,19 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		VkExportMetalObjectTypeFlagBitsEXT：
 		VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT : 指一个 Metal MTLDevice 可能被导出.
 		VK_EXPORT_METAL_OBJECT_TYPE_METAL_COMMAND_QUEUE_BIT_EXT :  指一个 Metal MTLCommandQueue 可能被导出.
-		VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT :  指一个 Metal MTLBuffer 可能被导出. 
-		VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT :  指一个 Metal MTLTexture 可能被导出. 
-		VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT :  指一个 Metal IOSurface 可能被导出. 
-		VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT :  指一个 Metal MTLSharedEvent 可能被导出. 
-		
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT :  指一个 Metal MTLBuffer 可能被导出.
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT :  指一个 Metal MTLTexture 可能被导出.
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT :  指一个 Metal IOSurface 可能被导出.
+		VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT :  指一个 Metal MTLSharedEvent 可能被导出.
+
 		*/
 
 
 		//导出vulkan 对象底层的Metal 对象
 		VkExportMetalObjectsInfoEXT exportMetalObjectsInfoEXT{};
 		exportMetalObjectsInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECTS_INFO_EXT;
-			//VkExportMetalObjectsInfoEXT.pNext
-			{
+		//VkExportMetalObjectsInfoEXT.pNext
+		{
 			//可以包含在VkExportMetalObjectsInfoEXT.pNext中指明要导出的Metal 对象类型
 			struct ExportMetalObjectsInfoEXT {
 				VkExportMetalBufferInfoEXT exportMetalBufferInfoEXT{};
@@ -805,11 +805,11 @@ void MemoryAllocationTest::DeviceMemoryTest()
 					exportMetalTextureInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_TEXTURE_INFO_EXT;
 					exportMetalTextureInfoEXT.pNext = nullptr;
 
-				
+
 				}
 
 			};
-		
+
 
 
 			ExportMetalObjectsInfoEXT exportMetalObjectsInfoEXT{};
@@ -821,25 +821,25 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 			//导出Vulkan Queue对象底层的Metal MTLCommandQueue对象
 			VkExportMetalCommandQueueInfoEXT exportMetalCommandQueueInfoEXT = exportMetalObjectsInfoEXT.exportMetalCommandQueueInfoEXT;
-			exportMetalCommandQueueInfoEXT.queue = VkQueue{/*假设这里是一个有效的VkQueue对象*/};
+			exportMetalCommandQueueInfoEXT.queue = VkQueue{/*假设这里是一个有效的VkQueue对象*/ };
 			exportMetalCommandQueueInfoEXT.mtlCommandQueue;//是与调用中标识的VkQueue对象关联的VkPhysicalDevice 底层的Metal id<MTLCommandQueue>对象。该实现将返回到此成员中的MTLCommandQueue，或者如果在 VkQueue 对象下没有找到MTLCommandQueue，则它将返回NULL
-			
+
 
 			//导出 VkDeviceMemory 对象底层的Metal MTLBuffer对象
 			VkExportMetalBufferInfoEXT& exportMetalBufferInfoEXT = exportMetalObjectsInfoEXT.exportMetalBufferInfoEXT;
 			exportMetalBufferInfoEXT.memory;
 			exportMetalBufferInfoEXT.mtlBuffer;//是与调用中标识的VkDeviceMemory对象memory 关联的VkPhysicalDevice 底层的Metal id<MTLBuffer>对象。该实现将返回到此成员中的MTLBuffer，或者如果在VkDeviceMemory 对象下没有找到MTLBuffer，则它将返回NULL
-		
+
 			//导入Metal MTLBuffer 对象到Vulkan VkDeviceMemory 对象，需要在VkMemoryAllocateInfo的pNext中加入VkImportMetalBufferInfoEXT
 			VkImportMetalBufferInfoEXT importMetalBufferInfoEXT{};
 			importMetalBufferInfoEXT.sType = VK_STRUCTURE_TYPE_IMPORT_METAL_BUFFER_INFO_EXT;
 			importMetalBufferInfoEXT.pNext = nullptr;
-			importMetalBufferInfoEXT.mtlBuffer = MTLBuffer_id{/*假设这是一个有效的MTLBuffer_id*/}; //是一个要导入到VkDeviceMemory底层的 Metal id<MTLBuffer> object 
+			importMetalBufferInfoEXT.mtlBuffer = MTLBuffer_id{/*假设这是一个有效的MTLBuffer_id*/ }; //是一个要导入到VkDeviceMemory底层的 Metal id<MTLBuffer> object 
 
 
 			//导出  VkImage, VkImageView, 或 VkBufferView对象底层的Metal MTLTexture 对象
 			VkExportMetalTextureInfoEXT& exportMetalTextureInfoEXT = exportMetalObjectsInfoEXT.exportMetalTextureInfoEXT;
-			exportMetalTextureInfoEXT.image = VkImage{/*假设这是一个有效的VkImage句柄*/};
+			exportMetalTextureInfoEXT.image = VkImage{/*假设这是一个有效的VkImage句柄*/ };
 			exportMetalTextureInfoEXT.imageView = VK_NULL_HANDLE;
 			exportMetalTextureInfoEXT.bufferView = VK_NULL_HANDLE;
 			exportMetalTextureInfoEXT.mtlTexture;//是与调用中image，imageView 或 bufferView 标识的VkImage, VkImageView, 或 VkBufferView对象关联的底层的Metal id<MTLTexture>对象，plane 指定aspectMask。该实现将返回到此成员中的MTLTexture，或者如果在VkImage, VkImageView, 或 VkBufferView 对象下没有找到MTLTexture，则它将返回NULL
@@ -853,7 +853,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 			importMetalTextureInfoEXT.pNext = nullptr;
 			importMetalTextureInfoEXT.mtlTexture = MTLTexture_id{/*假设这是一个有效的MTLTexture_id*/ }; //是一个要导入到 VkImage底层的 Metal id<MTLTexture> object
 			importMetalTextureInfoEXT.plane = VK_IMAGE_ASPECT_PLANE_0_BIT; //指明 这个Metal id<MTLTexture> object 要附加在 plane上
-			
+
 
 			//导出  VkImage 对象底层的Metal IOSurfaceRef 对象
 			VkExportMetalIOSurfaceInfoEXT& exportMetalIOSurfaceInfoEXT = exportMetalObjectsInfoEXT.exportMetalIOSurfaceInfoEXT;
@@ -883,7 +883,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 
 
-			}
+		}
 		exportMetalObjectsInfoEXT.pNext = nullptr;//必须包含一些信息指明要导出的Metal 对象类型
 		/*
 		VkExportMetalObjectsInfoEXT有效用法
@@ -902,7 +902,7 @@ void MemoryAllocationTest::DeviceMemoryTest()
 		12.如果pNext包含一个VkExportMetalSharedEventInfoEXT，则该结构体的semaphore或 event 有一个不为VK_NULL_HANDLE
 		13.如果pNext包含一个VkExportMetalSharedEventInfoEXT，则（1）如果该结构体的semaphore不为VK_NULL_HANDLE，则 该结构体的semaphore的VkSemaphore 创建命令VkSemaphoreCreateInfo 的VkSemaphoreCreateInfo的pNext中必须包含一个VkExportMetalObjectCreateInfoEXT，且其exportObjectType为VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT
 															   （2）如果该结构体的event不为VK_NULL_HANDLE，则 该结构体的event的VkEvent 创建命令vkCreateEvent 的VkEventCreateInfo的pNext中必须包含一个VkExportMetalObjectCreateInfoEXT，且其exportObjectType为VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT
-		
+
 		14.pNext中的sType必须是唯一的，除了  VkExportMetalBufferInfoEXT, VkExportMetalCommandQueueInfoEXT, VkExportMetalIOSurfaceInfoEXT, VkExportMetalSharedEventInfoEXT, 或VkExportMetalTextureInfoEXT
 		*/
 
@@ -917,6 +917,77 @@ void MemoryAllocationTest::DeviceMemoryTest()
 
 	}
 
+
+	_screen_buffer* screenBuffer;
+	// QNX Screen buffer
+	{
+		//导入 QNX Screen buffer的memory到 vulkan instance
+		VkImportScreenBufferInfoQNX& importScreenBufferInfoQNX = memoryAllocateInfoEXT.importScreenBufferInfoQNX;
+		importScreenBufferInfoQNX.buffer = screenBuffer;//是一个指向 struct _screen_buffer 的指针，即要导入的 QNX Screen buffer
+		/*
+		VkImportScreenBufferInfoQNX有效用法:
+		1.如果 buffer不为 NULL，则（1） QNX Screen Buffers必须支持导入，参见VkExternalImageFormatProperties 或者 VkExternalBufferProperties
+								  （2）buffer必须为一个有效的 QNX Screen Buffers 指针
+
+		*/
+
+		VkScreenBufferPropertiesQNX screenBufferPropertiesQNX{};
+		screenBufferPropertiesQNX.sType = VK_STRUCTURE_TYPE_SCREEN_BUFFER_PROPERTIES_QNX;
+		//VkScreenBufferPropertiesQNX.pNext
+		VkScreenBufferFormatPropertiesQNX screenBufferFormatPropertiesQNX{};
+		screenBufferFormatPropertiesQNX.sType = VK_STRUCTURE_TYPE_SCREEN_BUFFER_FORMAT_PROPERTIES_QNX;
+		screenBufferFormatPropertiesQNX.pNext = nullptr;
+		screenBufferFormatPropertiesQNX.format;//是与Screen buffer format对应的Vulkan format，如果没有等效的Vulkan格式则为VK_FORMAT_UNDIFIED。等效指的是如果 QNX Screen buffer 有一个列举在  QNX Screen Format Equivalence table的format，则format必须为其中对应的format
+		screenBufferFormatPropertiesQNX.externalFormat;//是一个实现定义的外部格式标识符，用于VkExternalFormatQNX。不能为零。
+		screenBufferFormatPropertiesQNX.formatFeatures;//描述绑定到vkGetScreenBufferPropertiesQNX的buffer参数的使用了external format的image的 format的能力。必须包含 VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT，应该包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT 和VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT.
+		screenBufferFormatPropertiesQNX.samplerYcbcrConversionComponents;//应该用在VkSamplerYcbcrConversionCreateInfo中的component swizzle参数
+		screenBufferFormatPropertiesQNX.screenUsage;//是一个实现定义的QNX Screen Buffers的外部使用标识符
+		screenBufferFormatPropertiesQNX.suggestedXChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 X chroma offset
+		screenBufferFormatPropertiesQNX.suggestedYChromaOffset;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议的 Y chroma offset
+		screenBufferFormatPropertiesQNX.suggestedYcbcrModel;//用在VkSamplerYcbcrConversionCreateInfo中的一个建议的color model
+		screenBufferFormatPropertiesQNX.suggestedYcbcrRange;//是在VkSamplerYcbcrConversionCreateInfo.中使用的一个建议数值范围
+
+		screenBufferPropertiesQNX.pNext = &screenBufferFormatPropertiesQNX;//可以包含一个VkScreenBufferFormatPropertiesQNX获取format 属性
+		screenBufferPropertiesQNX.allocationSize;//外部memory 的大小
+		screenBufferPropertiesQNX.memoryTypeBits;////是一个比特掩码，对应每一个memory type （见VkPhysicalDeviceMemoryProperties.memoryTypes ??），指明 QNX Screen Buffers可以被引入为的类型 .
+
+		//获取导入的QNX Screen Buffers的memory 参数
+		vkGetScreenBufferPropertiesQNX(device, screenBuffer, &screenBufferPropertiesQNX);
+
+
+	}
+
+
+
+	//Device Group Memory Allocations
+	//如果 VkMemoryAllocateInfo 的pNext中含有一个VkMemoryAllocateFlagsInfo，指明多少个memory的实例会被分配，参数包含flags和deviceMask
+	VkMemoryAllocateFlagsInfo& memoryAllocateFlagsInfo = memoryAllocateInfoEXT.memoryAllocateFlagsInfo;
+	memoryAllocateFlagsInfo.flags = VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT;//是控制分配的VkMemoryAllocateFlagBits组合值的一个位掩码。
+	memoryAllocateFlagsInfo.deviceMask = 0;/*是逻辑设备中的物理设备的掩码，指示如果在标志中设置了VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT，则必须在掩码中的每个设备上分配内存。如果没有设置VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT则看VK_MEMORY_HEAP_MULTI_INSTANCE_BIT是否设置，如果设置了仍会让每个物理设备分配内存否则只分配一次内存，就像是该值设置为1
+	VkMemoryAllocateFlagBits：
+	VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT:  指明VkMemoryAllocateInfo所对应的 memory 将在VkMemoryAllocateFlagsInfo::deviceMask 指明的device上分配
+	VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT:  指明VkMemoryAllocateInfo所对应的memory 可以附到一个以VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT创建的buffer 对象中，且这个内存对象可以通过vkGetDeviceMemoryOpaqueCaptureAddress用来获取一个Opaque Address
+	VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT:  指明VkMemoryAllocateInfo所分配的memory的地址可以在后续运行中被重用或者保留（如trace capture 和 replay）,详细信息见VkBufferOpaqueCaptureAddressCreateInfo
+	*/
+
+
+
+	//Opaque Capture Address Allocation
+	//如果 VkMemoryAllocateInfo 的pNext中含有一个VkMemoryOpaqueCaptureAddressAllocateInfo，则指明
+	// 需要一个特殊的设备地址用于VkMemoryAllocateInfo所对应的memory 分配，
+
+	VkMemoryOpaqueCaptureAddressAllocateInfo& memoryOpaqueCaptureAddressAllocateInfo = memoryAllocateInfoEXT.memoryOpaqueCaptureAddressAllocateInfo;
+	memoryOpaqueCaptureAddressAllocateInfo.opaqueCaptureAddress = NULL;//为为内存分配请求的paque capture address。可以通过vkGetDeviceMemoryOpaqueCaptureAddress 获取
+
+
+
+
+
+
+
+
+
+
 	vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &deviceMemory);
 	/*
 	vkAllocateMemory有效用法:
@@ -924,8 +995,94 @@ void MemoryAllocationTest::DeviceMemoryTest()
 	2.pAllocateInfo->memoryTypeIndex必须小于通过vkGetPhysicalDeviceMemoryProperties接口查询的VkPhysicalDeviceMemoryProperties::memoryTypeCount，
 	3.如果 deviceCoherentMemory 特性没有开启，pAllocateInfo->memoryTypeIndex就不能指定一个支持 VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD的内存类型
 	4.当前在device上分配的内存大小必须小于VkPhysicalDeviceLimits::maxMemoryAllocationCount
-	
+
 	*/
+
+	vkFreeMemory(device, deviceMemory, nullptr);
+
+
+	//host端访问device端分配的内存
+	//以VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT 创建的device 端的memory 才能被host端访问（映射的方式）
+	//调用vkMapMemory将device端的memory映射到host端后，需要由应用来控制host和device对该内存的同步操作
+	void* mappedMemoryPointer;
+	vkMapMemory(device, allocatedMemory, 0, 1, 0, &mappedMemoryPointer);/*
+	vkMapMemory有效用法:
+		1.offset: 为基于0开始的memory 对象的字节偏移值，必须小于memory的大小
+		2.size: 从offset 偏移值开始的映射内存字节大小,如果为VK_WHOLE_SIZE表示从offse开始到memory的结尾，如果不为VK_WHOLE_SIZE,则必须大于 0且小于等于 memory的大小减去 offset
+		3.flags: 为VkMemoryMapFlagBits组合值的位掩码指明映射操作的额外操作参数，不能设置VK_MEMORY_MAP_PLACED_BIT_EXT，VK_MEMORY_MAP_PLACED_BIT_EXT指明请求实现将内存映射放置在客户端指定的虚拟地址上，
+							通过VkMemoryMapPlacedInfoEXT::pPlacedAddress，替换该地址上的任何现有映射。此标志不能与vkMapMemory一起使用，因为没有办法指定放置地址。
+		4.ppData: 是一个指向void*变量的指针，其中返回一个指向映射范围开头的主机可访问的指针。这个指针减去offset必须至少对齐到VkPhysicalDeviceLimits：：minMemoryMapAlignment
+		5.memory不能是已经被映射过的，且不能创建为multiple instance的，且必须以VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT创建
+	*/
+
+	VkMemoryMapInfoKHR memoryMapInfoKHR{};
+	memoryMapInfoKHR.sType = VK_STRUCTURE_TYPE_MEMORY_MAP_INFO_KHR;
+		//VkMemoryMapInfoKHR.pNext
+		{
+			// Provided by VK_EXT_map_memory_placed
+			typedef struct VkMemoryMapPlacedInfoEXT {
+				VkStructureType sType;
+				const void* pNext;
+				void* pPlacedAddress;//指明内存映射会映射到这里指定的虚拟地址,不能为NULL如果VkMemoryMapInfoKHR.flags包含 VK_MEMORY_MAP_PLACED_BIT_EXT,所指内存必须对齐到整数倍VkPhysicalDeviceMapMemoryPlacedPropertiesEXT::minPlacedMemoryMapAlignment，和VkMemoryMapInfoKHR::size所限定的内存范围不能和任何现有的其他映射重叠
+			} VkMemoryMapPlacedInfoEXT;//这个结构体没有定义，这里手动定义
+
+			VkMemoryMapPlacedInfoEXT memoryMapPlacedInfoEXT{};
+			memoryMapPlacedInfoEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;
+			memoryMapPlacedInfoEXT.pNext = nullptr;
+			memoryMapPlacedInfoEXT.pNext = nullptr;
+		}
+	memoryMapInfoKHR.pNext = nullptr;//如果flags 包含VK_MEMORY_MAP_PLACED_BIT_EXT，则可以包含一个VkMemoryMapPlacedInfoEXT
+	memoryMapInfoKHR.offset = 0;//为基于0开始的memory 对象的字节偏移值，必须小于memory的大小
+	memoryMapInfoKHR.size = 1;//从offset 偏移值开始的映射内存字节大小,如果为VK_WHOLE_SIZE表示从offse开始到memory的结尾，如果不为VK_WHOLE_SIZE,则必须大于 0且小于等于 memory的大小减去 offset
+	memoryMapInfoKHR.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/}; //指明需要被映射的VkDeviceMemory
+	memoryMapInfoKHR.flags = 0;/*为VkMemoryMapFlagBits组合值的位掩码指明映射操作的额外操作参数，
+			如果设置了VK_MEMORY_MAP_PLACED_BIT_EXT，则（1）memoryMapPlaced特性必须开启
+													  （2）pNext中必须包含一个VkMemoryMapPlacedInfoEXT::pPlacedAddress 不为NULL的VkMemoryMapPlacedInfoEXT
+													  （3）如果memoryMapRangePlaced 没有开启，则offset必须为0，size 必须为 VK_WHOLE_SIZE 或 VkMemoryAllocateInfo::allocationSize
+													  （4）如果memoryMapRangePlaced 开启，则offset必须对齐到整数倍的VkPhysicalDeviceMapMemoryPlacedPropertiesEXT::minPlacedMemoryMapAlignment
+													  （5）如果size 不为VK_WHOLE_SIZE，size必须对齐到整数倍的VkPhysicalDeviceMapMemoryPlacedPropertiesEXT::minPlacedMemoryMapAlignment
+													  （6）如果size 为VK_WHOLE_SIZE，VkMemoryAllocateInfo::allocationSize必须对齐到整数倍的 VkPhysicalDeviceMapMemoryPlacedPropertiesEXT::minPlacedMemoryMapAlignment
+													  （7）memory 不能是从handle 类型为VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT 或者VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT 引入的
+
+	*/
+	vkMapMemory2KHR(device, &memoryMapInfoKHR, &mappedMemoryPointer);/*
+	vkMapMemory2KHR有效用法:
+
+		ppData: 是一个指向void*变量的指针，其中返回一个指向映射范围开头的主机可访问的指针。这个指针减去VkMemoryMapInfoKHR.offset必须至少对齐到VkPhysicalDeviceLimits：：minMemoryMapAlignment
+	*/
+
+
+
+	
+	VkMappedMemoryRange mappedMemoryRange{};
+	mappedMemoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+	mappedMemoryRange.pNext = nullptr;
+	mappedMemoryRange.offset = 0;//为基于0开始的memory 对象的字节偏移值，
+	mappedMemoryRange.size = 1;//从offset 偏移值开始的映射内存字节大小,
+	mappedMemoryRange.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ };//指明这个所属的buffer
+	/*
+	VkMappedMemoryRange有效用法:
+	1.memory 必须已经映射到host端了
+	2.如果size 不为VK_WHOLE_SIZE，offset 和 size 必须指明当前映射的memory 范围中的一个子范围
+	3.如果size 为VK_WHOLE_SIZE，offset 必须在当前映射的memory 范围中
+	4.offset必须是VkPhysicalDeviceLimits::nonCoherentAtomSize的倍数
+	5.如果size 为VK_WHOLE_SIZE，memory的当前映射的结尾必须为VkPhysicalDeviceLimits::nonCoherentAtomSize的整数倍或者为memory的结尾
+	6.如果size 不为VK_WHOLE_SIZE，size必须是VkPhysicalDeviceLimits::nonCoherentAtomSize的倍数或者offset加上size必须等于memory的大小
+
+	*/
+
+
+
+	//一旦调用 vkMapMemory 或者 vkMapMemory2KHR成功映射了device memory,host端写入数据到映射回的指针后，则可以刷新host端的cache到non-coherent device memory可调用
+	vkFlushMappedMemoryRanges(device, 1, &mappedMemoryRange);
+	//一旦调用 vkMapMemory 或者 vkMapMemory2KHR成功映射了device memory,host端写入数据到映射回的指针后，则让host端的cache的数据无效化可调用
+	vkInvalidateMappedMemoryRanges(device, 1, &mappedMemoryRange);
+
+
+
+
+
+
 
 
 

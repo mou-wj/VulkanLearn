@@ -1079,10 +1079,165 @@ void MemoryAllocationTest::DeviceMemoryTest()
 	vkInvalidateMappedMemoryRanges(device, 1, &mappedMemoryRange);
 
 
+	//如果host端不再需要访问device端的memory，则需要调用vkUnmapMemory解除映射关系
+	vkUnmapMemory(device, deviceMemory);
+
+
+	VkMemoryUnmapInfoKHR memoryUnmapInfoKHR{};
+	memoryUnmapInfoKHR.sType = VK_STRUCTURE_TYPE_MEMORY_UNMAP_INFO_KHR;
+	memoryUnmapInfoKHR.pNext = nullptr;
+	memoryUnmapInfoKHR.flags = 0;/*是VkMemoryUnmapFlagBitsKHR组合值的位掩码，指定内存取消映射操作的附加参数，VK_MEMORY_UNMAP_RESERVE_BIT_EXT 表示 请求在 vkUnmapMemory2KHR 调用完成后，内存映射当前占用的虚拟地址范围保持保留。
+									未来系统内存映射操作或调用vkMapMemory或 vkMapMemory2KHR不会返回所需范围的地址，除非地址范围由于 客户端显示调用含VK_MEMORY_MAP_PLACED_BIT_EXT的vkMapMemory2KHR 或者做等价的 内存映射 而没有被保留了。  
+									当设置了VK_MEMORY_UNMAP_RESERVE_BIT_EXT时，内存取消映射操作可能会失败，在这种情况下，内存对象将保持主机映射，而vkUnmap内存2KHR将返回VK_ERROR_MEMORY_MAP_FAILED*/
+	memoryUnmapInfoKHR.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ };//指明这个所属的buffer
+	/*
+	VkMemoryUnmapInfoKHR有效用法:
+	1.memory 必须已经映射到host端了
+	2.如果flags设置了VK_MEMORY_UNMAP_RESERVE_BIT_EXT， 则（1）memoryUnmapReserve 必须开启
+													     （2）memory 不能是从handle 类型为VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT 或者VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT 引入的
+
+	*/
+
+
+	vkUnmapMemory2KHR(device, &memoryUnmapInfoKHR);/*
+	
+	*/
 
 
 
 
+	//Lazily Allocated Memory
+	{
+		//如果内存对象是从带有VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT位集的堆中分配的，那么该对象的支持内存可能由实现延迟地提供。实际提交的内存大小最初可能小至零（或与请求的大小一样大），并且随着需要额外的内存而单调地增加。
+		//设置了此标志的内存类型只允许绑定到其使用标志包含VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT的VkImage
+
+		VkDeviceSize lazySize;
+		//要确定当前为内存对象提交的延迟分配的内存量
+		vkGetDeviceMemoryCommitment(device, allocatedMemory, &lazySize);//是指向VkDeviceSize值的指针，返回当前内存对象延迟分配的内存量，memory必须以VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT的 内存类型创建
+	
+	}
+
+
+	//Protected Memory 见p985
+
+
+	//External Memory Handle Types
+	{
+	//Android Hardware Buffer 见p986
+	
+		//AHardwareBuffer Format Equivalence
+		/*
+				AHardwareBuffer  Format                  |             Vulkan Format
+			AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM        |      VK_FORMAT_R8G8B8A8_UNORM
+			AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM 1      |      VK_FORMAT_R8G8B8A8_UNORM
+			AHARDWAREBUFFER_FORMAT_R8G8B8_UNORM          |      VK_FORMAT_R8G8B8_UNORM
+			AHARDWAREBUFFER_FORMAT_R5G6B5_UNORM          |      VK_FORMAT_R5G6B5_UNORM_PACK16
+			AHARDWAREBUFFER_FORMAT_R16G16B16A16_FLOAT    |      VK_FORMAT_R16G16B16A16_SFLOAT
+			AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM     |      VK_FORMAT_A2B10G10R10_UNORM_PACK32
+			AHARDWAREBUFFER_FORMAT_D16_UNORM             |      VK_FORMAT_D16_UNORM
+			AHARDWAREBUFFER_FORMAT_D24_UNORM             |      VK_FORMAT_X8_D24_UNORM_PACK32
+			AHARDWAREBUFFER_FORMAT_D24_UNORM_S8_UINT     |      VK_FORMAT_D24_UNORM_S8_UINT
+			AHARDWAREBUFFER_FORMAT_D32_FLOAT             |      VK_FORMAT_D32_SFLOAT
+			AHARDWAREBUFFER_FORMAT_D32_FLOAT_S8_UINT     |      VK_FORMAT_D32_SFLOAT_S8_UINT
+			AHARDWAREBUFFER_FORMAT_S8_UINT               |      VK_FORMAT_S8_UINT
+		
+		1数字见p989
+		*/
+
+	
+		//AHardwareBuffer Usage Equivalence
+		/*
+		
+		AHardwareBuffer Usage						|	Vulkan Usage 或者 Creation Flag
+		None										|	VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+		None										|	VK_IMAGE_USAGE_TRANSFER_DST_BIT
+		AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE		|	VK_IMAGE_USAGE_SAMPLED_BIT
+		AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE		|	VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
+		AHARDWAREBUFFER_USAGE_GPU_FRAMEBUFFER 3		|	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+		AHARDWAREBUFFER_USAGE_GPU_FRAMEBUFFER 3		|	VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+		AHARDWAREBUFFER_USAGE_GPU_CUBE_MAP			|	VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT
+		AHARDWAREBUFFER_USAGE_GPU_MIPMAP_COMPLETE	|	None 2
+		AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT		|	VK_IMAGE_CREATE_PROTECTED_BIT
+		None										|	VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT
+		None										|	VK_IMAGE_CREATE_EXTENDED_USAGE_BIT
+		AHARDWAREBUFFER_USAGE_GPU_DATA_BUFFER 4		|	VK_IMAGE_USAGE_STORAGE_BIT
+		
+		2,3,4数字见p990
+		*/
+
+
+
+	//QNX Screen Buffer
+		
+		// QNX Screen Buffer Format Equivalence
+		/*
+		
+		QNX Screen Format				|	     Vulkan Format
+		SCREEN_FORMAT_RGBA8888			|	 VK_FORMAT_B8G8R8A8_UNORM
+		SCREEN_FORMAT_RGBX8888 1		|	 VK_FORMAT_B8G8R8A8_UNORM
+		SCREEN_FORMAT_BGRA8888			|	 VK_FORMAT_R8G8B8A8_UNORM
+		SCREEN_FORMAT_BGRX8888 1		|	 VK_FORMAT_R8G8B8A8_UNORM
+		SCREEN_FORMAT_RGBA1010102		|	 VK_FORMAT_A2R10G10B10_UNORM_PACK32
+		SCREEN_FORMAT_RGBX1010102 1		|	 VK_FORMAT_A2R10G10B10_UNORM_PACK32
+		SCREEN_FORMAT_BGRA1010102		|	 VK_FORMAT_A2B10G10R10_UNORM_PACK32
+		SCREEN_FORMAT_BGRX1010102 1		|	 VK_FORMAT_A2B10G10R10_UNORM_PACK32
+		SCREEN_FORMAT_RGBA5551			|	 VK_FORMAT_A1R5G5B5_UNORM_PACK16
+		SCREEN_FORMAT_RGBX5551 1		|	 VK_FORMAT_A1R5G5B5_UNORM_PACK16
+		SCREEN_FORMAT_RGB565			|	 VK_FORMAT_R5G6B5_UNORM_PACK16
+		SCREEN_FORMAT_RGB888			|	 VK_FORMAT_R8G8B8_UNORM
+		
+		1数字见p992
+		
+		*/
+
+
+
+	}
+
+
+	//Peer Memory Features
+	{
+		//peer memory是在逻辑设备的一个物理设备上分配的内存，然后绑定一个该逻辑设备的不同的物理设备的资源或者在其中访问。
+		
+		VkPeerMemoryFeatureFlags peerMemoryFeatureFlags;
+		//获取peer memory如何被访问的属性,两个接口等价
+		vkGetDeviceGroupPeerMemoryFeatures(device, 0, 0, 1, &peerMemoryFeatureFlags);
+		vkGetDeviceGroupPeerMemoryFeaturesKHR(device, 0, 0, 1, &peerMemoryFeatureFlags);/*
+		vkGetDeviceGroupPeerMemoryFeatures或vkGetDeviceGroupPeerMemoryFeaturesKHR 参数解析
+			heapIndex 是从中分配内存的内存堆的索引。
+			localDeviceIndex 是执行内存访问的物理设备的设备索引
+			remoteDeviceIndex 是需要分配内存的物理设备的设备索引。
+			pPeerMemoryFeatures 是一个指向 VkPeerMemoryFeatureFlags 的指针，指示堆、本地和远程设备的组合支持哪些类型的内存访问。
+
+		*/
+
+		VkPeerMemoryFeatureFlagBits peerMemoryFeatureFlagBits;
+		/*
+		VK_PEER_MEMORY_FEATURE_COPY_SRC_BIT:  指明memory可以通过作为vkCmdCopy* 命令的source 被访问
+		VK_PEER_MEMORY_FEATURE_COPY_DST_BIT:  指明memory可以通过作为vkCmdCopy* 命令的destination 被访问
+		VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT:  指明memory可以作为任何memory access type 被读取
+		VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT:  指明memory可以作为任何memory access type 被写入，认为Shader atomics 是写
+		*/
+	}
+
+
+
+	//Opaque Capture Address Query
+	{
+		VkDeviceMemoryOpaqueCaptureAddressInfo memoryOpaqueCaptureAddressInfo{};
+		memoryOpaqueCaptureAddressInfo.sType = VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO;
+		memoryOpaqueCaptureAddressInfo.pNext = nullptr;
+		memoryOpaqueCaptureAddressAllocateInfo.opaqueCaptureAddress;//返回一个64位的设备内存的opaque capture address。如果该值不为0，则调用接口返回的值应该和该值相同
+
+		//查询一个64位的设备内存的opaque capture address。两个接口等效
+		vkGetDeviceMemoryOpaqueCaptureAddress(device, &memoryOpaqueCaptureAddressInfo);
+		vkGetDeviceMemoryOpaqueCaptureAddressKHR(device, &memoryOpaqueCaptureAddressInfo);/*
+		vkGetDeviceMemoryOpaqueCaptureAddress或vkGetDeviceMemoryOpaqueCaptureAddressKHR 有效用法：
+		1. bufferDeviceAddress特性必须开启
+		2. 如果device 创建含有多个物理设备，则 bufferDeviceAddressMultiDevice 特性必须开启
+		
+		*/
+	}
 
 
 

@@ -1,0 +1,26 @@
+#pragma once
+
+#include "VKTestBase.h"
+
+
+NS_TEST_BEGIN
+
+MARK_TEST_SEQUENCE(1)
+class ResourceCreationTest : public VKTestBase {
+public:
+	ResourceCreationTest();
+	void run() override;
+	~ResourceCreationTest();
+
+private:
+
+	void BufferCreateTest();
+
+
+};
+TEST_REGISTER(ResourceCreationTest)
+
+
+
+NS_TEST_END
+

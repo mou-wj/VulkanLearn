@@ -422,29 +422,29 @@ void ResourceCreationTest::ImageCreateTest()
 	imageCreateInfo.flags = 0;//是 VkImageCreateFlagBits的组合值，指明image的额外参数
 	/*
 	VkImageCreateFlagBits：
-	
-    VK_IMAGE_CREATE_SPARSE_BINDING_BIT:  指明image将使用sparse memory binding来备份
-    VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT：指明image 可以使用sparse memory binding来部分备份，以该flag创建则也需要以VK_IMAGE_CREATE_SPARSE_BINDING_BIT创建
-    VK_IMAGE_CREATE_SPARSE_ALIASED_BIT： 指明image 可以使用sparse memory binding来部分备份，其memory range可能会同时备份到其他的image中（或者本image的不同部分），以该flag创建则也需要以VK_IMAGE_CREATE_SPARSE_BINDING_BIT创建
-    VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT： 指明image 可以用来创建一个不同format 的VkImageView，对于multi-planar formats，VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT指明VkImageView可以被认为是image的一个plane
-    VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT：指明image 可以用来创建一个类型为 VK_IMAGE_VIEW_TYPE_CUBE 或者 VK_IMAGE_VIEW_TYPE_CUBE_ARRAY 的VkImageView
-    VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT：指明image 可以用来创建一个类型为VK_IMAGE_VIEW_TYPE_2D 或 VK_IMAGE_VIEW_TYPE_2D_ARRAY的VkImageView
-    VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT：指明image 可以用来创建一个类型为VK_IMAGE_VIEW_TYPE_2D 的VkImageView
-    VK_IMAGE_CREATE_PROTECTED_BIT：指明image 是一个  protected image.
-    VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT：指明image 可以在vkBindImageMemory2命令中和splitInstanceBindRegionCount为非0值的VkBindImageMemoryDeviceGroupInfo一起使用，这个flag 也让image 使用标准的sparse image block dimensions
-	VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT：指明image 有一个压缩format，可以用来创建一个有非压缩format的VkImageView，iamge view的texel对应image的 压缩的texel block。
-    VK_IMAGE_CREATE_EXTENDED_USAGE_BIT：指明image 可以以一个本image的usage不支持的format但是至少支持一个从这个image上创建的VkImageView的format上创建
-    VK_IMAGE_CREATE_DISJOINT_BIT：指明有一个multi-planar format 的image 的必须其每个plane 要分离地绑定到内存，而不是直接全部绑定到一块单独的内存上，这个主要是为了区分disjoint image和非disjoint image
-    VK_IMAGE_CREATE_ALIAS_BIT ：指定使用相同创建参数创建并指向相同内存的两个图像可以彼此一致地解释内存的内容，并遵循内存混叠部分中描述的规则。该标志进一步指定，不相交图像的每个平面可以与单平面图像共享内存中的非线性表示，
-										并且单平面图像可以与多平面不相交图像的平面共享内存中的非线性表示。如果pNext链包含一个VkExternalMemoryImageCreateInfo或VkExternalMemoryImageCreateInfoNV结构，其把手类型成员不是0，则像设置VK_IMAGE_CREATE_ALIAS_BIT一样。
-    VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT ：指定有一个depth 或者 depth/stencil format 的image 可以在作为 depth/stencil attachment使用的时候使用自定义的采样位置
-    VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV：指定  image 是一个 corner-sampled image. 
-    VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT：指定  image 可以有一个subsampled format，当作为一个含有fragment density map attachment 的render pass的附件被写入的时候或许是更优的方式，但是访问这种subsampled image有更多限制（详情见p1061）
 
-    VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM ：指定可以在具有非零fragment density map offsets的渲染过程中使用图像。在带有非零偏移量的渲染通道中，必须使用VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM创建fragment density map attachments, input attachments, color attachments, depth/stencil attachment, resolve attachments, 以及 preserve attachments
+	VK_IMAGE_CREATE_SPARSE_BINDING_BIT:  指明image将使用sparse memory binding来备份
+	VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT：指明image 可以使用sparse memory binding来部分备份，以该flag创建则也需要以VK_IMAGE_CREATE_SPARSE_BINDING_BIT创建
+	VK_IMAGE_CREATE_SPARSE_ALIASED_BIT： 指明image 可以使用sparse memory binding来部分备份，其memory range可能会同时备份到其他的image中（或者本image的不同部分），以该flag创建则也需要以VK_IMAGE_CREATE_SPARSE_BINDING_BIT创建
+	VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT： 指明image 可以用来创建一个不同format 的VkImageView，对于multi-planar formats，VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT指明VkImageView可以被认为是image的一个plane
+	VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT：指明image 可以用来创建一个类型为 VK_IMAGE_VIEW_TYPE_CUBE 或者 VK_IMAGE_VIEW_TYPE_CUBE_ARRAY 的VkImageView
+	VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT：指明image 可以用来创建一个类型为VK_IMAGE_VIEW_TYPE_2D 或 VK_IMAGE_VIEW_TYPE_2D_ARRAY的VkImageView
+	VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT：指明image 可以用来创建一个类型为VK_IMAGE_VIEW_TYPE_2D 的VkImageView
+	VK_IMAGE_CREATE_PROTECTED_BIT：指明image 是一个  protected image.
+	VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT：指明image 可以在vkBindImageMemory2命令中和splitInstanceBindRegionCount为非0值的VkBindImageMemoryDeviceGroupInfo一起使用，这个flag 也让image 使用标准的sparse image block dimensions
+	VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT：指明image 有一个压缩format，可以用来创建一个有非压缩format的VkImageView，iamge view的texel对应image的 压缩的texel block。
+	VK_IMAGE_CREATE_EXTENDED_USAGE_BIT：指明image 可以以一个本image的usage不支持的format但是至少支持一个从这个image上创建的VkImageView的format上创建
+	VK_IMAGE_CREATE_DISJOINT_BIT：指明有一个multi-planar format 的image 的必须其每个plane 要分离地绑定到内存，而不是直接全部绑定到一块单独的内存上，这个主要是为了区分disjoint image和非disjoint image
+	VK_IMAGE_CREATE_ALIAS_BIT ：指定使用相同创建参数创建并指向相同内存的两个图像可以彼此一致地解释内存的内容，并遵循内存混叠部分中描述的规则。该标志进一步指定，不相交图像的每个平面可以与单平面图像共享内存中的非线性表示，
+										并且单平面图像可以与多平面不相交图像的平面共享内存中的非线性表示。如果pNext链包含一个VkExternalMemoryImageCreateInfo或VkExternalMemoryImageCreateInfoNV结构，其把手类型成员不是0，则像设置VK_IMAGE_CREATE_ALIAS_BIT一样。
+	VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT ：指定有一个depth 或者 depth/stencil format 的image 可以在作为 depth/stencil attachment使用的时候使用自定义的采样位置
+	VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV：指定  image 是一个 corner-sampled image.
+	VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT：指定  image 可以有一个subsampled format，当作为一个含有fragment density map attachment 的render pass的附件被写入的时候或许是更优的方式，但是访问这种subsampled image有更多限制（详情见p1061）
+
+	VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM ：指定可以在具有非零fragment density map offsets的渲染过程中使用图像。在带有非零偏移量的渲染通道中，必须使用VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM创建fragment density map attachments, input attachments, color attachments, depth/stencil attachment, resolve attachments, 以及 preserve attachments
 
 	VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT： 指定image 可以用来作为一个descriptor buffers 的capturing 和replaying(e.g. for trace capture and replay)，详情参见VkOpaqueCaptureDescriptorDataCreateInfoEXT
-    VK_IMAGE_CREATE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_BIT_EXT： 指定image 可以用在 multisampled rendering 中作为single-sampled framebuffer attachment
+	VK_IMAGE_CREATE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_BIT_EXT： 指定image 可以用在 multisampled rendering 中作为single-sampled framebuffer attachment
 	VK_IMAGE_CREATE_VIDEO_PROFILE_INDEPENDENT_BIT_KHR：指定image 可以用在video coding operations 而不需要在创建过程中指定video profiles，除非这个image只作为 DPB pictures，则只要考虑image与的video配置兼容。
 
 	*/
@@ -452,34 +452,79 @@ void ResourceCreationTest::ImageCreateTest()
 	imageCreateInfo.usage = VK_IMAGE_USAGE_SAMPLED_BIT;/*//是 VkImageUsageFlagBits 的组合值指明image用途
 	VkImageUsageFlagBits：
 
-    VK_IMAGE_USAGE_TRANSFER_SRC_BIT：指明image 可以用作transfer command的source
-    VK_IMAGE_USAGE_TRANSFER_DST_BIT：指明image  可以用作transfer command的destination
-    VK_IMAGE_USAGE_SAMPLED_BIT：  指明image  可以用来创建一个适用于VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE或者VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER的占据一个 VkDescriptorSet slot的VkImageView，用于shader采样。
-    VK_IMAGE_USAGE_STORAGE_BIT： 指明image  可以用来创建一个适用于VK_DESCRIPTOR_TYPE_STORAGE_IMAGE 的占据一个 VkDescriptorSet slot的VkImageView，
-    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT：  指明image 可以用来创建一个适用于作为VkFramebuffer 的color 或 resolve attachment 的VkImageView
-    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT：  指明image 可以用来创建一个适用于作为VkFramebuffer 的depth/stencil 或 depth/stencil resolve attachment 的VkImageView
-    VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT：  指明实现可能支持VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT的memory allocations来备份一个 image，这个位可以设置用来创建一个适用于作为 color, resolve, depth/stencil, 或者 input attachment的VkImageView.
-    VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT：  指明image 可以用来创建一个适用于VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT 的占据一个 VkDescriptorSet slot的VkImageView，在shader中作为input attachment读取，在VkFrameBuffer中作为input attachment 使用
-    VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT：  指明image 可以用来创建一个适用于fragment density map image的VkImageView
-    VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR：  指明image 可以用来创建一个适用于fragment shading rate attachment 或者 shading rate image的VkImageView
-    VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR： 指明image 可以用来作为一个video decode operation 的output picture
-    VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR：保留未来使用.
-    VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR：  指明image 可以用来作为一个video decode operation 的一个output reconstructed picture 或者 input reference picture
-    VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR：保留未来使用.
-    VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR：  指明image 可以用来作为一个video encode operation 的input picture
-    VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR：  指明image 可以用来作为一个video encode operation 的一个output reconstructed picture 或者 input reference picture
-    VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT： 指明image 可以转换布局到VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT，在同一个render pass中被使用作为VkFramebuffer 的color 或者 depth/stencil attachment 或者shader的read-only input resource (sampled image, combined image sampler 或者 input attachment)的时候
+	VK_IMAGE_USAGE_TRANSFER_SRC_BIT：指明image 可以用作transfer command的source
+	VK_IMAGE_USAGE_TRANSFER_DST_BIT：指明image  可以用作transfer command的destination
+	VK_IMAGE_USAGE_SAMPLED_BIT：  指明image  可以用来创建一个适用于VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE或者VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER的占据一个 VkDescriptorSet slot的VkImageView，用于shader采样。
+	VK_IMAGE_USAGE_STORAGE_BIT： 指明image  可以用来创建一个适用于VK_DESCRIPTOR_TYPE_STORAGE_IMAGE 的占据一个 VkDescriptorSet slot的VkImageView，
+	VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT：  指明image 可以用来创建一个适用于作为VkFramebuffer 的color 或 resolve attachment 的VkImageView
+	VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT：  指明image 可以用来创建一个适用于作为VkFramebuffer 的depth/stencil 或 depth/stencil resolve attachment 的VkImageView
+	VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT：  指明实现可能支持VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT的memory allocations来备份一个 image，这个位可以设置用来创建一个适用于作为 color, resolve, depth/stencil, 或者 input attachment的VkImageView.
+	VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT：  指明image 可以用来创建一个适用于VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT 的占据一个 VkDescriptorSet slot的VkImageView，在shader中作为input attachment读取，在VkFrameBuffer中作为input attachment 使用
+	VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT：  指明image 可以用来创建一个适用于fragment density map image的VkImageView
+	VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR：  指明image 可以用来创建一个适用于fragment shading rate attachment 或者 shading rate image的VkImageView
+	VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR： 指明image 可以用来作为一个video decode operation 的output picture
+	VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR：保留未来使用.
+	VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR：  指明image 可以用来作为一个video decode operation 的一个output reconstructed picture 或者 input reference picture
+	VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR：保留未来使用.
+	VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR：  指明image 可以用来作为一个video encode operation 的input picture
+	VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR：  指明image 可以用来作为一个video encode operation 的一个output reconstructed picture 或者 input reference picture
+	VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT： 指明image 可以转换布局到VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT，在同一个render pass中被使用作为VkFramebuffer 的color 或者 depth/stencil attachment 或者shader的read-only input resource (sampled image, combined image sampler 或者 input attachment)的时候
 	VK_IMAGE_USAGE_HOST_TRANSFER_BIT_EXT：  指明image 可以用在host端的copy 命令和layout transitions中
 
+
+	*/
+	imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;/*指明image的 texel blocks的内存排布的一个 VkImageTiling
+	
+	VkImageTiling：指明image中的texel blocks的内存排布
+	VK_IMAGE_TILING_OPTIMAL：指明是优化排布 (texels 以基于实现的方式进行排布，为了更高效的的内存访问).
+	VK_IMAGE_TILING_LINEAR：指明是线性排布 (texels 在内存中以行序优先（row-major）的方式进行排布，每行可能存在内存补丁（padding）).
+	VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT：指明image的排布由Linux DRM format modifier决定，而modifier又在image 创建时候由VkImageDrmFormatModifierListCreateInfoEXT 或者 VkImageDrmFormatModifierExplicitCreateInfoEXT指定，查询modifier可调用vkGetImageDrmFormatModifierPropertiesEXT
 	
 	*/
-	imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;//指明image的 texel blocks的内存排布的一个 VkImageTiling
 	imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;//是一个 VkSharingMode 值，指定图像在它将被多个队列族访问时的共享模式。
 	imageCreateInfo.queueFamilyIndexCount = 0;//pQueueFamilyIndices的元素个数
 	imageCreateInfo.pQueueFamilyIndices = VK_NULL_HANDLE;//是指向将访问此图像的队列族索引数组的指针。如果共享模式不是VK_SHARING_MODE_CONCURRENT，则被忽略。
 	imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;// 是一个指定samples per texel采样数的 VkSampleCountFlagBits
-	imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;//是一个指定image的基本维度的VkImageType值。从图像类型的目的上讲，array textures中的layers不计入维度
-	imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED; //是一个VkImageLayout 值，指定图像的所有image subresources (mips 以及 layers)的初始VkAmageLayout 值。请参见Image Layout p1078
+	imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;/*是一个指定image的基本维度的VkImageType值。从图像类型的目的上讲，array textures中的layers不计入维度
+	
+	VkImageType
+	VK_IMAGE_TYPE_1D ：指明一个一维image.
+	VK_IMAGE_TYPE_2D ：指明一个二维image.
+	VK_IMAGE_TYPE_3D ：指明一个三维image.
+
+	*/
+	imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED; /*是一个VkImageLayout 值，指定图像的所有image subresources (mips 以及 layers)的初始VkAmageLayout 值。请参见Image Layout p1078
+	VkImageLayout:
+    VK_IMAGE_LAYOUT_UNDEFINED:  指定layout未知，Image memory不能转换到这个layout，这个layout不能用作VkImageCreateInfo的initialLayout。这个layout可以在layout transition命令中代替当前image的layout，但是这样做会导致image的memory中的值变成未定义的。
+    VK_IMAGE_LAYOUT_PREINITIALIZED:  指定image的内存在已定义的layout中，并且可以由数据填充，但它尚未被驱动程序初始化。Image memory不能转换到此布局中。此布局可以用作VkImageCreateInfo的initialLayout成员。此布局旨在用作其内容由主机写入的图像的初始布局，因此，可以立即将数据写入内存，而无需首先执行布局转换。目前，VK_IMAGE_LAYOUT_PREINITIALIZED只对linear image有用，因为没有为VK_IMAGE_TILING_OPTIMAL图像定义的标准布局。
+    VK_IMAGE_LAYOUT_GENERAL:  支持所有的device访问类型 
+    VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL:  指定 一个只能用在graphics pipeline中用作attachment访问的layout
+    VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL:  指定 一个作为附件，或者shader中作为一个sampled image，combied image/sampler,或者input attachment 的只读的layout
+    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:  指定只能在VkFramebuffer中作为color或者resolve attachment，这个layout只对创建时usage含有VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:  指定一个作为允许读写的 depth/stencil attachment的含有depth/stencil format的 image 的depth和stencil两个aspect的layout，等价于 VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL & VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL
+    VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:  指定一个作为只读的 depth/stencil attachment的含有depth/stencil format的 image 的depth和stencil两个aspect的layout，等价于 VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL & VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL:  指定一个含有depth/stencil format的 image作为 允许stencil 读写的 stencil attachment和允许 depth 只读的 depth attachment ，或者在shaders中作为sampled image，combied image或者input attachment 的depth/stencil的layout，等价于 VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL & VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL
+    VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:  指定一个含有depth/stencil format的 image作为 允许depth 读写的 depth attachment和允许 stencil 只读的 stencil attachment ，或者在shaders中作为sampled image，combied image或者input attachment 的depth/stencil的layout，等价于 VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL & VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL:  指定一个含有depth/stencil format的 image作为 允许depth 读写的 depth attachment的depth aspect的layout
+    VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL:  指定一个含有depth/stencil format的 image作为 只允许depth 读的 depth attachment或者 在shaders中作为sampled image，combied image或者input attachment 的depth aspect的layout
+    VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL:  指定一个含有depth/stencil format的 image作为 允许stencil 读写的 stencil attachment的stencil aspect的layout
+    VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL:  指定一个含有depth/stencil format的 image作为 只允许stencil 读的 stencil attachment或者 在shaders中作为sampled image，combied image或者input attachment 的stencil aspect的layout
+    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:  指定一个 在shaders中作为sampled image，combied image或者input attachment 的只读访问的layout，这个layout只对创建时usage含有VK_IMAGE_USAGE_SAMPLED_BIT或 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: 必须用在transfer command中作为source image参数(参见定义 VK_PIPELINE_STAGE_TRANSFER_BIT相关的命令)，这个layout只对创建时usage含有 VK_IMAGE_USAGE_TRANSFER_SRC_BIT 的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: 必须用在transfer command中作为destination image参数(参见定义 VK_PIPELINE_STAGE_TRANSFER_BIT相关的命令)，这个layout只对创建时usage含有 VK_IMAGE_USAGE_TRANSFER_DST_BIT 的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:  必须用来显示一个可显示的image，这个layout只对创建时usage含有 VK_IMAGE_USAGE_TRANSFER_DST_BIT 的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR: 仅对共享的可显示的image有效，并且必须用于图像支持的任何使用。
+    VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR:  必须用作一个fragment shading rate attachment 或者 shading rate image，这个layout只对创建时usage含有 VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR 的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT:  必须在VkRenderPass中用作一个fragment density map attachment ，这个layout只对创建时usage含有 VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT 的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR:  必须在video decode operation中用作一个decode output picture ，这个layout只对创建时usage含有 VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR 的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR: 保留未来使用
+    VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR:  必须在video decode operation中用作一个output reconstructed picture 或者 input reference picture ，这个layout只对创建时usage含有 VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR 的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_VIDEO_ENCODE_DST_KHR: 保留未来使用
+    VK_IMAGE_LAYOUT_VIDEO_ENCODE_SRC_KHR:  必须在video encode operation中用作一个encode input picture ，这个layout只对创建时usage含有 VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR 的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_VIDEO_ENCODE_DPB_KHR:  必须在video encode operation中用作一个output reconstructed picture 或者 input reference picture ，这个layout只对创建时usage含有 VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR 的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT:  必须仅作为VkFrameBuffer中的color attachment或depth/stencil attachment使用，且或在shaders中作为sampled image, combined image/sampler, 或者 input attachment进行只读访问。此layout仅对启用VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT，且还启用 VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT或VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT，或者是VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT或VK_IMAGE_USAGE_SAMPLED_BIT 创建的image subresource 或者image有效。
+    VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR:  必须仅用作storage image、color 或者 depth/stencil attachment 以及 input attachment。此布局仅对使用VK_IMAGE_USAGE_STORAGE_BIT，或者是使用了VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT 和 VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT 或 VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT两个其中一个创建的image subresource 或者image有效。
+	*/
 	imageCreateInfo.mipLevels = 1;//描述可用于对image的缩小采样的细节级别的数量。mipmap level的数量
 	imageCreateInfo.arrayLayers = 1;//image中layer的数量
 	imageCreateInfo.extent = VkExtent3D{ 1,1 ,1 };//是一个VkExtent3D，描述了base lavel的每个维度中的数据元素的数量。
@@ -725,7 +770,7 @@ void ResourceCreationTest::ImageCreateTest()
 	//该结构体指明image创建时将以列举在该结构体中的 Linux DRM format modifiers的一个元素创建，具体是哪一个取决于实现
 	VkImageDrmFormatModifierListCreateInfoEXT& imageDrmFormatModifierListCreateInfoEXT = imageCreateInfoEXT.imageDrmFormatModifierListCreateInfoEXT;
 	imageDrmFormatModifierListCreateInfoEXT.drmFormatModifierCount = 1;//是pDrmFormatModifiers中的元素个数
-		uint64_t drmFormatModifier;
+	uint64_t drmFormatModifier;
 	imageDrmFormatModifierListCreateInfoEXT.pDrmFormatModifiers = &drmFormatModifier;//是一个 Linux DRM format modifiers数组首地址指针
 	/*
 	VkImageDrmFormatModifierListCreateInfoEXT有效用法：
@@ -738,7 +783,7 @@ void ResourceCreationTest::ImageCreateTest()
 	VkImageDrmFormatModifierExplicitCreateInfoEXT& imageDrmFormatModifierExplicitCreateInfoEXT = imageCreateInfoEXT.imageDrmFormatModifierExplicitCreateInfoEXT;
 	imageDrmFormatModifierExplicitCreateInfoEXT.drmFormatModifierPlaneCount = 1;//是image中memory plane的数量（参见VkDrmFormatModifierPropertiesEXT）以及pPlaneLayouts 数组的长度。
 	imageDrmFormatModifierExplicitCreateInfoEXT.drmFormatModifier = 0;//是image创建的  Linux DRM format modifier
-		VkSubresourceLayout planeLayout;
+	VkSubresourceLayout planeLayout;
 	imageDrmFormatModifierExplicitCreateInfoEXT.pPlaneLayouts = &planeLayout;//是一个指向描述image memory plane的 VkSubresourceLayout结构数组的指针。第i个元素描述 image的第i个memory plane layout（VK_IMAGE_ASPECT_MEMORY_PLANE_i_BIT_EXT），每个元素的size会被忽略
 	/*
 	VkImageDrmFormatModifierExplicitCreateInfoEXT有效用法：
@@ -750,35 +795,36 @@ void ResourceCreationTest::ImageCreateTest()
 
 
 	// VkImageCompressionControlEXT
+	{
 	VkImageCompressionControlEXT& imageCompressionControlEXT = imageCreateInfoEXT.imageCompressionControlEXT;
 	imageCompressionControlEXT.flags = 0;//是一个 VkImageCompressionControlFlagBitsEXT 组合值，指定了image压缩控制的选项。
 	/*
 	VkImageCompressionFlagBitsEXT:
 	VK_IMAGE_COMPRESSION_DEFAULT_EXT：指明iamge使用默认压缩设置，实现不能使用fixed-rate 压缩
 	VK_IMAGE_COMPRESSION_FIXED_RATE_DEFAULT_EXT： 指明实现可能会选择任何支持的fixed-rate 压缩设置基于image的属性采取实现定义的行为
-	VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT： 指明fixed-rate 压缩可能会被使用且允许通过VkImageCompressionControlEXT::pFixedRateFlags指定压缩速率 
+	VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT： 指明fixed-rate 压缩可能会被使用且允许通过VkImageCompressionControlEXT::pFixedRateFlags指定压缩速率
 	VK_IMAGE_COMPRESSION_DISABLED_EXT： 指明所有lossless 压缩和 fixed-rate 压缩应该被禁用
 	*/
 	imageCompressionControlEXT.pFixedRateFlags = VK_NULL_HANDLE;/*是NULL或指向VkImageCompressionFixedRateFlagsEXT位字段数组的指针，描述每个图像平面允许的固定速率压缩率。如果flags不包含VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT，则会忽略它。第i个元素指明image的第i个 memory plane的固定速率压缩率。
 	VkImageCompressionFixedRateFlagBitsEXT:
 
-    VK_IMAGE_COMPRESSION_FIXED_RATE_NONE_EXT： 指明 fixed-rate 压缩不会被使用
-    VK_IMAGE_COMPRESSION_FIXED_RATE_1BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[1,2)中的一个bitrate 
-    VK_IMAGE_COMPRESSION_FIXED_RATE_2BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[2,3)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_3BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[3,4)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_4BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[4,5)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_5BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[5,6)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_6BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[6,7)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_7BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[7,8)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_8BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[8,9)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_9BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[9,10)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_10BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[10,11)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_11BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[11,12)中的一个bitrate
-    VK_IMAGE_COMPRESSION_FIXED_RATE_12BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用至少12个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_NONE_EXT： 指明 fixed-rate 压缩不会被使用
+	VK_IMAGE_COMPRESSION_FIXED_RATE_1BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[1,2)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_2BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[2,3)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_3BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[3,4)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_4BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[4,5)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_5BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[5,6)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_6BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[6,7)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_7BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[7,8)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_8BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[8,9)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_9BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[9,10)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_10BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[10,11)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_11BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用[11,12)中的一个bitrate
+	VK_IMAGE_COMPRESSION_FIXED_RATE_12BPC_BIT_EXT： 指明fixed-rate 压缩每个component使用至少12个bitrate
 
 	//这里的机制不是很清楚，待后续深入
-	
-	
+
+
 	//查询图像的压缩速率属性
 	---->调用vkGetImageSubresourceLayout2KHR 或者 vkGetImageSubresourceLayout2EXT.传入pNext中含有一个 VkImageCompressionPropertiesEXT的VkSubresourceLayout2EXT
 	//查询format的压缩速率属性
@@ -803,10 +849,8 @@ void ResourceCreationTest::ImageCreateTest()
 	VkImageCompressionControlEXT有效用法:
 	1.flags必须是VK_IMAGE_COMPRESSION_DEFAULT_EXT, VK_IMAGE_COMPRESSION_FIXED_RATE_DEFAULT_EXT, VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT,或者 VK_IMAGE_COMPRESSION_DISABLED_EXT其中一个
 	2.如果flags 包含VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT，则pFixedRateFlags必须不为NULL，
-	
-
 	*/
-	
+	}
 
 
 
@@ -833,6 +877,152 @@ void ResourceCreationTest::ImageCreateTest()
 	4.如果pCreateInfo 中的pNext中含有一个VkBufferCollectionImageCreateInfoFUCHSIA，则pCreateInfo必须匹配在匹配标准小 系统选定的除了VkImageCreateInfo::extent 以及VkImageCreateInfo::usage的VkImageCreateInfo
 
 	*/
+
+
+
+	//image subresource layout
+	{
+		/*
+		image坐标地址计算：
+		1.非压缩format：
+			// (x,y,z,layer) are in texel coordinates
+			address(x,y,z,layer) = layer*arrayPitch + z*depthPitch + y*rowPitch + x*elementSize + offset
+		2.压缩format
+			// (x,y,z,layer) are in compressed texel block coordinates
+			address(x,y,z,layer) = layer*arrayPitch + z*depthPitch + y*rowPitch + x*compressedTexelBlockByteSize + offset;
+		*/
+
+		VkSubresourceLayout subresourceLayout;
+		subresourceLayout.arrayPitch;//描述了当前image subresource每一个array layer所需要的字节内存大小
+		subresourceLayout.rowPitch;//描述了当前image subresource每一行texel所需要的字节内存大小
+		subresourceLayout.depthPitch;//描述了3维图像当前image subresource每一个slice之间所需要的字节内存大小
+		subresourceLayout.offset;//是当前image subresource从image的开头或者image subresource开始的plane 开始的字节偏移量
+		subresourceLayout.size;//是该image subresource的字节大小，包含rowPitch中需要的额外内存
+		VkImageSubresource imageSubresource;
+		imageSubresource.arrayLayer = 0;//指明array layer
+		imageSubresource.aspectMask = VK_IMAGE_ASPECT_PLANE_0_BIT;//是一个指明 image aspect的 VkImageAspectFlags 值
+		imageSubresource.mipLevel = 0;//指明mipmap level
+		//查询image subresource 的layout布局
+		vkGetImageSubresourceLayout(device, image, &imageSubresource, &subresourceLayout);
+		/*
+		vkGetImageSubresourceLayout有效用法：
+		1.image 必须以tiling为VK_IMAGE_TILING_LINEAR或 VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT创建
+		2.pSubresource的aspectMask 必须只含有一个比特位
+		3.pSubresource的mipLevel必须小于image创建指定的mipLevels，arrayLayer必须小于image创建指定的arrayLayers
+		4.如果image的format是一个color format且不是一个multi-planar image format，且tiling 为VK_IMAGE_TILING_LINEAR 或 VK_IMAGE_TILING_OPTIMAL，则pSubresource的 aspectMask必须为 VK_IMAGE_ASPECT_COLOR_BIT
+		5.如果image的format有一个depth component，则pSubresource的aspectMask 必须包含VK_IMAGE_ASPECT_DEPTH_BIT
+		6.如果image的format有一个stencil component，则pSubresource的aspectMask 必须包含VK_IMAGE_ASPECT_STENCIL_BIT
+		7.如果image的format不包含一个stencil 或 depth component，则pSubresource的aspectMask 不能包含VK_IMAGE_ASPECT_DEPTH_BIT 或VK_IMAGE_ASPECT_STENCIL_BIT
+		8.如果image的tiling 为 VK_IMAGE_TILING_LINEAR且含有一个multi-planar 的 image format，则pSubresource的aspectMask 必须是一个单独有效的multi-planar mask比特位
+		9.如果image 以VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID 类型的external memory handle type创建，则该image必须已经绑定了memory
+		10.如果image的tiling 为VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT，则pSubresource的aspectMask 必须为VK_IMAGE_ASPECT_MEMORY_PLANE_i_BIT_EXT且 i必须小于和 image的format以及 VkImageDrmFormatModifierPropertiesEXT::drmFormatModifier 相关联的 VkDrmFormatModifierPropertiesEXT::drmFormatModifierPlaneCount
+
+		*/
+
+		VkSubresourceLayout2KHR subresourceLayout2KHR{};
+		subresourceLayout2KHR.sType = VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2_KHR;
+		subresourceLayout2KHR.pNext = nullptr;
+		subresourceLayout2KHR.subresourceLayout = subresourceLayout; //是一个VkSubresourceLayout （vkGetImageSubresourceLayout的参数）
+
+		VkImageSubresource2KHR imageSubresourceKHR{};
+		imageSubresourceKHR.sType = VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2_KHR;
+			//VkImageSubresource2KHR.pNext
+			{
+				//当image创建指定了VK_HOST_IMAGE_COPY_MEMCPY_EXT，然后要查询使用 vkCopyMemoryToImageEXT 或者 vkCopyImageToMemoryEXT 命令拷贝到image或从image拷贝的需要的内存大小
+				//VkSubresourceHostMemcpySizeEXT链接到VkImageSubresource2KHR.pNext
+				VkSubresourceHostMemcpySizeEXT subresourceHostMemcpySizeEXT{};
+				subresourceHostMemcpySizeEXT.sType = VK_STRUCTURE_TYPE_SUBRESOURCE_HOST_MEMCPY_SIZE_EXT;
+				subresourceHostMemcpySizeEXT.pNext = nullptr;
+				subresourceHostMemcpySizeEXT.size = 0;//为image subresource的字节大小
+
+				//VkImageCompressionPropertiesEXT链接到VkImageSubresource2KHR.pNext
+				VkImageCompressionPropertiesEXT  imageCompressionPropertiesEXT{  };//前面已经说明过该结构体的作用这里边不再进行说明
+
+				
+
+
+			}
+		imageSubresourceKHR.pNext = nullptr;//可以包含一个 VkImageCompressionPropertiesEXT 或 VkSubresourceHostMemcpySizeEXT
+		imageSubresourceKHR.imageSubresource = imageSubresource;// 是一个 VkImageSubresource （vkGetImageSubresourceLayout的参数）.
+		//查询image subresource 的layout布局,和vkGetImageSubresourceLayout相似，只是可以查询时可以附加一些额外信息，等效于vkGetImageSubresourceLayout2EXT,该接口可以查询VK_IMAGE_TILING_OPTIMAL的imagesubresource但是返回的值时未定义的
+		vkGetImageSubresourceLayout2KHR(device, image, &imageSubresourceKHR, &subresourceLayout2KHR);
+		/*
+		vkGetImageSubresourceLayout2KHR或vkGetImageSubresourceLayout2EXT有效用法:
+		1.pSubresource的aspectMask 必须只含有一个比特位
+		2.pSubresource的mipLevel必须小于image创建指定的mipLevels，arrayLayer必须小于image创建指定的arrayLayers
+		3.如果image的format是一个color format且不是一个multi-planar image format，且tiling 为VK_IMAGE_TILING_LINEAR 或 VK_IMAGE_TILING_OPTIMAL，则pSubresource的 aspectMask必须为 VK_IMAGE_ASPECT_COLOR_BIT
+		4.如果image的format有一个depth component，则pSubresource的aspectMask 必须包含VK_IMAGE_ASPECT_DEPTH_BIT
+		5.如果image的format有一个stencil component，则pSubresource的aspectMask 必须包含VK_IMAGE_ASPECT_STENCIL_BIT
+		6.如果image的format不包含一个stencil 或 depth component，则pSubresource的aspectMask 不能包含VK_IMAGE_ASPECT_DEPTH_BIT 或VK_IMAGE_ASPECT_STENCIL_BIT
+		7.如果image的tiling 为 VK_IMAGE_TILING_LINEAR且含有一个multi-planar 的 image format，则pSubresource的aspectMask 必须是一个单独有效的multi-planar mask比特位
+		8.如果image 以VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID 类型的external memory handle type创建，则该image必须已经绑定了memory
+		9.如果image的tiling 为VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT，则pSubresource的aspectMask 必须为VK_IMAGE_ASPECT_MEMORY_PLANE_i_BIT_EXT且 i必须小于和 image的format以及 VkImageDrmFormatModifierPropertiesEXT::drmFormatModifier 相关联的 VkDrmFormatModifierPropertiesEXT::drmFormatModifierPlaneCount
+		*/
+
+
+	
+		VkDeviceImageSubresourceInfoKHR deviceImageSubresourceInfoKHR{};
+		deviceImageSubresourceInfoKHR.sType = VK_STRUCTURE_TYPE_DEVICE_IMAGE_SUBRESOURCE_INFO_KHR;
+		deviceImageSubresourceInfoKHR.pNext = nullptr;
+		deviceImageSubresourceInfoKHR.pCreateInfo = &imageCreateInfo;//是一个指向 VkImageCreateInfo 结构的指针，包含影响创建image的参数。
+		deviceImageSubresourceInfoKHR.pSubresource = &imageSubresourceKHR;//是指向VkImageSubresource2KHR结构的指针，为查询选择特定的图像子资源
+		/*
+		VkDeviceImageSubresourceInfoKHR有效用法:
+		1.pSubresource的aspectMask 必须只含有一个比特位
+		2.pSubresource的mipLevel必须小于pCreateInfo指定的mipLevels，arrayLayer必须小于pCreateInfo指定的arrayLayers
+		3.如果image的format是一个color format且不是一个multi-planar image format，且pCreateInfo的tiling 为VK_IMAGE_TILING_LINEAR 或 VK_IMAGE_TILING_OPTIMAL，则pSubresource的 aspectMask必须为 VK_IMAGE_ASPECT_COLOR_BIT
+		4.如果pCreateInfo的format有一个depth component，则pSubresource的aspectMask 必须包含VK_IMAGE_ASPECT_DEPTH_BIT
+		5.如果pCreateInfo的format有一个stencil component，则pSubresource的aspectMask 必须包含VK_IMAGE_ASPECT_STENCIL_BIT
+		6.如果pCreateInfo的format不包含一个stencil 或 depth component，则pSubresource的aspectMask 不能包含VK_IMAGE_ASPECT_DEPTH_BIT 或VK_IMAGE_ASPECT_STENCIL
+		7.如果pCreateInfo的tiling 为 VK_IMAGE_TILING_LINEAR且含有一个multi-planar 的 image format，则pSubresource的aspectMask 必须是一个单独有效的multi-planar mask比特位
+		*/
+		
+		//查询一个image subresource的memory layout，不需要指定一个image,和 vkGetImageSubresourceLayout2KHR类似，但是是通过 VkImageCreateInfo来指定image
+		vkGetDeviceImageSubresourceLayoutKHR(device, &deviceImageSubresourceInfoKHR, &subresourceLayout2KHR);
+
+
+
+
+		VkImageDrmFormatModifierPropertiesEXT imageDrmFormatModifierPropertiesEXT{};
+		imageDrmFormatModifierPropertiesEXT.sType = VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT;
+		imageDrmFormatModifierPropertiesEXT.pNext = nullptr;
+		imageDrmFormatModifierPropertiesEXT.drmFormatModifier;//返回image的 DRM format modifier。
+
+
+		//如果一个image是用VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT创建的,其他tiling不行，那么该图像就有一个Linux DRM format modifier。查询这个modifier
+		vkGetImageDrmFormatModifierPropertiesEXT(device, image, &imageDrmFormatModifierPropertiesEXT);
+
+	}
+
+	vkDestroyImage(device, image, nullptr);
+
+
+
+	//Image Format Features 参见p1076
+	{
+	//......
+	}
+
+	//Corner-Sampled Images
+	{
+	//corner-sampled image是一个非标准化的texel坐标以整数值而不是半整数值为中心的图像。参见p1077
+	}
+
+	//Image Mip Level Sizing
+	{
+		//complete mipmap chain是mipmap level的全集，从最大的level到最小的level，
+		// 对传统的image，即mipmal level数为 ⌊log2(max (width0 , height0 , depth0))⌋ + 1,第n层和第n+1层的mipmap level的width，height，depth满足 Sn+1 = max(⌊S/2⌋, 1),最小的mipmap为1，1*1，1*1*1
+		// 对corner-sampled images,即mipmal level数为 log2(max (width0 , height0 , depth0)),第n层和第n+1层的mipmap level的width，height，depth满足 Sn+1 = max(⌈Sn/2⌉, 2),最小的mipmap为1*1，1*1*1，不支持一维
+	}
+
+	//image layout
+	{
+		//每个image subresource 都有一个image layout，不同的subresource 的image layout可以不同
+
+
+
+
+	}
 
 
 

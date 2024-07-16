@@ -17,6 +17,7 @@ private:
 	void BufferCreateTest();
 	void BufferViewCreateTest();
 	void ImageCreateTest();
+	void ImageViewCreateTest();
 
 };
 TEST_REGISTER(ResourceCreationTest)

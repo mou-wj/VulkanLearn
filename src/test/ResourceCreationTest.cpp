@@ -1,5 +1,6 @@
 ﻿#include "ResourceCreationTest.h"
 #include <Windows.h>
+#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_win32.h>
 #include <winnt.h>
 #include <vulkan/vulkan_metal.h>
@@ -1025,6 +1026,215 @@ void ResourceCreationTest::ImageCreateTest()
 	}
 
 
+
+}
+
+struct ImageViewCreateInfoEXT {
+	VkExportMetalObjectCreateInfoEXT exportMetalObjectCreateInfoEXT{};
+	VkImageViewASTCDecodeModeEXT imageViewASTCDecodeModeEXT{};
+	VkImageViewMinLodCreateInfoEXT imageViewMinLodCreateInfoEXT{};
+	VkImageViewSampleWeightCreateInfoQCOM imageViewSampleWeightCreateInfoQCOM{};
+	VkImageViewSlicedCreateInfoEXT imageViewSlicedCreateInfoEXT{};
+	VkImageViewUsageCreateInfo imageViewUsageCreateInfo{};
+	VkOpaqueCaptureDescriptorDataCreateInfoEXT OpaqueCaptureDescriptorDataCreateInfoEXT{};
+	VkSamplerYcbcrConversionInfo samplerYcbcrConversionInfo{};
+	ImageViewCreateInfoEXT() {
+		Init();
+	}
+	void Init() {
+		exportMetalObjectCreateInfoEXT.sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT;
+		imageViewASTCDecodeModeEXT.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_ASTC_DECODE_MODE_EXT;
+		imageViewMinLodCreateInfoEXT.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_MIN_LOD_CREATE_INFO_EXT;
+		imageViewSampleWeightCreateInfoQCOM.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_SAMPLE_WEIGHT_CREATE_INFO_QCOM;
+		imageViewSlicedCreateInfoEXT.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_SLICED_CREATE_INFO_EXT;
+		imageViewUsageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_USAGE_CREATE_INFO;
+		OpaqueCaptureDescriptorDataCreateInfoEXT.sType = VK_STRUCTURE_TYPE_OPAQUE_CAPTURE_DESCRIPTOR_DATA_CREATE_INFO_EXT;
+		samplerYcbcrConversionInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO_KHR;
+
+
+
+	}
+};
+
+
+void ResourceCreationTest::ImageViewCreateTest()
+{
+	/*
+	shaders不能直接访问image对象用于读取或写入图像数据。相反，将使用表示image subresource的连续范围并包含其他元数据的image view来进行访问image。image view必须在兼容类型的image上创建，并且必须表示image subresource的有效子集。
+	*/
+
+
+	
+	
+	VkImageView imageView{};
+	VK_REMAINING_ARRAY_LAYERS;//VK_REMAINING_ARRAY_LAYERS  是一个特殊的常量值，用于图像视图，用来表示图像中基底层后的所有剩余数组层都应该包含在视图中。
+	VK_REMAINING_MIP_LEVELS;//VK_REMAINING_MIP_LEVELS 是一个特殊的常量值，用于图像视图，用来表示在基础级别之后的图像中剩余的所有mipmap级别都应该包含在视图中
+
+	//image view 的用法隐含（隐含规则见p1087）在image 创建时候usage指定的内存，但可以在VkImageViewCreateInfo的pNext中包含一个VkImageViewUsageCreateInfo进行显示指定，一些其他的规则见p1087
+	{
+		/*
+		 Image type 和 image view type 兼容需求表
+
+		Image View Type					|		 Compatible Image Types
+		VK_IMAGE_VIEW_TYPE_1D			|	VK_IMAGE_TYPE_1D
+		VK_IMAGE_VIEW_TYPE_1D_ARRAY		|	VK_IMAGE_TYPE_1D
+		VK_IMAGE_VIEW_TYPE_2D			|	VK_IMAGE_TYPE_2D , VK_IMAGE_TYPE_3D
+		VK_IMAGE_VIEW_TYPE_2D_ARRAY		|	VK_IMAGE_TYPE_2D , VK_IMAGE_TYPE_3D
+		VK_IMAGE_VIEW_TYPE_CUBE			|	VK_IMAGE_TYPE_2D
+		VK_IMAGE_VIEW_TYPE_CUBE_ARRAY	|	VK_IMAGE_TYPE_2D
+		VK_IMAGE_VIEW_TYPE_3D			|	VK_IMAGE_TYPE_3D
+		*/
+	}
+	VkImageViewCreateInfo imageViewCreateInfo{};
+	imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		ImageViewCreateInfoEXT imageViewCreateInfoEXT{};
+	imageViewCreateInfo.pNext = &imageViewCreateInfoEXT.exportMetalObjectCreateInfoEXT;
+	imageViewCreateInfo.flags = 0;/*是指定image view的附加参数的 VkImageViewCreateFlagBits 组合值的位掩码。
+	VkImageViewCreateFlagBits:
+	VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT: 指明device将在VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT 阶段读取ragment density map
+	VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT: 指明host将在render pass记录到的primary command buffer的vkEndCommandBuffer命令执行期间读取ragment density map
+	VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT: 指明image view可以在capturing 和 replaying (e.g. for trace capture and replay)和descriptor buffers 一起使用，参见VkOpaqueCaptureDescriptorDataCreateInfoEXT（p1392）
+
+	*/
+	imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;//是指定image view类型的 VkImageViewType值
+	imageViewCreateInfo.format = VK_FORMAT_UNDEFINED;//指明用来解释image texel blocks的format和类型的一个 VkFormat值
+		VkComponentMapping componentsMapping;
+		componentsMapping.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+		componentsMapping.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+		componentsMapping.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+		componentsMapping.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+	imageViewCreateInfo.components = componentsMapping;//是一种 VkComponentMapping 结构体，指定color component（或depth或stencil component转换为color component后）的重新映射规则。该规则主要是用于shaders代码中vec component是如何映射到image component的
+	imageViewCreateInfo.image = VkImage{/*假设这是一个有效的VkImage*/ }; //指明从那个image上创建image view
+		VkImageSubresourceRange imageSubresourceRange{};
+		imageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;//是 VkImageAspectFlagBits组合值的位掩码，指定image view中包含image的哪个aspect。
+		imageSubresourceRange.baseArrayLayer = 0;//指明image view可访问的image的第一个array layer
+		imageSubresourceRange.layerCount = 1;//指明image view从baseArrayLayer开始可访问的array layer的数量。如果为VK_REMAINING_ARRAY_LAYERS则表明使用baseArrayLayer开始所有的array layer
+		imageSubresourceRange.baseMipLevel = 0;//指明image view可访问的image的第一个mipmap level
+		imageSubresourceRange.levelCount = 1;//指明image view从baseMipLevel开始可访问的mipmap level的数量。如果为VK_REMAINING_MIP_LEVELS则表明使用baseMipLevel开始所有的array layer
+	imageViewCreateInfo.subresourceRange = imageSubresourceRange;//是一个 VkImageSubresourceRange 结构，选择image view 可访问的mipmap level和array layer集合。
+	/*
+	VkImageViewCreateInfo有效用法：
+	1.如果image不以VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT创建，则viewType 不能为VK_IMAGE_VIEW_TYPE_CUBE 或者 VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+	2.如果imageCubeArray 特性没有开启，viewType 不能是VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+	3.如果image以VK_IMAGE_TYPE_3D但是不以VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT 创建则viewType 不能为VK_IMAGE_VIEW_TYPE_2D_ARRAY
+	4.如果image以VK_IMAGE_TYPE_3D但是不以VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT 或者VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT 创建则viewType 不能为VK_IMAGE_VIEW_TYPE_2D
+	5.如果image以VK_IMAGE_TYPE_3D创建且 viewType为VK_IMAGE_VIEW_TYPE_2D 或者VK_IMAGE_VIEW_TYPE_2D_ARRAY，则（1）subresourceRange.levelCount 必须为1
+																									       （2）VkImageCreateInfo::flags不能包含任何VK_IMAGE_CREATE_SPARSE_BINDING_BIT, VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT, 和VK_IMAGE_CREATE_SPARSE_ALIASED_BIT中的一个
+	6.如果image创建时的samples 不等于VK_SAMPLE_COUNT_1_BIT，则viewType 必须为VK_IMAGE_VIEW_TYPE_2D或 VK_IMAGE_VIEW_TYPE_2D_ARRAY
+	7.image 必须以包含至少一个定义在有效对image view的image usage list中的usage 值创建
+	8.最终image view的format features必须包含至少一个比特位
+	9.如果image的usage包含VK_IMAGE_USAGE_SAMPLED_BIT，则最终image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+	10.如果image的usage包含VK_IMAGE_USAGE_STORAGE_BIT，则最终image view的format features必须包含VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT
+	11.如果image的usage包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT，则最终image view的format features必须包含VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT 或VK_FORMAT_FEATURE_2_LINEAR_COLOR_ATTACHMENT_BIT_NV
+	12.如果image的usage包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT，则最终image view的format features必须包含VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+	13.如果image以VK_IMAGE_CREATE_VIDEO_PROFILE_INDEPENDENT_BIT_KHR创建则（1）如果usage包含VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR，则最终image view的format features必须包含VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR
+																		 （2）如果usage包含VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR，则最终image view的format features必须包含VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR
+																		 （3）image的usage不能包含VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR 或者 VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR
+																		 （4）如果usage包含VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR，则最终image view的format features必须包含VK_FORMAT_FEATURE_VIDEO_ENCODE_INPUT_BIT_KHR
+																		 （5）如果usage包含VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR，则最终image view的format features必须包含VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR
+	
+	14.如果usage 包含VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT，且 externalFormatResolve特性没有开启，nullColorAttachmentWithExternalFormatResolve属性为VK_TRUE，或者image一个VkExternalFormatANDROID::externalFormat为0的值创建 三者只要任何一个成立，则
+						image view的format features至少包含VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT 或 VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT 或者 VK_FORMAT_FEATURE_2_LINEAR_COLOR_ATTACHMENT_BIT_NV 中的一个
+	15.subresourceRange.baseMipLevel 必须小于image的VkImageCreateInfo中指定的mipLevels
+	16.如果subresourceRange.levelCount 不为VK_REMAINING_MIP_LEVELS ，则subresourceRange.baseMipLevel + subresourceRange.levelCount 必须小于等于image的VkImageCreateInfo中指定的mipLevels
+	17.如果image 以包含VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT的usage创建，则subresourceRange.levelCount 必须为1
+	18.如果image不是一个以VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT 或VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT创建的3D image，或者viewType不是VK_IMAGE_VIEW_TYPE_2D 或 VK_IMAGE_VIEW_TYPE_2D_ARRAY，则subresourceRange.baseArrayLayer 必须小于image的VkImageCreateInfo中指定的arrayLayers
+	19.如果subresourceRange.layerCount 不是 VK_REMAINING_ARRAY_LAYERS，且image不是一个以VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT 或VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT创建的，或者viewType不是VK_IMAGE_VIEW_TYPE_2D 或 VK_IMAGE_VIEW_TYPE_2D_ARRAY，则subresourceRange.baseArrayLayer 必须为非0值且subresourceRange.baseArrayLayer + subresourceRange.layerCount小于等于image的VkImageCreateInfo中指定的arrayLayers
+	20.如果image是以VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT 创建的3D image，且viewType 为 VK_IMAGE_VIEW_TYPE_2D 或者 VK_IMAGE_VIEW_TYPE_2D_ARRAY，则subresourceRange.baseArrayLayer必须小于根据Image Mip Level Sizing 定义的规则由 VkImageCreateInfo的baseMipLevel以及 extent.depth计算出来的深度值
+	21.如果subresourceRange.layerCount 不是 VK_REMAINING_ARRAY_LAYERS，且image是一个以VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT 创建的3D image，且viewType是VK_IMAGE_VIEW_TYPE_2D 或 VK_IMAGE_VIEW_TYPE_2D_ARRAY，则subresourceRange.layerCount 必须为非0值且subresourceRange.baseArrayLayer + subresourceRange.layerCount 必须小于等于根据Image Mip Level Sizing 定义的规则由 VkImageCreateInfo的baseMipLevel以及 extent.depth计算出来的深度值
+	22.如果image以VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT但不以VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT 标志创建，且其format是一个multi-planar format，则VkImageViewCreateInfo.format必须和创建image的format兼容，参见 Format Compatibility Classes p4067
+	23.如果image以VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT 创建，则（1）当前format必须和创建image的format是兼容的，或者是大小兼容的非压缩的format。
+																	   	  （2）如果format是一个非压缩format，则subresourceRange.levelCount必须为1
+																	   	  （3）如果VkPhysicalDeviceMaintenance6PropertiesKHR::blockTexelViewCompatibleMultipleLayers不为VK_TRUE,且format是一个非压缩format，则subresourceRange.layerCount 必须为1
+
+	24.如果创建image的VkImageCreateInfo.pNext中含有一个VkImageFormatListCreateInfo，且VkImageFormatListCreateInfo::viewFormatCount不为0，则format必须为VkImageFormatListCreateInfo::pViewFormats 中的一个
+	25.如果image以VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT创建，如果iamge的format是一个multi-planar format，且subresourceRange.aspectMask是multi-planar aspect mask中的一个，则format 必须和subresourceRange.aspectMask指明的plane的 image format兼容，参见Compatible Formats of Planes of Multi-Planar Formats p4057
+	26.subresourceRange.aspectMask 必须只能含有至多一个有效的multi-planar aspect mask 比特位
+	27.如果image不以VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT 创建，如果如果image的 format是一个multi-planar format且 subresourceRange.aspectMask为VK_IMAGE_ASPECT_COLOR_BIT ，则format必须等于创建image的format
+	28.如果image view需要一个sampler Y′CBCR conversion且image的 usage含有VK_IMAGE_USAGE_SAMPLED_BIT，则pNext中必须含有一个conversion不为VK_NULL_HANDLE 的VkSamplerYcbcrConversionInfo
+	29.如果format 含有_422 或 _420 后缀，则image必须以width为2的倍数来创建
+	30.如果format 含有_420 后缀，则image必须以height为2的倍数来创建
+	31.如果pNext中必须含有一个conversion不为VK_NULL_HANDLE 的VkSamplerYcbcrConversionInfo，则（1）components中的所有成员必须为identity swizzle
+																							 （2）则format 必须和VkSamplerYcbcrConversionCreateInfo::format相同
+	32.如果image是non-sparse 则其必须绑定到一个完整连续的单个VkDeviceMemory对象上
+	33.viewType 必须和image 的type兼容，见1045行中的注释
+	34.如果image有一个Android external format，则（1）format必须为VK_FORMAT_UNDEFINED
+												 （2）pNext中必须有一个以含有和image相同的external format创建的conversion的VkSamplerYcbcrConversionInfo
+												 （3）components中的所有成员必须为identity swizzle
+	35.如果image有一个QNX Screen external format，则（1）format必须为VK_FORMAT_UNDEFINED
+												 （2）pNext中必须有一个以含有和image相同的external format创建的conversion的VkSamplerYcbcrConversionInfo
+												 （3）components中的所有成员必须为identity swizzle
+	36.如果image以usage含有VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR创建，则viewType必须为VK_IMAGE_VIEW_TYPE_2D 或者 VK_IMAGE_VIEW_TYPE_2D_ARRAY
+	37.如果shadingRateImage 特性开启，且如果image以usage含有VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV创建，则format 必须为 VK_FORMAT_R8_UINTAY
+	38.如果attachmentFragmentShadingRate 特性开启，且对image view如果usage含有VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR，则（1）image view的format features必须包含 VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR
+																																		 （2）如果layeredShadingRateAttachments为 VK_FALSE，则subresourceRange.layerCount 必须为1
+	39.如果fragmentDensityMapDynamic 特性未开启，flags不能包含VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT
+	40.如果fragmentDensityMapDeferred 特性未开启，flags不能包含VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT
+	41.如果flags包含VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT，则flags就不能包含VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT
+	42.如果image 以VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT创建且usage 包含VK_IMAGE_USAGE_SAMPLED_BIT，subresourceRange.layerCount 必须小于等于 VkPhysicalDeviceFragmentDensityMap2PropertiesEXT::maxSubsampledArrayLayers
+	43.如果invocationMask 特性开启，且image以usage含VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI 创建，format 必须为VK_FORMAT_R8_UINT
+	44.如果flags 不包含VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT，且image创建是usage含有VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT，则image创建时的flags就不能含有VK_IMAGE_CREATE_PROTECTED_BIT,
+						VK_IMAGE_CREATE_SPARSE_BINDING_BIT, VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT, 或者 VK_IMAGE_CREATE_SPARSE_ALIASED_BIT 中的任何一个
+	45.如果pNext中包含一个VkImageViewUsageCreateInfo，但是image创建时候的VkImageCreateInfo.pNext中不包含VkImageViewUsageCreateInfo，则pNext中的VkImageViewUsageCreateInfo的usage就不能包含任何在VkImageCreateInfo.usage中没有的比特位
+	46.如果pNext中包含一个VkImageViewUsageCreateInfo，但是image创建时候的VkImageCreateInfo.pNext中包含VkImageStencilUsageCreateInfo，则（1）如果 subresourceRange.aspectMask 包含VK_IMAGE_ASPECT_STENCIL_BIT， 则pNext中的VkImageViewUsageCreateInfo的usage就不能包含任何在VkImageCreateInfo.pNext中的VkImageStencilUsageCreateInfo.usage中没有的比特位
+																																	   （2）如果 subresourceRange.aspectMask 不包含VK_IMAGE_ASPECT_STENCIL_BIT， 则pNext中的VkImageViewUsageCreateInfo的usage就不能包含任何在VkImageCreateInfo.ugsae中没有的比特位
+	47.如果viewType为VK_IMAGE_VIEW_TYPE_1D, VK_IMAGE_VIEW_TYPE_2D, 或者 VK_IMAGE_VIEW_TYPE_3D，则（1）如果subresourceRange.layerCount不为VK_REMAINING_ARRAY_LAYERS则必须为1
+																								 （2）如果subresourceRange.layerCount不为VK_REMAINING_ARRAY_LAYERS就必须为1
+	48.如果viewType为VK_IMAGE_VIEW_TYPE_CUBE，则（1）如果subresourceRange.layerCount 不为VK_REMAINING_ARRAY_LAYERS就必须为6
+												（2）如果subresourceRange.layerCount 为VK_REMAINING_ARRAY_LAYERS 则 remaining layers的个数就必须为6
+	49.如果viewType为VK_IMAGE_VIEW_TYPE_CUBE_ARRAY，则（1）如果subresourceRange.layerCount 不为VK_REMAINING_ARRAY_LAYERS就必须为6的倍数
+													  （2）如果subresourceRange.layerCount 为VK_REMAINING_ARRAY_LAYERS则 remaining layers的个数必须为6的倍数
+	50.如果VK_KHR_portability_subset 拓展开启，则（1）如果VkPhysicalDevicePortabilitySubsetFeaturesKHR::imageViewFormatSwizzle 为VK_FALSE，则components中的所有成员必须为identity swizzle
+												 （2）如果VkPhysicalDevicePortabilitySubsetFeaturesKHR::imageViewFormatReinterpretation 为VK_FALSE，image view的format相比image的format就不能包含不同数量的component，或者同一component含不同的比特数
+	51.如果image以usage含有VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR，VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR 或者 VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR，
+						   VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR, VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR, 或者 VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR创建，则viewType 必须为VK_IMAGE_VIEW_TYPE_2D 或者 VK_IMAGE_VIEW_TYPE_2D_ARRAY
+	52.如果flags包含VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT，descriptorBufferCaptureReplay特性必须开启
+	53.如果pNext中包含一个VkOpaqueCaptureDescriptorDataCreateInfoEXT，则flags必须包含VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT
+	54.如果pNext中包含一个VkExportMetalObjectCreateInfoEXT，则该结构体的exportObjectType 必须为VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT
+	55.如果pNext中包含一个VkImageViewSampleWeightCreateInfoQCOM，则（1）textureSampleWeighted 特性必须开启
+																   （2）image必须以usage含有VK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM 创建
+																   （3）components的所有成员必须为VK_COMPONENT_SWIZZLE_IDENTITY
+																   （4）subresourceRange.aspectMask 必须为 VK_IMAGE_ASPECT_COLOR_BIT
+																   （5）subresourceRange.levelCount 必须为 1
+																   （6）viewType 必须为 VK_IMAGE_VIEW_TYPE_1D_ARRAY or VK_IMAGE_VIEW_TYPE_2D_ARRAY
+																   （7）如果viewType 为 VK_IMAGE_VIEW_TYPE_1D_ARRAY,则 image 必须以 imageType 为 VK_IMAGE_TYPE_1D创建
+																   （8）如果viewType 为 VK_IMAGE_VIEW_TYPE_1D_ARRAY,则 subresourceRange.layerCount 必须为2
+																   （9）如果viewType 为 VK_IMAGE_VIEW_TYPE_1D_ARRAY,则 image必须以width 大于等于 （numPhases * max(align(filterSize.width,4),filterSize.height)）
+																   （10）如果viewType 为 VK_IMAGE_VIEW_TYPE_2D_ARRAY,则 image 必须以 imageType 为 VK_IMAGE_TYPE_2D创建
+																   （11）如果viewType 为 VK_IMAGE_VIEW_TYPE_2D_ARRAY,则 subresourceRange.layerCount 必须大于等于 numPhases
+																   （12）如果viewType 为 VK_IMAGE_VIEW_TYPE_2D_ARRAY,则 image必须以width 大于等于 filterSize.width
+																   （13）如果viewType 为 VK_IMAGE_VIEW_TYPE_2D_ARRAY,则 image必须以height 大于等于 filterSize.height
+																   （14）则VkImageViewSampleWeightCreateInfoQCOM::filterSize.height必须小于等于VkPhysicalDeviceImageProcessingPropertiesQCOM::maxWeightFilterDimension.height
+	56.subresourceRange.aspectMask 必须是对image 创建时的format有效的一个值
+
+	*/
+
+
+	// VkImageViewUsageCreateInfo
+	//该结构体可以限定相对于image的usage使用在本image view上的usage
+	VkImageViewUsageCreateInfo& VkImageViewUsageCreateInfo = imageViewCreateInfoEXT.imageViewUsageCreateInfo;
+	VkImageViewUsageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;//是指定image view允许使用的 VkImageUsageFlagBits组合值位掩码，不能为0
+
+
+	VK_REMAINING_3D_SLICES_EXT;//VK_REMAINING_3D_SLICES_EXT是一个特殊的常量值，用于VkImageViewSlicedCreateInfoEXT的切片计数，表示指定的第一个切片偏移后图像中剩余的所有3D切片都应该包含在视图中。
+	//VkImageViewSlicedCreateInfoEXT
+	//该结构体用来限制image view所对应的3D slices的范围--对应到image的Z维度的范围，3D slices只有一个mipmap level且只能和 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE结合使用
+	VkImageViewSlicedCreateInfoEXT& imageViewSlicedCreateInfoEXT = imageViewCreateInfoEXT.imageViewSlicedCreateInfoEXT;
+	imageViewSlicedCreateInfoEXT.sliceCount = 0;//是从sliceOffset开始image view可访问的3D slices数量
+	imageViewSlicedCreateInfoEXT.sliceOffset = 0;//是image view可访问的第一个3D slices对image的Z-偏移量
+	/*
+	VkImageViewSlicedCreateInfoEXT有效用法:
+	1.sliceOffset 必须小于 Image Mip Level Sizing中实际起作用的深度大小
+	2.如果sliceCount 不为VK_REMAINING_3D_SLICES_EXT，则其必须为非0值 且sliceOffset + sliceCount必须小于等于 Image Mip Level Sizing中实际起作用的深度大小
+	3.image 必须以imageType 为VK_IMAGE_TYPE_3D 创建
+	4.viewType必须为VK_IMAGE_VIEW_TYPE_3D
+	5.image view 必须只引用一个mipmap level
+	6.imageSlicedViewOf3D 特性必须在device上启用
+
+
+	*/
+
+	vkCreateImageView(device, &imageViewCreateInfo, nullptr, &imageView);
 
 }
 

@@ -18,6 +18,7 @@ private:
 	void BufferViewCreateTest();
 	void ImageCreateTest();
 	void ImageViewCreateTest();
+	void AccelerationStructureCreateTest();
 
 };
 TEST_REGISTER(ResourceCreationTest)

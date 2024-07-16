@@ -1099,18 +1099,50 @@ void ResourceCreationTest::ImageViewCreateTest()
 	imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;//是指定image view类型的 VkImageViewType值
 	imageViewCreateInfo.format = VK_FORMAT_UNDEFINED;//指明用来解释image texel blocks的format和类型的一个 VkFormat值
 		VkComponentMapping componentsMapping;
-		componentsMapping.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-		componentsMapping.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-		componentsMapping.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-		componentsMapping.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+		componentsMapping.r = VK_COMPONENT_SWIZZLE_IDENTITY;//是一个 VkComponentSwizzle值，指定shader输出vec的R分量的分量值
+		componentsMapping.g = VK_COMPONENT_SWIZZLE_IDENTITY;//是一个 VkComponentSwizzle值，指定shader输出vec的G分量的分量值
+		componentsMapping.b = VK_COMPONENT_SWIZZLE_IDENTITY;//是一个 VkComponentSwizzle值，指定shader输出vec的B分量的分量值
+		componentsMapping.a = VK_COMPONENT_SWIZZLE_IDENTITY;//是一个 VkComponentSwizzle值，指定shader输出vec的A分量的分量值
+		/*
+		
+        VK_COMPONENT_SWIZZLE_IDENTITY:  指明这个分量component设置为 identity swizzle.
+        VK_COMPONENT_SWIZZLE_ZERO:  指明这个分量component设置为 0.
+		VK_COMPONENT_SWIZZLE_ONE:  指明这个分量component设置为1或1.0，取决于image view format是一个整数还是浮点型的format，参见p4027  Format Definition
+		VK_COMPONENT_SWIZZLE_R:  指明这个分量component设置为image的 R 分量component
+        VK_COMPONENT_SWIZZLE_G:  指明这个分量component设置为image的 G 分量component
+        VK_COMPONENT_SWIZZLE_B:  指明这个分量component设置为image的 B 分量component
+        VK_COMPONENT_SWIZZLE_A:  指明这个分量component设置为image的 A 分量component
+
+		componeny设置为VK_COMPONENT_SWIZZLE_IDENTITY等价于：
+		Component       |       Identity Mapping
+		components.r	|	 VK_COMPONENT_SWIZZLE_R
+		components.g	|	 VK_COMPONENT_SWIZZLE_G
+		components.b	|	 VK_COMPONENT_SWIZZLE_B
+		components.a	|	 VK_COMPONENT_SWIZZLE_A
+		*/
 	imageViewCreateInfo.components = componentsMapping;//是一种 VkComponentMapping 结构体，指定color component（或depth或stencil component转换为color component后）的重新映射规则。该规则主要是用于shaders代码中vec component是如何映射到image component的
 	imageViewCreateInfo.image = VkImage{/*假设这是一个有效的VkImage*/ }; //指明从那个image上创建image view
 		VkImageSubresourceRange imageSubresourceRange{};
-		imageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;//是 VkImageAspectFlagBits组合值的位掩码，指定image view中包含image的哪个aspect。
-		imageSubresourceRange.baseArrayLayer = 0;//指明image view可访问的image的第一个array layer
-		imageSubresourceRange.layerCount = 1;//指明image view从baseArrayLayer开始可访问的array layer的数量。如果为VK_REMAINING_ARRAY_LAYERS则表明使用baseArrayLayer开始所有的array layer
+		imageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;/*是 VkImageAspectFlagBits组合值的位掩码，指定image view中包含image的哪个aspect。如果包含VK_IMAGE_ASPECT_COLOR_BIT,就不能再包含VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT,或者 VK_IMAGE_ASPECT_PLANE_2_BIT，且不能包含任何 VK_IMAGE_ASPECT_MEMORY_PLANE_i_BIT_EXT
+		VkImageAspectFlagBits:
+        VK_IMAGE_ASPECT_NONE:  指明没有image aspect, 或者 image aspect 不可应用.
+        VK_IMAGE_ASPECT_COLOR_BIT:  指明 color aspect.
+        VK_IMAGE_ASPECT_DEPTH_BIT:  指明 depth aspect.
+        VK_IMAGE_ASPECT_STENCIL_BIT:  指明 stencil aspect.
+        VK_IMAGE_ASPECT_METADATA_BIT:  指明用在sparse resource operations的 metadata aspect used 
+        VK_IMAGE_ASPECT_PLANE_0_BIT:  指明multi-planar image format 的 plane 0 
+        VK_IMAGE_ASPECT_PLANE_1_BIT:  指明multi-planar image format 的 plane 1
+        VK_IMAGE_ASPECT_PLANE_2_BIT:  指明multi-planar image format 的 plane 2
+        VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT:  指明 memory plane 0.
+        VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT:  指明 memory plane 1.
+        VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT:  指明 memory plane 2.
+        VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT:  指明 memory plane 3
+		
+		*/
+		imageSubresourceRange.baseArrayLayer = 0;//指明image view可访问的image的第一个array layer。对于cube map,从baseArrayLayer 开始依次表示+X,-X,+Y,-Y,+Z,-Z
+		imageSubresourceRange.layerCount = 1;//指明image view从baseArrayLayer开始可访问的array layer的数量。如果为VK_REMAINING_ARRAY_LAYERS则表明使用baseArrayLayer开始所有的array layer，如果不为VK_REMAINING_ARRAY_LAYERS则必须大于0
 		imageSubresourceRange.baseMipLevel = 0;//指明image view可访问的image的第一个mipmap level
-		imageSubresourceRange.levelCount = 1;//指明image view从baseMipLevel开始可访问的mipmap level的数量。如果为VK_REMAINING_MIP_LEVELS则表明使用baseMipLevel开始所有的array layer
+		imageSubresourceRange.levelCount = 1;//指明image view从baseMipLevel开始可访问的mipmap level的数量。如果为VK_REMAINING_MIP_LEVELS则表明使用baseMipLevel开始所有的array layer，如果不为VK_REMAINING_MIP_LEVELS则必须大于0
 	imageViewCreateInfo.subresourceRange = imageSubresourceRange;//是一个 VkImageSubresourceRange 结构，选择image view 可访问的mipmap level和array layer集合。
 	/*
 	VkImageViewCreateInfo有效用法：
@@ -1212,8 +1244,8 @@ void ResourceCreationTest::ImageViewCreateTest()
 
 	// VkImageViewUsageCreateInfo
 	//该结构体可以限定相对于image的usage使用在本image view上的usage
-	VkImageViewUsageCreateInfo& VkImageViewUsageCreateInfo = imageViewCreateInfoEXT.imageViewUsageCreateInfo;
-	VkImageViewUsageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;//是指定image view允许使用的 VkImageUsageFlagBits组合值位掩码，不能为0
+	VkImageViewUsageCreateInfo& imageViewUsageCreateInfo = imageViewCreateInfoEXT.imageViewUsageCreateInfo;
+	imageViewUsageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;//是指定image view允许使用的 VkImageUsageFlagBits组合值位掩码，不能为0
 
 
 	VK_REMAINING_3D_SLICES_EXT;//VK_REMAINING_3D_SLICES_EXT是一个特殊的常量值，用于VkImageViewSlicedCreateInfoEXT的切片计数，表示指定的第一个切片偏移后图像中剩余的所有3D切片都应该包含在视图中。
@@ -1234,7 +1266,108 @@ void ResourceCreationTest::ImageViewCreateTest()
 
 	*/
 
+
+	//VkImageViewASTCDecodeModeEXT
+	//这个结构体表示使用了ATSC format的image view的解码模式
+	VkImageViewASTCDecodeModeEXT& imageViewASTCDecodeModeEXT = imageViewCreateInfoEXT.imageViewASTCDecodeModeEXT;
+	imageViewASTCDecodeModeEXT.decodeMode = VK_FORMAT_R16G16B16A16_SFLOAT;//是用于解码ASTC压缩格式的中间格式。如果image view的format为sRGB格式，则该值无效
+	/*
+	VkImageViewASTCDecodeModeEXT有效用法:
+	1.decodeMode 必须是VK_FORMAT_R16G16B16A16_SFLOAT, VK_FORMAT_R8G8B8A8_UNORM, 或 VK_FORMAT_E5B9G9R9_UFLOAT_PACK32中的一个
+	2.如果 decodeModeSharedExponent 特性没有开启，decodeMode 就不能为VK_FORMAT_E5B9G9R9_UFLOAT_PACK32
+	3.如果 decodeMode 为VK_FORMAT_R8G8B8A8_UNORM, 则image view 必须不包含任何使用ASTC HDR模式的块
+	4.image view的format必须是ASTC Compressed Image Formats（p4307） 中的一个
+
+
+	*/
+
+
+
+	// VkImageViewSampleWeightCreateInfoQCOM
+	//该结构体指明 weight image sampling的参数，见p1519
+	VkImageViewSampleWeightCreateInfoQCOM& imageViewSampleWeightCreateInfoQCOM = imageViewCreateInfoEXT.imageViewSampleWeightCreateInfoQCOM;
+	imageViewSampleWeightCreateInfoQCOM.numPhases = 1;//是 sub-pixel filter 阶段的数量
+		VkExtent2D filterSize;
+	imageViewSampleWeightCreateInfoQCOM.filterSize = filterSize;//是一个指定权重滤波维度的VkExtent2D。见p1521
+		VkOffset2D filterCenter;
+	imageViewSampleWeightCreateInfoQCOM.filterCenter = filterCenter;//是一个描述权重滤波原点位置的VkOffset2D。指定滤波核中心，见p1522
+	/*
+	VkImageViewSampleWeightCreateInfoQCOM有效用法:
+	1.filterSize.width 必须小于或等于 VkPhysicalDeviceImageProcessingPropertiesQCOM::maxWeightFilterDimension.width
+	2.filterSize.height 必须小于或等于 VkPhysicalDeviceImageProcessingPropertiesQCOM::maxWeightFilterDimension.height
+	3.filterCenter.x 必须小于或等于(filterSize.width - 1)
+	4.filterCenter.y 必须小于或等于(filterSize.height - 1)
+	5.numPhases 必须是2的指数的平方(i.e., 1, 4, 16, 64, 256, etc.)
+	6.numPhases 必须小于等于 VkPhysicalDeviceImageProcessingPropertiesQCOM::maxWeightFilterPhases
+
+	*/
+
+	//VkImageViewMinLodCreateInfoEXT
+	//该结构体指定了image view的再 Image Level(s) Selection（p1506）, Texel Gathering（p1511） 以及 Integer Texel Coordinate Operations （p1510）中可访问的最小LOD值，见p1524
+	VkImageViewMinLodCreateInfoEXT& imageViewMinLodCreateInfoEXT = imageViewCreateInfoEXT.imageViewMinLodCreateInfoEXT;
+	imageViewMinLodCreateInfoEXT.minLod = 0.0f;//指定一个值限定最小的image view可访问的LOD 
+	/*
+	VkImageViewMinLodCreateInfoEXT有效用法：
+	1.如果minLod 特性没有开启，则minLod 必须为0
+	2.minLod 必须小于或等于 image view可访问的最后一个mipmap level的索引
+	*/
+
+
 	vkCreateImageView(device, &imageViewCreateInfo, nullptr, &imageView);
+
+
+	vkDestroyImageView(device, imageView, nullptr);
+
+	VkImageViewHandleInfoNVX imageViewHandleInfoNVX{};
+	imageViewHandleInfoNVX.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_HANDLE_INFO_NVX;
+	imageViewHandleInfoNVX.pNext = nullptr;
+	imageViewHandleInfoNVX.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//指明从哪里查询句柄的描述符类型
+	imageViewHandleInfoNVX.imageView = VkImageView{/*假设这是一个有效的VkImageView句柄*/ };//是要获取句柄的image view
+	imageViewHandleInfoNVX.sampler = VkSampler{/*假设这是一个有效的VkSampler句柄*/ };//是当生成句柄时绑定到image view的sampler
+	/*
+	VkImageViewHandleInfoNVX有效用法：
+	1.descriptorType 必须为VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE，VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 或者 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+	2.sampler 必须是有效的VkSampler句柄，如果descriptorType 为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+	3.如果descriptorType 为VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE 或者VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，则image view对应的image必须以usage含有VK_IMAGE_USAGE_SAMPLED_BIT创建
+	4.如果descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_IMAGE，则image view对应的image必须以usage含有VK_IMAGE_USAGE_STORAGE_BIT创建
+
+	*/
+	//获取image view的句柄
+	uint32_t handle = vkGetImageViewHandleNVX(device, &imageViewHandleInfoNVX);
+
+
+
+
+
+	VkImageViewAddressPropertiesNVX imageViewAddressPropertiesNVX{};
+	imageViewAddressPropertiesNVX.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_ADDRESS_PROPERTIES_NVX;
+	imageViewAddressPropertiesNVX.pNext = nullptr;
+	imageViewAddressPropertiesNVX.deviceAddress;//返回image view的设备地址
+	imageViewAddressPropertiesNVX.size = 0;//返回image view设备地址内存的字节大小
+
+
+	//获取image view的设备地址
+	vkGetImageViewAddressNVX(device, VkImageView{/*假设这是一个有效的VkImageView句柄*/ }, & imageViewAddressPropertiesNVX);
+	
+
+	// Image View Format Features 见p1111
+	{
+		//简单讲就是调用某些查询格式属性的函数来获取对应格式的属性
+	}
+
+}
+
+void ResourceCreationTest::AccelerationStructureCreateTest()
+{
+	/*
+	概述：
+	加速结构是不透明的数据结构，以更有效地对提供的几何数据执行空间查询。对于这种扩展，加速度结构是包含一组底层加速度结构的顶层加速度结构，或者是包含一组自定义几何的轴对边框或一组三角形的底层加速度结构。
+	顶层加速结构中的每个实例都包含对底层加速结构的引用，以及实例转换以及索引到着色器绑定所需的信息。顶层加速结构是绑定到加速描述符的结构，例如，要在光线跟踪管道中的着色器内部进行跟踪。
+	
+	*/
+	VkAccelerationStructureKHR accelerationStructureKHR{};
+	VkAccelerationStructureNV accelerationStructureNV{};
+
 
 }
 

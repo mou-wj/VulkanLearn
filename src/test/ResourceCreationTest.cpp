@@ -1678,14 +1678,63 @@ void ResourceCreationTest::AccelerationStructureCreateTest()
 	VkBindAccelerationStructureMemoryInfoNV bindAccelerationStructureMemoryInfoNV{};
 	bindAccelerationStructureMemoryInfoNV.sType = VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NV;
 	bindAccelerationStructureMemoryInfoNV.pNext = nullptr;
-	bindAccelerationStructureMemoryInfoNV.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ };
-	bindAccelerationStructureMemoryInfoNV.memoryOffset = 0;
-	bindAccelerationStructureMemoryInfoNV.deviceIndexCount = 0;
-	bindAccelerationStructureMemoryInfoNV.pDeviceIndices = VK_NULL_HANDLE;
-	bindAccelerationStructureMemoryInfoNV.accelerationStructure = VkAccelerationStructureNV{/*假设这是一个有效的VkAccelerationStructureNV句柄*/};
+	bindAccelerationStructureMemoryInfoNV.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ };//是一个 VkDeviceMemory指明要绑定到的memory
+	bindAccelerationStructureMemoryInfoNV.memoryOffset = 0;//是要绑定到加速结构的memory区域的起始偏移量。从内存偏移字节开始的内存中的返回到VkMemoryRequirements：：size的字节数，将被绑定到指定的加速结构。
+	bindAccelerationStructureMemoryInfoNV.deviceIndexCount = 0;//pDeviceIndices的元素个数
+	bindAccelerationStructureMemoryInfoNV.pDeviceIndices = VK_NULL_HANDLE;//是device索引值的数组首地址
+	bindAccelerationStructureMemoryInfoNV.accelerationStructure = VkAccelerationStructureNV{/*假设这是一个有效的VkAccelerationStructureNV句柄*/};//指明要绑定到memory上的加速结构
+	/*
+	1.accelerationStructure 不能已经被一个memory 对象备份了
+	2.memoryOffset 必须小于memory的大小
+	3.memory 必须已经使用调用vkGetAccelerationStructureMemoryRequirementsNV传入accelerationStructure 以及type为VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV 返回的结构中的VkMemoryRequirements的memoryTypeBits 允许的类型创建
+	4.memoryOffset 必须是调用vkGetAccelerationStructureMemoryRequirementsNV传入accelerationStructure 以及type为VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV 返回的结构中的VkMemoryRequirements的alignment 的整数倍
+	5.调用vkGetAccelerationStructureMemoryRequirementsNV传入accelerationStructure 以及type为VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV 返回的结构中size 必须小于等于memory的大小减去memoryOffset
+
+	
+	*/
+	
+	
 	//将一个memory绑定到一个或多个加速结构上
 	vkBindAccelerationStructureMemoryNV(device, 1, &bindAccelerationStructureMemoryInfoNV);
 
+
+
+
+
+
+
+	//如果需要，为了允许使用设备代码构造几何实例，我们需要能够查询加速结构的不透明句柄。这个句柄的值为8个字节
+	//
+	uint64_t handle;
+	vkGetAccelerationStructureHandleNV(device, VkAccelerationStructureNV{/*假设这是一个有效的VkAccelerationStructureNV句柄*/ }, sizeof(uint64_t), & handle);/*
+	vkGetAccelerationStructureHandleNV有效用法:
+	1.dataSize 必须足够大以容纳8个字节的结果
+	2.accelerationStructure 必须已经通过vkBindAccelerationStructureMemoryNV 绑定到一个完整的连续的单个VkDeviceMemory 对象上
+
+	*/
+
+	VkAccelerationStructureDeviceAddressInfoKHR accelerationStructureDeviceAddressInfoKHR{};
+	accelerationStructureDeviceAddressInfoKHR.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+	accelerationStructureDeviceAddressInfoKHR.pNext = nullptr;
+	accelerationStructureDeviceAddressInfoKHR.accelerationStructure = VkAccelerationStructureKHR{/*假设这是一个有效的VkAccelerationStructureKHR句柄*/ };//指明要查询设备地址的加速结构
+
+
+
+	//查询加速结构的64位设备地址
+	vkGetAccelerationStructureDeviceAddressKHR(device, &accelerationStructureDeviceAddressInfoKHR);/*
+	vkGetAccelerationStructureDeviceAddressKHR有效用法:
+	1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure 特性必须开启
+	2.如果device 以多physical device创建，则bufferDeviceAddressMultiDevice 特性必须开启
+	3.如果 pInfo->accelerationStructure 加速结构所在的buffer是non-sparse的则该buffer必须被完全和连续的绑定到一个VkDeviceMemory对象上
+	4.pInfo->accelerationStructure 加速结构所在的buffer 必须以VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT 标志创建
+
+	*/
+
+}
+
+void ResourceCreationTest::MicroMapsCreateTest()
+{
+	//Micromaps是一种不透明的数据结构，由实现构建，以编码包含在加速结构中的sub-triangle数据。
 
 }
 

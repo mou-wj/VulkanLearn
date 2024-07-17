@@ -1363,10 +1363,328 @@ void ResourceCreationTest::AccelerationStructureCreateTest()
 	概述：
 	加速结构是不透明的数据结构，以更有效地对提供的几何数据执行空间查询。对于这种扩展，加速度结构是包含一组底层加速度结构的顶层加速度结构，或者是包含一组自定义几何的轴对边框或一组三角形的底层加速度结构。
 	顶层加速结构中的每个实例都包含对底层加速结构的引用，以及实例转换以及索引到着色器绑定所需的信息。顶层加速结构是绑定到加速描述符的结构，例如，要在光线跟踪管道中的着色器内部进行跟踪。
+
+	*/
+
+
+	VkAccelerationStructureNV accelerationStructureNV{};
+	VkAccelerationStructureCreateInfoNV accelerationStructureCreateInfoNV{};
+	accelerationStructureCreateInfoNV.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV;
+	accelerationStructureCreateInfoNV.pNext = nullptr;//可以包含一个VkOpaqueCaptureDescriptorDataCreateInfoEXT
+	accelerationStructureCreateInfoNV.compactedSize = 0;//如果这个加速结构将是压缩拷贝的目标，则为vkCmdWriteAccelerationStructuresPropertiesNV返回结果的大小。如果 compactedSize 不为 0 则 info.geometryCount 和 info.instanceCount 必须为 0
+	VkAccelerationStructureInfoNV accelerationStructureInfoNV{};
+	{
+		accelerationStructureInfoNV.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV;
+		accelerationStructureInfoNV.pNext = nullptr;
+		accelerationStructureInfoNV.flags = 0;/*是VkBuildAccelerationStructureFlagBitsNV(等同于VkBuildAccelerationStructureFlagBitsKHR)组合值的一个位掩码，指定了加速结构的附加参数。
+		VkBuildAccelerationStructureFlagBitsKHR:
+		VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR:  指明这个加速结构可以在VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR模式下调用VkAccelerationStructureBuildGeometryInfoKHR 或者在vkCmdBuildAccelerationStructureNV 中设置为VK_TURE来进行更新 
+		VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR:  指明这个加速可够可以在VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR 模式下作为拷贝命令的source来产生一个compacted 加速结构
+		VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR:  表示给定的加速结构构建应该优先考虑跟踪性能。
+		VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR:  表示给定的加速结构构建应该优先考虑构建时间，而不是跟踪性能。 
+		VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_KHR: 表明这种加速结构应该最小化scratch memory和最终的加速结构，可能以牺牲构建时间或跟踪性能为代价。
+		VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_UPDATE_EXT: 表示与指定加速结构相关的opacity micromaps可能随着加速结构的更新而变化。
+		VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT: 表示与指定加速度结构相关的opacity micromaps的数据可能随着加速度结构的更新而变化
+		VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISABLE_OPACITY_MICROMAPS_EXT:  表示指定的加速结构可以引用具有VK_GEOMETRY_INSTANCE_DISABLE_OPACITY_MICROMAPS_EXT设置的实例
+		VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_KHR:  表示可以使用指定的加速度结构获取命中三角形的顶点位置时。
+		VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV:  表示与指定加速度结构相关的displacement micromaps可能会随着加速度结构的更新而变化。 
+		*/
+
+
+		accelerationStructureInfoNV.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;/*是一个指定将要创建的加速度结构类型的VkAccelerationStructureTypeNV值。
+		VkAccelerationStructureTypeNV:
+		VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR: 是一个包含对bottom-level 加速结构的instance data引用的top-level 加速结构
+		VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR: 是一个包含用来求交的AABBs或者 geometry 的 bottom-level的加速结构
+		VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR: 是一个在特殊情况下使用的且类型在构建时期确定的加速结构，在这种情况下，加速结构在创建的时候并不确定其类型，必须在构建的时候指定其是top-level的还是bottom-level的加速结构
+
+		*/
+
+
+		accelerationStructureInfoNV.geometryCount = 1;//指定新加速结构中的geometrys数量
+		VkGeometryNV geometry{};
+		{
+			geometry.sType = VK_STRUCTURE_TYPE_GEOMETRY_NV;
+			geometry.pNext = nullptr;
+			geometry.flags = 0;/*包含描述geometry 选项的 VkGeometryFlagBitsKHR
+			VkGeometryFlagBitsKHR
+			VK_GEOMETRY_OPAQUE_BIT_KHR:  指出这个geometry 不会触发任何any-hit shaders即使它在一个hit group中
+			VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR: 指出实现必须为geometry的每个图元只调用一次 any-hit shader，如果没有该比特位，则实现可能会为每个图元调用多次 any-hit shader
+			*/
+			geometry.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;/*一个指定geometry 类型的 VkGeometryTypeKHR，geometryType 必须为 VK_GEOMETRY_TYPE_TRIANGLES_NV 或者 VK_GEOMETRY_TYPE_AABBS_NV
+			VkGeometryTypeKHR:
+			VK_GEOMETRY_TYPE_TRIANGLES_KHR: 指明一个包含三角形的geometry 类型
+			VK_GEOMETRY_TYPE_AABBS_KHR: 指明一个包含axis-aligned bounding boxes 的geometry 类型 
+			VK_GEOMETRY_TYPE_INSTANCES_KHR: 指明一个包含加速结构的geometry 类型 
+			*/
+			
+			VkGeometryDataNV geometryDataNV{};
+			{
+				VkGeometryAABBNV aabbs;//指定bottom-level加速结构的axis-aligned bounding box geometry信息,
+				{
+					aabbs.sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV;
+					aabbs.pNext = nullptr;
+					aabbs.stride = 0;//是aabbData中每一个AABB之间的字节大小，必须是8的倍数
+					aabbs.numAABBs = 0;//是geometry中AABB的个数
+					aabbs.offset = 0;//是aabbData中第一个AABB的字节偏移量,必须小于aabbData的大小且为8的倍数
+					aabbs.aabbData = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//是包含 axis-aligned bounding box数据 的VkBuffer
+				}
+				geometryDataNV.aabbs = aabbs;//如果 VkGeometryNV::geometryType 为 VK_GEOMETRY_TYPE_AABBS_NV，则这里包含axis-aligned bounding box 数据
+				VkGeometryTrianglesNV triangles;//指定bottom-level加速结构的三角形geometry信息,如果indexType为VK_INDEX_TYPE_NONE_NV，则此结构描述了一组由vertexCount确定的三角形。否则，此结构描述了一组由indexCount确定的索引三角形。
+				{
+					triangles.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
+					triangles.pNext = nullptr;
+					triangles.indexType = VK_INDEX_TYPE_UINT16;//描述每个顶点索引元素格式的 VkIndexType
+					triangles.indexData = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//是geometry的包含顶点索引数据的VkBuffer
+					triangles.indexCount = 1;//有效的索引个数
+					triangles.indexOffset = 0;//是geometry基于包含顶点索引数据的indexData的字节偏移量
+					triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;//描述每个顶点元素的一个 VkFormat 值
+					triangles.vertexData = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//是geometry的包含顶点数据的VkBuffer
+					triangles.vertexCount = 1;//有效的顶点数
+					triangles.vertexOffset = 0;//是geometry基于包含顶点数据的vertexData的字节偏移量
+					triangles.vertexStride = 3;//每一个顶点的步长字节数
+					triangles.transformOffset = 0;//基于transformData的字节偏移量
+					triangles.transformData = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//是一个可选的缓冲区，包含一个 VkTransformMatrixNV 结构，定义了一个应用于这个几何的转换矩阵数据
+					/*
+					VkGeometryTrianglesNV有效用法:
+					1.vertexOffset 必须小于vertexData 的大小，且必须为vertexFormat 大小的倍数
+					2.vertexFormat必须为VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32_SFLOAT, VK_FORMAT_R16G16B16_SFLOAT, VK_FORMAT_R16G16_SFLOAT, VK_FORMAT_R16G16_SNORM, 或者 VK_FORMAT_R16G16B16_SNORM 中的一个
+					3.vertexStride 必须小于等于2				
+					4.indexOffset 必须小于indexData 的大小，且必须为indexType 大小的倍数
+					5.indexType必须为VK_INDEX_TYPE_UINT16, VK_INDEX_TYPE_UINT32, 或者 VK_INDEX_TYPE_NONE_NV
+					6.如果indexType为 VK_INDEX_TYPE_NONE_NV 则indexData 必须为VK_NULL_HANDLE
+					7.如果indexType不为 VK_INDEX_TYPE_NONE_NV 则indexData 必须为一个有效的VkBuffer句柄
+					8.如果indexType为 VK_INDEX_TYPE_NONE_NV 则indexCount 必须为VK_NULL_HANDLE
+					9.transformOffset必须小于transformData 的大小，且必须为16的倍数
+
+					*/
+				
+				}
+				geometryDataNV.triangles = triangles;//如果 VkGeometryNV::geometryType 为 VK_GEOMETRY_TYPE_TRIANGLES_NV，则这里包含三角面片数据
+			}
+			geometry.geometry = geometryDataNV; //以 VkGeometryDataNV 描述的geometry 数据
+		}
+		accelerationStructureInfoNV.pGeometries = &geometry;//是一个指向 geometryCount个VkGeometryNV数组的指针，其中包含被传递到加速结构的场景数据。
+		accelerationStructureInfoNV.instanceCount = 1;//指定将在新的加速结构中存在的instance数。
+		/*
+		VkAccelerationStructureInfoNV有效用法:
+		1.geometryCount必须小于等于 VkPhysicalDeviceRayTracingPropertiesNV::maxGeometryCount
+		2.instanceCount必须小于等于 VkPhysicalDeviceRayTracingPropertiesNV::maxInstanceCount
+		3.所有geometries中的triangles 的总数必须小于等于VkPhysicalDeviceRayTracingPropertiesNV::maxTriangleCount
+		4.如果type 为VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV，则geometryCount 必须为0
+		5.如果type 为VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV，则instanceCount 必须为0，pGeometries中的每个元素的 geometryType必须相同
+		6.type不能为 VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR
+		7.如果flags包含VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV，则flags就不能包含VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_NV
+		8.scratch 必须以VK_BUFFER_USAGE_RAY_TRACING_BIT_NV 创建
+		9.如果instanceData 不为VK_NULL_HANDLE，instanceData必须以VK_BUFFER_USAGE_RAY_TRACING_BIT_NV 创建
+
+		*/
+	}
+	accelerationStructureCreateInfoNV.info = accelerationStructureInfoNV;//是指定所创建的加速结构的更多参数的VkAccelerationStructureInfoNV结构。
+
+
+	vkCreateAccelerationStructureNV(device, &accelerationStructureCreateInfoNV, nullptr, &accelerationStructureNV);
+
+
+	vkDestroyAccelerationStructureNV(device, accelerationStructureNV, nullptr);/*
+	vkDestroyAccelerationStructureNV有效用法:
+	1.引用到accelerationStructure的所有已经提交的命令必须完成执行
+	2.如果创建accelerationStructure 提供了一个VkAllocationCallbacks，则这里也需要提供一个兼容的
+	3.如果创建accelerationStructure 没有提供一个VkAllocationCallbacks，则这里设置为nullptr
 	
 	*/
+
+
+
 	VkAccelerationStructureKHR accelerationStructureKHR{};
-	VkAccelerationStructureNV accelerationStructureNV{};
+	VkAccelerationStructureCreateInfoKHR accelerationStructureCreateInfoKHR{};
+	accelerationStructureCreateInfoKHR.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
+	accelerationStructureCreateInfoKHR.pNext = nullptr;//可以包含一个 VkAccelerationStructureMotionInfoNV 或者 VkOpaqueCaptureDescriptorDataCreateInfoEXT
+	accelerationStructureCreateInfoKHR.buffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//是将存储加速度结构的buffer。其数据通过vkCmdBuildAccelerationStructuresKHR, vkBuildAccelerationStructuresKHR, vkCmdCopyAccelerationStructureKHR, 和 vkCopyAccelerationStructureKHR命令填充
+	accelerationStructureCreateInfoKHR.offset = 0;//是与加速度结构将被存储的buffer的相对其基本地址的一个字节偏移量，并且必须是256的倍数。
+	accelerationStructureCreateInfoKHR.size = 1;//是加速结构所需的字节大小。
+	accelerationStructureCreateInfoKHR.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;//是一个指定将要创建的加速度结构类型的VkAccelerationStructureTypeKHR值。
+	accelerationStructureCreateInfoKHR.deviceAddress = 0;//是加速结构需要的device address，需要accelerationStructureCaptureReplay 特性开启，如果为0，则表示不需要特定的地址，常规使用尽量避免使用该项
+	accelerationStructureCreateInfoKHR.createFlags = VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR;/*是VkAccelerationStructureCreateFlagBitsKHR组合值的位掩码，指定加速结构的附加创建参数。
+	VkAccelerationStructureCreateFlagBitsKHR:
+	VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR :  指明这个加速结构的地址可以在后续运行中被保存或者重用
+	VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EX :  指明这个加速结构可以在capturing 和 replaying时候用作 descriptor buffers，(e.g.见 trace capture and replay)，参见VkOpaqueCaptureDescriptorDataCreateInfoEXT p1392
+	*/
+	/*
+	VkAccelerationStructureCreateInfoKHR有效用法:
+	1.如果deviceAddress 不为0，则（1）createFlags 必须包含VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR
+								 （2）deviceAddress必须从，则必须从相同创建的加速结构中获取，buffer和deviceAddress除外（这句不太明白）
+								 （3）buffer必须是和用来创建加速结构的以及获取deviceAddress的 VkBuffer相同创建的，除了VkBufferOpaqueCaptureAddressCreateInfo::opaqueCaptureAddress
+								 （4）buffer必须是通过vkGetBufferOpaqueCaptureAddress传入buffer后返回的 VkBufferOpaqueCaptureAddressCreateInfo::opaqueCaptureAddress创建的且该buffer是用来创建加速结构的以及获取deviceAddress的
+	2.如果createFlags 包含VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR，VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureCaptureReplay必须为 VK_TRUE
+	3.buffer 必须以usage含有VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR 创建
+	4.buffer 不能以VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT 创建
+	5.offset + size 必须小于等于buffer的大小
+	6.offset必须为256的倍数
+	7.如果createFlags 包含VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV，且type为VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR ，则pNext中必须包含一个有效的VkAccelerationStructureMotionInfoNV
+	8.如果任何geometry 包含VkAccelerationStructureGeometryMotionTrianglesDataNV，则createFlags 必须包含VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV
+	9.如果createFlags 包含VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT，则descriptorBufferCaptureReplay 特性必须开启
+	10.如果pNext中包含一个VkOpaqueCaptureDescriptorDataCreateInfoEXT，则createFlags 必须包含VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT
+
+	*/
+
+
+	//VkAccelerationStructureMotionInfoNV
+	//可包含在VkAccelerationStructureCreateInfoKHR.pNext中
+	VkAccelerationStructureMotionInfoNV  accelerationStructureMotionInfoNV{};
+	accelerationStructureMotionInfoNV.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MOTION_INFO_NV;
+	accelerationStructureMotionInfoNV.pNext = nullptr;
+	accelerationStructureMotionInfoNV.flags = 0;//为0，保留未来使用
+	accelerationStructureMotionInfoNV.maxInstances = 1;//是在运动top-level加速度结构中可能使用的最大的instance数。
+
+
+
+
+
+
+
+
+
+	vkCreateAccelerationStructureKHR(device, &accelerationStructureCreateInfoKHR, nullptr, &accelerationStructureKHR);/*
+	vkCreateAccelerationStructureKHR有效用法:
+	1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure 特性必须启用
+	2.如果VkAccelerationStructureCreateInfoKHR::deviceAddress 不为0，则accelerationStructureCaptureReplay 特性必须启用
+	3.如果device 以多physical device创建，则bufferDeviceAddressMultiDevice 特性必须开启
+
+	*/
+
+	//详情见p1123
+	VkAccelerationStructureBuildGeometryInfoKHR accelerationStructureBuildGeometryInfoKHR{};
+	accelerationStructureBuildGeometryInfoKHR.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+	accelerationStructureBuildGeometryInfoKHR.pNext = nullptr;
+	accelerationStructureBuildGeometryInfoKHR.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+		VkDeviceOrHostAddressKHR scratchData{};
+		{
+			scratchData.deviceAddress = 0;
+			scratchData.hostAddress = 0;
+		}
+	accelerationStructureBuildGeometryInfoKHR.scratchData = scratchData;
+	accelerationStructureBuildGeometryInfoKHR.srcAccelerationStructure = VkAccelerationStructureKHR{/*假设这是一个有效的VkAccelerationStructureKHR加速结构句柄*/ };
+	accelerationStructureBuildGeometryInfoKHR.dstAccelerationStructure = VkAccelerationStructureKHR{/*假设这是一个有效的VkAccelerationStructureKHR加速结构句柄*/ };
+	accelerationStructureBuildGeometryInfoKHR.geometryCount = 1;
+		VkAccelerationStructureGeometryKHR geomerty{};
+		{
+			geomerty.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
+			geomerty.pNext = nullptr;
+			VkAccelerationStructureGeometryDataKHR geometryData{};
+			{
+				VkAccelerationStructureGeometryAabbsDataKHR aabbs;
+				{
+				aabbs.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR;
+				aabbs.pNext = nullptr;
+				aabbs.stride = 0;
+				aabbs.data = VkDeviceOrHostAddressConstKHR{  /*假设这是一个有效的VkDeviceOrHostAddressConstKHR句柄，其中含有有效地址*/ };
+				}
+			geometryData.aabbs = aabbs;
+				VkAccelerationStructureGeometryInstancesDataKHR instancesData;
+				{
+				instancesData.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
+				instancesData.pNext = nullptr;
+				instancesData.arrayOfPointers = VK_FALSE;
+				instancesData.data = VkDeviceOrHostAddressConstKHR{  /*假设这是一个有效的VkDeviceOrHostAddressConstKHR句柄，其中含有有效地址*/ };
+
+				}
+			geometryData.instances = instancesData;
+				VkAccelerationStructureGeometryTrianglesDataKHR trianglesData;
+				{
+				trianglesData.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR;
+				trianglesData.pNext = nullptr;
+				trianglesData.indexType = VK_INDEX_TYPE_UINT8_EXT;
+				trianglesData.indexData = VkDeviceOrHostAddressConstKHR{  /*假设这是一个有效的VkDeviceOrHostAddressConstKHR句柄，其中含有有效地址*/ };
+				trianglesData.maxVertex = 1;
+				trianglesData.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
+				trianglesData.vertexStride = 3;
+				trianglesData.vertexData = VkDeviceOrHostAddressConstKHR{  /*假设这是一个有效的VkDeviceOrHostAddressConstKHR句柄，其中含有有效地址*/ };
+				trianglesData.transformData = VkDeviceOrHostAddressConstKHR{  /*假设这是一个有效的VkDeviceOrHostAddressConstKHR句柄，其中含有有效地址*/ };
+				}
+			geometryData.triangles = trianglesData;
+		}
+			geomerty.geometry = geometryData;
+			geomerty.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
+			geomerty.flags = 0;
+		
+		}
+	accelerationStructureBuildGeometryInfoKHR.pGeometries = &geomerty;
+	accelerationStructureBuildGeometryInfoKHR.ppGeometries = &accelerationStructureBuildGeometryInfoKHR.pGeometries;
+	accelerationStructureBuildGeometryInfoKHR.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+	accelerationStructureBuildGeometryInfoKHR.flags = 0;
+	
+	VkAccelerationStructureBuildSizesInfoKHR buildSizeInfoKHR{};
+	buildSizeInfoKHR.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
+	buildSizeInfoKHR.pNext = nullptr;
+	buildSizeInfoKHR.updateScratchSize = 0;//是更新操作中scratch buffer所需要的字节数大小
+	buildSizeInfoKHR.buildScratchSize = 0;//是构建操作中scratch buffer所需要的字节数大小
+	buildSizeInfoKHR.accelerationStructureSize = 0;//是VkAccelerationStructureKHR加速结构中构建或更新操作所需的字节大小。
+	uint32_t buildSizeInfoCount = 1;
+	//获取加速结构的构建大小
+	//
+	vkGetAccelerationStructureBuildSizesKHR(device, VkAccelerationStructureBuildTypeKHR::VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+		&accelerationStructureBuildGeometryInfoKHR, &buildSizeInfoCount, &buildSizeInfoKHR);/*
+	vkGetAccelerationStructureBuildSizesKHR有效用法:
+	1. VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure特性必须开启
+	2. 如果pBuildInfo->geometryCount 不为0，则pMaxPrimitiveCounts 必须是一个有效的pBuildInfo->geometryCount个uint32_t 值的首地址指针
+	3. 如果	pBuildInfo->pGeometries 或者 pBuildInfo->ppGeometries 由元素的geometryType 为VK_GEOMETRY_TYPE_INSTANCES_KHR，则每个pMaxPrimitiveCounts[i] 必须小于等于 VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount
+
+	---------------------------------------------------
+	VkAccelerationStructureBuildTypeKHR:
+	VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_KHR: 请求主机执行的操作的内存需求。
+	VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR: 请求该设备执行的操作的内存需求。
+	VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR: 请求主机或设备执行的操作的内存需求
+
+	*/
+
+
+
+	//销毁
+	vkDestroyAccelerationStructureKHR(device, accelerationStructureKHR, nullptr);/*
+	vkDestroyAccelerationStructureKHR有效用法:
+	1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure 特性必须开启
+	2.引用到accelerationStructure的所有已经提交的命令必须完成执行
+	3.如果创建accelerationStructure 提供了一个VkAllocationCallbacks，则这里也需要提供一个兼容的
+	4.如果创建accelerationStructure 没有提供一个VkAllocationCallbacks，则这里设置为nullptr
+	*/
+
+
+
+
+	VkAccelerationStructureMemoryRequirementsInfoNV accelerationStructureMemoryRequirementsInfoNV{};
+	accelerationStructureMemoryRequirementsInfoNV.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV;
+	accelerationStructureMemoryRequirementsInfoNV.pNext = nullptr;
+	accelerationStructureMemoryRequirementsInfoNV.type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV;//选择要查询的内存需求的类型。VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV返回对象本身的内存需求。VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV在执行构建时返回scratch memory的内存需求。VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NV在执行更新时返回scratch memory的内存要求。
+	/*
+	VkAccelerationStructureMemoryRequirementsTypeNV:
+	VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV: 查询VkAccelerationStructureNV 备份存储的内存需求
+	VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV:  查询在最初构建时scratch space 的内存需求
+	VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NV:  查询更新时scratch space 的内存需求
+	*/
+	accelerationStructureMemoryRequirementsInfoNV.accelerationStructure = VkAccelerationStructureNV{/*假设这是一个有效的VkAccelerationStructureNV句柄*/};//指明要查询内存属性的加速架构
+	
+	VkMemoryRequirements2KHR memoryRequirements2KHR{};
+	memoryRequirements2KHR.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
+	memoryRequirements2KHR.pNext = nullptr;
+	memoryRequirements2KHR.memoryRequirements;//
+	//加速结构具有结构对象本身的内存需求，构建scratch space和更新scratch space
+	//查询内存属性
+	vkGetAccelerationStructureMemoryRequirementsNV(device, &accelerationStructureMemoryRequirementsInfoNV, &memoryRequirements2KHR);
+
+
+
+
+
+	VkBindAccelerationStructureMemoryInfoNV bindAccelerationStructureMemoryInfoNV{};
+	bindAccelerationStructureMemoryInfoNV.sType = VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NV;
+	bindAccelerationStructureMemoryInfoNV.pNext = nullptr;
+	bindAccelerationStructureMemoryInfoNV.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ };
+	bindAccelerationStructureMemoryInfoNV.memoryOffset = 0;
+	bindAccelerationStructureMemoryInfoNV.deviceIndexCount = 0;
+	bindAccelerationStructureMemoryInfoNV.pDeviceIndices = VK_NULL_HANDLE;
+	bindAccelerationStructureMemoryInfoNV.accelerationStructure = VkAccelerationStructureNV{/*假设这是一个有效的VkAccelerationStructureNV句柄*/};
+	//将一个memory绑定到一个或多个加速结构上
+	vkBindAccelerationStructureMemoryNV(device, 1, &bindAccelerationStructureMemoryInfoNV);
 
 
 }

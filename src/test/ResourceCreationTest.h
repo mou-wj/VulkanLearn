@@ -20,6 +20,7 @@ private:
 	void ImageViewCreateTest();
 	void AccelerationStructureCreateTest();
 	void MicroMapsCreateTest();
+	void ResourceMemoryAssociationTest();
 
 };
 TEST_REGISTER(ResourceCreationTest)

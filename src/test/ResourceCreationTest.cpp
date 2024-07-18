@@ -1735,6 +1735,260 @@ void ResourceCreationTest::AccelerationStructureCreateTest()
 void ResourceCreationTest::MicroMapsCreateTest()
 {
 	//Micromaps是一种不透明的数据结构，由实现构建，以编码包含在加速结构中的sub-triangle数据。
+	VkMicromapEXT micromapEXT{};
+	VkMicromapCreateInfoEXT micromapCreateInfoEXT{  };
+	micromapCreateInfoEXT.sType = VK_STRUCTURE_TYPE_MICROMAP_CREATE_INFO_EXT;
+	micromapCreateInfoEXT.pNext = nullptr;
+	micromapCreateInfoEXT.type = VK_MICROMAP_TYPE_OPACITY_MICROMAP_EXT;/*是一个VkMicromapTypeEXT值，指定将创建的micromap的类型。
+	VkMicromapTypeEXT:
+	VK_MICROMAP_TYPE_OPACITY_MICROMAP_EXT: 是一个包含控制三角形不透明度信息的micromap 
+	VK_MICROMAP_TYPE_DISPLACEMENT_MICROMAP_NV:  是一个包含控制三角形中的子三角形的位移信息
+	*/
+	micromapCreateInfoEXT.buffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//是存储micromap的数据的VkBuffer，通过 vkCmdBuildMicromapsEXT, vkBuildMicromapsEXT, vkCmdCopyMicromapEXT,和vkCopyMicromapEXT 生成
+	micromapCreateInfoEXT.offset = 0;//是micromap开始存储数据地址基于buffer基地址的字节偏移量，必须是256的倍数
+	micromapCreateInfoEXT.size = 0;//是micromap需要的内存大小
+	micromapCreateInfoEXT.deviceAddress = 0;//如果 micromapCaptureReplay 特性开启则为micromap需要的设备地址
+	micromapCreateInfoEXT.createFlags = VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT;//是VkMicromapCreateFlagBitsEXT组合值的一个位掩码，指定了micromap的额外创建参数。VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT 指明micromap的地址可以在后续运行中捕获或重用
+	/*
+	VkMicromapCreateInfoEXT有效用法:
+	1.如果deviceAddress 不为0，则createFlags 必须包含VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT
+	2.如果createFlags 包含VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT,则 kPhysicalDeviceOpacityMicromapFeaturesEXT::micromapCaptureReplay 必须为VK_TRUE
+	3.buffer必须以usage含有VK_BUFFER_USAGE_MICROMAP_STORAGE_BIT_EXT 创建
+	4.buffer 不能以VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT 创建
+	5.offset + size必须小于buffer的大小
+	6.offset必须是256的倍数
+	
+	*/
+
+
+
+
+	vkCreateMicromapEXT(device, &micromapCreateInfoEXT, nullptr, &micromapEXT);/*
+	vkCreateMicromapEXT有效用法:
+	1.micromap 特性必须开启
+	2.如果VkMicromapCreateInfoEXT::deviceAddress 不为0，则micromapCaptureReplay 必须开启
+	3.如果device以多physical device创建，则bufferDeviceAddressMultiDevice 特性必须开启
+	
+	*/
+
+
+	VkMicromapBuildInfoEXT micromapBuildInfoEXT{};
+	micromapBuildInfoEXT.sType = VK_STRUCTURE_TYPE_MICROMAP_BUILD_INFO_EXT;
+	micromapBuildInfoEXT.pNext = nullptr;
+	micromapBuildInfoEXT.flags = VK_BUILD_MICROMAP_PREFER_FAST_BUILD_BIT_EXT;/*
+	VkBuildMicromapFlagBitsEXT:
+	VK_BUILD_MICROMAP_PREFER_FAST_TRACE_BIT_EXT:  指明给定的micromap的构建相比构建时间优先考虑性能
+	VK_BUILD_MICROMAP_PREFER_FAST_BUILD_BIT_EXT:  指明给定的micromap的构建相比性能优先考虑构建时间
+	*/
+	micromapBuildInfoEXT.mode = VK_BUILD_MICROMAP_MODE_BUILD_EXT;
+	micromapBuildInfoEXT.dstMicromap = VkMicromapEXT{/*假设这是一个有效的VkMicromapEXT句柄*/ };
+	micromapBuildInfoEXT.scratchData = VkDeviceOrHostAddressKHR{/*假设这是一个有效的VkDeviceOrHostAddressConstKHR句柄*/ };
+	micromapBuildInfoEXT.type = VK_MICROMAP_TYPE_OPACITY_MICROMAP_EXT;
+	micromapBuildInfoEXT.usageCountsCount = 1;
+	VkMicromapUsageEXT usage{};
+	usage.count = 0;
+	usage.format = 0;
+	usage.subdivisionLevel = 0;
+	micromapBuildInfoEXT.pUsageCounts = &usage;
+	micromapBuildInfoEXT.ppUsageCounts = &micromapBuildInfoEXT.pUsageCounts;
+	micromapBuildInfoEXT.triangleArrayStride = 0;
+	micromapBuildInfoEXT.triangleArray = VkDeviceOrHostAddressConstKHR{/*假设这是一个有效的VkDeviceOrHostAddressConstKHR句柄*/ };
+
+
+	VkMicromapBuildSizesInfoEXT micromapBuildSizesInfoEXT{};
+	micromapBuildSizesInfoEXT.sType = VK_STRUCTURE_TYPE_MICROMAP_BUILD_SIZES_INFO_EXT;
+	micromapBuildSizesInfoEXT.pNext = nullptr;
+	micromapBuildSizesInfoEXT.micromapSize = 0;//返回micromap构建或更新需要的字节大小
+	micromapBuildSizesInfoEXT.buildScratchSize = 0;//返回构建过程中scratch buffer需要的字节大小
+	micromapBuildSizesInfoEXT.discardable = VK_FALSE;//指示在加速结构构建或更新后是否可以销毁micromap对象。VK_FALSE意味着用该micromap构建的加速度结构可能包含对其中包含的数据的引用，并且在射线遍历结束之前，应用程序不能破坏该micromap。VK_TRUE表示micromap中的信息将被值复制到加速度结构中，在加速度结构构建结束后，micromap可能会被销毁。
+
+	//获取micromap的构建大小
+	vkGetMicromapBuildSizesEXT(device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &micromapBuildInfoEXT, &micromapBuildSizesInfoEXT);/*
+	vkGetMicromapBuildSizesEXT有效用法:
+	1.pBuildInfo的dstMicromap 以及 mode 是被忽略的. pBuildInfo的所有VkDeviceOrHostAddressKHR 成员是被忽略的。
+	2.VkMicromapBuildInfoEXT::dstMicromap 必须从device上创建
+	3.micromap 特性必须开启
+	4.如果device以多physical device创建，则bufferDeviceAddressMultiDevice 特性必须开启
+
+	*/
+
+
+	vkDestroyMicromapEXT(device, micromapEXT, nullptr);
+
+
+}
+
+void ResourceCreationTest::ResourceMemoryAssociationTest()
+{
+	/*
+	概述
+	资源最初是作为虚拟分配创建的，没有实际内存。设备内存被单独分配（请参见Device Memory p887），然后与资源关联。对于稀疏资源，这种关联对于非稀疏资源的做法不同。
+	使用任何稀疏创建标志创建的资源都被认为是稀疏资源。没有这些标志创建的资源是非稀疏的。在Sparse Resources (p2981)中描述了关于稀疏资源的资源内存关联的详细信息。
+	
+	*/
+
+	//查询资源的内存需求,返回的内存需求中的参数的更细致的描述见p1156
+	{
+
+		VkMemoryRequirements bufferMemoryRequirements{};
+		bufferMemoryRequirements.size = 0;//为当前资源分配所需要的字节大小
+		bufferMemoryRequirements.memoryTypeBits = 0;//是一个位掩码，对资源的每个支持的内存类型都包含一个比特位。当且仅当物理设备的VkPhysicalDeviceMemoryProperties结构中的内存类型i支持该资源时，才设置位i。
+		bufferMemoryRequirements.alignment = 0;//是资源分配所需的offset的字节对齐数
+		//查询buffer资源的内存需求
+		vkGetBufferMemoryRequirements(device, VkBuffer{/*假设这是一个有效的VkBuffer*/ }, &bufferMemoryRequirements);
+
+
+		VkMemoryRequirements imageMemoryRequirements{};
+		imageMemoryRequirements.size = 0;//为当前资源分配所需要的字节大小
+		imageMemoryRequirements.memoryTypeBits = 0;//是一个位掩码，对资源的每个支持的内存类型都包含一个比特位。当且仅当物理设备的VkPhysicalDeviceMemoryProperties结构中的内存类型i支持该资源时，才设置位i。
+		imageMemoryRequirements.alignment = 0;//是资源分配所需的offset的字节对齐数
+		//查询不以VK_IMAGE_CREATE_DISJOINT_BIT创建的image资源的内存需求
+		vkGetImageMemoryRequirements(device, VkImage{/*假设这是一个有效的VkBuffer*/ }, &imageMemoryRequirements);/*
+		1.image不能以VK_IMAGE_CREATE_DISJOINT_BIT 创建
+		2.如果image以VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID external memory handle type创建，且image必须绑定到memory
+		3.如果image以VK_EXTERNAL_MEMORY_HANDLE_TYPE_SCREEN_BUFFER_BIT_QNX external memory handle type创建，且image必须绑定到memory
+		*/
+
+
+
+
+		VkBufferMemoryRequirementsInfo2 bufferMemoryRequirementsInfo2{};
+		bufferMemoryRequirementsInfo2.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2;
+		bufferMemoryRequirementsInfo2.pNext = nullptr;
+		bufferMemoryRequirementsInfo2.buffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//指要查询的buffer
+
+		VkMemoryRequirements2 bufferMemoryRequirements2{};
+		bufferMemoryRequirements2.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+		VkMemoryDedicatedRequirements bufferMemoryDedicatedRequirements{};//等价于VkMemoryDedicatedRequirementsKHR
+		{
+			//返回的参数的更多信息见p1168
+			bufferMemoryDedicatedRequirements.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS;
+			bufferMemoryDedicatedRequirements.pNext = nullptr;
+			bufferMemoryDedicatedRequirements.prefersDedicatedAllocation = VK_FALSE;//指定实现更希望对此资源进行专用分配。应用程序仍然可以自由进行次分配资源，但是如果使用专用分配，它可以获得更好的性能。
+			bufferMemoryDedicatedRequirements.requiresDedicatedAllocation = VK_FALSE;//指定此资源需要进行专用分配。
+		}
+		bufferMemoryRequirements2.pNext = &bufferMemoryDedicatedRequirements;//可以添加一个VkMemoryDedicatedRequirements
+		bufferMemoryRequirements2.memoryRequirements = bufferMemoryRequirements;//是一个描述资源的内存需求的VkMemoryRequirements。
+		//查询buffer资源的内存需求，等同于vkGetBufferMemoryRequirements2KHR
+		vkGetBufferMemoryRequirements2(device, &bufferMemoryRequirementsInfo2, &bufferMemoryRequirements2);
+
+
+
+		VkDeviceBufferMemoryRequirements deviceBufferMemoryRequirements{};
+		deviceBufferMemoryRequirements.sType = VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS;
+		deviceBufferMemoryRequirements.pNext = nullptr;
+			VkBufferCreateInfo bufferCreateInfo{}; {/*假设这是一个有效的VkBufferCreateInfo*/ }
+		deviceBufferMemoryRequirements.pCreateInfo = &bufferCreateInfo; //是一个指向VkBufferCreateInfo结构的指针，其中包含影响要查询的buffer创建的参数
+		//查询buffer资源的内存需求而不需要先有一个buffer对象,等同于vkGetDeviceBufferMemoryRequirementsKHR
+		vkGetDeviceBufferMemoryRequirements(device, &deviceBufferMemoryRequirements, &bufferMemoryRequirements2);
+
+
+
+		VkImageMemoryRequirementsInfo2 imageMemoryRequirementsInfo2{};//等价于VkImageMemoryRequirementsInfo2KHR
+		imageMemoryRequirementsInfo2.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2;
+		VkImagePlaneMemoryRequirementsInfo imagePlaneMemoryRequirementsInfo{}; //等同于VkImagePlaneMemoryRequirementsInfoKHR
+		{
+			imagePlaneMemoryRequirementsInfo.sType = VK_STRUCTURE_TYPE_IMAGE_PLANE_MEMORY_REQUIREMENTS_INFO;
+			imagePlaneMemoryRequirementsInfo.pNext = nullptr;
+			imagePlaneMemoryRequirementsInfo.planeAspect = VK_IMAGE_ASPECT_COLOR_BIT;//是一个VkImageAspectFlagBits值，指定与要查询的image plane aspect
+			/*
+			VkImagePlaneMemoryRequirementsInfo有效用法:
+			1.如果image的tiling 为VK_IMAGE_TILING_LINEAR 或者 VK_IMAGE_TILING_OPTIMAL，则planeAspect 必须是一个单独有效的multi-planar aspect mask比特位
+			2.如果image的tiling 为VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT，则planeAspect 必须是一个单独的有效的image memory plane(即 aspectMask必须指明一个其索引小于和 image的format以及VkImageDrmFormatModifierPropertiesEXT::drmFormatModifier关联的 VkDrmFormatModifierPropertiesEXT::drmFormatModifierPlaneCount 的plane )
+
+			*/
+		}
+		imageMemoryRequirementsInfo2.pNext = &imagePlaneMemoryRequirementsInfo;//可以包含一个 VkImagePlaneMemoryRequirementsInfo
+		imageMemoryRequirementsInfo2.image = VkImage{/*假设这是一个有效的VkImage*/ };//指明要查询的image
+		/*
+		VkImageMemoryRequirementsInfo2有效用法：
+		1.如果image以一个multi-planar format 和VK_IMAGE_CREATE_DISJOINT_BIT创建，则VkImageMemoryRequirementsInfo2的pNext中必须包含一个VkImagePlaneMemoryRequirementsInfo
+		2.如果image以VK_IMAGE_CREATE_DISJOINT_BIT 和VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT创建，则VkImageMemoryRequirementsInfo2的pNext中必须包含一个VkImagePlaneMemoryRequirementsInfo
+		3.如果image不以VK_IMAGE_CREATE_DISJOINT_BIT 创建，则VkImageMemoryRequirementsInfo2的pNext中不能包含一个VkImagePlaneMemoryRequirementsInfo
+		4.如果image以一个single-plane format 且不包含VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT 创建，则VkImageMemoryRequirementsInfo2的pNext中不能包含一个VkImagePlaneMemoryRequirementsInfo
+		5.如果image 以VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID  external memory handle type创建，则image必须绑定到memory
+		6.如果image 以VK_EXTERNAL_MEMORY_HANDLE_TYPE_SCREEN_BUFFER_BIT_QNX  external memory handle type创建，则image必须绑定到memory
+
+		*/
+
+		VkMemoryRequirements2 imageMemoryRequirements2{};
+		imageMemoryRequirements2.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+		VkMemoryDedicatedRequirements imageMemoryDedicatedRequirements{};//等价于VkMemoryDedicatedRequirementsKHR
+		{
+			//返回的参数的更多信息见p1168
+			imageMemoryDedicatedRequirements.sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS;
+			imageMemoryDedicatedRequirements.pNext = nullptr;
+			imageMemoryDedicatedRequirements.prefersDedicatedAllocation = VK_FALSE;//指定实现更希望对此资源进行专用分配。应用程序仍然可以自由进行次分配资源，但是如果使用专用分配，它可以获得更好的性能。
+			imageMemoryDedicatedRequirements.requiresDedicatedAllocation = VK_FALSE;//指定此资源需要进行专用分配。
+		}
+		imageMemoryRequirements2.pNext = &imageMemoryDedicatedRequirements;//可以包含一个VkMemoryDedicatedRequirements
+		imageMemoryRequirements2.memoryRequirements = imageMemoryRequirements;//是一个描述资源的内存需求的VkMemoryRequirements。
+
+		//查询不以image资源的内存需求，等同于vkGetImageMemoryRequirements2KHR
+		vkGetImageMemoryRequirements2(device, &imageMemoryRequirementsInfo2, &imageMemoryRequirements2);
+
+
+
+		VkDeviceImageMemoryRequirements deviceImageMemoryRequirements{};
+		deviceImageMemoryRequirements.sType = VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS;
+		deviceImageMemoryRequirements.pNext = nullptr;
+		deviceImageMemoryRequirements.planeAspect = VK_IMAGE_ASPECT_COLOR_BIT;// 是一个VkImageAspectFlagBits值，指定与要查询的image plane aspect。此参数将会被忽略，除非pCreateInfo->tiling是VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT，或pCreateInfo->flags已经设置了VK_IMAGE_CREATE_DISJOINT_BIT。
+			VkImageCreateInfo imageCreateInfo{};//假设这是一个有效的VkImageCreateInfo
+		deviceImageMemoryRequirements.pCreateInfo = &imageCreateInfo;//是一个指向VkImageCreateInfo结构的指针，其中包含影响要查询的image创建的参数
+		/*
+		VkDeviceImageMemoryRequirements有效用法:
+		1.pCreateInfo->pNext 不能包含一个VkImageSwapchainCreateInfoKHR或者VkImageDrmFormatModifierExplicitCreateInfoEXT
+		2.vkGetDeviceImageMemoryRequirements调用时，VkDeviceImageMemoryRequirements.pCreateInfo->pNext不能含有一个externalFormat 为非0值的VkExternalFormatANDROID 或者VkExternalFormatQNX
+		3.如果pCreateInfo->format 指定一个multi-planar format 且pCreateInfo->flags含有VK_IMAGE_CREATE_DISJOINT_BIT，则planeAspect 不能为VK_IMAGE_ASPECT_NONE_KHR
+		4.如果pCreateInfo->flags 有VK_IMAGE_CREATE_DISJOINT_BIT且如果pCreateInfo->tiling为VK_IMAGE_TILING_LINEAR 或者 VK_IMAGE_TILING_OPTIMAL，则planeAspect 必须是一个单独的有效的multi-planar aspect mask 比特位
+		5.如果pCreateInfo->tiling 为VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT，则planeAspect 必须是一个单独的有效的image memory plane(即 aspectMask必须指明一个其索引小于和 image的format以及VkImageDrmFormatModifierPropertiesEXT::drmFormatModifier关联的 VkDrmFormatModifierPropertiesEXT::drmFormatModifierPlaneCount 的plane )
+
+		*/
+
+
+		//查询image资源的内存需求而不需要先有一个image对象,等同于vkGetDeviceImageMemoryRequirementsKHR
+		vkGetDeviceImageMemoryRequirements(device, &deviceImageMemoryRequirements, &imageMemoryRequirements2);
+
+	}
+
+
+	//绑定memory到VkBuffer
+	{
+		vkBindBufferMemory(device, VkBuffer{/*假设这是一个有效的VkBuffer*/ }, VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ },0);
+		/*
+		vkBindBufferMemory参数:
+		buffer:要附加到memory的VkBuffer
+		memory:buffer需要附加到的VkDeviceMemory
+		memoryOffset:指明从memory开始的字节偏移量开始的区域将绑定到buffer---从memory的memoryOffset开始 查询获取的VkMemoryRequirements::size大小的内存将绑定到buffer
+		
+		-------------------------------------
+		vkBindBufferMemory有效用法:
+		1.buffer 不能已经绑定到memory了
+		2.buffer 不能以任何sparse memory binding标志创建
+		3.memoryOffset 必须小于memory的大小
+		4.memory 必须使用调用vkGetBufferMemoryRequirements传入buffer返回的VkMemoryRequirements.memoryTypeBits允许的一种内存类型创建
+		5.memoryOffset必须是调用vkGetBufferMemoryRequirements传入buffer返回的VkMemoryRequirements.alignment的整数倍
+		6.调用vkGetBufferMemoryRequirements传入buffer返回的VkMemoryRequirements.size必须小于等于 memory的大小减去memoryOffset
+		7.如果buffer需要dedicated allocation（参见传入buffer调用vkGetBufferMemoryRequirements2返回的VkMemoryDedicatedRequirements::requiresDedicatedAllocation），则memory必须以其VkMemoryDedicatedAllocateInfo::buffer等于buffer创建
+		8.如果memory创建时候的VkMemoryAllocateInfo.pNext中含有一个buffer不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo，则VkMemoryDedicatedAllocateInfo::buffer必须等于buffer，memoryOffset必须为0
+		9.如果buffer 以VK_BUFFER_CREATE_PROTECTED_BIT创建，则buffer就必须绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
+		10.如果buffer 不以VK_BUFFER_CREATE_PROTECTED_BIT创建，则buffer就不能绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
+		11.如果buffer 以其VkDedicatedAllocationBufferCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，则memory必须以其VkMemoryDedicatedAllocateInfo::buffer等于一个和buffer创建参数相同的VkBuffer句柄，且memoryOffset必须为0
+		12.如果VK_KHR_dedicated_allocation 拓展没有开启，且VkPhysicalDeviceProperties::apiVersion小于Vulkan 1.1，且buffer 不以其VkDedicatedAllocationBufferCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，对buffer或image则其memory就不能采用专有分配
+		13.如果创建memory时的VkExportMemoryAllocateInfo::handleTypes 不为0则必须包含至少一个设置在VkExternalMemoryBufferCreateInfo::handleTypes 中的类型
+		14.如果memory是通过一个导入操作创建的，且不是通过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID创建的，则导入的memory的external handle type必须设置在buffer创建时候的VkExternalMemoryBufferCreateInfo::handleTypes 中
+		15.如果memory 使用过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID的导入操作创建的，则在buffer创建时候的VkExternalMemoryBufferCreateInfo::handleTypes 中必须包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID
+		16.如果VkPhysicalDeviceBufferDeviceAddressFeatures::bufferDeviceAddress 特性开启则（1）如果buffer以VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT创建，则memory 必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT创建
+																						  （2）如果buffer以VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建，则memory 必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建
+		17.如果buffer创建的时候VkBufferCreateInfo::pNext 含有一个VkBufferCollectionBufferCreateInfoFUCHSIA，则memory 创建时候的VkMemoryAllocateInfo::pNext 也必须含有VkBufferCollectionBufferCreateInfoFUCHSIA
+		18.如果buffer以VK_BUFFER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建，则memory必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT 以及 VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建
+
+		*/
+
+
+
+	}
+	
 
 }
 

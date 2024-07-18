@@ -1973,23 +1973,228 @@ void ResourceCreationTest::ResourceMemoryAssociationTest()
 		8.如果memory创建时候的VkMemoryAllocateInfo.pNext中含有一个buffer不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo，则VkMemoryDedicatedAllocateInfo::buffer必须等于buffer，memoryOffset必须为0
 		9.如果buffer 以VK_BUFFER_CREATE_PROTECTED_BIT创建，则buffer就必须绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
 		10.如果buffer 不以VK_BUFFER_CREATE_PROTECTED_BIT创建，则buffer就不能绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
-		11.如果buffer 以其VkDedicatedAllocationBufferCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，则memory必须以其VkMemoryDedicatedAllocateInfo::buffer等于一个和buffer创建参数相同的VkBuffer句柄，且memoryOffset必须为0
+		11.如果buffer 以其VkDedicatedAllocationBufferCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，则memory必须以其VkDedicatedAllocationBufferCreateInfoNV::buffer等于一个和buffer创建参数相同的VkBuffer句柄，且memoryOffset必须为0
 		12.如果VK_KHR_dedicated_allocation 拓展没有开启，且VkPhysicalDeviceProperties::apiVersion小于Vulkan 1.1，且buffer 不以其VkDedicatedAllocationBufferCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，对buffer或image则其memory就不能采用专有分配
 		13.如果创建memory时的VkExportMemoryAllocateInfo::handleTypes 不为0则必须包含至少一个设置在VkExternalMemoryBufferCreateInfo::handleTypes 中的类型
 		14.如果memory是通过一个导入操作创建的，且不是通过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID创建的，则导入的memory的external handle type必须设置在buffer创建时候的VkExternalMemoryBufferCreateInfo::handleTypes 中
 		15.如果memory 使用过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID的导入操作创建的，则在buffer创建时候的VkExternalMemoryBufferCreateInfo::handleTypes 中必须包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID
-		16.如果VkPhysicalDeviceBufferDeviceAddressFeatures::bufferDeviceAddress 特性开启则（1）如果buffer以VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT创建，则memory 必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT创建
-																						  （2）如果buffer以VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建，则memory 必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建
+		16.如果VkPhysicalDeviceBufferDeviceAddressFeatures::bufferDeviceAddress 特性开启且如果buffer以VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT创建，则memory 必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT创建
+		17.如果VkPhysicalDeviceBufferDeviceAddressFeatures::bufferDeviceAddressCaptureReplay 特性开启且 如果buffer以VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建，则memory 必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建
 		17.如果buffer创建的时候VkBufferCreateInfo::pNext 含有一个VkBufferCollectionBufferCreateInfoFUCHSIA，则memory 创建时候的VkMemoryAllocateInfo::pNext 也必须含有VkBufferCollectionBufferCreateInfoFUCHSIA
 		18.如果buffer以VK_BUFFER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建，则memory必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT 以及 VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建
 
 		*/
 
+		VkBindBufferMemoryInfo bindBufferMemoryInfo{};
+		bindBufferMemoryInfo.sType = VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO;
+		//VkBindBufferMemoryInfo.pNetx 
+		VkBindBufferMemoryDeviceGroupInfo bindBufferMemoryDeviceGroupInfo{};//等价于VkBindBufferMemoryDeviceGroupInfoKHR
+		//VkBindMemoryStatusKHR 
+		{
+			bindBufferMemoryDeviceGroupInfo.sType = VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_DEVICE_GROUP_INFO;
+			bindBufferMemoryDeviceGroupInfo.pNext = nullptr;
+			bindBufferMemoryDeviceGroupInfo.deviceIndexCount = 0;//pDeviceIndices中的元素个数，如果为0，且memory以VK_MEMORY_HEAP_MULTI_INSTANCE_BIT创建，则相当于pDeviceIndices中的元素是从0到device中的设备数减去1，如果为0且不以VK_MEMORY_HEAP_MULTI_INSTANCE_BIT创建，则相当于pDeviceIndices中的元素是0
+			bindBufferMemoryDeviceGroupInfo.pDeviceIndices = VK_NULL_HANDLE;//指向一个uint32_t数组，包含要绑定的设备索引，其中元素指明buffer将绑定到device中第几个物理设备的memory 实例
+			/*
+			VkBindBufferMemoryDeviceGroupInfo有效用法：
+			1.deviceIndexCount必须为0或者等于逻辑设备中的物理设备数
+			2.pDeviceIndices 中的元素都必须是有效的设备索引值
+			*/
+
+			// Provided by VK_KHR_maintenance6
+			typedef struct VkBindMemoryStatusKHR {
+				VkStructureType sType;
+				const void* pNext;
+				VkResult* pResult;
+			} VkBindMemoryStatusKHR; //这个没有定义这里先自己定义
+
+			VkBindMemoryStatusKHR bindBufferStatusKHR{};
+			bindBufferStatusKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//这里先设置为最大枚举值，实际上应该是VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_STATUS_KHR，但是该值没有定义
+			bindBufferStatusKHR.pNext = nullptr;
+			bindBufferStatusKHR.pResult = nullptr;//指向一个VkResult指针，用来描述绑定buffer到memory操作的结果
+
+
+		}
+
+		bindBufferMemoryInfo.pNext = &bindBufferMemoryDeviceGroupInfo;//可以包含一个 VkBindBufferMemoryDeviceGroupInfo 或者 VkBindMemoryStatusKHR
+		bindBufferMemoryInfo.buffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//要附加到memory的VkBuffer
+		bindBufferMemoryInfo.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ };//buffer需要附加到的VkDeviceMemory
+		bindBufferMemoryInfo.memoryOffset = 0;//指明从memory开始的字节偏移量开始的区域将绑定到buffer---从memory的memoryOffset开始 查询获取的VkMemoryRequirements::size大小的内存将绑定到buffer
+		/*
+		VkBindBufferMemoryInfo有效用法:
+		1.buffer 不能已经绑定到memory了
+		2.buffer 不能以任何sparse memory binding标志创建
+		3.memoryOffset 必须小于memory的大小
+		4.memory 必须使用调用vkGetBufferMemoryRequirements传入buffer返回的VkMemoryRequirements.memoryTypeBits允许的一种内存类型创建
+		5.memoryOffset必须是调用vkGetBufferMemoryRequirements传入buffer返回的VkMemoryRequirements.alignment的整数倍
+		6.调用vkGetBufferMemoryRequirements传入buffer返回的VkMemoryRequirements.size必须小于等于 memory的大小减去memoryOffset
+		7.如果buffer需要dedicated allocation（参见传入buffer调用vkGetBufferMemoryRequirements2返回的VkMemoryDedicatedRequirements::requiresDedicatedAllocation），则memory必须以其VkMemoryDedicatedAllocateInfo::buffer等于buffer创建
+		8.如果memory创建时候的VkMemoryAllocateInfo.pNext中含有一个buffer不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo，则VkMemoryDedicatedAllocateInfo::buffer必须等于buffer，memoryOffset必须为0
+		9.如果buffer 以VK_BUFFER_CREATE_PROTECTED_BIT创建，则buffer就必须绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
+		10.如果buffer 不以VK_BUFFER_CREATE_PROTECTED_BIT创建，则buffer就不能绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
+		11.如果buffer 以其VkDedicatedAllocationBufferCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，则memory必须以其VkDedicatedAllocationMemoryAllocateInfoNV::buffer等于一个和buffer创建参数相同的VkBuffer句柄，且memoryOffset必须为0
+		12.如果VK_KHR_dedicated_allocation 拓展没有开启，且VkPhysicalDeviceProperties::apiVersion小于Vulkan 1.1，且buffer 不以其VkDedicatedAllocationBufferCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，对buffer或image则其memory就不能采用专有分配
+		13.如果创建memory时的VkExportMemoryAllocateInfo::handleTypes 不为0则必须包含至少一个设置在VkExternalMemoryBufferCreateInfo::handleTypes 中的类型
+		14.如果memory是通过一个导入操作创建的，且不是通过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID创建的，则导入的memory的external handle type必须设置在buffer创建时候的VkExternalMemoryBufferCreateInfo::handleTypes 中
+		15.如果memory 使用过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID的导入操作创建的，则在buffer创建时候的VkExternalMemoryBufferCreateInfo::handleTypes 中必须包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID
+		16.如果VkPhysicalDeviceBufferDeviceAddressFeatures::bufferDeviceAddress 特性开启则如果buffer以VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT创建，则memory 必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT创建
+		17.如果VkPhysicalDeviceBufferDeviceAddressFeatures::bufferDeviceAddressCaptureReplay 特性开启，且如果buffer以VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建，则memory 必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建																		  
+		18.如果buffer创建的时候VkBufferCreateInfo::pNext 含有一个VkBufferCollectionBufferCreateInfoFUCHSIA，则memory 创建时候的VkMemoryAllocateInfo::pNext 也必须含有VkBufferCollectionBufferCreateInfoFUCHSIA
+		18.如果buffer以VK_BUFFER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建，则memory必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT 以及 VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建
+		19.如果VkBindBufferMemoryInfo::pNext 含有一个VkBindBufferMemoryDeviceGroupInfo，则所有VkBindBufferMemoryDeviceGroupInfo::pDeviceIndices指定的 memory 实例必须已经创建
+
+		*/
+		
+		
+		//等价于vkBindBufferMemory2KHR，如果pBindInfos的元素的pNext中不含VkBindMemoryStatusKHR，且该命令失败，则pBindInfos中的元素引用的buffer会变成终止状态，后续不能继续使用，应该被销毁
+		vkBindBufferMemory2(device, 1, &bindBufferMemoryInfo);
 
 
 	}
 	
 
+
+	//绑定memory 到image
+	{
+		//绑定memory到 不以 VK_IMAGE_CREATE_DISJOINT_BIT创建的image
+		vkBindImageMemory(device, VkImage{/*假设这是一个有效的VkImage*/ }, VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ }, 0);/*
+		vkBindImageMemory参数：
+		image:要附加到memory的VkImage
+		memory:image需要附加到的VkDeviceMemory
+		memoryOffset:指明从memory开始的字节偏移量开始的区域将绑定到image---从memory的memoryOffset开始 查询获取的VkMemoryRequirements::size大小的内存将绑定到image
+		
+		----------------------------------------------------
+		vkBindImageMemory有效用法:
+		1.image 不能已经绑定到memory了
+		2.image 不能以任何sparse memory binding标志创建
+		3.memoryOffset 必须小于memory的大小
+		4.如果image需要dedicated allocation（参见传入image调用vkGetImageMemoryRequirements2返回的VkMemoryDedicatedRequirements::requiresDedicatedAllocation），则memory必须以其VkMemoryDedicatedAllocateInfo::image等于image创建
+		5.如果dedicatedAllocationImageAliasing 特性没有开启，且memory创建时候的VkMemoryAllocateInfo.pNext中含有一个image不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo，则VkMemoryDedicatedAllocateInfo::image必须等于image，memoryOffset必须为0
+		6.如果dedicatedAllocationImageAliasing 特性开启，且memory创建时候的VkMemoryAllocateInfo.pNext中含有一个image不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo，则memoryOffset必须为0，image必须等于VkMemoryDedicatedAllocateInfo::image或者在VkImageCreateInfo使用相同参数创建的image，除了
+					 extent 和 arrayLayers可能不同，但其遵循以下限制：正要绑定memory的image的extent的每个维度必须是等于或小于原image的extent的对应维度，arrayLayers参数必须是等于或小于原image的arrayLayers。
+		7.如果image 以VK_IMAGE_CREATE_PROTECTED_BIT创建，则image就必须绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
+		8.如果image 不以VK_IMAGE_CREATE_PROTECTED_BIT创建，则buffer就不能绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
+		9.如果image 以其VkDedicatedAllocationImageCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，则memory必须以其VkDedicatedAllocationMemoryAllocateInfoNV::image等于一个和image创建参数相同的VkImage句柄，且memoryOffset必须为0
+		10.如果VK_KHR_dedicated_allocation 拓展没有开启，且VkPhysicalDeviceProperties::apiVersion小于Vulkan 1.1，且image 不以其VkDedicatedAllocationImageCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，对buffer或image则其memory就不能采用专有分配
+		11.如果创建memory时的VkExportMemoryAllocateInfo::handleTypes 不为0则必须包含至少一个设置在image创建时 VkExternalMemoryImageCreateInfo::handleTypes 中的类型
+		12.如果memory是通过一个导入操作创建的，且不是通过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID创建的，则导入的memory的external handle type必须设置在image创建时候的VkExternalMemoryImageCreateInfo::handleTypes 中
+		13.如果memory 使用过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID的导入操作创建的，则在image创建时候的VkExternalMemoryImageCreateInfo::handleTypes 中必须包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID
+		14.如果image以VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建，则memory必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT 以及 VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建
+		15.image 不能以VK_IMAGE_CREATE_DISJOINT_BIT 创建
+		16.memory 必须使用调用vkGetImageMemoryRequirements传入image返回的VkMemoryRequirements.memoryTypeBits允许的一种内存类型创建
+		17.memoryOffset必须是调用vkGetImageMemoryRequirements传入image返回的VkMemoryRequirements.alignment的整数倍
+		18.调用vkGetImageMemoryRequirements传入image返回的VkMemoryRequirements.size必须小于等于 memory的大小减去memoryOffset
+		19.如果image创建的时候VkImageCreateInfo::pNext 含有一个VkBufferCollectionBufferCreateInfoFUCHSIA，则memory 创建时候的VkMemoryAllocateInfo::pNext 也必须含有VkBufferCollectionBufferCreateInfoFUCHSIA
+		*/
+
+
+
+		VkBindImageMemoryInfo bindImageMemoryInfo{};
+		bindImageMemoryInfo.sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO_KHR;
+		//VkBindImageMemoryInfo.pNext
+		VkBindImageMemoryDeviceGroupInfo bindImageMemoryDeviceGroupInfo{};
+		VkBindImageMemorySwapchainInfoKHR bindImageMemorySwapchainInfoKHR{};//指明image将绑定到swapchain的某个image memory上，可以和VkBindImageMemoryDeviceGroupInfo连用
+		VkBindImagePlaneMemoryInfo bindImagePlaneMemoryInfo{};//绑定一个 disjoint image的planes
+		//VkBindMemoryStatusKHR
+		{
+			bindImageMemoryDeviceGroupInfo.sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_DEVICE_GROUP_INFO;
+			bindImageMemoryDeviceGroupInfo.deviceIndexCount = 0;//pDeviceIndices中的元素个数，如果为0，且memory以VK_MEMORY_HEAP_MULTI_INSTANCE_BIT创建，则相当于pDeviceIndices中的元素是从0到device中的设备数减去1，如果为0且不以VK_MEMORY_HEAP_MULTI_INSTANCE_BIT创建，则相当于pDeviceIndices中的元素是0
+			bindImageMemoryDeviceGroupInfo.pDeviceIndices = VK_NULL_HANDLE;//指向一个uint32_t数组，包含要绑定的设备索引，其中元素指明buffer将绑定到device中第几个物理设备的memory 实例
+			bindImageMemoryDeviceGroupInfo.splitInstanceBindRegionCount = 0;//是pSplitInstanceBindRegions中的元素个数
+			bindImageMemoryDeviceGroupInfo.pSplitInstanceBindRegions = VK_NULL_HANDLE;//VkRect2D数组，描述image的那个区域会被绑定到每一个设备的memory 实例上，设N为逻辑设备中的物理设备的数量。如果splitInstanceBindRegionCount大于0，那么pSplitInstanceBindRegions是一个指向N平方个矩形数组的指针，其中资源实例i中元素i*N+j处的矩形指定的图像区域被绑定到内存实例j。绑定到每个稀疏图像块区域的内存块使用内存中的偏移，相对于内存偏移，计算就好像整个图像被绑定到一个连续的内存范围。换句话说，水平相邻的图像块使用连续的内存块，垂直相邻的图像块用每个块的字节数乘以图像块的宽度，（0,0）对应于从内存偏移开始的存储器。
+			/*
+			VkBindImageMemoryDeviceGroupInfo有效用法:
+			1.deviceIndexCount 和splitInstanceBindRegionCount 至少一个必须为0
+			2.deviceIndexCount必须为0或者等于逻辑设备中的物理设备数
+			3.pDeviceIndices 中的元素必须是有效的设备索引值	
+			4.splitInstanceBindRegionCount必须为0或者等于逻辑设备中的物理设备数的平方
+			5.pSplitInstanceBindRegions 中的对应到相同image的元素不能重叠
+			6.pSplitInstanceBindRegions任何元素的offset.x 必须是image全部non-metadata aspects的sparse image block width（VkSparseImageFormatProperties::imageGranularity.width）的倍数
+			7.pSplitInstanceBindRegions任何元素的offset.y 必须是image全部non-metadata aspects的sparse image block height（VkSparseImageFormatProperties::imageGranularity.height）的倍数
+			8.pSplitInstanceBindRegions任何元素的extent.width 必须是 image全部non-metadata aspects的sparse image block width的倍数或者extent.width + offset.x 必须等于image subresource的width
+			9.pSplitInstanceBindRegions任何元素的extent.height 必须是 image全部non-metadata aspects的sparse image block height的倍数或者extent.height + offset.y 必须等于image subresource的height
+
+			*/
+			bindImageMemorySwapchainInfoKHR.sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR;
+			bindImageMemorySwapchainInfoKHR.pNext = nullptr;
+			bindImageMemorySwapchainInfoKHR.swapchain = VkSwapchainKHR{/*假设这是一个有效的VkSwapchainKHR*/ };//image将绑定到swapchain的某个image memory上
+			bindImageMemorySwapchainInfoKHR.imageIndex = 0;//指明要绑定的swapchain 中的image 索引
+			/*
+			VkBindImageMemorySwapchainInfoKHR有效用法:
+			1.imageIndex 必须小于swapchain中image的数量
+			2.如果swapchain以VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_EXT 创建，则imageIndex 必须是vkAcquireNextImageKHR 或者 vkAcquireNextImage2KHR之前调用返回的索引值
+
+			*/
+
+
+			bindImagePlaneMemoryInfo.sType = VK_STRUCTURE_TYPE_BIND_IMAGE_PLANE_MEMORY_INFO;
+			bindImagePlaneMemoryInfo.pNext = nullptr;
+			bindImagePlaneMemoryInfo.planeAspect = VK_IMAGE_ASPECT_COLOR_BIT;//是一个 VkImageAspectFlagBits 指定要绑定的disjoint image plane的aspect
+			/*
+			VkBindImagePlaneMemoryInfo有效用法：
+			1.如果image的tiling为VK_IMAGE_TILING_LINEAR 或者 VK_IMAGE_TILING_OPTIMAL，则planeAspect 必须是一个单独有效的 multi-planar aspect mask 比特
+			2.如果image的tiling为VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT，则planeAspect 必须是一个单独有效的image的 memory plane （aspectMask 必须指定一个小于 和image的format以及VkImageDrmFormatModifierPropertiesEXT::drmFormatModifier 相关的VkDrmFormatModifierPropertiesEXT::drmFormatModifierPlaneCount的plane的索引值 ）
+			*/
+
+			//VkBindMemoryStatusKHR这里不再赘述，见VkBindBufferMemoryInfo.pNetx 
+
+		
+		}
+		bindImageMemoryInfo.pNext = nullptr;//可以包含VkBindImageMemoryDeviceGroupInfo, VkBindImageMemorySwapchainInfoKHR, VkBindImagePlaneMemoryInfo, 或者 VkBindMemoryStatusKHR
+		bindImageMemoryInfo.image = VkImage{/*假设这是一个有效的VkImage*/ };//是要绑定到memory的image
+		bindImageMemoryInfo.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ };//image需要附加到的VkDeviceMemory
+		bindImageMemoryInfo.memoryOffset = 0;//指明从memory开始的字节偏移量开始的区域将绑定到image---从memory的memoryOffset开始 查询获取的VkMemoryRequirements::size大小的内存将绑定到image
+		/*
+		VkBindImageMemoryInfo有效用法:
+		1.image 不能已经绑定到memory了
+		2.image 不能以任何sparse memory binding标志创建
+		3.memoryOffset 必须小于memory的大小
+		4.如果image需要dedicated allocation（参见传入image调用vkGetImageMemoryRequirements2返回的VkMemoryDedicatedRequirements::requiresDedicatedAllocation），则memory必须以其VkMemoryDedicatedAllocateInfo::image等于image创建
+		5.如果dedicatedAllocationImageAliasing 特性没有开启，且memory创建时候的VkMemoryAllocateInfo.pNext中含有一个image不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo，则VkMemoryDedicatedAllocateInfo::image必须等于image，memoryOffset必须为0
+		6.如果dedicatedAllocationImageAliasing 特性开启，且memory创建时候的VkMemoryAllocateInfo.pNext中含有一个image不为VK_NULL_HANDLE的VkMemoryDedicatedAllocateInfo，则memoryOffset必须为0，image必须等于VkMemoryDedicatedAllocateInfo::image或者在VkImageCreateInfo使用相同参数创建的image，除了
+					 extent 和 arrayLayers可能不同，但其遵循以下限制：正要绑定memory的image的extent的每个维度必须是等于或小于原image的extent的对应维度，arrayLayers参数必须是等于或小于原image的arrayLayers。
+		7.如果image 以VK_IMAGE_CREATE_PROTECTED_BIT创建，则image就必须绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
+		8.如果image 不以VK_IMAGE_CREATE_PROTECTED_BIT创建，则buffer就不能绑定到其分配时memory type含有VK_MEMORY_PROPERTY_PROTECTED_BIT的memory对象
+		9.如果image 以其VkDedicatedAllocationImageCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，则memory必须以其VkDedicatedAllocationMemoryAllocateInfoNV::image等于一个和image创建参数相同的VkImage句柄，且memoryOffset必须为0
+		10.如果VK_KHR_dedicated_allocation 拓展没有开启，且VkPhysicalDeviceProperties::apiVersion小于Vulkan 1.1，且image 不以其VkDedicatedAllocationImageCreateInfoNV::dedicatedAllocation为VK_TRUE 创建，对buffer或image则其memory就不能采用专有分配
+		11.如果创建memory时的VkExportMemoryAllocateInfo::handleTypes 不为0则必须包含至少一个设置在image创建时 VkExternalMemoryImageCreateInfo::handleTypes 中的类型
+		12.如果memory是通过一个导入操作创建的，且不是通过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID创建的，则导入的memory的external handle type必须设置在image创建时候的VkExternalMemoryImageCreateInfo::handleTypes 中
+		13.如果memory 使用过一个含有non-NULL 的buffer对象的VkImportAndroidHardwareBufferInfoANDROID的导入操作创建的，则在image创建时候的VkExternalMemoryImageCreateInfo::handleTypes 中必须包含VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID
+		14.如果image以VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建，则memory必须以VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT 以及 VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT创建
+		15.如果pNext中不包含一个VkBindImagePlaneMemoryInfo结构，则（1）memory必须使用调用vkGetImageMemoryRequirements传入image返回的VkMemoryRequirements.memoryTypeBits允许的一种内存类型创建
+																  （2）memoryOffset必须是调用vkGetImageMemoryRequirements传入image返回的VkMemoryRequirements.alignment的整数倍
+																  （3）调用vkGetImageMemoryRequirements传入image返回的VkMemoryRequirements.size必须小于等于 memory的大小减去memoryOffset
+		16.如果pNext中包含一个VkBindImagePlaneMemoryInfo结构，则（1）image必须以VK_IMAGE_CREATE_DISJOINT_BIT 创建
+															    （2）memory必须使用调用vkGetImageMemoryRequirements传入image以及pNetx中的VkImagePlaneMemoryRequirementsInfo::planeAspect对应VkBindImagePlaneMemoryInfo::planeAspect的VkImageMemoryRequirementsInfo2参数 返回的VkMemoryRequirements.memoryTypeBits允许的一种内存类型创建
+															    （3）memoryOffset必须是调用vkGetImageMemoryRequirements传入image以及pNetx中的VkImagePlaneMemoryRequirementsInfo::planeAspect对应VkBindImagePlaneMemoryInfo::planeAspect的VkImageMemoryRequirementsInfo2参数返回的VkMemoryRequirements.alignment的整数倍
+															    （4）调用vkGetImageMemoryRequirements传入image以及pNetx中的VkImagePlaneMemoryRequirementsInfo::planeAspect对应VkBindImagePlaneMemoryInfo::planeAspect的VkImageMemoryRequirementsInfo2参数返回的VkMemoryRequirements.size必须小于等于 memory的大小减去memoryOffset
+		17.如果pNext中包含一个VkBindImageMemoryDeviceGroupInfo，则（1）所有VkBindImageMemoryDeviceGroupInfo::pDeviceIndices中指定的memory 实例必须已经创建
+																  （2）如果VkBindImageMemoryDeviceGroupInfo::splitInstanceBindRegionCount 不为0，则image 必须以VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT创建
+																  （3）所有VkBindImageMemoryDeviceGroupInfo::pSplitInstanceBindRegions中的元素必须有效的包含在在image维度中的值
+																  （4）所有VkBindImageMemoryDeviceGroupInfo::pSplitInstanceBindRegions的元素的合集必须包含整个image的区域
+		18.如果image以其VkImageSwapchainCreateInfoKHR::swapchain一个有效的值创建，则pNext中也必须包含一个含有相同swapchain句柄的VkBindImageMemorySwapchainInfoKHR
+		19.如果pNext中含有一个VkBindImageMemorySwapchainInfoKHR，则memory必须为VK_NULL_HANDLE
+		20.如果pNext不包含一个VkBindImageMemorySwapchainInfoKHR，则memory必须是一个有效的VkDeviceMemory 句柄
+
+		*/
+
+
+
+		//等价于vkBindImageMemory2KHR，如果pBindInfos的元素的pNext中不含VkBindMemoryStatusKHR，且该命令失败，则pBindInfos中的元素引用的image会变成终止状态，后续不能继续使用，应该被销毁
+		vkBindImageMemory2(device, 1, &bindImageMemoryInfo);/*
+		vkBindImageMemory2有效用法：
+		1.如果任何 VkBindImageMemoryInfo::image 以VK_IMAGE_CREATE_DISJOINT_BIT创建，则VkBindImageMemoryInfo::image的所有plane必须单独在一个 VkBindImageMemoryInfo 结构中进行绑定
+		2.pBindInfos不能多次引用相同的image
+
+		*/
+
+
+	
+	}
+
+
+
+	//Buffer-Image Granularity 见p1191
 }
 
 

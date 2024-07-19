@@ -21,6 +21,7 @@ private:
 	void AccelerationStructureCreateTest();
 	void MicroMapsCreateTest();
 	void ResourceMemoryAssociationTest();
+	void OtherTest();
 
 };
 TEST_REGISTER(ResourceCreationTest)

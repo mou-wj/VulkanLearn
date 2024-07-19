@@ -2197,6 +2197,198 @@ void ResourceCreationTest::ResourceMemoryAssociationTest()
 	//Buffer-Image Granularity 见p1191
 }
 
+void ResourceCreationTest::OtherTest()
+{
+	// Resource Sharing Mode p1192
+	//buffer和image对象通过共享模式来控制如何从队列访问它们
+	{
+		VkSharingMode sharingMode{};
+		/*
+		VK_SHARING_MODE_EXCLUSIVE : 指定对对象的任何范围或图像子资源的访问将由单个队列族独占。只能由创建该对象时指明的队列族访问，如果创建时没有指明哪个队列族，则该对象将属于第一次使用该对象的队列族，如果对象要给别的队列族使用，那么要进行所有权转换
+		VK_SHARING_MODE_CONCURRENT : 指定支持多个队列族对对象任何范围或图像子资源的并发访问。
+		
+		*/
+	
+
+
+		//External Resource Sharing
+		/*
+		底层memory对象同一时候只能由一个vulkan instance访问，vulkan instance独占其自己分配的内存，
+		当然vulkan instance可以从外部导入或导出底层memory对象以此来进行memory所有权的转换。只有当内存已从使用外部内存句柄导入或导出到另一个实例或外部API时，应用程序才能转移资源的底层内存的所有权。
+		这种所有权转换操作也使用barrier操作来完成。
+		*/
+
+
+
+	}
+
+	//Memory Aliasing
+	{
+	//如果一个memory对象的某个范围区域绑定到多个resource 上，则说这个memory是Aliasing的，更多细节见p1194
+	
+	
+	}
+
+
+	//Buffer Collections p1196
+	{
+	/*
+	概述:
+	Fuchsia’s FIDL-based( Fuchsia Interface Definition Language.以fidl作为文件后缀)的系统服务通过VK_FUCHSIA_buffer_collection 拓展和vulkan交互
+	buffer collection指的是一组含一个或多个拥有相同属性的buffer，这些属性描述了这些buffer的内部解释，比如维度和布局信息。
+	这确保了所有的buffer都可以被需要在多个buffer之间进行交换的任务互换使用，例如双缓冲区图形渲染。
+	在Fuchsia 中，buffer collection是其核心设计思想
+	
+	*/
+	
+		VkBufferCollectionFUCHSIA bufferCollectionFUCHSIA{};
+		
+		VkBufferCollectionCreateInfoFUCHSIA bufferCollectionCreateInfoFUCHSIA{};
+		bufferCollectionCreateInfoFUCHSIA.sType = VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CREATE_INFO_FUCHSIA;
+		bufferCollectionCreateInfoFUCHSIA.pNext = nullptr;
+		bufferCollectionCreateInfoFUCHSIA.collectionToken = zx_handle_t{/*假设这是一个有效的zx_handle_t */ };//是一个包含Sysmem客户端的 buffer collection token 的zx_handle_t,collectionToken 必须是一个有效的System以ZX_DEFAULT_CHANNEL_RIGHTS权限分配的Zircon channel的 zx_handle_t (fuchsia.sysmem.Allocator / AllocateSharedCollection) 
+
+		vkCreateBufferCollectionFUCHSIA(device, &bufferCollectionCreateInfoFUCHSIA, nullptr, &bufferCollectionFUCHSIA);
+
+
+
+
+
+		//buffer collection可以为了VkImage或者VkBuffer的内存分配而构建，可以设置一些限制
+		VkImageConstraintsInfoFUCHSIA imageConstraintsInfoFUCHSIA{};
+		imageConstraintsInfoFUCHSIA.sType = VK_STRUCTURE_TYPE_IMAGE_CONSTRAINTS_INFO_FUCHSIA;
+		imageConstraintsInfoFUCHSIA.pNext = nullptr;
+		imageConstraintsInfoFUCHSIA.flags = 0;/*是一个VkImageConstraintsInfoFlagBitsFUCHSIA值，指定关于Sysmem应该为buffer collection分配的内存类型的提示。
+		VkImageConstraintsInfoFlagBitsFUCHSIA:
+		关于Sysmem应该根据缓冲区集合中的图像的预期使用情况所分配的内存类型的一般提示包括：
+		VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_RARELY_FUCHSIA 
+		VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_OFTEN_FUCHSIA 
+		VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_RARELY_FUCHSIA 
+		VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_OFTEN_FUCHSIA
+		
+		对于protected内存：
+		VK_IMAGE_CONSTRAINTS_INFO_PROTECTED_OPTIONAL_FUCHSIA :  指定protected内存是可选的。
+		*/
+		imageConstraintsInfoFUCHSIA.formatConstraintsCount = 0;//是pFormatConstraints 中的个数
+			VkImageFormatConstraintsInfoFUCHSIA imageFormatConstraintsInfoFUCHSIA{};
+			{
+			imageFormatConstraintsInfoFUCHSIA.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_CONSTRAINTS_INFO_FUCHSIA;
+			imageFormatConstraintsInfoFUCHSIA.pNext = nullptr;
+			imageFormatConstraintsInfoFUCHSIA.flags = 0;//保留未来使用
+			imageFormatConstraintsInfoFUCHSIA.sysmemPixelFormat = 0;//是一个来自fuchsia.sysmem/image_formats.fidl FIDL Interface的 PixelFormatType 值
+			imageFormatConstraintsInfoFUCHSIA.requiredFormatFeatures = VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;//是VkFormatFeatureFlagBits组合值的位掩码，指明buffer collection中的buffer需要的format feature，不能为0
+			imageFormatConstraintsInfoFUCHSIA.colorSpaceCount = 0;//pColorSpaces中的个数
+				VkSysmemColorSpaceFUCHSIA colorSpace{};
+				{
+					colorSpace.sType = VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA;
+					colorSpace.pNext = nullptr;
+					colorSpace.colorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;// Sysmem 的ColorSpaceType值，参见 fuchsia.sysmem/image_formats.fidl
+				}
+			imageFormatConstraintsInfoFUCHSIA.pColorSpaces = &colorSpace;//是colorSpaceCount 个VkSysmemColorSpaceFUCHSIA 数组的首地址
+			imageFormatConstraintsInfoFUCHSIA.imageCreateInfo = VkImageCreateInfo{/*假设这是一个有效的VkImageCreateInfo*/ };//是一个VkImageCreateInfo ，用来创建一个使用 VkBufferCollectionFUCHSIA 的memory的VkImage
+			}
+		imageConstraintsInfoFUCHSIA.pFormatConstraints = &imageFormatConstraintsInfoFUCHSIA;//是一个指向 formatConstraintsCount个 VkImageFormatConstraintsInfoFUCHSIA 格式结构数组的指针，用于进一步限制基于image的buffer collection的buffer collection的format选择。
+			VkBufferCollectionConstraintsInfoFUCHSIA bufferCollectionConstraintsInfoFUCHSIA{};//p1204
+			{
+				bufferCollectionConstraintsInfoFUCHSIA.sType = VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CONSTRAINTS_INFO_FUCHSIA;
+				bufferCollectionConstraintsInfoFUCHSIA.pNext = nullptr;
+				bufferCollectionConstraintsInfoFUCHSIA.maxBufferCount = 1;//是buffer collection中可用的buffer的最大数量
+				bufferCollectionConstraintsInfoFUCHSIA.minBufferCount = 0;//是buffer collection中可用的buffer的最小数量
+				bufferCollectionConstraintsInfoFUCHSIA.minBufferCountForCamping = 0;//是camping 的 per-participant的最小的buffer数量
+				bufferCollectionConstraintsInfoFUCHSIA.minBufferCountForDedicatedSlack = 0;//是dedicated slack 的 per-participant的最小的buffer数量
+				bufferCollectionConstraintsInfoFUCHSIA.minBufferCountForSharedSlack = 0;//是 shared slack 的 per-participant的最小的buffer数量
+			}
+		imageConstraintsInfoFUCHSIA.bufferCollectionConstraints = bufferCollectionConstraintsInfoFUCHSIA;//是一个VkBufferCollectionConstraintsInfoFUCHSIA结构，用于为基于buffer的buffer collection的权衡和分配提供参数
+		/*
+		VkImageConstraintsInfoFUCHSIA有效用法:
+		1.pFormatConstraints中的所有元素其VkImageFormatConstraintsInfoFUCHSIA::requiredFormatFeatures必须至少含有一个比特位
+		2.如果pFormatConstraints->imageCreateInfo->usage 包含VK_IMAGE_USAGE_SAMPLED_BIT	，则pFormatConstraints->requiredFormatFeatures 必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+		3.如果pFormatConstraints->imageCreateInfo->usage 包含VK_IMAGE_USAGE_STORAGE_BIT	，则pFormatConstraints->requiredFormatFeatures 必须包含VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT
+		4.如果pFormatConstraints->imageCreateInfo->usage 包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ，则pFormatConstraints->requiredFormatFeatures 必须包含VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
+		5.如果pFormatConstraints->imageCreateInfo->usage 包含VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT ，则pFormatConstraints->requiredFormatFeatures 必须包含VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+		6.如果pFormatConstraints->imageCreateInfo->usage 包含VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT ，则pFormatConstraints->requiredFormatFeatures 必须包含VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT，或VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT中的至少一个
+		7.如果attachmentFragmentShadingRate 特性开启，且如果pFormatConstraints->imageCreateInfo->usage 包含VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR ，则pFormatConstraints->requiredFormatFeatures 必须包含VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR
+		*/
+		
+		//设置buffer collection 限制来进行VkImage 的 format的权衡以及buffer collection分配
+		vkSetBufferCollectionImageConstraintsFUCHSIA(device, bufferCollectionFUCHSIA,&imageConstraintsInfoFUCHSIA);//如果pImageConstraintsInfo->formatConstraintsCount大于实现能支持的或者pImageConstraintsInfo中列举的format实现不支持则可能失败返回其错误信息，且该接口对于同一个bufferCollection只能调用一次
+
+
+
+
+		VkBufferConstraintsInfoFUCHSIA bufferConstraintsInfoFUCHSIA{};
+		bufferConstraintsInfoFUCHSIA.sType = VK_STRUCTURE_TYPE_BUFFER_CONSTRAINTS_INFO_FUCHSIA;
+		bufferConstraintsInfoFUCHSIA.pNext = nullptr;
+		bufferConstraintsInfoFUCHSIA.createInfo = VkBufferCreateInfo{/*假设这是一个有效的VkBufferCreateInfo*/ };//是一个 VkBufferCreateInfo 描述buffer collection中buffer的属性
+		bufferConstraintsInfoFUCHSIA.requiredFormatFeatures = VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;//是VkFormatFeatureFlagBits组合值的位掩码，指明buffer collection中buffer需要的format feature，必须从 buffer compatible format features（p4085）中列举的值中选取
+		VkBufferCollectionConstraintsInfoFUCHSIA bufferCollectionConstraintsInfoFUCHSIA{};//p1204
+		{
+			bufferCollectionConstraintsInfoFUCHSIA.sType = VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CONSTRAINTS_INFO_FUCHSIA;
+			bufferCollectionConstraintsInfoFUCHSIA.pNext = nullptr;
+			bufferCollectionConstraintsInfoFUCHSIA.maxBufferCount = 1;//是buffer collection中可用的buffer的最大数量
+			bufferCollectionConstraintsInfoFUCHSIA.minBufferCount = 0;//是buffer collection中可用的buffer的最小数量
+			bufferCollectionConstraintsInfoFUCHSIA.minBufferCountForCamping = 0;//是camping 的 per-participant的最小的buffer数量
+			bufferCollectionConstraintsInfoFUCHSIA.minBufferCountForDedicatedSlack = 0;//是dedicated slack 的 per-participant的最小的buffer数量
+			bufferCollectionConstraintsInfoFUCHSIA.minBufferCountForSharedSlack = 0;//是 shared slack 的 per-participant的最小的buffer数量
+		}
+		bufferConstraintsInfoFUCHSIA.bufferCollectionConstraints = bufferCollectionConstraintsInfoFUCHSIA;//是一个VkBufferCollectionConstraintsInfoFUCHSIA结构，用于为基于buffer的buffer collection的权衡和分配提供参数
+
+		//设置VkBuffer 的buffer collection 限制
+		vkSetBufferCollectionBufferConstraintsFUCHSIA(device, bufferCollectionFUCHSIA, &bufferConstraintsInfoFUCHSIA);//如果实现不支持bufferCollectionConstraints中的限制则可能失败，对每个bufferCollection只能调用一次
+
+
+
+		VkBufferCollectionPropertiesFUCHSIA bufferCollectionPropertiesFUCHSIA{};
+		bufferCollectionPropertiesFUCHSIA.sType = VK_STRUCTURE_TYPE_BUFFER_COLLECTION_PROPERTIES_FUCHSIA;
+		bufferCollectionPropertiesFUCHSIA.pNext = nullptr;
+		bufferCollectionPropertiesFUCHSIA.bufferCount = 0;//是 buffer collection中buffer的数量
+		bufferCollectionPropertiesFUCHSIA.createInfoIndex = 0;//返回之前调用vkSetBufferCollectionImageConstraintsFUCHSIA设置image buffer collection限制时选取的VkImageConstraintsInfoFUCHSIA::pImageCreateInfos中的一个元素的索引值，如果先前调用vkSetBufferCollectionBufferConstraintsFUCHSIA则返回0
+		bufferCollectionPropertiesFUCHSIA.formatFeatures = 0;//是buffer collection共有的 VkFormatFeatureFlagBits的组合值的位掩码
+		bufferCollectionPropertiesFUCHSIA.memoryTypeBits = 0;//是一个至少包含一个比特为的位掩码，用来指明buffer collection可以导入为什么memory type的buffer collection
+		bufferCollectionPropertiesFUCHSIA.samplerYcbcrConversionComponents = VkComponentMapping{};//指明各个分量映射规则的VkComponentMapping
+		bufferCollectionPropertiesFUCHSIA.suggestedYcbcrModel = VK_SAMPLER_YCBCR_MODEL_CONVERSION_RGB_IDENTITY;//指明建议的 Y′CbCr模式  的 VkSamplerYcbcrModelConversion值
+		bufferCollectionPropertiesFUCHSIA.suggestedYcbcrRange = VK_SAMPLER_YCBCR_RANGE_ITU_FULL;//指明建议的 Y′CbCr范围的VkSamplerYcbcrRange 值
+		bufferCollectionPropertiesFUCHSIA.suggestedXChromaOffset = VK_CHROMA_LOCATION_COSITED_EVEN;//指明建议的 X chroma 偏移的 VkChromaLocation 值
+		bufferCollectionPropertiesFUCHSIA.suggestedYChromaOffset = VK_CHROMA_LOCATION_COSITED_EVEN;//指明建议的 Y chroma 偏移的 VkChromaLocation 值
+		bufferCollectionPropertiesFUCHSIA.sysmemColorSpaceIndex = VkSysmemColorSpaceFUCHSIA{};//是一个指明color space的 VkSysmemColorSpaceFUCHSIA,只对image buffer collection有效，成功后将为kImageConstraintsInfoFUCHSIA::pFormatConstraints的第createInfoIndex个元素的pColorSpaces中的一个值
+		bufferCollectionPropertiesFUCHSIA.sysmemPixelFormat = 0;//是定义在fuchsia.sysmem/image_formats.fidl中的System PixelFormatType值
+		
+
+		//获取buffer collection的属性
+		// 在调用vkSetBufferCollectionImageConstraintsFUCHSIA 或者 vkSetBufferCollectionBufferConstraintsFUCHSIA设置了限制之后获取buffer collection最终的属性
+		vkGetBufferCollectionPropertiesFUCHSIA(device, bufferCollectionFUCHSIA, &bufferCollectionPropertiesFUCHSIA);
+
+
+
+
+
+
+		//buffer collection memory的导入
+		//如果将buffer collection memory导入到image或者buffer，则在其memory创建时候的VkMemoryAllocateInfo的pNext中包含一个VkImportMemoryBufferCollectionFUCHSIA
+		VkImportMemoryBufferCollectionFUCHSIA importMemoryBufferCollectionFUCHSIA{};
+		importMemoryBufferCollectionFUCHSIA.sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_BUFFER_COLLECTION_FUCHSIA;
+		importMemoryBufferCollectionFUCHSIA.pNext = nullptr;
+		importMemoryBufferCollectionFUCHSIA.index = 0;//buffer collection中buffer的索引，必须小于buffer collection的buffer的数量，参见属性VkBufferCollectionPropertiesFUCHSIA:bufferCount
+		importMemoryBufferCollectionFUCHSIA.collection = bufferCollectionFUCHSIA;//指明一个buffer collection的 VkBufferCollectionFUCHSIA
+
+		
+		
+		
+		//销毁buffer collection
+		vkDestroyBufferCollectionFUCHSIA(device, bufferCollectionFUCHSIA, nullptr);//引用到该buffer collection的image或者buffer 可能会比这个buffer collection的生命周期长
+
+
+
+
+
+
+
+
+	}
+
+
+}
+
 
 
 NS_TEST_END

@@ -1,6 +1,20 @@
 #include "ResourceDescriptorsTest.h"
 NS_TEST_BEGIN
 
+
+
+/*
+一个 descriptor 是一个指明了用作一个shader resource 的如 buffer, buffer view, image view, sampler, 或者 combined image sampler，通过 descriptor sets来组织，
+每个descriptor set中可以包含的descriptor 排布由 descriptor set layout决定。descriptor set layout 可被pipeline layout进行使用，如果 descriptorBuffer 特性开启，则支持
+将descriptor 放到 descriptor buffers中。
+
+shader通过使用descriptor set和binding 号进行修饰的变量来访问资源，这些变量将它们链接到descriptor set中的descriptor，映射到descriptor set的shader 接口描述见  Shader Resource Interface p1409
+
+shader 可以直接通过64位的地址直接访问buffer而不需要通过descriptor，见 Physical Storage Buffer Access p1352
+
+*/
+
+
 ResourceDescriptorsTest::ResourceDescriptorsTest()
 {
 }
@@ -11,6 +25,642 @@ void ResourceDescriptorsTest::run()
 
 ResourceDescriptorsTest::~ResourceDescriptorsTest()
 {
+}
+
+void ResourceDescriptorsTest::DescriptorTypeTest()
+{
+	// Descriptor Types    
+	//vulkan中支持多找descriptor 类型，对应不同的资源使用方式
+
+
+	// Storage Image
+	{
+	/*
+	
+	 一个storage image (VK_DESCRIPTOR_TYPE_STORAGE_IMAGE) 是一个关联到image resource通过image view进行的加载，存储，以及原子操作的 descriptor type
+
+	 支持所有shader阶段，其他详情见p1242
+
+	
+	*/
+	
+	}
+
+	// Sampler
+	{
+	/*
+	一个sampler descriptor (VK_DESCRIPTOR_TYPE_SAMPLER) 是一个关联 sampler 的 descriptor type,用来控制 sampled image的采样行为（p1473）
+
+	*/
+	}
+
+
+	//Sampled Image
+	{
+	/*
+	一个sampled image (VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE) 是一个关联到image resource通过image view进行的采样操作（p1473）的 descriptor type
+	
+	shader 绑定到一个sampled image变量以及sampler变量来进行采样
+
+	支持所有shader，image view的format的  format features 需含有VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+
+	绑定的image subresource的layout应为以下类型之一：
+    VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_GENERAL
+    VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR
+    VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL
+    VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR
+    VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT
+	*/
+	
+	}
+
+	// Combined Image Sampler
+	{
+	/*
+	一个combined image sampler (VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) 是一个单独的关联到sampler和 image subresource的  descriptor type，即将 一个sampler 和 sampled image descriptor绑定到了一起成为一个单独的descriptor
+	
+	如果该descriptor 引用到一个 使用了 Y′CBCR conversion 或者采样  subsampled image的sampler，则sampler只能用于对同一descriptor中的image进行采样。否则sampler和descriptor的image 就看可以任意组合
+
+	绑定的image subresource的layout应为以下类型之一：
+	VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
+	VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+	VK_IMAGE_LAYOUT_GENERAL
+	VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR
+	VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL
+	VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL
+	VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL
+	VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL
+	VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR
+	VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT
+
+	*/
+	
+	}
+
+	// Uniform Texel Buffer
+	{
+	/*
+	一个uniform texel buffer (VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER) 是一个关联到buffer resource通过buffer view进行image 采样操作（p1473）的 descriptor type
+	
+	uniform texel buffer定义了一个紧密排列的一维线性texel数组，当纹理在着色器中读取时，纹理会以与图像一样的方式进行格式转换。
+	
+	支持所有shader，image view的format的  format features 需含有VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT
+	*/
+	
+	}
+
+
+	// Storage Texel Buffer
+	{
+	/*
+	一个 storage texel buffer (VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER) 是一个关联到buffer resource通过buffer view进行image 加载，存储，以及原子操作的 descriptor type
+	
+	storage texel buffer定义了一个紧密排列的一维线性texel数组，当纹理在着色器中读取时，纹理会以与图像一样的方式进行格式转换。相比 uniform texel buffer，storage texel buffer可以用相同的方式写入  storage images。
+
+	其他详情见p1244
+	*/
+	
+	}
+
+	// Storage Buffer
+	{
+	/*
+	一个 storage buffer (VK_DESCRIPTOR_TYPE_STORAGE_BUFFER) 是一个直接关联到buffer resource，在shader中通过结构体变量成员来进行加载，存储，以及原子操作的 descriptor type
+	
+	*/
+	}
+
+	// Uniform Buffer
+	{
+	/*
+	一个  uniform buffer (VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER) 是一个直接关联到buffer resource，在shader中通过结构体变量成员来进行加载操作的 descriptor type
+	*/
+	}
+
+	// Dynamic Uniform Buffer
+	{
+	/*
+		一个 dynamic uniform buffer(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC) 几乎等同于 uniform buffer，只是该descriptor会去指定buffer的offset，在绑定descriptor set 时添加一个 VkDescriptorBufferInfo 到dynamic offset（p1239）的最开始更新descriptor set的时候计算基本的offset
+	*/
+	
+	}
+
+	//Dynamic Storage Buffer
+	{
+	/*
+		一个 dynamic storage buffer (VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC) 几乎等同于 storage buffer，只是该descriptor会去指定buffer的offset，在绑定descriptor set 时添加一个 VkDescriptorBufferInfo 到dynamic offset（p1239）的最开始更新descriptor set的时候计算基本的offset
+	*/
+	}
+
+	// Inline Uniform Block
+	{
+	/*
+	一个inline uniform block (VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK) 几乎等用于uniform buffer，只是该descriptor 所对的数据直接存储在descriptor set中，不用额外的buffer memory，节省了内存，提高了性能。
+	
+	典型用法时存放小部分常量数据，相比于push constants ，可以在离散的绘制以及dispatching commands时重用相同的常量数据。
+	
+	inline uniform block descriptors 不能组合成一个数组，而一个inline uniform block descriptor binding 的数组大小实际是指明了这个binding的字节容量。
+	*/
+	}
+
+	// Sample Weight Image
+	{
+	/*
+	一个sample weight image (VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM) 是一个关联到 image resource 通过 image view 进行weight image 采样操作的 descriptor type，该 image view 必须使用 VkImageViewSampleWeightCreateInfoQCOM 结构创建。
+
+	shader可以绑定一个sample weight image变量，一个sampled image变量，以及一个sampler变量来进行weight image采样。
+
+	支持所有shader，weight image view的format的  format features 需含有VK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOM，sampled image view的format的  format features 需含有VK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM
+	
+
+	weight image subresources的布局应该为 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL或者  VK_IMAGE_LAYOUT_GENERAL 
+	*/
+	}
+
+
+	//Block Matching Image
+	{
+	/*
+	一个block matching image (VK_DESCRIPTOR_TYPE_BLOCK_MATCHING_IMAGE_QCOM) 是一个关联到 image resource 通过 image view 进行block matching 操作的 descriptor type。
+
+	shader可以绑定一个block matching image（target image）变量，一个reference image变量，以及一个sampler变量来进行block matching。
+
+	支持所有shader，block matching image view和reference view 的format的  format features 需含有VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
+	
+	block matching的image subresources 的布局应该为VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL 或者 VK_IMAGE_LAYOUT_GENERAL
+
+	*/
+	
+	}
+
+	//Input Attachment
+	{
+	/*
+	一个input attachment (VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT) 是一个关联到 image resource 通过 image view 进行在fragment shaders中framebuffer local load 操作的 descriptor type。
+
+	对于给定image的tiling所有支持color attachments（VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT 或 VK_FORMAT_FEATURE_2_LINEAR_COLOR_ATTACHMENT_BIT_NV ），或者 depth/stencil attachments (VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) 也将支持input attachments
+	
+	input attachment所对的image view的布局应该为以下中的一个:
+    VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_GENERAL
+    VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR
+    VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL
+    VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL
+    VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR
+    VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT
+    VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR
+	*/
+	
+	}
+
+	//Acceleration Structure
+	{
+	/*
+	一个acceleration structure (VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR 或者 VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV) 是一个获取shader中用来进行ray tracing的场景集合数据（只读）的 descriptor type。
+
+	*/
+	}
+
+	//Mutable
+	{
+	/*
+	一个 mutable  descriptor (VK_DESCRIPTOR_TYPE_MUTABLE_EXT) 指明这个descriptor 可以变更为任何其他类型的descriptor，具体的类型由VkDescriptorSetLayoutCreateInfo.pNext中的VkMutableDescriptorTypeListEXT::pDescriptorTypes列表中当前bingding给出的descriptor type决定。
+	
+	可以通过指定VK_DESCRIPTOR_TYPE_MUTABLE_EXT binding以及 该binding的 VkMutableDescriptorTypeCreateInfoEXT::pDescriptorTypes 调用 vkGetDescriptorSetLayoutSupport来获取该descriptor支持的descriptor type。
+	*/
+	
+	
+	}
+
+}
+
+struct DescriptorSetLayoutCreateInfoEXT {
+	VkDescriptorSetLayoutBindingFlagsCreateInfo	descriptorSetLayoutBindingFlagsCreateInfo{};
+	VkMutableDescriptorTypeCreateInfoEXT mutableDescriptorTypeCreateInfoEXT{};
+	DescriptorSetLayoutCreateInfoEXT() {
+		Init();
+	}
+	void Init() {
+		descriptorSetLayoutBindingFlagsCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
+		descriptorSetLayoutBindingFlagsCreateInfo.pNext = nullptr;
+		mutableDescriptorTypeCreateInfoEXT.sType = VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_EXT;
+		mutableDescriptorTypeCreateInfoEXT.pNext = nullptr;
+
+	}
+
+
+};
+
+struct DescriptorPoolCreateInfoEXT {
+	VkDescriptorPoolInlineUniformBlockCreateInfo descriptorPoolInlineUniformBlockCreateInfo{};
+	VkMutableDescriptorTypeCreateInfoEXT mutableDescriptorTypeCreateInfoEXT{};
+	DescriptorPoolCreateInfoEXT() {
+		Init();
+	}
+	void Init() {
+		descriptorPoolInlineUniformBlockCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO;
+		descriptorPoolInlineUniformBlockCreateInfo.pNext = nullptr;
+		mutableDescriptorTypeCreateInfoEXT.sType = VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_EXT;
+		mutableDescriptorTypeCreateInfoEXT.pNext = nullptr;
+
+
+	}
+
+
+};
+
+void ResourceDescriptorsTest::DescriptorSetsTest()
+{
+	/*
+	概述
+	descriptor 组合成descriptor set，然后通过 descriptor set layout描述其中的descriptor的类型和数量，以及它们的binding 号，descriptor set layout也会确定descriptor set要使用的resource以及 shader resources和shader stage之间的接口。
+	
+	*/
+
+	//descriptor set layout
+	VkDescriptorSetLayout descriptorSetLayout{};
+	{
+	/*
+	descriptor set layout 通过一组一个或多个 descriptor bindings 来定义，每个单独的descriptor binding 由一个 descriptor type，一个bingding中的 descriptor count，以及一组可访问该binding的 shader stage 组成，还有（如果使用 immutable samplers）一个 sampler descriptors的数组。
+	*/
+	
+		VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo{};
+		descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			DescriptorSetLayoutCreateInfoEXT descriptorSetLayoutCreateInfoEXT{};
+		descriptorSetLayoutCreateInfo.pNext = &descriptorSetLayoutCreateInfoEXT.descriptorSetLayoutBindingFlagsCreateInfo;//可以含有VkDescriptorSetLayoutBindingFlagsCreateInfo 或者 VkMutableDescriptorTypeCreateInfoEXT
+		descriptorSetLayoutCreateInfo.flags = 0;//是一个  VkDescriptorSetLayoutCreateFlagBits 组合值的位掩码，指明descriptor set layout创建的额外属性
+		/*
+		VkDescriptorSetLayoutCreateFlagBits:
+
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR :  指定descriptor sets不能使用这个layout进行分配，这个descriptors 会通过vkCmdPushDescriptorSetKHR 进行更新 
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT :  指定descriptor sets必须从一个创建含有VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT 的descriptor pool 上去分配，以这个标志创建的descriptor set layout在descriptors per-stage 以及 per-pipeline layout上由别的最大数量的限制，、
+																					non-UpdateAfterBind 限制只会统计不以这个标志创建的descriptor set 中的descriptors数量。UpdateAfterBind 限制会统计所有descriptors数量，但可能高于non-UpdateAfterBind 限制数量。
+		
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_INDIRECT_BINDABLE_BIT_NV:  指定使用这个layout的descriptor sets 能够绑定到以VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV 创建的compute pipelines，在Device-Generated Commands 中使用。
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT:  指定这个layout只能用于描述 descriptor buffers.
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT:  指定这个layout只能包含vkCmdBindDescriptorBufferEmbeddedSamplersEXT 可以绑定的 immutable samplers，不像通常的immutable samplers，embedded immutable samplers不需要应用提供一个 descriptor buffer.
+
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT :  指定descriptor sets必须从一个创建含有VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT 的descriptor pool 上去分配，以这个标志创建的descriptor set layout在descriptors per-stage  上没有明显的最大数量的限制，host descriptor sets 只受可用host memory的限制，但可能由于一些具体的实现而收到特别的限制， 实现
+																					可能会限制支持的UpdateAfterBind 或者 non-UpdateAfterBind descriptors数量，不管哪一个更大。
+		
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV:  指定descriptor sets中使用这个layout的bingding 数量在每一个stage中可能会呈现不同资源且或者资源类型
+		*/
+		descriptorSetLayoutCreateInfo.bindingCount = 1;// pBindings 中的个数
+			VkDescriptorSetLayoutBinding descriptorBinding{};
+			{
+				descriptorBinding.binding = 0;//指定binding号，对应shader stage中相同binding号的资源
+				descriptorBinding.descriptorCount = 1;//是shader stage中这个binding上含有的descriptors的数量，在shader中通过数组访问， 如果 descriptorType为 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则该值表示 inline uniform block 的字节大小，如果该值为0则表示shader不能在绑定了这个layout的pipeline中使用这个binding
+				descriptorBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//是一个 VkDescriptorType值，指定这个binding上的resource descriptors的类型
+				descriptorBinding.pImmutableSamplers = (const VkSampler*)VkSampler{/*假设这是一个有效的VkSampler*/};//影响 samplers的初始化,如果descriptorType为 VK_DESCRIPTOR_TYPE_SAMPLER 为 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，且该VkSampler不为VK_NULL_HANDL则表示该VkSampler会在该binding上使用且无法动态更新，如果VkSampler为VK_NULL_HANDL则表示可以动态更新，如果descriptorType不为前面说的两种，则这个参数会被忽略
+				descriptorBinding.stageFlags = VK_SHADER_STAGE_ALL;//是 VkShaderStageFlagBits 组合值的位掩码，指定这个binding可以被访问的shader stage
+				/*
+				VkDescriptorSetLayoutBinding有效用法：
+				1.如果descriptorType 为VK_DESCRIPTOR_TYPE_SAMPLER 或者VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，且descriptorCount不为0，pImmutableSamplers不为NULL，否则pImmutableSamplers必须指向一个包含descriptorCount个有效VkSampler的数组。
+				2.如果inlineUniformBlock 特性没有开启，则descriptorType 不能为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+				3.如果descriptorType 为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK 则（1）descriptorCount 必须为4的倍数
+																				 （2）如果VkDescriptorSetLayoutCreateInfo::flags 不包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT，则descriptorCount 必须小于等于VkPhysicalDeviceInlineUniformBlockProperties::maxInlineUniformBlockSize
+				4.如果VkDescriptorSetLayoutCreateInfo::flags 包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT，则（1）descriptorType 必须为VK_DESCRIPTOR_TYPE_SAMPLER，descriptorCount 必须小于等于1
+																																		（2）如果descriptorCount 等于1，pImmutableSamplers 不能为NULL
+				5.如果descriptorCount 不为0，stageFlags 必须为VK_SHADER_STAGE_ALL 或者有效的VkShaderStageFlagBits 组合值
+				6.如果descriptorType 为VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT且descriptorCount 不为0，则stageFlags 必须为0或者 VK_SHADER_STAGE_FRAGMENT_BIT
+				7.pImmutableSamplers 指定的sampler对象的borderColor 等于VK_BORDER_COLOR_FLOAT_CUSTOM_EXT 或VK_BORDER_COLOR_INT_CUSTOM_EXT 
+				8.如果descriptorType 为VK_DESCRIPTOR_TYPE_MUTABLE_EXT，则pImmutableSamplers 必须为NULL
+				9.如果 VkDescriptorSetLayoutCreateInfo::flags 包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV，且descriptorCount 不为0，则stageFlags 必须是 VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
+													VK_SHADER_STAGE_GEOMETRY_BIT, VK_SHADER_STAGE_FRAGMENT_BIT 和 VK_SHADER_STAGE_COMPUTE_BIT 的有效的组合值
+
+				*/
+			
+			}
+		descriptorSetLayoutCreateInfo.pBindings = &descriptorBinding;//是一组 VkDescriptorSetLayoutBinding的数组地址
+		/*
+		VkDescriptorSetLayoutCreateInfo有效用法:
+		1.如果perStageDescriptorSet 特性没有开启，或者flags没有包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV，则pBindings中的每个元素的VkDescriptorSetLayoutBinding::binding成员必须有不同的值
+		2.如果flags包含	VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR，则pBindings 的所有元素不能有 descriptorType 等于 VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC 或 VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+		3.如果flags包含 VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR，则（1）pBindings 的所有元素不能有 descriptorType 等于 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+																				   （2）pBindings 的所有元素中descriptor数量总和不能超过 VkPhysicalDevicePushDescriptorPropertiesKHR::maxPushDescriptors
+																				   （3）flags 不能包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT
+																				   （4）pBindings中不能含有descriptorType 为VK_DESCRIPTOR_TYPE_MUTABLE_EXT 的元素
+		4.如果任何binding含有VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT，则（1）flags 必须包含 VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT
+																			（2）所有binding元素不能有 descriptorType 等于 VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC 或者VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+		5.如果flags包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT，则flags不能包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT
+		6.如果如果pBindings[i]的descriptorType 等于 VK_DESCRIPTOR_TYPE_MUTABLE_EXT，则pNext中必须含有一个mutableDescriptorTypeListCount 大于i的VkMutableDescriptorTypeCreateInfoEXT
+		7.如果一个binding的descriptorType为VK_DESCRIPTOR_TYPE_MUTABLE_EXT，则pImmutableSamplers 必须为NULL
+		8.如果mutableDescriptorTypeFeaturesEXT::mutableDescriptorType 特性没有开启，则pBindings中不能含有descriptorType 为VK_DESCRIPTOR_TYPE_MUTABLE_EXT 的元素
+		9.如果flags包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT，则VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT::mutableDescriptorType 必须开启
+		10.如果flags包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT，则pBindings 的所有元素不能有 descriptorType 等于 VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC 或 VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+		11.如果flags包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT，则flags不能包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT
+		12.如果flags包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT，则flags不能包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT，VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE
+		13.如果flags包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV，则（1）perStageDescriptorSet 必须开启
+																			（2）pBindings中不能含有VkDescriptorSetLayoutBinding::binding相等 以及VkDescriptorSetLayoutBinding::stageFlags含有相同比特位的两个元素 
+
+		*/
+
+
+		//VkMutableDescriptorTypeCreateInfoEXT   等价于VkMutableDescriptorTypeCreateInfoVALVE
+		//指明mutable descriptor可能的descriptor 类型, VkDescriptorSetLayoutCreateInfo::pBindings[i] 使用列举在VkMutableDescriptorTypeCreateInfoEXT::::pMutableDescriptorTypeLists[i]中的 descriptor类型
+		VkMutableDescriptorTypeCreateInfoEXT& mutableDescriptorTypeCreateInfoEXT = descriptorSetLayoutCreateInfoEXT.mutableDescriptorTypeCreateInfoEXT;
+		mutableDescriptorTypeCreateInfoEXT.mutableDescriptorTypeListCount = 1;// pMutableDescriptorTypeLists的元素
+			VkMutableDescriptorTypeListEXT mutableDescriptorTypeList{};//等价于VkMutableDescriptorTypeListVALVE
+			{
+				mutableDescriptorTypeList.descriptorTypeCount = 0;//pDescriptorTypes中元素个数
+				mutableDescriptorTypeList.pDescriptorTypes = VK_NULL_HANDLE;//是descriptorTypeCount个 VkDescriptorType的数组地址，定义一个给定的绑定mutable descriptor可能会突变为哪些描述符类型。
+				/*
+				VkMutableDescriptorTypeListEXT有效用法:
+				1.descriptorTypeCount 不能为0，如果对应的binding 为VK_DESCRIPTOR_TYPE_MUTABLE_EXT
+				2.pDescriptorTypes 必须是一个有效的指针，指向一个descriptorTypeCount个有效的、唯一的VkDescriptorType值，如果给定的binding是VK_DESCRIPTOR_TYPE_MUTABLE_EXT类型
+				3.descriptorTypeCount 必须为0，如果对应的binding 不为VK_DESCRIPTOR_TYPE_MUTABLE_EXT
+				4.pDescriptorTypes 不能包含VK_DESCRIPTOR_TYPE_MUTABLE_EXT，VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC，VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC ，VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+
+				*/
+			}
+		mutableDescriptorTypeCreateInfoEXT.pMutableDescriptorTypeLists = &mutableDescriptorTypeList;//是一组 VkMutableDescriptorTypeListEXT的数组地址
+
+
+		//VkDescriptorSetLayoutBindingFlagsCreateInfo    等同于VkDescriptorSetLayoutBindingFlagsCreateInfoEXT
+		//指明用于descriptor sets layout的每个binding的flags   ，即 VkDescriptorSetLayoutCreateInfo::pBindings[i] 使用 VkDescriptorSetLayoutBindingFlagsCreateInfo::pBindingFlags[i] 中的flags
+		VkDescriptorSetLayoutBindingFlagsCreateInfo& bindingFlagsCreateInfo = descriptorSetLayoutCreateInfoEXT.descriptorSetLayoutBindingFlagsCreateInfo;
+		bindingFlagsCreateInfo.pBindingFlags = (VkDescriptorBindingFlags*)VkDescriptorBindingFlagBits{ VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT };/*是一个VkDescriptorBindingFlagBits 组合值的位掩码数组，用于指定descriptor set layout的每个binding的flags
+		VkDescriptorBindingFlagBits （等同于VkDescriptorBindingFlagBitsEXT）:
+
+		VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT:  指明这个binding的descriptors 将在这个descriptor set绑定到command buffer和command buffer提交到队列之间进行更新。
+		VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT:  指明这个binding的descriptors 不是动态使用的，在使用时这个binding必须含有有效的descriptors
+		VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT:  指明这个binding的descriptors 可以在command buffer绑定该descriptor set之后更新，或者在使用该descriptor set的command buffer处于pending execution下进行更新，或者在不使用该descriptor set的command buffer处于pending execution下进行更新。
+		VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT:  指明这个binding的descriptors 是一个可变大小的descriptor binding，其大小将在分配descriptor set时指定。descriptorCount 将作为一个上限，但实际的descriptor数量可能小于这个上限。
+
+		》》》》》》》》》》这里每个枚举类型的含义过长，这里只列举最重要的信息，剩下的详细说明见p1261
+		
+		*/
+		bindingFlagsCreateInfo.bindingCount = 1;//pBindingFlags 中的元素个数
+		/*
+		VkDescriptorSetLayoutBindingFlagsCreateInfo
+		1.如果bindingCount 不能0则必须等于VkDescriptorSetLayoutCreateInfo::bindingCount
+		2.如果VkDescriptorSetLayoutCreateInfo::flags 包含VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR，则pBindingFlags 中的所有元素不能含有VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT，VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT，VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT 或者VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
+		3.如果pBindingFlags 的一个元素包含VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT，则这个元素的binding 号必须是pBindings 中binding 号的最大值
+		4.如果VkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingUniformBufferUpdateAfterBind 没有开启，则所有binding的descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER 不能使用VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		5.如果VkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingSampledImageUpdateAfterBind 没有开启，则所有binding的descriptorType为VK_DESCRIPTOR_TYPE_SAMPLER而 不能为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER 或者 VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
+		6.如果VkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingStorageImageUpdateAfterBind 没有开启，则所有binding的descriptorType为VK_DESCRIPTOR_TYPE_STORAGE_IMAGE 且不能使用VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		7.如果VkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingStorageBufferUpdateAfterBind 没有开启，则所有binding的descriptorType为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER 且不能使用VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		8.如果VkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingUniformTexelBufferUpdateAfterBind 没有开启，则所有binding的descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER 且不能使用VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		9.如果VkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingStorageTexelBufferUpdateAfterBind 没有开启，则所有binding的descriptorType为VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER 且不能使用VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		10.如果VkPhysicalDeviceInlineUniformBlockFeatures::descriptorBindingInlineUniformBlockUpdateAfterBind 没有开启，则所有binding的descriptorType为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK 且不能使用VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		11.如果VkPhysicalDeviceAccelerationStructureFeaturesKHR::descriptorBindingAccelerationStructureUpdateAfterBind 没有开启，则所有binding的descriptorType为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR 或者VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV  且不能使用VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		12.所有使用descriptor type 为VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 或者 VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC的binding 且不能使用VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		13.如果VkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingUpdateUnusedWhilePending 没有开启，则所有pBindingFlags的元素不能含有VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT
+		14.如果VkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingPartiallyBound 没有开启，则所有pBindingFlags的元素不能含有VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
+		15.如果VkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingVariableDescriptorCount 没有开启，则所有pBindingFlags的元素不能含有VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
+		16.如果pBindingFlags 的一个元素包含VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT，则这个元素的descriptorType 不能为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC 或者VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+
+		*/
+
+
+
+		//查询一个descriptor set layout是否能够被创建,需要查询的原因见p1263
+		{
+			VkDescriptorSetLayoutSupport support{};//等同于VkDescriptorSetLayoutSupportKHR
+			support.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT;
+				VkDescriptorSetVariableDescriptorCountLayoutSupport variableSupport{};//等同于VkDescriptorSetVariableDescriptorCountLayoutSupportEXT
+				{
+					variableSupport.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT;
+					variableSupport.pNext = nullptr;
+					variableSupport.maxVariableDescriptorCount = 0;//指示在layout的最高编号binding中支持的最大descriptor数，如果该binding是可变大小的。如果layout的最高编号binding的描述符类型为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，那么maxVariableDescriptorCount表示binding支持的最大字节大小，如果该binding大小可变的。
+				}
+			support.pNext = &variableSupport;//可以包含VkDescriptorSetVariableDescriptorCountLayoutSupport
+			support.supported = VK_FALSE;//指明这个descriptor set layout是否能够被创建的返回值
+
+			//等用于vkGetDescriptorSetLayoutSupportKHR
+			vkGetDescriptorSetLayoutSupport(device, & descriptorSetLayoutCreateInfo, & support);
+
+
+		
+		}
+
+
+		//一些binding在着色器代码中声明形式如下：  详情见p1265
+		/*
+		//例如在着色器中声明如下的uniform变量：
+		//
+		// binding to a single sampled image descriptor in set 0
+		//
+		layout (set=0, binding=0) uniform texture2D mySampledImage;
+		*/
+
+		vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr,&descriptorSetLayout);
+
+		//销毁descriptor set layout
+		vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);//如果创建descriptor set layout时指定了VkAllocationCallbacks，则这里需要提供一个兼容的VkAllocationCallbacks，否则这里的pAllocator可以设置为NULL。
+
+	}
+
+
+	//pipeline layout
+	VkPipelineLayout pipelineLayout{};
+	{
+	/*
+	在pipeline中访问descriptor set通过pipeline layout，descriptor set layout和push constant ranges将绑定到一起形成一个描述可供pipeline 访问的完整的资源集的pipeline layout，这个pipeline layout用于确定shader stage和shader resource之间的接口
+	*/
+	
+		VkDescriptorSetLayout validDescriptorSetLayout{};//假设一个有效的VkDescriptorSetLayout
+		VkPushConstantRange pushConstantRange{};//假设一个有效的VkPushConstantRange
+		pushConstantRange.offset = 0;//以字节为单位，必须为4的倍数，必须小于 VkPhysicalDeviceLimits::maxPushConstantsSize
+		pushConstantRange.size = 1;//以字节为单位，必须为4的倍数
+		pushConstantRange.stageFlags = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;//是一组stage标志，它描述了将访问一系列push constant的着色器阶段。如果一个特定的阶段不包括在该范围中，那么从相应的着色器阶段访问该推送常数范围的成员将返回未定义的值。
+
+
+
+		//一个pipeline layout中所能拥有的descriptor的数量存在一些限制，详情见p1278  Pipeline Layout Resource Limits
+		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{};
+		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutCreateInfo.pNext = nullptr;
+		pipelineLayoutCreateInfo.flags = 0;/*是 VkPipelineLayoutCreateFlagBits 组合值的位掩码，指明pipeline layout创建的选项
+		VkPipelineLayoutCreateFlagBits:
+		VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT :  指明实现必须保证含有或者缺失特定descriptor set的属性不能影响pipeline layout的任何属性。这个允许链接pipeline libraries时可以不用创建一个含VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT 的总的descriptor set中的一个子集
+		*/
+		pipelineLayoutCreateInfo.setLayoutCount = 1;//pSetLayouts 中元素个数
+		pipelineLayoutCreateInfo.pSetLayouts = &validDescriptorSetLayout;//是一组 VkDescriptorSetLayout 对象数组的指针
+		pipelineLayoutCreateInfo.pushConstantRangeCount = 1;//pPushConstantRanges 中元素个数
+		pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;//是一组 VkPushConstantRange 对象数组的指针，定义用在单个pipeline layout中的push constant range，pipeline layout 额外描述了pipeline每个stage可访问的push constant的数量
+		/*
+		VkPipelineLayoutCreateInfo有效用法:
+		1.setLayoutCount 必须小于等于VkPhysicalDeviceLimits::maxBoundDescriptorSets
+		2.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_SAMPLER 和VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxPerStageDescriptorSamplers
+		3.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER 和VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxPerStageDescriptorUniformBuffers
+		4.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER 和VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxPerStageDescriptorStorageBuffers
+		5.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM, 和VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxPerStageDescriptorSampledImages
+		6.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_IMAGE 和VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxPerStageDescriptorStorageImages
+		7.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxPerStageDescriptorInputAttachments
+		8.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceInlineUniformBlockProperties::maxPerStageDescriptorInlineUniformBlocks
+		9.所有descriptorType 为VK_DESCRIPTOR_TYPE_SAMPLER 以及VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindSamp
+		10.所有descriptorType 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER 以及VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindUniformBuffers
+		11.所有descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER 以及VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindStorageBuffers
+		12.所有descriptorType 为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 和VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindSampledImages
+		13.所有descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_IMAGE 以及VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindStorageImages
+		14.所有descriptorType 为VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindInputAttachments
+		15.所有descriptorType 为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceInlineUniformBlockProperties::maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks
+		16.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_SAMPLER 和 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于VkPhysicalDeviceLimits::maxDescriptorSetSamplers
+		18.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxDescriptorSetUniformBuffers
+		19.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxDescriptorSetUniformBuffersDynamic
+		20.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxDescriptorSetStorageBuffers
+		21.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxDescriptorSetStorageBuffersDynamic
+		22.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER ，VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE 和VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER  的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxDescriptorSetSampledImages
+		23.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_IMAGE 和VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxDescriptorSetStorageImages
+		24.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT 的可供任何所给shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceLimits::maxDescriptorSetInputAttachments
+		25.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK 的可供任何所给shader stages访问pSetLayouts的binding数量总和必须小于等于 VkPhysicalDeviceInlineUniformBlockProperties::maxDescriptorSetInlineUniformBlocks
+		26.所有descriptorType 为VK_DESCRIPTOR_TYPE_SAMPLER 和VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER 的可供所有shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindSamplers
+		27.所有descriptorType 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER 的可供所有shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindUniformBuffers
+		28.所有descriptorType 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC 的可供所有shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindUniformBuffersDynamic
+		29.所有descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER 的可供所有shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindStorageBuffers
+		30.所有descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC 的可供所有shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindStorageBuffersDynamic
+		31.所有descriptorType 为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE 和VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER 的可供所有shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindSampledImages
+		32.所有descriptorType 为VK_DESCRIPTOR_TYPE_STORAGE_IMAGE 和VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER 的可供所有shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindStorageImages
+		33.所有descriptorType 为VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT 的可供所有shader stages访问pSetLayouts的descriptor数量总和必须小于等于 VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindInputAttachments
+		34.所有descriptorType 为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK 的可供所有shader stages访问pSetLayouts的binding数量总和必须小于等于 VkPhysicalDeviceInlineUniformBlockProperties::maxDescriptorSetUpdateAfterBindInlineUniformBlocks
+		35.所有descriptorType 为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK 的可供所有shader stages访问pSetLayouts的descriptors数量总和必须小于等于 VkPhysicalDeviceVulkan13Properties::maxInlineUniformTotalSize
+		36.任何pPushConstantRanges 中的两个元素的stageFlags不能含有相同的stage
+		37.pSetLayout不能含有超过一个VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR创建的descriptor set layout
+		38.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR 的可供任何所给shader stages访问pSetLayouts的binding数量总和必须小于等于 VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPerStageDescriptorAccelerationStructures
+		39.所有descriptorType 为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR 的可供任何所给shader stages访问pSetLayouts的binding数量总和必须小于等于 VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPerStageDescriptorUpdateAfterBindAccelerationStructures
+		39.所有以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建的descriptor set layout 的其中descriptorType 为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR 的可供所有shader stages访问pSetLayouts的binding数量总和必须小于等于 VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxDescriptorSetAccelerationStructures
+		40.所有descriptorType 为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR 的可供任何所给shader stages访问pSetLayouts的binding数量总和必须小于等于 VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxDescriptorSetUpdateAfterBindA
+		41.所有descriptorType 为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV 的可供所有shader stages访问pSetLayouts的binding数量总和必须小于等于 VkPhysicalDeviceRayTracingPropertiesNV::maxDescriptorSetAccelerationStructures
+		42.pImmutableSamplers 中以VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT 或者VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT 创建所有shader stages以及所有pSetLayouts中的sampler 数量总和必须小于等于 VkPhysicalDeviceFragmentDensityMap2PropertiesEXT::maxDescriptorSetSubsampledSamplers
+		43.pSetLayouts 中的任何元素不能以VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT 创建
+		44.如果graphicsPipelineLibrary 未启用，pSetLayouts 中的每个元素必须是有效的VkDescriptorSetLayout对象
+		45.如果pSetLayouts 中的任何元素以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT 创建，则pSetLayouts 中的所有元素必须以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT 创建
+
+		*/
+
+
+
+		vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout);
+	
+
+		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+
+	}
+
+
+	//Pipeline Layout Compatibility 见p1280
+	//主要是为了在绑定pipeline时可以继续使用已经绑定的pipelineLayout，而不用重新创建pipelineLayout，从而提高效率。但是重新绑定了pipeline后该pipelineLayout中的descriptor Set是否对当前pipeline有效还需要看pipelineLayout的兼容性
+
+
+	// Allocation of Descriptor Sets 分配descriptor set
+	{
+		//descriptor pool容纳一批descriptors，descriptor sets可以从中进行分配
+		//详细信息见p1284
+		VkDescriptorPool descriptorPool{};
+		VkDescriptorPoolCreateInfo descriptorPoolCreateInfo{};
+		descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+			DescriptorPoolCreateInfoEXT descriptorPoolCreateInfoEXT{};
+		descriptorPoolCreateInfo.pNext = &descriptorPoolCreateInfoEXT.descriptorPoolInlineUniformBlockCreateInfo;//可以含有 VkDescriptorPoolInlineUniformBlockCreateInfo 或者 VkMutableDescriptorTypeCreateInfoEXT
+		descriptorPoolCreateInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;//是 VkDescriptorPoolCreateFlagBits 组合值的位掩码，指定pool上支持的特定的选项 
+		/*
+		VkDescriptorPoolCreateFlagBits:
+		VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT : 指明释放descriptor sets的分配是独立的，即可以使用vkAllocateDescriptorSets，vkFreeDescriptorSets，vkResetDescriptorPool，否则只能使用vkAllocateDescriptorSets以及vkResetDescriptorPool
+		VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT:  指明这个pool上分配的descriptor set可以含有包含VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT的binding，从含有VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT创建的pool上分配一个其binding不含VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT 的descriptor set是有效的
+		VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT:  指明这个pool上分配的descriptor set只能在主机内存中分配，并且不能被绑定。类似于不含有该标志分配的descriptor sets，应用程序可以在这个pool分配的descriptor sets间进行拷贝操作。从这个pool中分配的descriptor sets部分地免除了在vkUpdateDescriptorSetWithTemplateKHR和vkUpdateDescriptorSets中的外部同步要求。descriptor sets及其descriptor可以在不同的线程中同时更新，尽管相同的descriptor不能被两个线程同时更新。
+		VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NV:  指定实现应该允许应用从该pool中分配超过VkDescriptorPoolCreateInfo::maxSets 的descriptor set，实现应该使用maxSets 来分配初始的descriptor set，且maxSets 可以指定为0
+		VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_POOLS_BIT_NV:  指定实现应该允许pool分配超过任何VkDescriptorPoolCreateInfo::poolSizeCount以及VkDescriptorPoolCreateInfo::pPoolSizes指定的元素中VkDescriptorPoolSize::descriptorCount的descriptor,实现将用每个descriptor type的descriptorCount 分配初始的descriptor set，且poolSizeCount 可以指定为0，pPoolSizes中元素的descriptorCount 可以指定为0
+
+		*/
+		descriptorPoolCreateInfo.poolSizeCount = 1;// pPoolSizes的元素个数
+			VkDescriptorPoolSize descriptorPoolSize{};
+			{
+				descriptorPoolSize.descriptorCount = 1;//这个类型可以分配的descriptor数量，必须大于0，如果type为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则descriptorCount为这个类型可以分配的字节数量且必须是4的倍数
+				descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//descriptor类型
+			}
+
+		descriptorPoolCreateInfo.pPoolSizes = &descriptorPoolSize;//一组VkDescriptorPoolSize 的数组指针，每一个元素描述了pool中可以分配的descriptor的类型和数量
+		descriptorPoolCreateInfo.maxSets = 1;//是从这个pool上能够分配的descriptor set的最大数量
+		/*
+		VkDescriptorPoolCreateInfo有效用法:
+		1.如果descriptorPoolOverallocation 特性没有开启，或者flags不包含VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NV，则maxSets 必须大于0
+		2.如果flags包含VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NV或者VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_POOLS_BIT_NV ，则descriptorPoolOverallocation 特性必须开启
+		3.如果flags包含VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT，则就不能包含VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT
+		4.如果VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT::mutableDescriptorType 没有开启，则pPoolSizes 中不能包含descriptorType为 VK_DESCRIPTOR_TYPE_MUTABLE_EXT的元素
+		5.如果flags含有VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT，则VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT::mutableDescriptorType 必须开启
+		6.如果pPoolSizes 包含descriptorType 为VK_DESCRIPTOR_TYPE_MUTABLE_EXT 的元素，则pPoolSizes中任何其他含有VK_DESCRIPTOR_TYPE_MUTABLE_EXT的元素其descriptor set支持的descriptor 类型不能与该元素的descriptor set支持的descriptor 类型部分重叠
+		7.如果pPoolSizes 包含descriptorType 为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK 的元素，则pNext中必须包含一个maxInlineUniformBlockBindings 不为0的VkDescriptorPoolInlineUniformBlockCreateInfo结构体
+
+		*/
+
+
+		//VkDescriptorPoolInlineUniformBlockCreateInfo    等同于VkDescriptorPoolInlineUniformBlockCreateInfoEXT
+		//为了创建含有 inline uniform block binding的descriptor set，需要在VkDescriptorPoolCreateInfo的pNext中包含VkDescriptorPoolInlineUniformBlockCreateInfo结构体来指明descriptor pool的inline uniform block binding 容量
+		VkDescriptorPoolInlineUniformBlockCreateInfo& inlineUniformBlockCreateInfo = descriptorPoolCreateInfoEXT.descriptorPoolInlineUniformBlockCreateInfo;
+		inlineUniformBlockCreateInfo.maxInlineUniformBlockBindings = 1;//inline uniform block binding的最大数量
+
+
+
+		vkCreateDescriptorPool(device, &descriptorPoolCreateInfo, nullptr, &descriptorPool);
+
+
+		vkDestroyDescriptorPool(device, descriptorPool, nullptr);/*
+		vkDestroyDescriptorPool有效用法:
+		1.引用到该descriptorPool（通过任何分配的descriptor sets）的已经提交的command buffer必须已经完成执行
+		2.如果创建descriptorPool 提供了VkAllocationCallbacks，则这里需要提供一个兼容的VkAllocationCallbacks，否则设置为NULL
+
+		*/
+
+		VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
+		descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		VkDescriptorSetVariableDescriptorCountAllocateInfo descriptorSetVariableDescriptorCountAllocateInfo{};//指定 variable-sized descriptor bindings中的一组descriptor count，每个结构体对应一个descriptor set，等价于VkDescriptorSetVariableDescriptorCountAllocateInfoEXT
+		{
+			descriptorSetVariableDescriptorCountAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO;
+			descriptorSetVariableDescriptorCountAllocateInfo.pNext = nullptr;
+			descriptorSetVariableDescriptorCountAllocateInfo.descriptorSetCount = 1;//pDescriptorCounts 中的元素个数，如果不为0则必须等于VkDescriptorSetAllocateInfo::descriptorSetCount
+				uint32_t descriptorCount = 10;//每一个descriptor set的variable descriptor count
+			descriptorSetVariableDescriptorCountAllocateInfo.pDescriptorCounts = &descriptorCount;//为给定descriptor set上每个 variable-sized descriptor binding 上的descriptor 数量的数组指针
+		}
+
+		descriptorSetAllocateInfo.pNext = &descriptorSetVariableDescriptorCountAllocateInfo;//可以含有一个VkDescriptorSetVariableDescriptorCountAllocateInfo
+		descriptorSetAllocateInfo.descriptorPool = VkDescriptorPool{/*假设这是一个有效的VkDescriptorPool*/ };//指明descriptor set从哪个pool中分配
+		descriptorSetAllocateInfo.descriptorSetCount = 1;//要分配的descriptor set的数量
+		descriptorSetAllocateInfo.pSetLayouts = &descriptorSetLayout;//是一组VkDescriptorSetLayout 的数组指针，每一个元素指向一个descriptor set layout，描述了要分配descriptor set的布局
+		/*
+		VkDescriptorSetAllocateInfo有效用法:
+		1.如果VK_KHR_maintenance1 拓展没有开启且VkPhysicalDeviceProperties::apiVersion 小于Vulkan 1.1，则（1）descriptorSetCount 不能大于descriptorPool 中可分配的descriptor set数量
+																										 （2）descriptorPool 中剩余的descriptor capacity 必须足够分配指定layout 的descriptor set。
+		2.pSetLayouts的每个元素不能以VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR 创建
+		3.如果pSetLayouts 的任意元素以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建，则descriptorPool 必须以VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT 创建
+		4.如果pSetLayouts[i] 以其pBindingFlags 含有VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT，且其pNext中含有一个descriptorSetCount 不为0的VkDescriptorSetVariableDescriptorCountAllocateInfo，则VkDescriptorSetVariableDescriptorCountAllocateInfo::pDescriptorCounts[i]
+																	的值必须小于或等于VkDescriptorSetLayoutBinding::descriptorCount 对应创建pSetLayouts[i]的binding的的数量。
+		5.如果pSetLayouts 的任何元素以VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT，则descriptorPool 必须以VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT 创建
+		6.pSetLayouts中的每个元素不能以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT 创建
+
+		*/
+
+
+		VkDescriptorSet descriptorSet{};
+		//分配descriptor set
+		vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &descriptorSet);//详情见p1290
+
+
+		//释放descriptor set
+		vkFreeDescriptorSets(device, descriptorPool, 1, &descriptorSet);/*
+		vkFreeDescriptorSets有效用法:
+		1.引用到pDescriptorSets 的任何元素的已经提交的command buffer必须已经完成执行
+		2.pDescriptorSets 必须是 descriptorSetCount 个有效的VkDescriptorSet或者VK_NULL_HANDLE
+		3.descriptorPool 必须以VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT创建
+		*/
+
+
+		//将pool上分配的所有descriptor set回收到pool而不是单独释放一个descriptor set
+		vkResetDescriptorPool(device, descriptorPool, 0);/* 所有引用到descriptorPool（通过任何分配的descriptor sets）的操作必须已经完成   */
+
+	}
+
+
+
+
+
+
+
 }
 
 

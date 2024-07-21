@@ -13,6 +13,9 @@ public:
 	~ResourceDescriptorsTest();
 
 private:
+	void DescriptorTypeTest();
+	void DescriptorSetsTest();
+
 private:
 
 

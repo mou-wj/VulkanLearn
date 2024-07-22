@@ -275,6 +275,26 @@ struct DescriptorPoolCreateInfoEXT {
 
 };
 
+struct WriteDescriptorSetEXT
+{
+	VkWriteDescriptorSetAccelerationStructureKHR writeDescriptorSetAccelerationStructureKHR{};
+	VkWriteDescriptorSetAccelerationStructureNV writeDescriptorSetAccelerationStructureNV{};
+	VkWriteDescriptorSetInlineUniformBlock writeDescriptorSetInlineUniformBlock{};
+	WriteDescriptorSetEXT() {
+		Init();
+	}
+	void Init() {
+		writeDescriptorSetAccelerationStructureKHR.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
+		writeDescriptorSetAccelerationStructureKHR.pNext = nullptr;
+		writeDescriptorSetAccelerationStructureNV.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV;
+		writeDescriptorSetAccelerationStructureNV.pNext = nullptr;
+		writeDescriptorSetInlineUniformBlock.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK;
+		writeDescriptorSetInlineUniformBlock.pNext = nullptr;
+
+	}
+
+};
+
 void ResourceDescriptorsTest::DescriptorSetsTest()
 {
 	/*
@@ -656,7 +676,192 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 	}
 
 
+	//Descriptor Set Updates 更新descriptor set
+	{
 
+		//分配了descriptor set后便可通过写入或者拷贝来完成descriptor set的更新
+
+		//write  
+		// VkWriteDescriptorSet的 pImageInfo, pBufferInfo, 或者 pTexelBufferView三个中只使用一个，或者都不使用，在 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK,VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR或者VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV情况下
+		//使用 VkWriteDescriptorSetInlineUniformBlock， VkWriteDescriptorSetAccelerationStructureKHR或者 VkWriteDescriptorSetAccelerationStructureNV 来指定相关参数
+		VkWriteDescriptorSet writeDescriptorSet{};
+		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			WriteDescriptorSetEXT writeDescriptorSetEXT{};
+		writeDescriptorSet.pNext = &writeDescriptorSetEXT.writeDescriptorSetAccelerationStructureKHR;
+		writeDescriptorSet.descriptorCount = 1;//这个binding中从dstArrayElement开始要更新的descriptor数量，如果通过dstSet和dstBinding 指定的binding的descriptorType为 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则这个指明为这个binding中要更新的字节大小，否则为pImageInfo中的元素个数， pBufferInfo中的元素个数， pTexelBufferView中的元素个数，VkWriteDescriptorSetInlineUniformBlock.dataSize或者VkWriteDescriptorSetAccelerationStructureKHR.accelerationStructureCount中的一个
+		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;/*是一个VkDescriptorType 指明pImageInfo, pBufferInfo, 或者 pTexelBufferView中 descriptor的类型，如果通过dstSet和dstBinding 指定的binding的descriptorType不为 VK_DESCRIPTOR_TYPE_MUTABLE_EXT，则这个类型必须和其相同
+		VkDescriptorType:
+
+        VK_DESCRIPTOR_TYPE_SAMPLER:  指明一个 sampler descriptor.
+        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:  指明一个 combined image sampler descriptor.
+        VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:  指明一个 sampled image descriptor.
+        VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:  指明一个 storage image descriptor.
+        VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:  指明一个 uniform texel buffer descriptor.
+        VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:  指明一个 storage texel buffer descriptor.
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:  指明一个 uniform buffer descriptor.
+        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:  指明一个 storage buffer descriptor.
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:  指明一个 dynamic uniform buffer descriptor.
+        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:  指明一个 dynamic storage buffer descriptor.
+        VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:  指明一个n input attachment descriptor.
+        VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK:  指明一个 inline uniform block.
+        VK_DESCRIPTOR_TYPE_MUTABLE_EXT:  指明一个 descriptor of mutable type.
+        VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM:  指明一个 sampled weight image descriptor.
+        VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM:  指明一个 block matching image descriptor.
+		
+		*/
+		
+		writeDescriptorSet.dstArrayElement = 0;//这个binding中descriptor数组中的起始元素，如果通过dstSet和dstBinding 指定的binding的descriptorType为 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则这个指明为这个binding中开始字节的偏移量
+		writeDescriptorSet.dstBinding = 0;//要更新的descriptor set的 descriptor binding
+		writeDescriptorSet.dstSet = VkDescriptorSet{/*假设这是一个有效的VkDescriptorSet*/ };//要更新的descriptor set
+			VkDescriptorBufferInfo descriptorBufferInfo{};
+			{
+				descriptorBufferInfo.buffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//为VK_NULL_HANDLE或者指定buffer资源，如果 nullDescriptor没有开启则不能为VK_NULL_HANDLE，如果为VK_NULL_HANDLE，则offset必须为0，range必须为VK_WHOLE_SIZE
+				descriptorBufferInfo.offset = 0;//指明buffer的起始字节偏移量，通过这个descriptor访问buffer将基于这个偏移量的相对地址进行访问，必须小于buffer的大小
+				descriptorBufferInfo.range = 1;//指明这个descriptor要更新的buffer的字节数，如果为VK_WHOLE_SIZE则表示从offset开始到buffer结束，如果设置为VK_WHOLE_SIZE，则有效范围（offset到结束）不能大于 maxUniformBufferRange 或者 maxStorageBufferRange，且0 < range <= buffer大小 - offset
+			}
+		writeDescriptorSet.pBufferInfo = &descriptorBufferInfo;//是一组   VkDescriptorBufferInfo 的数组地址
+			VkDescriptorImageInfo descriptorImageInfo{};
+			{
+				descriptorImageInfo.sampler = VkSampler{/*假设这是一个有效的VkSampler*/ };//是一个VkSampler句柄，使用在VK_DESCRIPTOR_TYPE_SAMPLER 以及 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER类型且没有使用immutable samplers 的descriptor的更新中
+				descriptorImageInfo.imageView = VkImageView{/*假设这是一个有效的VkImageView*/ };//为VK_NULL_HANDLE或者VkImageView句柄，使用在VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 以及 VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT 类型的descriptor的更新中
+				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;//是在descriptor访问时从imageView访问的image subresource的VkImageLayout布局，用在VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 以及 VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT类型的descriptor的更新中
+				/*
+				VkDescriptorImageInfo有效用法:
+				1.imageView 不能是从3D image上创建的2D array image view
+				2.如果imageView 是从3D image上创建的2D image view，则（1）descriptorType必须为 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 或者 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+																	 （2）image必须以VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT创建
+				3.如果image2DViewOf3D 特性没有开启或者descriptorType 不是 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE，VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE 或者 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，则imageView 不能是从3D image上创建的2D image view
+				
+				4.如果imageView从一个depth/stencil image 上创建，则用来创建imageView的aspectMask 必须包含VK_IMAGE_ASPECT_DEPTH_BIT 或者 VK_IMAGE_ASPECT_STENCIL_BIT 中的一个
+				5.如果imageLayout 为VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL，则用来创建imageView的aspectMask 不能包含VK_IMAGE_ASPECT_DEPTH_BIT 或者 VK_IMAGE_ASPECT_STENCIL_BIT 中的一个
+				6.如果imageLayout 为VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL,
+									VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL,
+									VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+									VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL,
+									VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL 或者
+									VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL，则用来创建imageView的aspectMask 不能包含VK_IMAGE_ASPECT_COLOR_BIT
+				7.在descriptor访问的时候 imageLayout 必须和实际的从imageView可访问的image subresource的VkImageLayout布局匹配，参见匹配规则 image layout matching rules p1083
+				8.如果使用了sampler且image的VkFormat是一个multi-planar format，则image必须以VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT创建，且imageView创建的aspectMask必须是一个有效的multi-planar aspect mask比特位
+				9.如果VK_KHR_portability_subset 拓展开启，且VkPhysicalDevicePortabilitySubsetFeaturesKHR::mutableComparisonSamplers为 VK_FALSE，则sampler必须以VkSamplerCreateInfo::compareEnable设置为VK_FALSE创建
+
+				*/
+			}
+		writeDescriptorSet.pImageInfo = &descriptorImageInfo;//是一组 VkDescriptorImageInfo 的数组地址
+			VkBufferView texelBufferView{};
+		writeDescriptorSet.pTexelBufferView = &texelBufferView;//是一组  VkBufferView 的数组地址
+		/*
+		VkWriteDescriptorSet有效用法:
+		1.dstBinding 必须小于等于dstSet的 descriptor set layout创建时指明的最大的binding的数量
+		2.dstBinding 必须是一个含有非0descriptorCount值的binding
+		3.所有通过单独的VkWriteDescriptorSet更新的连续的binding，除了那些descriptorCount为0的binding，这些binding必须有相同的descriptorType 以及 stageFlags，必须全部使用或者不使用immutable samplers
+		4.descriptorType必须和dstSet中的dstBinding匹配
+		5.dstSet必须是有效的 VkDescriptorSet句柄
+		6.dstArrayElement + descriptorCount必须小于等于dstBinding中指定的descriptor数组中元素的数量，以及consecutive binding updates p1301中描述的连续binding中所有可用的descriptor的总数
+		7.如果descriptorType为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则dstArrayElement以及descriptorCount 必须是4的整数倍
+		8.如果descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER 或者VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER，则（1）pTexelBufferView中的元素必须是有效的VkBufferView句柄或者VK_NULL_HANDLE
+																													 （2）如果nullDescriptor 特性没有开启，则pTexelBufferView中的每个元素就不能为VK_NULL_HANDLE
+		9.如果descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 或者 VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC，pBufferInfo 必须是descriptorCount个有效VkDescriptorBufferInfo的数组指针
+		10.如果descriptorType为VK_DESCRIPTOR_TYPE_SAMPLER 或者VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，且dstSet不以一个 descriptorType类型的dstBinding含有immutable samplers的layout分配，则pImageInfo中的每个元素的sampler必须是一个有效的VkSampler
+		11.如果descriptorType为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE 或者VK_DESCRIPTOR_TYPE_STORAGE_IMAGE，则（1）pImageInfo中的元素的imageView 必须是有效的VkImageView或者VK_NULL_HANDLE
+																																				   （2）如果nullDescriptor特性没有开启，则pImageInfo中的元素的imageView 不能为VK_NULL_HANDLE
+		12.如果descriptorType为VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT，则pImageInfo中的元素的imageView 不能为VK_NULL_HANDLE
+		13.如果descriptorType为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则pNext中必须包含一个dataSize 等于descriptorCount的VkWriteDescriptorSetInlineUniformBlock
+		14.如果descriptorType为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR，则pNext中必须包含一个accelerationStructureCount 等于descriptorCount的VkWriteDescriptorSetAccelerationStructureKHR
+		15.如果descriptorType为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV，则pNext中必须包含一个accelerationStructureCount 等于descriptorCount的VkWriteDescriptorSetAccelerationStructureNV
+		16.如果descriptorType为VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE，则pImageInfo中的元素的imageView 不能以其pNext含有一个VkSamplerYcbcrConversionInfo 进行创建
+		17.如果descriptorType为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，则（1）如果pImageInfo中的元素的imageView 以其pNext含有一个VkSamplerYcbcrConversionInfo 进行创建，则dstSet必须以dstBinding含有immutable samplers的layout进行创建，且对应的immutable samplers 必须和VkSamplerYcbcrConversionInfo中定义的相同
+																			（2）如果dstSet不以dstBinding含有immutable samplers的layout进行创建，则pImageInfo 中的每个元素的对应到一个启用了sampler Y′CBCR conversion的immutable sampler的 imageView 必须以含有一个和对应immutable sampler相同定义的VkSamplerYcbcrConversionInfo 进行创建
+																			（3）如果dstSet以dstBinding含有immutable samplers的layout进行创建，且这些samplers启用了sampler Y′CBCR conversion，则pImageInfo 中的每个元素的对应到一个启用了sampler Y′CBCR conversion的immutable sampler的 imageView 必须不能为VK_NULL_HANDLE
+		18.如果descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER或者 VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC，则pBufferInfo中每个元素的 offset 必须为VkPhysicalDeviceLimits::minUniformBufferOffsetAlignment的倍数
+		19.如果descriptorType为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER或者 VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC，则pBufferInfo中每个元素的 offset 必须为VkPhysicalDeviceLimits::minStorageBufferOffsetAlignment的倍数
+		20.如果descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER，VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC，VK_DESCRIPTOR_TYPE_STORAGE_BUFFER或者 VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC，且pBufferInfo中任何元素的buffer为non-sparse的，则buffer必须绑定到一个单独的完整的连续的VkDeviceMemory上
+		21.如果descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER 或者 VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC，则pBufferInfo中任何元素的buffer必须以VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT 创建
+		22.如果descriptorType为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER 或者 VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC，则（1）pBufferInfo中任何元素的buffer必须以VK_BUFFER_USAGE_STORAGE_BUFFER_BIT 创建
+																												   （2）则pBufferInfo中任何元素的range 必须小于等于 VkPhysicalDeviceLimits::maxUniformBufferRange，或者为VK_WHOLE_SIZE
+		23.如果descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER 或者 VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC，且（1）pBufferInfo中任何元素的buffer必须以VK_BUFFER_USAGE_STORAGE_BUFFER_BIT 创建
+																												   （2）则pBufferInfo中任何元素的range 必须小于等于 VkPhysicalDeviceLimits::maxStorageBufferRange，或者为VK_WHOLE_SIZE
+		24.如果descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER，则pTexelBufferView 的元素创建必须含有VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT
+		25.如果descriptorType为VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER，则pTexelBufferView 的元素创建必须含有VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT
+		26.如果descriptorType为VK_DESCRIPTOR_TYPE_STORAGE_IMAGE 或者VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT，则pImageInfo中每个元素的imageView 必须以identity swizzle 创建
+		27.如果descriptorType为VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE 或者VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，则pImageInfo中每个元素的imageView 必须以VK_IMAGE_USAGE_SAMPLED_BIT 创建
+		28.如果descriptorType为VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE，则pImageInfo中每个元素的imageLayout 必须是一个列举在Sampled Image p1243中的元素
+		29.如果descriptorType为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，则pImageInfo中每个元素的imageLayout 必须是一个列举在Combined Image Sampler p1243中的元素
+		30.如果descriptorType为VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT，则（1）pImageInfo中每个元素的imageLayout 必须是一个列举在Input Attachment p1246中的元素
+																	  （2）pImageInfo中每个元素的imageView 必须以VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT创建
+		31.如果descriptorType为VK_DESCRIPTOR_TYPE_STORAGE_IMAGE，则（1）pImageInfo中每个元素的imageLayout 必须是一个列举在Storage Image p1242中的元素
+																   （2）pImageInfo中每个元素的imageView 必须以VK_IMAGE_USAGE_STORAGE_BIT创建
+																   （3）pImageInfo中每个元素的imageView 必须以其pNext中不含有一个VkImageViewMinLodCreateInfoEXT 或者 含有一个minLod为0的VkImageViewMinLodCreateInfoEXT 创建
+		32.如果descriptorType为VK_DESCRIPTOR_TYPE_SAMPLER，则dstSet 不能以一个dstBinding含有immutable samplers 的layout分配
+		33.如果dstSet的dstBinding所对的VkDescriptorSetLayoutBinding是VK_DESCRIPTOR_TYPE_MUTABLE_EXT类型的，则新的激活的descriptorType 必须列举在dstBinding对应的pMutableDescriptorTypeLists中
+		34.如果descriptorType为VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM，则（1）pImageInfo中每个元素的imageView 必须以VK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM 创建
+		35.如果descriptorType为VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM，则（1）pImageInfo中每个元素的imageView 必须以VK_IMAGE_USAGE_SAMPLE_BLOCK_MATCH_BIT_QCOM 创建
+
+		*/
+
+
+		//VkWriteDescriptorSetInlineUniformBlock
+		//指定要写入到descriptor set的数据当descriptor类型为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+		VkWriteDescriptorSetInlineUniformBlock& writeDescriptorSetInlineUniformBlock = writeDescriptorSetEXT.writeDescriptorSetInlineUniformBlock;
+		writeDescriptorSetInlineUniformBlock.dataSize = 0;//指明pData中inline uniform block 数据的字节数，必须为4的倍数
+		writeDescriptorSetInlineUniformBlock.pData = nullptr;//要写入到descriptor的inline uniform block 数据
+
+
+		//VkWriteDescriptorSetAccelerationStructureKHR
+		VkWriteDescriptorSetAccelerationStructureKHR& writeDescriptorSetAccelerationStructureKHR = writeDescriptorSetEXT.writeDescriptorSetAccelerationStructureKHR;
+		writeDescriptorSetAccelerationStructureKHR.accelerationStructureCount = 0;//是pAccelerationStructures中加速结构元素个数
+		writeDescriptorSetAccelerationStructureKHR.pAccelerationStructures = VK_NULL_HANDLE;//是一组VkAccelerationStructureKHR 的数组指针，指明要更新的加速结构
+		/*
+		VkWriteDescriptorSetAccelerationStructureKHR有效用法:
+		1.accelerationStructureCount 必须等于被拓展的VkWriteDescriptorSet的descriptorCount
+		2.pAccelerationStructures的每个加速结构必须以VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR 或者VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR类型创建
+		3.如果nullDescriptor 特性没有开启，则pAccelerationStructures中的每个元素不能为VK_NULL_HANDLE
+		*/
+
+		//VkWriteDescriptorSetAccelerationStructureNV
+		VkWriteDescriptorSetAccelerationStructureNV& writeDescriptorSetAccelerationStructureNV = writeDescriptorSetEXT.writeDescriptorSetAccelerationStructureNV;
+		writeDescriptorSetAccelerationStructureNV.accelerationStructureCount = 0;//是pAccelerationStructures中加速结构元素个数
+		writeDescriptorSetAccelerationStructureNV.pAccelerationStructures = VK_NULL_HANDLE;//是一组VkAccelerationStructureKHR 的数组指针，指明要更新的加速结构
+		/*
+		VkWriteDescriptorSetAccelerationStructureNV有效用法:
+		1.accelerationStructureCount 必须等于被拓展的VkWriteDescriptorSet的descriptorCount
+		2.pAccelerationStructures的每个加速结构必须以VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR 类型创建
+		3.如果nullDescriptor 特性没有开启，则pAccelerationStructures中的每个元素不能为VK_NULL_HANDLE
+		*/
+
+
+		//copy
+		VkCopyDescriptorSet copyDescriptorSet{};
+		copyDescriptorSet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+		copyDescriptorSet.pNext = nullptr;
+		copyDescriptorSet.descriptorCount = 1;
+		copyDescriptorSet.dstArrayElement = 0;
+		copyDescriptorSet.dstBinding = 0;
+		copyDescriptorSet.dstSet = VkDescriptorSet{/*假设这是一个有效的VkDescriptorSet*/ };
+		copyDescriptorSet.srcArrayElement = 0;
+		copyDescriptorSet.srcBinding = 0;
+		copyDescriptorSet.srcSet = VkDescriptorSet{/*假设这是一个有效的VkDescriptorSet*/ };
+		
+
+
+		vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 1, &copyDescriptorSet);
+		/*
+		vkUpdateDescriptorSets有效用法:
+		1.对于pDescriptorWrites中每个descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER 或者 VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER的元素，则该元素的pTexelBufferView 必须已经在device上创建
+		2.对于pDescriptorWrites中每个descriptorType为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 或者 VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC的元素，则该元素的pBufferInfo的buffer 必须已经在device上创建
+		3.对于pDescriptorWrites中每个descriptorType为VK_DESCRIPTOR_TYPE_SAMPLER 或者 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER的元素，如果其dstSet 不以一个descriptorType类型的dstBinding 包含 immutable samplers的layout进行分配，则则该元素的pImageInfo的 sampler必须已经在device上创建
+		4.对于pDescriptorWrites中每个descriptorType为VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE，VK_DESCRIPTOR_TYPE_STORAGE_IMAGE，VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT 或者 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER的元素，则该元素的pImageInfo的 imageView 必须已经在device上创建
+		5.对于pDescriptorWrites中每个descriptorType为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR 的元素，则该元素的pNext中的VkWriteDescriptorSetAccelerationStructureKHR.pAccelerationStructures 中的加速结构必须已经在device上创建
+		6.对于pDescriptorWrites中每个descriptorType为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV 的元素，则该元素的pNext中的VkWriteDescriptorSetAccelerationStructureNV.pAccelerationStructures 中的加速结构必须已经在device上创建
+		7.对于pDescriptorWrites中每个descriptorType为VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM 或者 VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM 的元素，则该元素的pImageInfo的 imageView  必须已经在device上创建
+		8.对于pDescriptorWrites中每个descriptorType为VK_DESCRIPTOR_TYPE_SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 或者
+                                     VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT 的元素，则该元素的pImageInfo必须是该元素所指descriptorCount个有效VkDescriptorImageInfo数组的指针
+		9.对于pDescriptorWrites中每个descriptorType为VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM 或者 VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM 的元素，则该元素的pImageInfo必须是该元素所指descriptorCount个有效VkDescriptorImageInfo数组的指针
+		10.pDescriptorWrites 中每个元素的dstSet或者 pDescriptorCopies中binding不以VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT或者 VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT创建的元素不能在任何一个记录到pending state 状态的command buffer的command中使用
+		11.host访问pDescriptorWrites中的dstSet以及pDescriptorCopies中的dstSet 必须是外部同步的，除非有特殊的标志设置。
+	
+		*/
+	
+	}
 
 
 

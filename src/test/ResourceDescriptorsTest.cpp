@@ -833,14 +833,34 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 		VkCopyDescriptorSet copyDescriptorSet{};
 		copyDescriptorSet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
 		copyDescriptorSet.pNext = nullptr;
-		copyDescriptorSet.descriptorCount = 1;
-		copyDescriptorSet.dstArrayElement = 0;
-		copyDescriptorSet.dstBinding = 0;
-		copyDescriptorSet.dstSet = VkDescriptorSet{/*假设这是一个有效的VkDescriptorSet*/ };
-		copyDescriptorSet.srcArrayElement = 0;
-		copyDescriptorSet.srcBinding = 0;
-		copyDescriptorSet.srcSet = VkDescriptorSet{/*假设这是一个有效的VkDescriptorSet*/ };
-		
+		copyDescriptorSet.descriptorCount = 1;//指明要拷贝的descriptor个数，如果通过srcSet和srcBinding 指定的binding的descriptorType为 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则这个指明要拷贝的字节大小
+		copyDescriptorSet.dstArrayElement = 0;//这个dstBinding中descriptor数组中的起始元素，如果通过dstSet和dstBinding 指定的binding的descriptorType为 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则这个指明为这个binding中开始字节的偏移量
+		copyDescriptorSet.dstBinding = 0;////指定要拷贝到的destination descriptor set的binding
+		copyDescriptorSet.dstSet = VkDescriptorSet{/*假设这是一个有效的VkDescriptorSet*/ }; //指明要拷贝到的destination descriptor set
+		copyDescriptorSet.srcArrayElement = 0;//这个srcBinding中descriptor数组中的起始元素，如果通过srcSet和srcBinding 指定的binding的descriptorType为 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则这个指明为这个binding中开始字节的偏移量
+		copyDescriptorSet.srcBinding = 0;//指定要拷贝的source descriptor set的binding
+		copyDescriptorSet.srcSet = VkDescriptorSet{/*假设这是一个有效的VkDescriptorSet*/ };//指明要拷贝的source descriptor set
+		/*
+		VkCopyDescriptorSet有效用法:
+		1.srcBinding 必须是srcSet中有效的binding
+		2.srcArrayElement + descriptorCount 必须小于等于srcSet中srcBinding的descriptor 的数量，以及consecutive binding updates p1301中描述的连续binding中所有可用的descriptor的总数
+		3.dstBinding 必须是dstSet中有效的binding
+		4.dstArrayElement + descriptorCount 必须小于等于srcSet中dstBinding的descriptor 的数量，以及consecutive binding updates p1301中描述的连续binding中所有可用的descriptor的总数
+		5.dstSet中dstBinding 的类型必须等于srcSet中srcBinding 的类型
+		6.如果srcSet 等于dstSet，则source和destination中descriptors的范围不能重叠，这些范围中可能包含consecutive binding updates p1301中描述的连续binding
+		7.如果srcBinding 指明的descriptor 类型为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则srcArrayElement 必须是4的整数倍
+		8.如果dstBinding 指明的descriptor 类型为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则dstArrayElement 必须是4的整数倍
+		9.如果srcBinding 或者 dstBinding 指明的descriptor 类型为VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK，则descriptorCount 必须是4的整数倍
+		10.如果srcSet 的layout以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT创建，则dstSet 的layout 必须以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT创建
+		11.如果srcSet 的layout不以VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT 或者VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT 创建，则dstSet 的layout 就不能以VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT创建
+		12.如果分配srcSet 的descriptor pool 以VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT创建，则分配dstSet 的descriptor pool 也必须以VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT创建
+		13.如果分配srcSet 的descriptor pool 不以VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT 或者 VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT创建，则分配dstSet 的descriptor pool 不能以VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT创建
+		14.如果dstBinding 指明的descriptor 类型为VK_DESCRIPTOR_TYPE_SAMPLER，则dstSet 不能以一个dstBinding 含有immutable samplers的layout进行分配
+		15.如果dstSet的dstBinding的类型为VK_DESCRIPTOR_TYPE_MUTABLE_EXT，则如果新的该dstBinding的descriptor 类型不为VK_DESCRIPTOR_TYPE_MUTABLE_EXT，则必须列举在该dstBinding对应的pMutableDescriptorTypeLists列表中
+		16.如果srcSet的srcBinding的类型为VK_DESCRIPTOR_TYPE_MUTABLE_EXT，且dstSet的dstBinding的类型不为VK_DESCRIPTOR_TYPE_MUTABLE_EXT，则source descriptor的类型必须和dstBinding上的descriptor类型匹配
+		17.如果dstSet的dstBinding的类型为VK_DESCRIPTOR_TYPE_MUTABLE_EXT，且如果新的该dstBinding的descriptor 类型为VK_DESCRIPTOR_TYPE_MUTABLE_EXT，则对应srcBinding和dstBinding的pMutableDescriptorTypeLists中的元素必须完全匹配
+
+		*/
 
 
 		vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 1, &copyDescriptorSet);

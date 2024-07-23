@@ -1,16 +1,16 @@
-#include "ResourceDescriptorsTest.h"
+ï»¿#include "ResourceDescriptorsTest.h"
 NS_TEST_BEGIN
 
 
 
 /*
-Ò»¸ö descriptor ÊÇÒ»¸öÖ¸Ã÷ÁËÓÃ×÷Ò»¸öshader resource µÄÈç buffer, buffer view, image view, sampler, »òÕß combined image sampler£¬Í¨¹ı descriptor setsÀ´×éÖ¯£¬
-Ã¿¸ödescriptor setÖĞ¿ÉÒÔ°üº¬µÄdescriptor ÅÅ²¼ÓÉ descriptor set layout¾ö¶¨¡£descriptor set layout ¿É±»pipeline layout½øĞĞÊ¹ÓÃ£¬Èç¹û descriptorBuffer ÌØĞÔ¿ªÆô£¬ÔòÖ§³Ö
-½«descriptor ·Åµ½ descriptor buffersÖĞ¡£
+ä¸€ä¸ª descriptor æ˜¯ä¸€ä¸ªæŒ‡æ˜äº†ç”¨ä½œä¸€ä¸ªshader resource çš„å¦‚ buffer, buffer view, image view, sampler, æˆ–è€… combined image samplerï¼Œé€šè¿‡ descriptor setsæ¥ç»„ç»‡ï¼Œ
+æ¯ä¸ªdescriptor setä¸­å¯ä»¥åŒ…å«çš„descriptor æ’å¸ƒç”± descriptor set layoutå†³å®šã€‚descriptor set layout å¯è¢«pipeline layoutè¿›è¡Œä½¿ç”¨ï¼Œå¦‚æœ descriptorBuffer ç‰¹æ€§å¼€å¯ï¼Œåˆ™æ”¯æŒ
+å°†descriptor æ”¾åˆ° descriptor buffersä¸­ã€‚
 
-shaderÍ¨¹ıÊ¹ÓÃdescriptor setºÍbinding ºÅ½øĞĞĞŞÊÎµÄ±äÁ¿À´·ÃÎÊ×ÊÔ´£¬ÕâĞ©±äÁ¿½«ËüÃÇÁ´½Óµ½descriptor setÖĞµÄdescriptor£¬Ó³Éäµ½descriptor setµÄshader ½Ó¿ÚÃèÊö¼û  Shader Resource Interface p1409
+shaderé€šè¿‡ä½¿ç”¨descriptor setå’Œbinding å·è¿›è¡Œä¿®é¥°çš„å˜é‡æ¥è®¿é—®èµ„æºï¼Œè¿™äº›å˜é‡å°†å®ƒä»¬é“¾æ¥åˆ°descriptor setä¸­çš„descriptorï¼Œæ˜ å°„åˆ°descriptor setçš„shader æ¥å£æè¿°è§  Shader Resource Interface p1409
 
-shader ¿ÉÒÔÖ±½ÓÍ¨¹ı64Î»µÄµØÖ·Ö±½Ó·ÃÎÊbuffer¶ø²»ĞèÒªÍ¨¹ıdescriptor£¬¼û Physical Storage Buffer Access p1352
+shader å¯ä»¥ç›´æ¥é€šè¿‡64ä½çš„åœ°å€ç›´æ¥è®¿é—®bufferè€Œä¸éœ€è¦é€šè¿‡descriptorï¼Œè§ Physical Storage Buffer Access p1352
 
 */
 
@@ -30,16 +30,16 @@ ResourceDescriptorsTest::~ResourceDescriptorsTest()
 void ResourceDescriptorsTest::DescriptorTypeTest()
 {
 	// Descriptor Types    
-	//vulkanÖĞÖ§³Ö¶àÕÒdescriptor ÀàĞÍ£¬¶ÔÓ¦²»Í¬µÄ×ÊÔ´Ê¹ÓÃ·½Ê½
+	//vulkanä¸­æ”¯æŒå¤šæ‰¾descriptor ç±»å‹ï¼Œå¯¹åº”ä¸åŒçš„èµ„æºä½¿ç”¨æ–¹å¼
 
 
 	// Storage Image
 	{
 	/*
 	
-	 Ò»¸östorage image (VK_DESCRIPTOR_TYPE_STORAGE_IMAGE) ÊÇÒ»¸ö¹ØÁªµ½image resourceÍ¨¹ıimage view½øĞĞµÄ¼ÓÔØ£¬´æ´¢£¬ÒÔ¼°Ô­×Ó²Ù×÷µÄ descriptor type
+	 ä¸€ä¸ªstorage image (VK_DESCRIPTOR_TYPE_STORAGE_IMAGE) æ˜¯ä¸€ä¸ªå…³è”åˆ°image resourceé€šè¿‡image viewè¿›è¡Œçš„åŠ è½½ï¼Œå­˜å‚¨ï¼Œä»¥åŠåŸå­æ“ä½œçš„ descriptor type
 
-	 Ö§³ÖËùÓĞshader½×¶Î£¬ÆäËûÏêÇé¼ûp1242
+	 æ”¯æŒæ‰€æœ‰shaderé˜¶æ®µï¼Œå…¶ä»–è¯¦æƒ…è§p1242
 
 	
 	*/
@@ -49,7 +49,7 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	// Sampler
 	{
 	/*
-	Ò»¸ösampler descriptor (VK_DESCRIPTOR_TYPE_SAMPLER) ÊÇÒ»¸ö¹ØÁª sampler µÄ descriptor type,ÓÃÀ´¿ØÖÆ sampled imageµÄ²ÉÑùĞĞÎª£¨p1473£©
+	ä¸€ä¸ªsampler descriptor (VK_DESCRIPTOR_TYPE_SAMPLER) æ˜¯ä¸€ä¸ªå…³è” sampler çš„ descriptor type,ç”¨æ¥æ§åˆ¶ sampled imageçš„é‡‡æ ·è¡Œä¸ºï¼ˆp1473ï¼‰
 
 	*/
 	}
@@ -58,13 +58,13 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	//Sampled Image
 	{
 	/*
-	Ò»¸ösampled image (VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE) ÊÇÒ»¸ö¹ØÁªµ½image resourceÍ¨¹ıimage view½øĞĞµÄ²ÉÑù²Ù×÷£¨p1473£©µÄ descriptor type
+	ä¸€ä¸ªsampled image (VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE) æ˜¯ä¸€ä¸ªå…³è”åˆ°image resourceé€šè¿‡image viewè¿›è¡Œçš„é‡‡æ ·æ“ä½œï¼ˆp1473ï¼‰çš„ descriptor type
 	
-	shader °ó¶¨µ½Ò»¸ösampled image±äÁ¿ÒÔ¼°sampler±äÁ¿À´½øĞĞ²ÉÑù
+	shader ç»‘å®šåˆ°ä¸€ä¸ªsampled imageå˜é‡ä»¥åŠsamplerå˜é‡æ¥è¿›è¡Œé‡‡æ ·
 
-	Ö§³ÖËùÓĞshader£¬image viewµÄformatµÄ  format features Ğèº¬ÓĞVK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+	æ”¯æŒæ‰€æœ‰shaderï¼Œimage viewçš„formatçš„  format features éœ€å«æœ‰VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
 
-	°ó¶¨µÄimage subresourceµÄlayoutÓ¦ÎªÒÔÏÂÀàĞÍÖ®Ò»£º
+	ç»‘å®šçš„image subresourceçš„layoutåº”ä¸ºä»¥ä¸‹ç±»å‹ä¹‹ä¸€ï¼š
     VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
     VK_IMAGE_LAYOUT_GENERAL
@@ -82,11 +82,11 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	// Combined Image Sampler
 	{
 	/*
-	Ò»¸öcombined image sampler (VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) ÊÇÒ»¸öµ¥¶ÀµÄ¹ØÁªµ½samplerºÍ image subresourceµÄ  descriptor type£¬¼´½« Ò»¸ösampler ºÍ sampled image descriptor°ó¶¨µ½ÁËÒ»Æğ³ÉÎªÒ»¸öµ¥¶ÀµÄdescriptor
+	ä¸€ä¸ªcombined image sampler (VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) æ˜¯ä¸€ä¸ªå•ç‹¬çš„å…³è”åˆ°samplerå’Œ image subresourceçš„  descriptor typeï¼Œå³å°† ä¸€ä¸ªsampler å’Œ sampled image descriptorç»‘å®šåˆ°äº†ä¸€èµ·æˆä¸ºä¸€ä¸ªå•ç‹¬çš„descriptor
 	
-	Èç¹û¸Ãdescriptor ÒıÓÃµ½Ò»¸ö Ê¹ÓÃÁË Y¡äCBCR conversion »òÕß²ÉÑù  subsampled imageµÄsampler£¬ÔòsamplerÖ»ÄÜÓÃÓÚ¶ÔÍ¬Ò»descriptorÖĞµÄimage½øĞĞ²ÉÑù¡£·ñÔòsamplerºÍdescriptorµÄimage ¾Í¿´¿ÉÒÔÈÎÒâ×éºÏ
+	å¦‚æœè¯¥descriptor å¼•ç”¨åˆ°ä¸€ä¸ª ä½¿ç”¨äº† Yâ€²CBCR conversion æˆ–è€…é‡‡æ ·  subsampled imageçš„samplerï¼Œåˆ™sampleråªèƒ½ç”¨äºå¯¹åŒä¸€descriptorä¸­çš„imageè¿›è¡Œé‡‡æ ·ã€‚å¦åˆ™samplerå’Œdescriptorçš„image å°±çœ‹å¯ä»¥ä»»æ„ç»„åˆ
 
-	°ó¶¨µÄimage subresourceµÄlayoutÓ¦ÎªÒÔÏÂÀàĞÍÖ®Ò»£º
+	ç»‘å®šçš„image subresourceçš„layoutåº”ä¸ºä»¥ä¸‹ç±»å‹ä¹‹ä¸€ï¼š
 	VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
 	VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 	VK_IMAGE_LAYOUT_GENERAL
@@ -105,11 +105,11 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	// Uniform Texel Buffer
 	{
 	/*
-	Ò»¸öuniform texel buffer (VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER) ÊÇÒ»¸ö¹ØÁªµ½buffer resourceÍ¨¹ıbuffer view½øĞĞimage ²ÉÑù²Ù×÷£¨p1473£©µÄ descriptor type
+	ä¸€ä¸ªuniform texel buffer (VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER) æ˜¯ä¸€ä¸ªå…³è”åˆ°buffer resourceé€šè¿‡buffer viewè¿›è¡Œimage é‡‡æ ·æ“ä½œï¼ˆp1473ï¼‰çš„ descriptor type
 	
-	uniform texel buffer¶¨ÒåÁËÒ»¸ö½ôÃÜÅÅÁĞµÄÒ»Î¬ÏßĞÔtexelÊı×é£¬µ±ÎÆÀíÔÚ×ÅÉ«Æ÷ÖĞ¶ÁÈ¡Ê±£¬ÎÆÀí»áÒÔÓëÍ¼ÏñÒ»ÑùµÄ·½Ê½½øĞĞ¸ñÊ½×ª»»¡£
+	uniform texel bufferå®šä¹‰äº†ä¸€ä¸ªç´§å¯†æ’åˆ—çš„ä¸€ç»´çº¿æ€§texelæ•°ç»„ï¼Œå½“çº¹ç†åœ¨ç€è‰²å™¨ä¸­è¯»å–æ—¶ï¼Œçº¹ç†ä¼šä»¥ä¸å›¾åƒä¸€æ ·çš„æ–¹å¼è¿›è¡Œæ ¼å¼è½¬æ¢ã€‚
 	
-	Ö§³ÖËùÓĞshader£¬image viewµÄformatµÄ  format features Ğèº¬ÓĞVK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT
+	æ”¯æŒæ‰€æœ‰shaderï¼Œimage viewçš„formatçš„  format features éœ€å«æœ‰VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT
 	*/
 	
 	}
@@ -118,11 +118,11 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	// Storage Texel Buffer
 	{
 	/*
-	Ò»¸ö storage texel buffer (VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER) ÊÇÒ»¸ö¹ØÁªµ½buffer resourceÍ¨¹ıbuffer view½øĞĞimage ¼ÓÔØ£¬´æ´¢£¬ÒÔ¼°Ô­×Ó²Ù×÷µÄ descriptor type
+	ä¸€ä¸ª storage texel buffer (VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER) æ˜¯ä¸€ä¸ªå…³è”åˆ°buffer resourceé€šè¿‡buffer viewè¿›è¡Œimage åŠ è½½ï¼Œå­˜å‚¨ï¼Œä»¥åŠåŸå­æ“ä½œçš„ descriptor type
 	
-	storage texel buffer¶¨ÒåÁËÒ»¸ö½ôÃÜÅÅÁĞµÄÒ»Î¬ÏßĞÔtexelÊı×é£¬µ±ÎÆÀíÔÚ×ÅÉ«Æ÷ÖĞ¶ÁÈ¡Ê±£¬ÎÆÀí»áÒÔÓëÍ¼ÏñÒ»ÑùµÄ·½Ê½½øĞĞ¸ñÊ½×ª»»¡£Ïà±È uniform texel buffer£¬storage texel buffer¿ÉÒÔÓÃÏàÍ¬µÄ·½Ê½Ğ´Èë  storage images¡£
+	storage texel bufferå®šä¹‰äº†ä¸€ä¸ªç´§å¯†æ’åˆ—çš„ä¸€ç»´çº¿æ€§texelæ•°ç»„ï¼Œå½“çº¹ç†åœ¨ç€è‰²å™¨ä¸­è¯»å–æ—¶ï¼Œçº¹ç†ä¼šä»¥ä¸å›¾åƒä¸€æ ·çš„æ–¹å¼è¿›è¡Œæ ¼å¼è½¬æ¢ã€‚ç›¸æ¯” uniform texel bufferï¼Œstorage texel bufferå¯ä»¥ç”¨ç›¸åŒçš„æ–¹å¼å†™å…¥  storage imagesã€‚
 
-	ÆäËûÏêÇé¼ûp1244
+	å…¶ä»–è¯¦æƒ…è§p1244
 	*/
 	
 	}
@@ -130,7 +130,7 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	// Storage Buffer
 	{
 	/*
-	Ò»¸ö storage buffer (VK_DESCRIPTOR_TYPE_STORAGE_BUFFER) ÊÇÒ»¸öÖ±½Ó¹ØÁªµ½buffer resource£¬ÔÚshaderÖĞÍ¨¹ı½á¹¹Ìå±äÁ¿³ÉÔ±À´½øĞĞ¼ÓÔØ£¬´æ´¢£¬ÒÔ¼°Ô­×Ó²Ù×÷µÄ descriptor type
+	ä¸€ä¸ª storage buffer (VK_DESCRIPTOR_TYPE_STORAGE_BUFFER) æ˜¯ä¸€ä¸ªç›´æ¥å…³è”åˆ°buffer resourceï¼Œåœ¨shaderä¸­é€šè¿‡ç»“æ„ä½“å˜é‡æˆå‘˜æ¥è¿›è¡ŒåŠ è½½ï¼Œå­˜å‚¨ï¼Œä»¥åŠåŸå­æ“ä½œçš„ descriptor type
 	
 	*/
 	}
@@ -138,14 +138,14 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	// Uniform Buffer
 	{
 	/*
-	Ò»¸ö  uniform buffer (VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER) ÊÇÒ»¸öÖ±½Ó¹ØÁªµ½buffer resource£¬ÔÚshaderÖĞÍ¨¹ı½á¹¹Ìå±äÁ¿³ÉÔ±À´½øĞĞ¼ÓÔØ²Ù×÷µÄ descriptor type
+	ä¸€ä¸ª  uniform buffer (VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER) æ˜¯ä¸€ä¸ªç›´æ¥å…³è”åˆ°buffer resourceï¼Œåœ¨shaderä¸­é€šè¿‡ç»“æ„ä½“å˜é‡æˆå‘˜æ¥è¿›è¡ŒåŠ è½½æ“ä½œçš„ descriptor type
 	*/
 	}
 
 	// Dynamic Uniform Buffer
 	{
 	/*
-		Ò»¸ö dynamic uniform buffer(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC) ¼¸ºõµÈÍ¬ÓÚ uniform buffer£¬Ö»ÊÇ¸Ãdescriptor»áÈ¥Ö¸¶¨bufferµÄoffset£¬ÔÚ°ó¶¨descriptor set Ê±Ìí¼ÓÒ»¸ö VkDescriptorBufferInfo µ½dynamic offset£¨p1239£©µÄ×î¿ªÊ¼¸üĞÂdescriptor setµÄÊ±ºò¼ÆËã»ù±¾µÄoffset
+		ä¸€ä¸ª dynamic uniform buffer(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC) å‡ ä¹ç­‰åŒäº uniform bufferï¼Œåªæ˜¯è¯¥descriptorä¼šå»æŒ‡å®šbufferçš„offsetï¼Œåœ¨ç»‘å®šdescriptor set æ—¶æ·»åŠ ä¸€ä¸ª VkDescriptorBufferInfo åˆ°dynamic offsetï¼ˆp1239ï¼‰çš„æœ€å¼€å§‹æ›´æ–°descriptor setçš„æ—¶å€™è®¡ç®—åŸºæœ¬çš„offset
 	*/
 	
 	}
@@ -153,32 +153,32 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	//Dynamic Storage Buffer
 	{
 	/*
-		Ò»¸ö dynamic storage buffer (VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC) ¼¸ºõµÈÍ¬ÓÚ storage buffer£¬Ö»ÊÇ¸Ãdescriptor»áÈ¥Ö¸¶¨bufferµÄoffset£¬ÔÚ°ó¶¨descriptor set Ê±Ìí¼ÓÒ»¸ö VkDescriptorBufferInfo µ½dynamic offset£¨p1239£©µÄ×î¿ªÊ¼¸üĞÂdescriptor setµÄÊ±ºò¼ÆËã»ù±¾µÄoffset
+		ä¸€ä¸ª dynamic storage buffer (VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC) å‡ ä¹ç­‰åŒäº storage bufferï¼Œåªæ˜¯è¯¥descriptorä¼šå»æŒ‡å®šbufferçš„offsetï¼Œåœ¨ç»‘å®šdescriptor set æ—¶æ·»åŠ ä¸€ä¸ª VkDescriptorBufferInfo åˆ°dynamic offsetï¼ˆp1239ï¼‰çš„æœ€å¼€å§‹æ›´æ–°descriptor setçš„æ—¶å€™è®¡ç®—åŸºæœ¬çš„offset
 	*/
 	}
 
 	// Inline Uniform Block
 	{
 	/*
-	Ò»¸öinline uniform block (VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK) ¼¸ºõµÈÓÃÓÚuniform buffer£¬Ö»ÊÇ¸Ãdescriptor Ëù¶ÔµÄÊı¾İÖ±½Ó´æ´¢ÔÚdescriptor setÖĞ£¬²»ÓÃ¶îÍâµÄbuffer memory£¬½ÚÊ¡ÁËÄÚ´æ£¬Ìá¸ßÁËĞÔÄÜ¡£
+	ä¸€ä¸ªinline uniform block (VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK) å‡ ä¹ç­‰ç”¨äºuniform bufferï¼Œåªæ˜¯è¯¥descriptor æ‰€å¯¹çš„æ•°æ®ç›´æ¥å­˜å‚¨åœ¨descriptor setä¸­ï¼Œä¸ç”¨é¢å¤–çš„buffer memoryï¼ŒèŠ‚çœäº†å†…å­˜ï¼Œæé«˜äº†æ€§èƒ½ã€‚
 	
-	µäĞÍÓÃ·¨Ê±´æ·ÅĞ¡²¿·Ö³£Á¿Êı¾İ£¬Ïà±ÈÓÚpush constants £¬¿ÉÒÔÔÚÀëÉ¢µÄ»æÖÆÒÔ¼°dispatching commandsÊ±ÖØÓÃÏàÍ¬µÄ³£Á¿Êı¾İ¡£
+	å…¸å‹ç”¨æ³•æ—¶å­˜æ”¾å°éƒ¨åˆ†å¸¸é‡æ•°æ®ï¼Œç›¸æ¯”äºpush constants ï¼Œå¯ä»¥åœ¨ç¦»æ•£çš„ç»˜åˆ¶ä»¥åŠdispatching commandsæ—¶é‡ç”¨ç›¸åŒçš„å¸¸é‡æ•°æ®ã€‚
 	
-	inline uniform block descriptors ²»ÄÜ×éºÏ³ÉÒ»¸öÊı×é£¬¶øÒ»¸öinline uniform block descriptor binding µÄÊı×é´óĞ¡Êµ¼ÊÊÇÖ¸Ã÷ÁËÕâ¸öbindingµÄ×Ö½ÚÈİÁ¿¡£
+	inline uniform block descriptors ä¸èƒ½ç»„åˆæˆä¸€ä¸ªæ•°ç»„ï¼Œè€Œä¸€ä¸ªinline uniform block descriptor binding çš„æ•°ç»„å¤§å°å®é™…æ˜¯æŒ‡æ˜äº†è¿™ä¸ªbindingçš„å­—èŠ‚å®¹é‡ã€‚
 	*/
 	}
 
 	// Sample Weight Image
 	{
 	/*
-	Ò»¸ösample weight image (VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM) ÊÇÒ»¸ö¹ØÁªµ½ image resource Í¨¹ı image view ½øĞĞweight image ²ÉÑù²Ù×÷µÄ descriptor type£¬¸Ã image view ±ØĞëÊ¹ÓÃ VkImageViewSampleWeightCreateInfoQCOM ½á¹¹´´½¨¡£
+	ä¸€ä¸ªsample weight image (VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM) æ˜¯ä¸€ä¸ªå…³è”åˆ° image resource é€šè¿‡ image view è¿›è¡Œweight image é‡‡æ ·æ“ä½œçš„ descriptor typeï¼Œè¯¥ image view å¿…é¡»ä½¿ç”¨ VkImageViewSampleWeightCreateInfoQCOM ç»“æ„åˆ›å»ºã€‚
 
-	shader¿ÉÒÔ°ó¶¨Ò»¸ösample weight image±äÁ¿£¬Ò»¸ösampled image±äÁ¿£¬ÒÔ¼°Ò»¸ösampler±äÁ¿À´½øĞĞweight image²ÉÑù¡£
+	shaderå¯ä»¥ç»‘å®šä¸€ä¸ªsample weight imageå˜é‡ï¼Œä¸€ä¸ªsampled imageå˜é‡ï¼Œä»¥åŠä¸€ä¸ªsamplerå˜é‡æ¥è¿›è¡Œweight imageé‡‡æ ·ã€‚
 
-	Ö§³ÖËùÓĞshader£¬weight image viewµÄformatµÄ  format features Ğèº¬ÓĞVK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOM£¬sampled image viewµÄformatµÄ  format features Ğèº¬ÓĞVK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM
+	æ”¯æŒæ‰€æœ‰shaderï¼Œweight image viewçš„formatçš„  format features éœ€å«æœ‰VK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOMï¼Œsampled image viewçš„formatçš„  format features éœ€å«æœ‰VK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM
 	
 
-	weight image subresourcesµÄ²¼¾ÖÓ¦¸ÃÎª VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL»òÕß  VK_IMAGE_LAYOUT_GENERAL 
+	weight image subresourcesçš„å¸ƒå±€åº”è¯¥ä¸º VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMALæˆ–è€…  VK_IMAGE_LAYOUT_GENERAL 
 	*/
 	}
 
@@ -186,13 +186,13 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	//Block Matching Image
 	{
 	/*
-	Ò»¸öblock matching image (VK_DESCRIPTOR_TYPE_BLOCK_MATCHING_IMAGE_QCOM) ÊÇÒ»¸ö¹ØÁªµ½ image resource Í¨¹ı image view ½øĞĞblock matching ²Ù×÷µÄ descriptor type¡£
+	ä¸€ä¸ªblock matching image (VK_DESCRIPTOR_TYPE_BLOCK_MATCHING_IMAGE_QCOM) æ˜¯ä¸€ä¸ªå…³è”åˆ° image resource é€šè¿‡ image view è¿›è¡Œblock matching æ“ä½œçš„ descriptor typeã€‚
 
-	shader¿ÉÒÔ°ó¶¨Ò»¸öblock matching image£¨target image£©±äÁ¿£¬Ò»¸öreference image±äÁ¿£¬ÒÔ¼°Ò»¸ösampler±äÁ¿À´½øĞĞblock matching¡£
+	shaderå¯ä»¥ç»‘å®šä¸€ä¸ªblock matching imageï¼ˆtarget imageï¼‰å˜é‡ï¼Œä¸€ä¸ªreference imageå˜é‡ï¼Œä»¥åŠä¸€ä¸ªsamplerå˜é‡æ¥è¿›è¡Œblock matchingã€‚
 
-	Ö§³ÖËùÓĞshader£¬block matching image viewºÍreference view µÄformatµÄ  format features Ğèº¬ÓĞVK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
+	æ”¯æŒæ‰€æœ‰shaderï¼Œblock matching image viewå’Œreference view çš„formatçš„  format features éœ€å«æœ‰VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
 	
-	block matchingµÄimage subresources µÄ²¼¾ÖÓ¦¸ÃÎªVK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL »òÕß VK_IMAGE_LAYOUT_GENERAL
+	block matchingçš„image subresources çš„å¸ƒå±€åº”è¯¥ä¸ºVK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL æˆ–è€… VK_IMAGE_LAYOUT_GENERAL
 
 	*/
 	
@@ -201,11 +201,11 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	//Input Attachment
 	{
 	/*
-	Ò»¸öinput attachment (VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT) ÊÇÒ»¸ö¹ØÁªµ½ image resource Í¨¹ı image view ½øĞĞÔÚfragment shadersÖĞframebuffer local load ²Ù×÷µÄ descriptor type¡£
+	ä¸€ä¸ªinput attachment (VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT) æ˜¯ä¸€ä¸ªå…³è”åˆ° image resource é€šè¿‡ image view è¿›è¡Œåœ¨fragment shadersä¸­framebuffer local load æ“ä½œçš„ descriptor typeã€‚
 
-	¶ÔÓÚ¸ø¶¨imageµÄtilingËùÓĞÖ§³Öcolor attachments£¨VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT »ò VK_FORMAT_FEATURE_2_LINEAR_COLOR_ATTACHMENT_BIT_NV £©£¬»òÕß depth/stencil attachments (VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) Ò²½«Ö§³Öinput attachments
+	å¯¹äºç»™å®šimageçš„tilingæ‰€æœ‰æ”¯æŒcolor attachmentsï¼ˆVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT æˆ– VK_FORMAT_FEATURE_2_LINEAR_COLOR_ATTACHMENT_BIT_NV ï¼‰ï¼Œæˆ–è€… depth/stencil attachments (VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) ä¹Ÿå°†æ”¯æŒinput attachments
 	
-	input attachmentËù¶ÔµÄimage viewµÄ²¼¾ÖÓ¦¸ÃÎªÒÔÏÂÖĞµÄÒ»¸ö:
+	input attachmentæ‰€å¯¹çš„image viewçš„å¸ƒå±€åº”è¯¥ä¸ºä»¥ä¸‹ä¸­çš„ä¸€ä¸ª:
     VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
     VK_IMAGE_LAYOUT_GENERAL
@@ -222,7 +222,7 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	//Acceleration Structure
 	{
 	/*
-	Ò»¸öacceleration structure (VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR »òÕß VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV) ÊÇÒ»¸ö»ñÈ¡shaderÖĞÓÃÀ´½øĞĞray tracingµÄ³¡¾°¼¯ºÏÊı¾İ£¨Ö»¶Á£©µÄ descriptor type¡£
+	ä¸€ä¸ªacceleration structure (VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR æˆ–è€… VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV) æ˜¯ä¸€ä¸ªè·å–shaderä¸­ç”¨æ¥è¿›è¡Œray tracingçš„åœºæ™¯é›†åˆæ•°æ®ï¼ˆåªè¯»ï¼‰çš„ descriptor typeã€‚
 
 	*/
 	}
@@ -230,9 +230,9 @@ void ResourceDescriptorsTest::DescriptorTypeTest()
 	//Mutable
 	{
 	/*
-	Ò»¸ö mutable  descriptor (VK_DESCRIPTOR_TYPE_MUTABLE_EXT) Ö¸Ã÷Õâ¸ödescriptor ¿ÉÒÔ±ä¸üÎªÈÎºÎÆäËûÀàĞÍµÄdescriptor£¬¾ßÌåµÄÀàĞÍÓÉVkDescriptorSetLayoutCreateInfo.pNextÖĞµÄVkMutableDescriptorTypeListEXT::pDescriptorTypesÁĞ±íÖĞµ±Ç°bingding¸ø³öµÄdescriptor type¾ö¶¨¡£
+	ä¸€ä¸ª mutable  descriptor (VK_DESCRIPTOR_TYPE_MUTABLE_EXT) æŒ‡æ˜è¿™ä¸ªdescriptor å¯ä»¥å˜æ›´ä¸ºä»»ä½•å…¶ä»–ç±»å‹çš„descriptorï¼Œå…·ä½“çš„ç±»å‹ç”±VkDescriptorSetLayoutCreateInfo.pNextä¸­çš„VkMutableDescriptorTypeListEXT::pDescriptorTypesåˆ—è¡¨ä¸­å½“å‰bingdingç»™å‡ºçš„descriptor typeå†³å®šã€‚
 	
-	¿ÉÒÔÍ¨¹ıÖ¸¶¨VK_DESCRIPTOR_TYPE_MUTABLE_EXT bindingÒÔ¼° ¸ÃbindingµÄ VkMutableDescriptorTypeCreateInfoEXT::pDescriptorTypes µ÷ÓÃ vkGetDescriptorSetLayoutSupportÀ´»ñÈ¡¸ÃdescriptorÖ§³ÖµÄdescriptor type¡£
+	å¯ä»¥é€šè¿‡æŒ‡å®šVK_DESCRIPTOR_TYPE_MUTABLE_EXT bindingä»¥åŠ è¯¥bindingçš„ VkMutableDescriptorTypeCreateInfoEXT::pDescriptorTypes è°ƒç”¨ vkGetDescriptorSetLayoutSupportæ¥è·å–è¯¥descriptoræ”¯æŒçš„descriptor typeã€‚
 	*/
 	
 	
@@ -298,8 +298,8 @@ struct WriteDescriptorSetEXT
 void ResourceDescriptorsTest::DescriptorSetsTest()
 {
 	/*
-	¸ÅÊö
-	descriptor ×éºÏ³Édescriptor set£¬È»ºóÍ¨¹ı descriptor set layoutÃèÊöÆäÖĞµÄdescriptorµÄÀàĞÍºÍÊıÁ¿£¬ÒÔ¼°ËüÃÇµÄbinding ºÅ£¬descriptor set layoutÒ²»áÈ·¶¨descriptor setÒªÊ¹ÓÃµÄresourceÒÔ¼° shader resourcesºÍshader stageÖ®¼äµÄ½Ó¿Ú¡£
+	æ¦‚è¿°
+	descriptor ç»„åˆæˆdescriptor setï¼Œç„¶åé€šè¿‡ descriptor set layoutæè¿°å…¶ä¸­çš„descriptorçš„ç±»å‹å’Œæ•°é‡ï¼Œä»¥åŠå®ƒä»¬çš„binding å·ï¼Œdescriptor set layoutä¹Ÿä¼šç¡®å®šdescriptor setè¦ä½¿ç”¨çš„resourceä»¥åŠ shader resourceså’Œshader stageä¹‹é—´çš„æ¥å£ã€‚
 	
 	*/
 
@@ -307,153 +307,153 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 	VkDescriptorSetLayout descriptorSetLayout{};
 	{
 	/*
-	descriptor set layout Í¨¹ıÒ»×éÒ»¸ö»ò¶à¸ö descriptor bindings À´¶¨Òå£¬Ã¿¸öµ¥¶ÀµÄdescriptor binding ÓÉÒ»¸ö descriptor type£¬Ò»¸öbingdingÖĞµÄ descriptor count£¬ÒÔ¼°Ò»×é¿É·ÃÎÊ¸ÃbindingµÄ shader stage ×é³É£¬»¹ÓĞ£¨Èç¹ûÊ¹ÓÃ immutable samplers£©Ò»¸ö sampler descriptorsµÄÊı×é¡£
+	descriptor set layout é€šè¿‡ä¸€ç»„ä¸€ä¸ªæˆ–å¤šä¸ª descriptor bindings æ¥å®šä¹‰ï¼Œæ¯ä¸ªå•ç‹¬çš„descriptor binding ç”±ä¸€ä¸ª descriptor typeï¼Œä¸€ä¸ªbingdingä¸­çš„ descriptor countï¼Œä»¥åŠä¸€ç»„å¯è®¿é—®è¯¥bindingçš„ shader stage ç»„æˆï¼Œè¿˜æœ‰ï¼ˆå¦‚æœä½¿ç”¨ immutable samplersï¼‰ä¸€ä¸ª sampler descriptorsçš„æ•°ç»„ã€‚
 	*/
 	
 		VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo{};
 		descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 			DescriptorSetLayoutCreateInfoEXT descriptorSetLayoutCreateInfoEXT{};
-		descriptorSetLayoutCreateInfo.pNext = &descriptorSetLayoutCreateInfoEXT.descriptorSetLayoutBindingFlagsCreateInfo;//¿ÉÒÔº¬ÓĞVkDescriptorSetLayoutBindingFlagsCreateInfo »òÕß VkMutableDescriptorTypeCreateInfoEXT
-		descriptorSetLayoutCreateInfo.flags = 0;//ÊÇÒ»¸ö  VkDescriptorSetLayoutCreateFlagBits ×éºÏÖµµÄÎ»ÑÚÂë£¬Ö¸Ã÷descriptor set layout´´½¨µÄ¶îÍâÊôĞÔ
+		descriptorSetLayoutCreateInfo.pNext = &descriptorSetLayoutCreateInfoEXT.descriptorSetLayoutBindingFlagsCreateInfo;//å¯ä»¥å«æœ‰VkDescriptorSetLayoutBindingFlagsCreateInfo æˆ–è€… VkMutableDescriptorTypeCreateInfoEXT
+		descriptorSetLayoutCreateInfo.flags = 0;//æ˜¯ä¸€ä¸ª  VkDescriptorSetLayoutCreateFlagBits ç»„åˆå€¼çš„ä½æ©ç ï¼ŒæŒ‡æ˜descriptor set layoutåˆ›å»ºçš„é¢å¤–å±æ€§
 		/*
 		VkDescriptorSetLayoutCreateFlagBits:
 
-		VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR :  Ö¸¶¨descriptor sets²»ÄÜÊ¹ÓÃÕâ¸ölayout½øĞĞ·ÖÅä£¬Õâ¸ödescriptors »áÍ¨¹ıvkCmdPushDescriptorSetKHR ½øĞĞ¸üĞÂ 
-		VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT :  Ö¸¶¨descriptor sets±ØĞë´ÓÒ»¸ö´´½¨º¬ÓĞVK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT µÄdescriptor pool ÉÏÈ¥·ÖÅä£¬ÒÔÕâ¸ö±êÖ¾´´½¨µÄdescriptor set layoutÔÚdescriptors per-stage ÒÔ¼° per-pipeline layoutÉÏÓÉ±ğµÄ×î´óÊıÁ¿µÄÏŞÖÆ£¬¡¢
-																					non-UpdateAfterBind ÏŞÖÆÖ»»áÍ³¼Æ²»ÒÔÕâ¸ö±êÖ¾´´½¨µÄdescriptor set ÖĞµÄdescriptorsÊıÁ¿¡£UpdateAfterBind ÏŞÖÆ»áÍ³¼ÆËùÓĞdescriptorsÊıÁ¿£¬µ«¿ÉÄÜ¸ßÓÚnon-UpdateAfterBind ÏŞÖÆÊıÁ¿¡£
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR :  æŒ‡å®šdescriptor setsä¸èƒ½ä½¿ç”¨è¿™ä¸ªlayoutè¿›è¡Œåˆ†é…ï¼Œè¿™ä¸ªdescriptors ä¼šé€šè¿‡vkCmdPushDescriptorSetKHR è¿›è¡Œæ›´æ–° 
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT :  æŒ‡å®šdescriptor setså¿…é¡»ä»ä¸€ä¸ªåˆ›å»ºå«æœ‰VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT çš„descriptor pool ä¸Šå»åˆ†é…ï¼Œä»¥è¿™ä¸ªæ ‡å¿—åˆ›å»ºçš„descriptor set layoutåœ¨descriptors per-stage ä»¥åŠ per-pipeline layoutä¸Šç”±åˆ«çš„æœ€å¤§æ•°é‡çš„é™åˆ¶ï¼Œã€
+																					non-UpdateAfterBind é™åˆ¶åªä¼šç»Ÿè®¡ä¸ä»¥è¿™ä¸ªæ ‡å¿—åˆ›å»ºçš„descriptor set ä¸­çš„descriptorsæ•°é‡ã€‚UpdateAfterBind é™åˆ¶ä¼šç»Ÿè®¡æ‰€æœ‰descriptorsæ•°é‡ï¼Œä½†å¯èƒ½é«˜äºnon-UpdateAfterBind é™åˆ¶æ•°é‡ã€‚
 		
-		VK_DESCRIPTOR_SET_LAYOUT_CREATE_INDIRECT_BINDABLE_BIT_NV:  Ö¸¶¨Ê¹ÓÃÕâ¸ölayoutµÄdescriptor sets ÄÜ¹»°ó¶¨µ½ÒÔVK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV ´´½¨µÄcompute pipelines£¬ÔÚDevice-Generated Commands ÖĞÊ¹ÓÃ¡£
-		VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT:  Ö¸¶¨Õâ¸ölayoutÖ»ÄÜÓÃÓÚÃèÊö descriptor buffers.
-		VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT:  Ö¸¶¨Õâ¸ölayoutÖ»ÄÜ°üº¬vkCmdBindDescriptorBufferEmbeddedSamplersEXT ¿ÉÒÔ°ó¶¨µÄ immutable samplers£¬²»ÏñÍ¨³£µÄimmutable samplers£¬embedded immutable samplers²»ĞèÒªÓ¦ÓÃÌá¹©Ò»¸ö descriptor buffer.
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_INDIRECT_BINDABLE_BIT_NV:  æŒ‡å®šä½¿ç”¨è¿™ä¸ªlayoutçš„descriptor sets èƒ½å¤Ÿç»‘å®šåˆ°ä»¥VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV åˆ›å»ºçš„compute pipelinesï¼Œåœ¨Device-Generated Commands ä¸­ä½¿ç”¨ã€‚
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT:  æŒ‡å®šè¿™ä¸ªlayoutåªèƒ½ç”¨äºæè¿° descriptor buffers.
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT:  æŒ‡å®šè¿™ä¸ªlayoutåªèƒ½åŒ…å«vkCmdBindDescriptorBufferEmbeddedSamplersEXT å¯ä»¥ç»‘å®šçš„ immutable samplersï¼Œä¸åƒé€šå¸¸çš„immutable samplersï¼Œembedded immutable samplersä¸éœ€è¦åº”ç”¨æä¾›ä¸€ä¸ª descriptor buffer.
 
-		VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT :  Ö¸¶¨descriptor sets±ØĞë´ÓÒ»¸ö´´½¨º¬ÓĞVK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT µÄdescriptor pool ÉÏÈ¥·ÖÅä£¬ÒÔÕâ¸ö±êÖ¾´´½¨µÄdescriptor set layoutÔÚdescriptors per-stage  ÉÏÃ»ÓĞÃ÷ÏÔµÄ×î´óÊıÁ¿µÄÏŞÖÆ£¬host descriptor sets Ö»ÊÜ¿ÉÓÃhost memoryµÄÏŞÖÆ£¬µ«¿ÉÄÜÓÉÓÚÒ»Ğ©¾ßÌåµÄÊµÏÖ¶øÊÕµ½ÌØ±ğµÄÏŞÖÆ£¬ ÊµÏÖ
-																					¿ÉÄÜ»áÏŞÖÆÖ§³ÖµÄUpdateAfterBind »òÕß non-UpdateAfterBind descriptorsÊıÁ¿£¬²»¹ÜÄÄÒ»¸ö¸ü´ó¡£
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT :  æŒ‡å®šdescriptor setså¿…é¡»ä»ä¸€ä¸ªåˆ›å»ºå«æœ‰VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT çš„descriptor pool ä¸Šå»åˆ†é…ï¼Œä»¥è¿™ä¸ªæ ‡å¿—åˆ›å»ºçš„descriptor set layoutåœ¨descriptors per-stage  ä¸Šæ²¡æœ‰æ˜æ˜¾çš„æœ€å¤§æ•°é‡çš„é™åˆ¶ï¼Œhost descriptor sets åªå—å¯ç”¨host memoryçš„é™åˆ¶ï¼Œä½†å¯èƒ½ç”±äºä¸€äº›å…·ä½“çš„å®ç°è€Œæ”¶åˆ°ç‰¹åˆ«çš„é™åˆ¶ï¼Œ å®ç°
+																					å¯èƒ½ä¼šé™åˆ¶æ”¯æŒçš„UpdateAfterBind æˆ–è€… non-UpdateAfterBind descriptorsæ•°é‡ï¼Œä¸ç®¡å“ªä¸€ä¸ªæ›´å¤§ã€‚
 		
-		VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV:  Ö¸¶¨descriptor setsÖĞÊ¹ÓÃÕâ¸ölayoutµÄbingding ÊıÁ¿ÔÚÃ¿Ò»¸östageÖĞ¿ÉÄÜ»á³ÊÏÖ²»Í¬×ÊÔ´ÇÒ»òÕß×ÊÔ´ÀàĞÍ
+		VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV:  æŒ‡å®šdescriptor setsä¸­ä½¿ç”¨è¿™ä¸ªlayoutçš„bingding æ•°é‡åœ¨æ¯ä¸€ä¸ªstageä¸­å¯èƒ½ä¼šå‘ˆç°ä¸åŒèµ„æºä¸”æˆ–è€…èµ„æºç±»å‹
 		*/
-		descriptorSetLayoutCreateInfo.bindingCount = 1;// pBindings ÖĞµÄ¸öÊı
+		descriptorSetLayoutCreateInfo.bindingCount = 1;// pBindings ä¸­çš„ä¸ªæ•°
 			VkDescriptorSetLayoutBinding descriptorBinding{};
 			{
-				descriptorBinding.binding = 0;//Ö¸¶¨bindingºÅ£¬¶ÔÓ¦shader stageÖĞÏàÍ¬bindingºÅµÄ×ÊÔ´
-				descriptorBinding.descriptorCount = 1;//ÊÇshader stageÖĞÕâ¸öbindingÉÏº¬ÓĞµÄdescriptorsµÄÊıÁ¿£¬ÔÚshaderÖĞÍ¨¹ıÊı×é·ÃÎÊ£¬ Èç¹û descriptorTypeÎª VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬Ôò¸ÃÖµ±íÊ¾ inline uniform block µÄ×Ö½Ú´óĞ¡£¬Èç¹û¸ÃÖµÎª0Ôò±íÊ¾shader²»ÄÜÔÚ°ó¶¨ÁËÕâ¸ölayoutµÄpipelineÖĞÊ¹ÓÃÕâ¸öbinding
-				descriptorBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//ÊÇÒ»¸ö VkDescriptorTypeÖµ£¬Ö¸¶¨Õâ¸öbindingÉÏµÄresource descriptorsµÄÀàĞÍ
-				descriptorBinding.pImmutableSamplers = (const VkSampler*)VkSampler{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSampler*/};//Ó°Ïì samplersµÄ³õÊ¼»¯,Èç¹ûdescriptorTypeÎª VK_DESCRIPTOR_TYPE_SAMPLER Îª VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER£¬ÇÒ¸ÃVkSampler²»ÎªVK_NULL_HANDLÔò±íÊ¾¸ÃVkSampler»áÔÚ¸ÃbindingÉÏÊ¹ÓÃÇÒÎŞ·¨¶¯Ì¬¸üĞÂ£¬Èç¹ûVkSamplerÎªVK_NULL_HANDLÔò±íÊ¾¿ÉÒÔ¶¯Ì¬¸üĞÂ£¬Èç¹ûdescriptorType²»ÎªÇ°ÃæËµµÄÁ½ÖÖ£¬ÔòÕâ¸ö²ÎÊı»á±»ºöÂÔ
-				descriptorBinding.stageFlags = VK_SHADER_STAGE_ALL;//ÊÇ VkShaderStageFlagBits ×éºÏÖµµÄÎ»ÑÚÂë£¬Ö¸¶¨Õâ¸öbinding¿ÉÒÔ±»·ÃÎÊµÄshader stage
+				descriptorBinding.binding = 0;//æŒ‡å®šbindingå·ï¼Œå¯¹åº”shader stageä¸­ç›¸åŒbindingå·çš„èµ„æº
+				descriptorBinding.descriptorCount = 1;//æ˜¯shader stageä¸­è¿™ä¸ªbindingä¸Šå«æœ‰çš„descriptorsçš„æ•°é‡ï¼Œåœ¨shaderä¸­é€šè¿‡æ•°ç»„è®¿é—®ï¼Œ å¦‚æœ descriptorTypeä¸º VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™è¯¥å€¼è¡¨ç¤º inline uniform block çš„å­—èŠ‚å¤§å°ï¼Œå¦‚æœè¯¥å€¼ä¸º0åˆ™è¡¨ç¤ºshaderä¸èƒ½åœ¨ç»‘å®šäº†è¿™ä¸ªlayoutçš„pipelineä¸­ä½¿ç”¨è¿™ä¸ªbinding
+				descriptorBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//æ˜¯ä¸€ä¸ª VkDescriptorTypeå€¼ï¼ŒæŒ‡å®šè¿™ä¸ªbindingä¸Šçš„resource descriptorsçš„ç±»å‹
+				descriptorBinding.pImmutableSamplers = (const VkSampler*)VkSampler{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkSampler*/};//å½±å“ samplersçš„åˆå§‹åŒ–,å¦‚æœdescriptorTypeä¸º VK_DESCRIPTOR_TYPE_SAMPLER ä¸º VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERï¼Œä¸”è¯¥VkSamplerä¸ä¸ºVK_NULL_HANDLåˆ™è¡¨ç¤ºè¯¥VkSamplerä¼šåœ¨è¯¥bindingä¸Šä½¿ç”¨ä¸”æ— æ³•åŠ¨æ€æ›´æ–°ï¼Œå¦‚æœVkSamplerä¸ºVK_NULL_HANDLåˆ™è¡¨ç¤ºå¯ä»¥åŠ¨æ€æ›´æ–°ï¼Œå¦‚æœdescriptorTypeä¸ä¸ºå‰é¢è¯´çš„ä¸¤ç§ï¼Œåˆ™è¿™ä¸ªå‚æ•°ä¼šè¢«å¿½ç•¥
+				descriptorBinding.stageFlags = VK_SHADER_STAGE_ALL;//æ˜¯ VkShaderStageFlagBits ç»„åˆå€¼çš„ä½æ©ç ï¼ŒæŒ‡å®šè¿™ä¸ªbindingå¯ä»¥è¢«è®¿é—®çš„shader stage
 				/*
-				VkDescriptorSetLayoutBindingÓĞĞ§ÓÃ·¨£º
-				1.Èç¹ûdescriptorType ÎªVK_DESCRIPTOR_TYPE_SAMPLER »òÕßVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER£¬ÇÒdescriptorCount²»Îª0£¬pImmutableSamplers²»ÎªNULL£¬·ñÔòpImmutableSamplers±ØĞëÖ¸ÏòÒ»¸ö°üº¬descriptorCount¸öÓĞĞ§VkSamplerµÄÊı×é¡£
-				2.Èç¹ûinlineUniformBlock ÌØĞÔÃ»ÓĞ¿ªÆô£¬ÔòdescriptorType ²»ÄÜÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
-				3.Èç¹ûdescriptorType ÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK Ôò£¨1£©descriptorCount ±ØĞëÎª4µÄ±¶Êı
-																				 £¨2£©Èç¹ûVkDescriptorSetLayoutCreateInfo::flags ²»°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT£¬ÔòdescriptorCount ±ØĞëĞ¡ÓÚµÈÓÚVkPhysicalDeviceInlineUniformBlockProperties::maxInlineUniformBlockSize
-				4.Èç¹ûVkDescriptorSetLayoutCreateInfo::flags °üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT£¬Ôò£¨1£©descriptorType ±ØĞëÎªVK_DESCRIPTOR_TYPE_SAMPLER£¬descriptorCount ±ØĞëĞ¡ÓÚµÈÓÚ1
-																																		£¨2£©Èç¹ûdescriptorCount µÈÓÚ1£¬pImmutableSamplers ²»ÄÜÎªNULL
-				5.Èç¹ûdescriptorCount ²»Îª0£¬stageFlags ±ØĞëÎªVK_SHADER_STAGE_ALL »òÕßÓĞĞ§µÄVkShaderStageFlagBits ×éºÏÖµ
-				6.Èç¹ûdescriptorType ÎªVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENTÇÒdescriptorCount ²»Îª0£¬ÔòstageFlags ±ØĞëÎª0»òÕß VK_SHADER_STAGE_FRAGMENT_BIT
-				7.pImmutableSamplers Ö¸¶¨µÄsampler¶ÔÏóµÄborderColor µÈÓÚVK_BORDER_COLOR_FLOAT_CUSTOM_EXT »òVK_BORDER_COLOR_INT_CUSTOM_EXT 
-				8.Èç¹ûdescriptorType ÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬ÔòpImmutableSamplers ±ØĞëÎªNULL
-				9.Èç¹û VkDescriptorSetLayoutCreateInfo::flags °üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV£¬ÇÒdescriptorCount ²»Îª0£¬ÔòstageFlags ±ØĞëÊÇ VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
-													VK_SHADER_STAGE_GEOMETRY_BIT, VK_SHADER_STAGE_FRAGMENT_BIT ºÍ VK_SHADER_STAGE_COMPUTE_BIT µÄÓĞĞ§µÄ×éºÏÖµ
+				VkDescriptorSetLayoutBindingæœ‰æ•ˆç”¨æ³•ï¼š
+				1.å¦‚æœdescriptorType ä¸ºVK_DESCRIPTOR_TYPE_SAMPLER æˆ–è€…VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERï¼Œä¸”descriptorCountä¸ä¸º0ï¼ŒpImmutableSamplersä¸ä¸ºNULLï¼Œå¦åˆ™pImmutableSamplerså¿…é¡»æŒ‡å‘ä¸€ä¸ªåŒ…å«descriptorCountä¸ªæœ‰æ•ˆVkSamplerçš„æ•°ç»„ã€‚
+				2.å¦‚æœinlineUniformBlock ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™descriptorType ä¸èƒ½ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+				3.å¦‚æœdescriptorType ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK åˆ™ï¼ˆ1ï¼‰descriptorCount å¿…é¡»ä¸º4çš„å€æ•°
+																				 ï¼ˆ2ï¼‰å¦‚æœVkDescriptorSetLayoutCreateInfo::flags ä¸åŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXTï¼Œåˆ™descriptorCount å¿…é¡»å°äºç­‰äºVkPhysicalDeviceInlineUniformBlockProperties::maxInlineUniformBlockSize
+				4.å¦‚æœVkDescriptorSetLayoutCreateInfo::flags åŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXTï¼Œåˆ™ï¼ˆ1ï¼‰descriptorType å¿…é¡»ä¸ºVK_DESCRIPTOR_TYPE_SAMPLERï¼ŒdescriptorCount å¿…é¡»å°äºç­‰äº1
+																																		ï¼ˆ2ï¼‰å¦‚æœdescriptorCount ç­‰äº1ï¼ŒpImmutableSamplers ä¸èƒ½ä¸ºNULL
+				5.å¦‚æœdescriptorCount ä¸ä¸º0ï¼ŒstageFlags å¿…é¡»ä¸ºVK_SHADER_STAGE_ALL æˆ–è€…æœ‰æ•ˆçš„VkShaderStageFlagBits ç»„åˆå€¼
+				6.å¦‚æœdescriptorType ä¸ºVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENTä¸”descriptorCount ä¸ä¸º0ï¼Œåˆ™stageFlags å¿…é¡»ä¸º0æˆ–è€… VK_SHADER_STAGE_FRAGMENT_BIT
+				7.pImmutableSamplers æŒ‡å®šçš„samplerå¯¹è±¡çš„borderColor ç­‰äºVK_BORDER_COLOR_FLOAT_CUSTOM_EXT æˆ–VK_BORDER_COLOR_INT_CUSTOM_EXT 
+				8.å¦‚æœdescriptorType ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œåˆ™pImmutableSamplers å¿…é¡»ä¸ºNULL
+				9.å¦‚æœ VkDescriptorSetLayoutCreateInfo::flags åŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NVï¼Œä¸”descriptorCount ä¸ä¸º0ï¼Œåˆ™stageFlags å¿…é¡»æ˜¯ VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
+													VK_SHADER_STAGE_GEOMETRY_BIT, VK_SHADER_STAGE_FRAGMENT_BIT å’Œ VK_SHADER_STAGE_COMPUTE_BIT çš„æœ‰æ•ˆçš„ç»„åˆå€¼
 
 				*/
 			
 			}
-		descriptorSetLayoutCreateInfo.pBindings = &descriptorBinding;//ÊÇÒ»×é VkDescriptorSetLayoutBindingµÄÊı×éµØÖ·
+		descriptorSetLayoutCreateInfo.pBindings = &descriptorBinding;//æ˜¯ä¸€ç»„ VkDescriptorSetLayoutBindingçš„æ•°ç»„åœ°å€
 		/*
-		VkDescriptorSetLayoutCreateInfoÓĞĞ§ÓÃ·¨:
-		1.Èç¹ûperStageDescriptorSet ÌØĞÔÃ»ÓĞ¿ªÆô£¬»òÕßflagsÃ»ÓĞ°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV£¬ÔòpBindingsÖĞµÄÃ¿¸öÔªËØµÄVkDescriptorSetLayoutBinding::binding³ÉÔ±±ØĞëÓĞ²»Í¬µÄÖµ
-		2.Èç¹ûflags°üº¬	VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR£¬ÔòpBindings µÄËùÓĞÔªËØ²»ÄÜÓĞ descriptorType µÈÓÚ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC »ò VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
-		3.Èç¹ûflags°üº¬ VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR£¬Ôò£¨1£©pBindings µÄËùÓĞÔªËØ²»ÄÜÓĞ descriptorType µÈÓÚ VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
-																				   £¨2£©pBindings µÄËùÓĞÔªËØÖĞdescriptorÊıÁ¿×ÜºÍ²»ÄÜ³¬¹ı VkPhysicalDevicePushDescriptorPropertiesKHR::maxPushDescriptors
-																				   £¨3£©flags ²»ÄÜ°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT
-																				   £¨4£©pBindingsÖĞ²»ÄÜº¬ÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT µÄÔªËØ
-		4.Èç¹ûÈÎºÎbindingº¬ÓĞVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT£¬Ôò£¨1£©flags ±ØĞë°üº¬ VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT
-																			£¨2£©ËùÓĞbindingÔªËØ²»ÄÜÓĞ descriptorType µÈÓÚ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC »òÕßVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
-		5.Èç¹ûflags°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT£¬Ôòflags²»ÄÜ°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT
-		6.Èç¹ûÈç¹ûpBindings[i]µÄdescriptorType µÈÓÚ VK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬ÔòpNextÖĞ±ØĞëº¬ÓĞÒ»¸ömutableDescriptorTypeListCount ´óÓÚiµÄVkMutableDescriptorTypeCreateInfoEXT
-		7.Èç¹ûÒ»¸öbindingµÄdescriptorTypeÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬ÔòpImmutableSamplers ±ØĞëÎªNULL
-		8.Èç¹ûmutableDescriptorTypeFeaturesEXT::mutableDescriptorType ÌØĞÔÃ»ÓĞ¿ªÆô£¬ÔòpBindingsÖĞ²»ÄÜº¬ÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT µÄÔªËØ
-		9.Èç¹ûflags°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT£¬ÔòVkPhysicalDeviceMutableDescriptorTypeFeaturesEXT::mutableDescriptorType ±ØĞë¿ªÆô
-		10.Èç¹ûflags°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT£¬ÔòpBindings µÄËùÓĞÔªËØ²»ÄÜÓĞ descriptorType µÈÓÚ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC »ò VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
-		11.Èç¹ûflags°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT£¬Ôòflags²»ÄÜ°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT
-		12.Èç¹ûflags°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT£¬Ôòflags²»ÄÜ°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT£¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE
-		13.Èç¹ûflags°üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV£¬Ôò£¨1£©perStageDescriptorSet ±ØĞë¿ªÆô
-																			£¨2£©pBindingsÖĞ²»ÄÜº¬ÓĞVkDescriptorSetLayoutBinding::bindingÏàµÈ ÒÔ¼°VkDescriptorSetLayoutBinding::stageFlagsº¬ÓĞÏàÍ¬±ÈÌØÎ»µÄÁ½¸öÔªËØ 
+		VkDescriptorSetLayoutCreateInfoæœ‰æ•ˆç”¨æ³•:
+		1.å¦‚æœperStageDescriptorSet ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œæˆ–è€…flagsæ²¡æœ‰åŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NVï¼Œåˆ™pBindingsä¸­çš„æ¯ä¸ªå…ƒç´ çš„VkDescriptorSetLayoutBinding::bindingæˆå‘˜å¿…é¡»æœ‰ä¸åŒçš„å€¼
+		2.å¦‚æœflagsåŒ…å«	VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHRï¼Œåˆ™pBindings çš„æ‰€æœ‰å…ƒç´ ä¸èƒ½æœ‰ descriptorType ç­‰äº VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC æˆ– VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+		3.å¦‚æœflagsåŒ…å« VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHRï¼Œåˆ™ï¼ˆ1ï¼‰pBindings çš„æ‰€æœ‰å…ƒç´ ä¸èƒ½æœ‰ descriptorType ç­‰äº VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+																				   ï¼ˆ2ï¼‰pBindings çš„æ‰€æœ‰å…ƒç´ ä¸­descriptoræ•°é‡æ€»å’Œä¸èƒ½è¶…è¿‡ VkPhysicalDevicePushDescriptorPropertiesKHR::maxPushDescriptors
+																				   ï¼ˆ3ï¼‰flags ä¸èƒ½åŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT
+																				   ï¼ˆ4ï¼‰pBindingsä¸­ä¸èƒ½å«æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXT çš„å…ƒç´ 
+		4.å¦‚æœä»»ä½•bindingå«æœ‰VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BITï¼Œåˆ™ï¼ˆ1ï¼‰flags å¿…é¡»åŒ…å« VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT
+																			ï¼ˆ2ï¼‰æ‰€æœ‰bindingå…ƒç´ ä¸èƒ½æœ‰ descriptorType ç­‰äº VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC æˆ–è€…VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+		5.å¦‚æœflagsåŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BITï¼Œåˆ™flagsä¸èƒ½åŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT
+		6.å¦‚æœå¦‚æœpBindings[i]çš„descriptorType ç­‰äº VK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œåˆ™pNextä¸­å¿…é¡»å«æœ‰ä¸€ä¸ªmutableDescriptorTypeListCount å¤§äºiçš„VkMutableDescriptorTypeCreateInfoEXT
+		7.å¦‚æœä¸€ä¸ªbindingçš„descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œåˆ™pImmutableSamplers å¿…é¡»ä¸ºNULL
+		8.å¦‚æœmutableDescriptorTypeFeaturesEXT::mutableDescriptorType ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™pBindingsä¸­ä¸èƒ½å«æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXT çš„å…ƒç´ 
+		9.å¦‚æœflagsåŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXTï¼Œåˆ™VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT::mutableDescriptorType å¿…é¡»å¼€å¯
+		10.å¦‚æœflagsåŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXTï¼Œåˆ™pBindings çš„æ‰€æœ‰å…ƒç´ ä¸èƒ½æœ‰ descriptorType ç­‰äº VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC æˆ– VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+		11.å¦‚æœflagsåŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXTï¼Œåˆ™flagsä¸èƒ½åŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT
+		12.å¦‚æœflagsåŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXTï¼Œåˆ™flagsä¸èƒ½åŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BITï¼ŒVK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE
+		13.å¦‚æœflagsåŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NVï¼Œåˆ™ï¼ˆ1ï¼‰perStageDescriptorSet å¿…é¡»å¼€å¯
+																			ï¼ˆ2ï¼‰pBindingsä¸­ä¸èƒ½å«æœ‰VkDescriptorSetLayoutBinding::bindingç›¸ç­‰ ä»¥åŠVkDescriptorSetLayoutBinding::stageFlagså«æœ‰ç›¸åŒæ¯”ç‰¹ä½çš„ä¸¤ä¸ªå…ƒç´  
 
 		*/
 
 
-		//VkMutableDescriptorTypeCreateInfoEXT   µÈ¼ÛÓÚVkMutableDescriptorTypeCreateInfoVALVE
-		//Ö¸Ã÷mutable descriptor¿ÉÄÜµÄdescriptor ÀàĞÍ, VkDescriptorSetLayoutCreateInfo::pBindings[i] Ê¹ÓÃÁĞ¾ÙÔÚVkMutableDescriptorTypeCreateInfoEXT::::pMutableDescriptorTypeLists[i]ÖĞµÄ descriptorÀàĞÍ
+		//VkMutableDescriptorTypeCreateInfoEXT   ç­‰ä»·äºVkMutableDescriptorTypeCreateInfoVALVE
+		//æŒ‡æ˜mutable descriptorå¯èƒ½çš„descriptor ç±»å‹, VkDescriptorSetLayoutCreateInfo::pBindings[i] ä½¿ç”¨åˆ—ä¸¾åœ¨VkMutableDescriptorTypeCreateInfoEXT::::pMutableDescriptorTypeLists[i]ä¸­çš„ descriptorç±»å‹
 		VkMutableDescriptorTypeCreateInfoEXT& mutableDescriptorTypeCreateInfoEXT = descriptorSetLayoutCreateInfoEXT.mutableDescriptorTypeCreateInfoEXT;
-		mutableDescriptorTypeCreateInfoEXT.mutableDescriptorTypeListCount = 1;// pMutableDescriptorTypeListsµÄÔªËØ
-			VkMutableDescriptorTypeListEXT mutableDescriptorTypeList{};//µÈ¼ÛÓÚVkMutableDescriptorTypeListVALVE
+		mutableDescriptorTypeCreateInfoEXT.mutableDescriptorTypeListCount = 1;// pMutableDescriptorTypeListsçš„å…ƒç´ 
+			VkMutableDescriptorTypeListEXT mutableDescriptorTypeList{};//ç­‰ä»·äºVkMutableDescriptorTypeListVALVE
 			{
-				mutableDescriptorTypeList.descriptorTypeCount = 0;//pDescriptorTypesÖĞÔªËØ¸öÊı
-				mutableDescriptorTypeList.pDescriptorTypes = VK_NULL_HANDLE;//ÊÇdescriptorTypeCount¸ö VkDescriptorTypeµÄÊı×éµØÖ·£¬¶¨ÒåÒ»¸ö¸ø¶¨µÄ°ó¶¨mutable descriptor¿ÉÄÜ»áÍ»±äÎªÄÄĞ©ÃèÊö·ûÀàĞÍ¡£
+				mutableDescriptorTypeList.descriptorTypeCount = 0;//pDescriptorTypesä¸­å…ƒç´ ä¸ªæ•°
+				mutableDescriptorTypeList.pDescriptorTypes = VK_NULL_HANDLE;//æ˜¯descriptorTypeCountä¸ª VkDescriptorTypeçš„æ•°ç»„åœ°å€ï¼Œå®šä¹‰ä¸€ä¸ªç»™å®šçš„ç»‘å®šmutable descriptorå¯èƒ½ä¼šçªå˜ä¸ºå“ªäº›æè¿°ç¬¦ç±»å‹ã€‚
 				/*
-				VkMutableDescriptorTypeListEXTÓĞĞ§ÓÃ·¨:
-				1.descriptorTypeCount ²»ÄÜÎª0£¬Èç¹û¶ÔÓ¦µÄbinding ÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT
-				2.pDescriptorTypes ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÖ¸Õë£¬Ö¸ÏòÒ»¸ödescriptorTypeCount¸öÓĞĞ§µÄ¡¢Î¨Ò»µÄVkDescriptorTypeÖµ£¬Èç¹û¸ø¶¨µÄbindingÊÇVK_DESCRIPTOR_TYPE_MUTABLE_EXTÀàĞÍ
-				3.descriptorTypeCount ±ØĞëÎª0£¬Èç¹û¶ÔÓ¦µÄbinding ²»ÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT
-				4.pDescriptorTypes ²»ÄÜ°üº¬VK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC£¬VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC £¬VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+				VkMutableDescriptorTypeListEXTæœ‰æ•ˆç”¨æ³•:
+				1.descriptorTypeCount ä¸èƒ½ä¸º0ï¼Œå¦‚æœå¯¹åº”çš„binding ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXT
+				2.pDescriptorTypes å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„æŒ‡é’ˆï¼ŒæŒ‡å‘ä¸€ä¸ªdescriptorTypeCountä¸ªæœ‰æ•ˆçš„ã€å”¯ä¸€çš„VkDescriptorTypeå€¼ï¼Œå¦‚æœç»™å®šçš„bindingæ˜¯VK_DESCRIPTOR_TYPE_MUTABLE_EXTç±»å‹
+				3.descriptorTypeCount å¿…é¡»ä¸º0ï¼Œå¦‚æœå¯¹åº”çš„binding ä¸ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXT
+				4.pDescriptorTypes ä¸èƒ½åŒ…å«VK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼ŒVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICï¼ŒVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC ï¼ŒVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
 
 				*/
 			}
-		mutableDescriptorTypeCreateInfoEXT.pMutableDescriptorTypeLists = &mutableDescriptorTypeList;//ÊÇÒ»×é VkMutableDescriptorTypeListEXTµÄÊı×éµØÖ·
+		mutableDescriptorTypeCreateInfoEXT.pMutableDescriptorTypeLists = &mutableDescriptorTypeList;//æ˜¯ä¸€ç»„ VkMutableDescriptorTypeListEXTçš„æ•°ç»„åœ°å€
 
 
-		//VkDescriptorSetLayoutBindingFlagsCreateInfo    µÈÍ¬ÓÚVkDescriptorSetLayoutBindingFlagsCreateInfoEXT
-		//Ö¸Ã÷ÓÃÓÚdescriptor sets layoutµÄÃ¿¸öbindingµÄflags   £¬¼´ VkDescriptorSetLayoutCreateInfo::pBindings[i] Ê¹ÓÃ VkDescriptorSetLayoutBindingFlagsCreateInfo::pBindingFlags[i] ÖĞµÄflags
+		//VkDescriptorSetLayoutBindingFlagsCreateInfo    ç­‰åŒäºVkDescriptorSetLayoutBindingFlagsCreateInfoEXT
+		//æŒ‡æ˜ç”¨äºdescriptor sets layoutçš„æ¯ä¸ªbindingçš„flags   ï¼Œå³ VkDescriptorSetLayoutCreateInfo::pBindings[i] ä½¿ç”¨ VkDescriptorSetLayoutBindingFlagsCreateInfo::pBindingFlags[i] ä¸­çš„flags
 		VkDescriptorSetLayoutBindingFlagsCreateInfo& bindingFlagsCreateInfo = descriptorSetLayoutCreateInfoEXT.descriptorSetLayoutBindingFlagsCreateInfo;
-		bindingFlagsCreateInfo.pBindingFlags = (VkDescriptorBindingFlags*)VkDescriptorBindingFlagBits{ VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT };/*ÊÇÒ»¸öVkDescriptorBindingFlagBits ×éºÏÖµµÄÎ»ÑÚÂëÊı×é£¬ÓÃÓÚÖ¸¶¨descriptor set layoutµÄÃ¿¸öbindingµÄflags
-		VkDescriptorBindingFlagBits £¨µÈÍ¬ÓÚVkDescriptorBindingFlagBitsEXT£©:
+		bindingFlagsCreateInfo.pBindingFlags = (VkDescriptorBindingFlags*)VkDescriptorBindingFlagBits{ VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT };/*æ˜¯ä¸€ä¸ªVkDescriptorBindingFlagBits ç»„åˆå€¼çš„ä½æ©ç æ•°ç»„ï¼Œç”¨äºæŒ‡å®šdescriptor set layoutçš„æ¯ä¸ªbindingçš„flags
+		VkDescriptorBindingFlagBits ï¼ˆç­‰åŒäºVkDescriptorBindingFlagBitsEXTï¼‰:
 
-		VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT:  Ö¸Ã÷Õâ¸öbindingµÄdescriptors ½«ÔÚÕâ¸ödescriptor set°ó¶¨µ½command bufferºÍcommand bufferÌá½»µ½¶ÓÁĞÖ®¼ä½øĞĞ¸üĞÂ¡£
-		VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT:  Ö¸Ã÷Õâ¸öbindingµÄdescriptors ²»ÊÇ¶¯Ì¬Ê¹ÓÃµÄ£¬ÔÚÊ¹ÓÃÊ±Õâ¸öbinding±ØĞëº¬ÓĞÓĞĞ§µÄdescriptors
-		VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT:  Ö¸Ã÷Õâ¸öbindingµÄdescriptors ¿ÉÒÔÔÚcommand buffer°ó¶¨¸Ãdescriptor setÖ®ºó¸üĞÂ£¬»òÕßÔÚÊ¹ÓÃ¸Ãdescriptor setµÄcommand buffer´¦ÓÚpending executionÏÂ½øĞĞ¸üĞÂ£¬»òÕßÔÚ²»Ê¹ÓÃ¸Ãdescriptor setµÄcommand buffer´¦ÓÚpending executionÏÂ½øĞĞ¸üĞÂ¡£
-		VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT:  Ö¸Ã÷Õâ¸öbindingµÄdescriptors ÊÇÒ»¸ö¿É±ä´óĞ¡µÄdescriptor binding£¬Æä´óĞ¡½«ÔÚ·ÖÅädescriptor setÊ±Ö¸¶¨¡£descriptorCount ½«×÷ÎªÒ»¸öÉÏÏŞ£¬µ«Êµ¼ÊµÄdescriptorÊıÁ¿¿ÉÄÜĞ¡ÓÚÕâ¸öÉÏÏŞ¡£
+		VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT:  æŒ‡æ˜è¿™ä¸ªbindingçš„descriptors å°†åœ¨è¿™ä¸ªdescriptor setç»‘å®šåˆ°command bufferå’Œcommand bufferæäº¤åˆ°é˜Ÿåˆ—ä¹‹é—´è¿›è¡Œæ›´æ–°ã€‚
+		VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT:  æŒ‡æ˜è¿™ä¸ªbindingçš„descriptors ä¸æ˜¯åŠ¨æ€ä½¿ç”¨çš„ï¼Œåœ¨ä½¿ç”¨æ—¶è¿™ä¸ªbindingå¿…é¡»å«æœ‰æœ‰æ•ˆçš„descriptors
+		VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT:  æŒ‡æ˜è¿™ä¸ªbindingçš„descriptors å¯ä»¥åœ¨command bufferç»‘å®šè¯¥descriptor setä¹‹åæ›´æ–°ï¼Œæˆ–è€…åœ¨ä½¿ç”¨è¯¥descriptor setçš„command bufferå¤„äºpending executionä¸‹è¿›è¡Œæ›´æ–°ï¼Œæˆ–è€…åœ¨ä¸ä½¿ç”¨è¯¥descriptor setçš„command bufferå¤„äºpending executionä¸‹è¿›è¡Œæ›´æ–°ã€‚
+		VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT:  æŒ‡æ˜è¿™ä¸ªbindingçš„descriptors æ˜¯ä¸€ä¸ªå¯å˜å¤§å°çš„descriptor bindingï¼Œå…¶å¤§å°å°†åœ¨åˆ†é…descriptor setæ—¶æŒ‡å®šã€‚descriptorCount å°†ä½œä¸ºä¸€ä¸ªä¸Šé™ï¼Œä½†å®é™…çš„descriptoræ•°é‡å¯èƒ½å°äºè¿™ä¸ªä¸Šé™ã€‚
 
-		¡·¡·¡·¡·¡·¡·¡·¡·¡·¡·ÕâÀïÃ¿¸öÃ¶¾ÙÀàĞÍµÄº¬Òå¹ı³¤£¬ÕâÀïÖ»ÁĞ¾Ù×îÖØÒªµÄĞÅÏ¢£¬Ê£ÏÂµÄÏêÏ¸ËµÃ÷¼ûp1261
+		ã€‹ã€‹ã€‹ã€‹ã€‹ã€‹ã€‹ã€‹ã€‹ã€‹è¿™é‡Œæ¯ä¸ªæšä¸¾ç±»å‹çš„å«ä¹‰è¿‡é•¿ï¼Œè¿™é‡Œåªåˆ—ä¸¾æœ€é‡è¦çš„ä¿¡æ¯ï¼Œå‰©ä¸‹çš„è¯¦ç»†è¯´æ˜è§p1261
 		
 		*/
-		bindingFlagsCreateInfo.bindingCount = 1;//pBindingFlags ÖĞµÄÔªËØ¸öÊı
+		bindingFlagsCreateInfo.bindingCount = 1;//pBindingFlags ä¸­çš„å…ƒç´ ä¸ªæ•°
 		/*
 		VkDescriptorSetLayoutBindingFlagsCreateInfo
-		1.Èç¹ûbindingCount ²»ÄÜ0Ôò±ØĞëµÈÓÚVkDescriptorSetLayoutCreateInfo::bindingCount
-		2.Èç¹ûVkDescriptorSetLayoutCreateInfo::flags °üº¬VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR£¬ÔòpBindingFlags ÖĞµÄËùÓĞÔªËØ²»ÄÜº¬ÓĞVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT£¬VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT£¬VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT »òÕßVK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
-		3.Èç¹ûpBindingFlags µÄÒ»¸öÔªËØ°üº¬VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT£¬ÔòÕâ¸öÔªËØµÄbinding ºÅ±ØĞëÊÇpBindings ÖĞbinding ºÅµÄ×î´óÖµ
-		4.Èç¹ûVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingUniformBufferUpdateAfterBind Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞbindingµÄdescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ²»ÄÜÊ¹ÓÃVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
-		5.Èç¹ûVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingSampledImageUpdateAfterBind Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞbindingµÄdescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLER¶ø ²»ÄÜÎªVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER »òÕß VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
-		6.Èç¹ûVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingStorageImageUpdateAfterBind Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞbindingµÄdescriptorTypeÎªVK_DESCRIPTOR_TYPE_STORAGE_IMAGE ÇÒ²»ÄÜÊ¹ÓÃVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
-		7.Èç¹ûVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingStorageBufferUpdateAfterBind Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞbindingµÄdescriptorTypeÎªVK_DESCRIPTOR_TYPE_STORAGE_BUFFER ÇÒ²»ÄÜÊ¹ÓÃVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
-		8.Èç¹ûVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingUniformTexelBufferUpdateAfterBind Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞbindingµÄdescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER ÇÒ²»ÄÜÊ¹ÓÃVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
-		9.Èç¹ûVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingStorageTexelBufferUpdateAfterBind Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞbindingµÄdescriptorTypeÎªVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER ÇÒ²»ÄÜÊ¹ÓÃVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
-		10.Èç¹ûVkPhysicalDeviceInlineUniformBlockFeatures::descriptorBindingInlineUniformBlockUpdateAfterBind Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞbindingµÄdescriptorTypeÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK ÇÒ²»ÄÜÊ¹ÓÃVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
-		11.Èç¹ûVkPhysicalDeviceAccelerationStructureFeaturesKHR::descriptorBindingAccelerationStructureUpdateAfterBind Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞbindingµÄdescriptorTypeÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR »òÕßVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV  ÇÒ²»ÄÜÊ¹ÓÃVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
-		12.ËùÓĞÊ¹ÓÃdescriptor type ÎªVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, »òÕß VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICµÄbinding ÇÒ²»ÄÜÊ¹ÓÃVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
-		13.Èç¹ûVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingUpdateUnusedWhilePending Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞpBindingFlagsµÄÔªËØ²»ÄÜº¬ÓĞVK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT
-		14.Èç¹ûVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingPartiallyBound Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞpBindingFlagsµÄÔªËØ²»ÄÜº¬ÓĞVK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
-		15.Èç¹ûVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingVariableDescriptorCount Ã»ÓĞ¿ªÆô£¬ÔòËùÓĞpBindingFlagsµÄÔªËØ²»ÄÜº¬ÓĞVK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
-		16.Èç¹ûpBindingFlags µÄÒ»¸öÔªËØ°üº¬VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT£¬ÔòÕâ¸öÔªËØµÄdescriptorType ²»ÄÜÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC »òÕßVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+		1.å¦‚æœbindingCount ä¸èƒ½0åˆ™å¿…é¡»ç­‰äºVkDescriptorSetLayoutCreateInfo::bindingCount
+		2.å¦‚æœVkDescriptorSetLayoutCreateInfo::flags åŒ…å«VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHRï¼Œåˆ™pBindingFlags ä¸­çš„æ‰€æœ‰å…ƒç´ ä¸èƒ½å«æœ‰VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BITï¼ŒVK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BITï¼ŒVK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT æˆ–è€…VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
+		3.å¦‚æœpBindingFlags çš„ä¸€ä¸ªå…ƒç´ åŒ…å«VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BITï¼Œåˆ™è¿™ä¸ªå…ƒç´ çš„binding å·å¿…é¡»æ˜¯pBindings ä¸­binding å·çš„æœ€å¤§å€¼
+		4.å¦‚æœVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingUniformBufferUpdateAfterBind æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰bindingçš„descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ä¸èƒ½ä½¿ç”¨VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		5.å¦‚æœVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingSampledImageUpdateAfterBind æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰bindingçš„descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLERè€Œ ä¸èƒ½ä¸ºVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER æˆ–è€… VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
+		6.å¦‚æœVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingStorageImageUpdateAfterBind æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰bindingçš„descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_STORAGE_IMAGE ä¸”ä¸èƒ½ä½¿ç”¨VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		7.å¦‚æœVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingStorageBufferUpdateAfterBind æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰bindingçš„descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER ä¸”ä¸èƒ½ä½¿ç”¨VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		8.å¦‚æœVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingUniformTexelBufferUpdateAfterBind æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰bindingçš„descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER ä¸”ä¸èƒ½ä½¿ç”¨VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		9.å¦‚æœVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingStorageTexelBufferUpdateAfterBind æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰bindingçš„descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER ä¸”ä¸èƒ½ä½¿ç”¨VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		10.å¦‚æœVkPhysicalDeviceInlineUniformBlockFeatures::descriptorBindingInlineUniformBlockUpdateAfterBind æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰bindingçš„descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK ä¸”ä¸èƒ½ä½¿ç”¨VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		11.å¦‚æœVkPhysicalDeviceAccelerationStructureFeaturesKHR::descriptorBindingAccelerationStructureUpdateAfterBind æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰bindingçš„descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR æˆ–è€…VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV  ä¸”ä¸èƒ½ä½¿ç”¨VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		12.æ‰€æœ‰ä½¿ç”¨descriptor type ä¸ºVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, æˆ–è€… VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICçš„binding ä¸”ä¸èƒ½ä½¿ç”¨VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+		13.å¦‚æœVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingUpdateUnusedWhilePending æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰pBindingFlagsçš„å…ƒç´ ä¸èƒ½å«æœ‰VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT
+		14.å¦‚æœVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingPartiallyBound æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰pBindingFlagsçš„å…ƒç´ ä¸èƒ½å«æœ‰VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT
+		15.å¦‚æœVkPhysicalDeviceDescriptorIndexingFeatures::descriptorBindingVariableDescriptorCount æ²¡æœ‰å¼€å¯ï¼Œåˆ™æ‰€æœ‰pBindingFlagsçš„å…ƒç´ ä¸èƒ½å«æœ‰VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
+		16.å¦‚æœpBindingFlags çš„ä¸€ä¸ªå…ƒç´ åŒ…å«VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BITï¼Œåˆ™è¿™ä¸ªå…ƒç´ çš„descriptorType ä¸èƒ½ä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC æˆ–è€…VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
 
 		*/
 
 
 
-		//²éÑ¯Ò»¸ödescriptor set layoutÊÇ·ñÄÜ¹»±»´´½¨,ĞèÒª²éÑ¯µÄÔ­Òò¼ûp1263
+		//æŸ¥è¯¢ä¸€ä¸ªdescriptor set layoutæ˜¯å¦èƒ½å¤Ÿè¢«åˆ›å»º,éœ€è¦æŸ¥è¯¢çš„åŸå› è§p1263
 		{
-			VkDescriptorSetLayoutSupport support{};//µÈÍ¬ÓÚVkDescriptorSetLayoutSupportKHR
+			VkDescriptorSetLayoutSupport support{};//ç­‰åŒäºVkDescriptorSetLayoutSupportKHR
 			support.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT;
-				VkDescriptorSetVariableDescriptorCountLayoutSupport variableSupport{};//µÈÍ¬ÓÚVkDescriptorSetVariableDescriptorCountLayoutSupportEXT
+				VkDescriptorSetVariableDescriptorCountLayoutSupport variableSupport{};//ç­‰åŒäºVkDescriptorSetVariableDescriptorCountLayoutSupportEXT
 				{
 					variableSupport.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT;
 					variableSupport.pNext = nullptr;
-					variableSupport.maxVariableDescriptorCount = 0;//Ö¸Ê¾ÔÚlayoutµÄ×î¸ß±àºÅbindingÖĞÖ§³ÖµÄ×î´ódescriptorÊı£¬Èç¹û¸ÃbindingÊÇ¿É±ä´óĞ¡µÄ¡£Èç¹ûlayoutµÄ×î¸ß±àºÅbindingµÄÃèÊö·ûÀàĞÍÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÄÇÃ´maxVariableDescriptorCount±íÊ¾bindingÖ§³ÖµÄ×î´ó×Ö½Ú´óĞ¡£¬Èç¹û¸Ãbinding´óĞ¡¿É±äµÄ¡£
+					variableSupport.maxVariableDescriptorCount = 0;//æŒ‡ç¤ºåœ¨layoutçš„æœ€é«˜ç¼–å·bindingä¸­æ”¯æŒçš„æœ€å¤§descriptoræ•°ï¼Œå¦‚æœè¯¥bindingæ˜¯å¯å˜å¤§å°çš„ã€‚å¦‚æœlayoutçš„æœ€é«˜ç¼–å·bindingçš„æè¿°ç¬¦ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œé‚£ä¹ˆmaxVariableDescriptorCountè¡¨ç¤ºbindingæ”¯æŒçš„æœ€å¤§å­—èŠ‚å¤§å°ï¼Œå¦‚æœè¯¥bindingå¤§å°å¯å˜çš„ã€‚
 				}
-			support.pNext = &variableSupport;//¿ÉÒÔ°üº¬VkDescriptorSetVariableDescriptorCountLayoutSupport
-			support.supported = VK_FALSE;//Ö¸Ã÷Õâ¸ödescriptor set layoutÊÇ·ñÄÜ¹»±»´´½¨µÄ·µ»ØÖµ
+			support.pNext = &variableSupport;//å¯ä»¥åŒ…å«VkDescriptorSetVariableDescriptorCountLayoutSupport
+			support.supported = VK_FALSE;//æŒ‡æ˜è¿™ä¸ªdescriptor set layoutæ˜¯å¦èƒ½å¤Ÿè¢«åˆ›å»ºçš„è¿”å›å€¼
 
-			//µÈÓÃÓÚvkGetDescriptorSetLayoutSupportKHR
+			//ç­‰ç”¨äºvkGetDescriptorSetLayoutSupportKHR
 			vkGetDescriptorSetLayoutSupport(device, & descriptorSetLayoutCreateInfo, & support);
 
 
@@ -461,9 +461,9 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 		}
 
 
-		//Ò»Ğ©bindingÔÚ×ÅÉ«Æ÷´úÂëÖĞÉùÃ÷ĞÎÊ½ÈçÏÂ£º  ÏêÇé¼ûp1265
+		//ä¸€äº›bindingåœ¨ç€è‰²å™¨ä»£ç ä¸­å£°æ˜å½¢å¼å¦‚ä¸‹ï¼š  è¯¦æƒ…è§p1265
 		/*
-		//ÀıÈçÔÚ×ÅÉ«Æ÷ÖĞÉùÃ÷ÈçÏÂµÄuniform±äÁ¿£º
+		//ä¾‹å¦‚åœ¨ç€è‰²å™¨ä¸­å£°æ˜å¦‚ä¸‹çš„uniformå˜é‡ï¼š
 		//
 		// binding to a single sampled image descriptor in set 0
 		//
@@ -472,8 +472,8 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 
 		vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr,&descriptorSetLayout);
 
-		//Ïú»Ùdescriptor set layout
-		vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);//Èç¹û´´½¨descriptor set layoutÊ±Ö¸¶¨ÁËVkAllocationCallbacks£¬ÔòÕâÀïĞèÒªÌá¹©Ò»¸ö¼æÈİµÄVkAllocationCallbacks£¬·ñÔòÕâÀïµÄpAllocator¿ÉÒÔÉèÖÃÎªNULL¡£
+		//é”€æ¯descriptor set layout
+		vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);//å¦‚æœåˆ›å»ºdescriptor set layoutæ—¶æŒ‡å®šäº†VkAllocationCallbacksï¼Œåˆ™è¿™é‡Œéœ€è¦æä¾›ä¸€ä¸ªå…¼å®¹çš„VkAllocationCallbacksï¼Œå¦åˆ™è¿™é‡Œçš„pAllocatorå¯ä»¥è®¾ç½®ä¸ºNULLã€‚
 
 	}
 
@@ -482,76 +482,76 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 	VkPipelineLayout pipelineLayout{};
 	{
 	/*
-	ÔÚpipelineÖĞ·ÃÎÊdescriptor setÍ¨¹ıpipeline layout£¬descriptor set layoutºÍpush constant ranges½«°ó¶¨µ½Ò»ÆğĞÎ³ÉÒ»¸öÃèÊö¿É¹©pipeline ·ÃÎÊµÄÍêÕûµÄ×ÊÔ´¼¯µÄpipeline layout£¬Õâ¸öpipeline layoutÓÃÓÚÈ·¶¨shader stageºÍshader resourceÖ®¼äµÄ½Ó¿Ú
+	åœ¨pipelineä¸­è®¿é—®descriptor seté€šè¿‡pipeline layoutï¼Œdescriptor set layoutå’Œpush constant rangeså°†ç»‘å®šåˆ°ä¸€èµ·å½¢æˆä¸€ä¸ªæè¿°å¯ä¾›pipeline è®¿é—®çš„å®Œæ•´çš„èµ„æºé›†çš„pipeline layoutï¼Œè¿™ä¸ªpipeline layoutç”¨äºç¡®å®šshader stageå’Œshader resourceä¹‹é—´çš„æ¥å£
 	*/
 	
-		VkDescriptorSetLayout validDescriptorSetLayout{};//¼ÙÉèÒ»¸öÓĞĞ§µÄVkDescriptorSetLayout
-		VkPushConstantRange pushConstantRange{};//¼ÙÉèÒ»¸öÓĞĞ§µÄVkPushConstantRange
-		pushConstantRange.offset = 0;//ÒÔ×Ö½ÚÎªµ¥Î»£¬±ØĞëÎª4µÄ±¶Êı£¬±ØĞëĞ¡ÓÚ VkPhysicalDeviceLimits::maxPushConstantsSize
-		pushConstantRange.size = 1;//ÒÔ×Ö½ÚÎªµ¥Î»£¬±ØĞëÎª4µÄ±¶Êı
-		pushConstantRange.stageFlags = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;//ÊÇÒ»×éstage±êÖ¾£¬ËüÃèÊöÁË½«·ÃÎÊÒ»ÏµÁĞpush constantµÄ×ÅÉ«Æ÷½×¶Î¡£Èç¹ûÒ»¸öÌØ¶¨µÄ½×¶Î²»°üÀ¨ÔÚ¸Ã·¶Î§ÖĞ£¬ÄÇÃ´´ÓÏàÓ¦µÄ×ÅÉ«Æ÷½×¶Î·ÃÎÊ¸ÃÍÆËÍ³£Êı·¶Î§µÄ³ÉÔ±½«·µ»ØÎ´¶¨ÒåµÄÖµ¡£
+		VkDescriptorSetLayout validDescriptorSetLayout{};//å‡è®¾ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorSetLayout
+		VkPushConstantRange pushConstantRange{};//å‡è®¾ä¸€ä¸ªæœ‰æ•ˆçš„VkPushConstantRange
+		pushConstantRange.offset = 0;//ä»¥å­—èŠ‚ä¸ºå•ä½ï¼Œå¿…é¡»ä¸º4çš„å€æ•°ï¼Œå¿…é¡»å°äº VkPhysicalDeviceLimits::maxPushConstantsSize
+		pushConstantRange.size = 1;//ä»¥å­—èŠ‚ä¸ºå•ä½ï¼Œå¿…é¡»ä¸º4çš„å€æ•°
+		pushConstantRange.stageFlags = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;//æ˜¯ä¸€ç»„stageæ ‡å¿—ï¼Œå®ƒæè¿°äº†å°†è®¿é—®ä¸€ç³»åˆ—push constantçš„ç€è‰²å™¨é˜¶æ®µã€‚å¦‚æœä¸€ä¸ªç‰¹å®šçš„é˜¶æ®µä¸åŒ…æ‹¬åœ¨è¯¥èŒƒå›´ä¸­ï¼Œé‚£ä¹ˆä»ç›¸åº”çš„ç€è‰²å™¨é˜¶æ®µè®¿é—®è¯¥æ¨é€å¸¸æ•°èŒƒå›´çš„æˆå‘˜å°†è¿”å›æœªå®šä¹‰çš„å€¼ã€‚
 
 
 
-		//Ò»¸öpipeline layoutÖĞËùÄÜÓµÓĞµÄdescriptorµÄÊıÁ¿´æÔÚÒ»Ğ©ÏŞÖÆ£¬ÏêÇé¼ûp1278  Pipeline Layout Resource Limits
+		//ä¸€ä¸ªpipeline layoutä¸­æ‰€èƒ½æ‹¥æœ‰çš„descriptorçš„æ•°é‡å­˜åœ¨ä¸€äº›é™åˆ¶ï¼Œè¯¦æƒ…è§p1278  Pipeline Layout Resource Limits
 		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{};
 		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutCreateInfo.pNext = nullptr;
-		pipelineLayoutCreateInfo.flags = 0;/*ÊÇ VkPipelineLayoutCreateFlagBits ×éºÏÖµµÄÎ»ÑÚÂë£¬Ö¸Ã÷pipeline layout´´½¨µÄÑ¡Ïî
+		pipelineLayoutCreateInfo.flags = 0;/*æ˜¯ VkPipelineLayoutCreateFlagBits ç»„åˆå€¼çš„ä½æ©ç ï¼ŒæŒ‡æ˜pipeline layoutåˆ›å»ºçš„é€‰é¡¹
 		VkPipelineLayoutCreateFlagBits:
-		VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT :  Ö¸Ã÷ÊµÏÖ±ØĞë±£Ö¤º¬ÓĞ»òÕßÈ±Ê§ÌØ¶¨descriptor setµÄÊôĞÔ²»ÄÜÓ°Ïìpipeline layoutµÄÈÎºÎÊôĞÔ¡£Õâ¸öÔÊĞíÁ´½Ópipeline librariesÊ±¿ÉÒÔ²»ÓÃ´´½¨Ò»¸öº¬VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT µÄ×ÜµÄdescriptor setÖĞµÄÒ»¸ö×Ó¼¯
+		VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT :  æŒ‡æ˜å®ç°å¿…é¡»ä¿è¯å«æœ‰æˆ–è€…ç¼ºå¤±ç‰¹å®šdescriptor setçš„å±æ€§ä¸èƒ½å½±å“pipeline layoutçš„ä»»ä½•å±æ€§ã€‚è¿™ä¸ªå…è®¸é“¾æ¥pipeline librariesæ—¶å¯ä»¥ä¸ç”¨åˆ›å»ºä¸€ä¸ªå«VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT çš„æ€»çš„descriptor setä¸­çš„ä¸€ä¸ªå­é›†
 		*/
-		pipelineLayoutCreateInfo.setLayoutCount = 1;//pSetLayouts ÖĞÔªËØ¸öÊı
-		pipelineLayoutCreateInfo.pSetLayouts = &validDescriptorSetLayout;//ÊÇÒ»×é VkDescriptorSetLayout ¶ÔÏóÊı×éµÄÖ¸Õë
-		pipelineLayoutCreateInfo.pushConstantRangeCount = 1;//pPushConstantRanges ÖĞÔªËØ¸öÊı
-		pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;//ÊÇÒ»×é VkPushConstantRange ¶ÔÏóÊı×éµÄÖ¸Õë£¬¶¨ÒåÓÃÔÚµ¥¸öpipeline layoutÖĞµÄpush constant range£¬pipeline layout ¶îÍâÃèÊöÁËpipelineÃ¿¸östage¿É·ÃÎÊµÄpush constantµÄÊıÁ¿
+		pipelineLayoutCreateInfo.setLayoutCount = 1;//pSetLayouts ä¸­å…ƒç´ ä¸ªæ•°
+		pipelineLayoutCreateInfo.pSetLayouts = &validDescriptorSetLayout;//æ˜¯ä¸€ç»„ VkDescriptorSetLayout å¯¹è±¡æ•°ç»„çš„æŒ‡é’ˆ
+		pipelineLayoutCreateInfo.pushConstantRangeCount = 1;//pPushConstantRanges ä¸­å…ƒç´ ä¸ªæ•°
+		pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;//æ˜¯ä¸€ç»„ VkPushConstantRange å¯¹è±¡æ•°ç»„çš„æŒ‡é’ˆï¼Œå®šä¹‰ç”¨åœ¨å•ä¸ªpipeline layoutä¸­çš„push constant rangeï¼Œpipeline layout é¢å¤–æè¿°äº†pipelineæ¯ä¸ªstageå¯è®¿é—®çš„push constantçš„æ•°é‡
 		/*
-		VkPipelineLayoutCreateInfoÓĞĞ§ÓÃ·¨:
-		1.setLayoutCount ±ØĞëĞ¡ÓÚµÈÓÚVkPhysicalDeviceLimits::maxBoundDescriptorSets
-		2.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_SAMPLER ºÍVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERµÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxPerStageDescriptorSamplers
-		3.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ºÍVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxPerStageDescriptorUniformBuffers
-		4.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_BUFFER ºÍVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxPerStageDescriptorStorageBuffers
-		5.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM, ºÍVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxPerStageDescriptorSampledImages
-		6.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_IMAGE ºÍVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxPerStageDescriptorStorageImages
-		7.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxPerStageDescriptorInputAttachments
-		8.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceInlineUniformBlockProperties::maxPerStageDescriptorInlineUniformBlocks
-		9.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_SAMPLER ÒÔ¼°VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindSamp
-		10.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ÒÔ¼°VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindUniformBuffers
-		11.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_BUFFER ÒÔ¼°VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindStorageBuffers
-		12.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, ºÍVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindSampledImages
-		13.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_IMAGE ÒÔ¼°VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindStorageImages
-		14.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindInputAttachments
-		15.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceInlineUniformBlockProperties::maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks
-		16.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_SAMPLER ºÍ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚVkPhysicalDeviceLimits::maxDescriptorSetSamplers
-		18.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxDescriptorSetUniformBuffers
-		19.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxDescriptorSetUniformBuffersDynamic
-		20.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_BUFFER µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxDescriptorSetStorageBuffers
-		21.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxDescriptorSetStorageBuffersDynamic
-		22.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER £¬VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ºÍVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER  µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxDescriptorSetSampledImages
-		23.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_IMAGE ºÍVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxDescriptorSetStorageImages
-		24.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxDescriptorSetInputAttachments
-		25.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄbindingÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceInlineUniformBlockProperties::maxDescriptorSetInlineUniformBlocks
-		26.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_SAMPLER ºÍVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindSamplers
-		27.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindUniformBuffers
-		28.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindUniformBuffersDynamic
-		29.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_BUFFER µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindStorageBuffers
-		30.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindStorageBuffersDynamic
-		31.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER£¬VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ºÍVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindSampledImages
-		32.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_STORAGE_IMAGE ºÍVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindStorageImages
-		33.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄdescriptorÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindInputAttachments
-		34.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄbindingÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceInlineUniformBlockProperties::maxDescriptorSetUpdateAfterBindInlineUniformBlocks
-		35.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄdescriptorsÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceVulkan13Properties::maxInlineUniformTotalSize
-		36.ÈÎºÎpPushConstantRanges ÖĞµÄÁ½¸öÔªËØµÄstageFlags²»ÄÜº¬ÓĞÏàÍ¬µÄstage
-		37.pSetLayout²»ÄÜº¬ÓĞ³¬¹ıÒ»¸öVK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR´´½¨µÄdescriptor set layout
-		38.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄbindingÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPerStageDescriptorAccelerationStructures
-		39.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄbindingÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPerStageDescriptorUpdateAfterBindAccelerationStructures
-		39.ËùÓĞÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨µÄdescriptor set layout µÄÆäÖĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄbindingÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxDescriptorSetAccelerationStructures
-		40.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR µÄ¿É¹©ÈÎºÎËù¸øshader stages·ÃÎÊpSetLayoutsµÄbindingÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxDescriptorSetUpdateAfterBindA
-		41.ËùÓĞdescriptorType ÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV µÄ¿É¹©ËùÓĞshader stages·ÃÎÊpSetLayoutsµÄbindingÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceRayTracingPropertiesNV::maxDescriptorSetAccelerationStructures
-		42.pImmutableSamplers ÖĞÒÔVK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT »òÕßVK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT ´´½¨ËùÓĞshader stagesÒÔ¼°ËùÓĞpSetLayoutsÖĞµÄsampler ÊıÁ¿×ÜºÍ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceFragmentDensityMap2PropertiesEXT::maxDescriptorSetSubsampledSamplers
-		43.pSetLayouts ÖĞµÄÈÎºÎÔªËØ²»ÄÜÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT ´´½¨
-		44.Èç¹ûgraphicsPipelineLibrary Î´ÆôÓÃ£¬pSetLayouts ÖĞµÄÃ¿¸öÔªËØ±ØĞëÊÇÓĞĞ§µÄVkDescriptorSetLayout¶ÔÏó
-		45.Èç¹ûpSetLayouts ÖĞµÄÈÎºÎÔªËØÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT ´´½¨£¬ÔòpSetLayouts ÖĞµÄËùÓĞÔªËØ±ØĞëÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT ´´½¨
+		VkPipelineLayoutCreateInfoæœ‰æ•ˆç”¨æ³•:
+		1.setLayoutCount å¿…é¡»å°äºç­‰äºVkPhysicalDeviceLimits::maxBoundDescriptorSets
+		2.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_SAMPLER å’ŒVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERçš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxPerStageDescriptorSamplers
+		3.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER å’ŒVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxPerStageDescriptorUniformBuffers
+		4.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER å’ŒVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxPerStageDescriptorStorageBuffers
+		5.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM, å’ŒVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxPerStageDescriptorSampledImages
+		6.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_IMAGE å’ŒVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxPerStageDescriptorStorageImages
+		7.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxPerStageDescriptorInputAttachments
+		8.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceInlineUniformBlockProperties::maxPerStageDescriptorInlineUniformBlocks
+		9.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_SAMPLER ä»¥åŠVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindSamp
+		10.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ä»¥åŠVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindUniformBuffers
+		11.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER ä»¥åŠVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindStorageBuffers
+		12.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, å’ŒVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindSampledImages
+		13.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_IMAGE ä»¥åŠVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindStorageImages
+		14.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxPerStageDescriptorUpdateAfterBindInputAttachments
+		15.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceInlineUniformBlockProperties::maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks
+		16.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_SAMPLER å’Œ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äºVkPhysicalDeviceLimits::maxDescriptorSetSamplers
+		18.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxDescriptorSetUniformBuffers
+		19.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxDescriptorSetUniformBuffersDynamic
+		20.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxDescriptorSetStorageBuffers
+		21.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxDescriptorSetStorageBuffersDynamic
+		22.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER ï¼ŒVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE å’ŒVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER  çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxDescriptorSetSampledImages
+		23.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_IMAGE å’ŒVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxDescriptorSetStorageImages
+		24.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxDescriptorSetInputAttachments
+		25.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„bindingæ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceInlineUniformBlockProperties::maxDescriptorSetInlineUniformBlocks
+		26.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_SAMPLER å’ŒVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindSamplers
+		27.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindUniformBuffers
+		28.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindUniformBuffersDynamic
+		29.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindStorageBuffers
+		30.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindStorageBuffersDynamic
+		31.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERï¼ŒVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE å’ŒVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindSampledImages
+		32.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_STORAGE_IMAGE å’ŒVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindStorageImages
+		33.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„descriptoræ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceDescriptorIndexingProperties::maxDescriptorSetUpdateAfterBindInputAttachments
+		34.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„bindingæ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceInlineUniformBlockProperties::maxDescriptorSetUpdateAfterBindInlineUniformBlocks
+		35.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„descriptorsæ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceVulkan13Properties::maxInlineUniformTotalSize
+		36.ä»»ä½•pPushConstantRanges ä¸­çš„ä¸¤ä¸ªå…ƒç´ çš„stageFlagsä¸èƒ½å«æœ‰ç›¸åŒçš„stage
+		37.pSetLayoutä¸èƒ½å«æœ‰è¶…è¿‡ä¸€ä¸ªVK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHRåˆ›å»ºçš„descriptor set layout
+		38.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„bindingæ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPerStageDescriptorAccelerationStructures
+		39.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„bindingæ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPerStageDescriptorUpdateAfterBindAccelerationStructures
+		39.æ‰€æœ‰ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºçš„descriptor set layout çš„å…¶ä¸­descriptorType ä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„bindingæ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxDescriptorSetAccelerationStructures
+		40.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR çš„å¯ä¾›ä»»ä½•æ‰€ç»™shader stagesè®¿é—®pSetLayoutsçš„bindingæ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceAccelerationStructurePropertiesKHR::maxDescriptorSetUpdateAfterBindA
+		41.æ‰€æœ‰descriptorType ä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV çš„å¯ä¾›æ‰€æœ‰shader stagesè®¿é—®pSetLayoutsçš„bindingæ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceRayTracingPropertiesNV::maxDescriptorSetAccelerationStructures
+		42.pImmutableSamplers ä¸­ä»¥VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT æˆ–è€…VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT åˆ›å»ºæ‰€æœ‰shader stagesä»¥åŠæ‰€æœ‰pSetLayoutsä¸­çš„sampler æ•°é‡æ€»å’Œå¿…é¡»å°äºç­‰äº VkPhysicalDeviceFragmentDensityMap2PropertiesEXT::maxDescriptorSetSubsampledSamplers
+		43.pSetLayouts ä¸­çš„ä»»ä½•å…ƒç´ ä¸èƒ½ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT åˆ›å»º
+		44.å¦‚æœgraphicsPipelineLibrary æœªå¯ç”¨ï¼ŒpSetLayouts ä¸­çš„æ¯ä¸ªå…ƒç´ å¿…é¡»æ˜¯æœ‰æ•ˆçš„VkDescriptorSetLayoutå¯¹è±¡
+		45.å¦‚æœpSetLayouts ä¸­çš„ä»»ä½•å…ƒç´ ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT åˆ›å»ºï¼Œåˆ™pSetLayouts ä¸­çš„æ‰€æœ‰å…ƒç´ å¿…é¡»ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT åˆ›å»º
 
 		*/
 
@@ -565,55 +565,55 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 	}
 
 
-	//Pipeline Layout Compatibility ¼ûp1280
-	//Ö÷ÒªÊÇÎªÁËÔÚ°ó¶¨pipelineÊ±¿ÉÒÔ¼ÌĞøÊ¹ÓÃÒÑ¾­°ó¶¨µÄpipelineLayout£¬¶ø²»ÓÃÖØĞÂ´´½¨pipelineLayout£¬´Ó¶øÌá¸ßĞ§ÂÊ¡£µ«ÊÇÖØĞÂ°ó¶¨ÁËpipelineºó¸ÃpipelineLayoutÖĞµÄdescriptor SetÊÇ·ñ¶Ôµ±Ç°pipelineÓĞĞ§»¹ĞèÒª¿´pipelineLayoutµÄ¼æÈİĞÔ
+	//Pipeline Layout Compatibility è§p1280
+	//ä¸»è¦æ˜¯ä¸ºäº†åœ¨ç»‘å®špipelineæ—¶å¯ä»¥ç»§ç»­ä½¿ç”¨å·²ç»ç»‘å®šçš„pipelineLayoutï¼Œè€Œä¸ç”¨é‡æ–°åˆ›å»ºpipelineLayoutï¼Œä»è€Œæé«˜æ•ˆç‡ã€‚ä½†æ˜¯é‡æ–°ç»‘å®šäº†pipelineåè¯¥pipelineLayoutä¸­çš„descriptor Setæ˜¯å¦å¯¹å½“å‰pipelineæœ‰æ•ˆè¿˜éœ€è¦çœ‹pipelineLayoutçš„å…¼å®¹æ€§
 
 
-	// Allocation of Descriptor Sets ·ÖÅädescriptor set
+	// Allocation of Descriptor Sets åˆ†é…descriptor set
 	{
-		//descriptor poolÈİÄÉÒ»Åúdescriptors£¬descriptor sets¿ÉÒÔ´ÓÖĞ½øĞĞ·ÖÅä
-		//ÏêÏ¸ĞÅÏ¢¼ûp1284
+		//descriptor poolå®¹çº³ä¸€æ‰¹descriptorsï¼Œdescriptor setså¯ä»¥ä»ä¸­è¿›è¡Œåˆ†é…
+		//è¯¦ç»†ä¿¡æ¯è§p1284
 		VkDescriptorPool descriptorPool{};
 		VkDescriptorPoolCreateInfo descriptorPoolCreateInfo{};
 		descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 			DescriptorPoolCreateInfoEXT descriptorPoolCreateInfoEXT{};
-		descriptorPoolCreateInfo.pNext = &descriptorPoolCreateInfoEXT.descriptorPoolInlineUniformBlockCreateInfo;//¿ÉÒÔº¬ÓĞ VkDescriptorPoolInlineUniformBlockCreateInfo »òÕß VkMutableDescriptorTypeCreateInfoEXT
-		descriptorPoolCreateInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;//ÊÇ VkDescriptorPoolCreateFlagBits ×éºÏÖµµÄÎ»ÑÚÂë£¬Ö¸¶¨poolÉÏÖ§³ÖµÄÌØ¶¨µÄÑ¡Ïî 
+		descriptorPoolCreateInfo.pNext = &descriptorPoolCreateInfoEXT.descriptorPoolInlineUniformBlockCreateInfo;//å¯ä»¥å«æœ‰ VkDescriptorPoolInlineUniformBlockCreateInfo æˆ–è€… VkMutableDescriptorTypeCreateInfoEXT
+		descriptorPoolCreateInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;//æ˜¯ VkDescriptorPoolCreateFlagBits ç»„åˆå€¼çš„ä½æ©ç ï¼ŒæŒ‡å®špoolä¸Šæ”¯æŒçš„ç‰¹å®šçš„é€‰é¡¹ 
 		/*
 		VkDescriptorPoolCreateFlagBits:
-		VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT : Ö¸Ã÷ÊÍ·Ådescriptor setsµÄ·ÖÅäÊÇ¶ÀÁ¢µÄ£¬¼´¿ÉÒÔÊ¹ÓÃvkAllocateDescriptorSets£¬vkFreeDescriptorSets£¬vkResetDescriptorPool£¬·ñÔòÖ»ÄÜÊ¹ÓÃvkAllocateDescriptorSetsÒÔ¼°vkResetDescriptorPool
-		VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT:  Ö¸Ã÷Õâ¸öpoolÉÏ·ÖÅäµÄdescriptor set¿ÉÒÔº¬ÓĞ°üº¬VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BITµÄbinding£¬´Óº¬ÓĞVK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT´´½¨µÄpoolÉÏ·ÖÅäÒ»¸öÆäbinding²»º¬VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT µÄdescriptor setÊÇÓĞĞ§µÄ
-		VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT:  Ö¸Ã÷Õâ¸öpoolÉÏ·ÖÅäµÄdescriptor setÖ»ÄÜÔÚÖ÷»úÄÚ´æÖĞ·ÖÅä£¬²¢ÇÒ²»ÄÜ±»°ó¶¨¡£ÀàËÆÓÚ²»º¬ÓĞ¸Ã±êÖ¾·ÖÅäµÄdescriptor sets£¬Ó¦ÓÃ³ÌĞò¿ÉÒÔÔÚÕâ¸öpool·ÖÅäµÄdescriptor sets¼ä½øĞĞ¿½±´²Ù×÷¡£´ÓÕâ¸öpoolÖĞ·ÖÅäµÄdescriptor sets²¿·ÖµØÃâ³ıÁËÔÚvkUpdateDescriptorSetWithTemplateKHRºÍvkUpdateDescriptorSetsÖĞµÄÍâ²¿Í¬²½ÒªÇó¡£descriptor sets¼°Æädescriptor¿ÉÒÔÔÚ²»Í¬µÄÏß³ÌÖĞÍ¬Ê±¸üĞÂ£¬¾¡¹ÜÏàÍ¬µÄdescriptor²»ÄÜ±»Á½¸öÏß³ÌÍ¬Ê±¸üĞÂ¡£
-		VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NV:  Ö¸¶¨ÊµÏÖÓ¦¸ÃÔÊĞíÓ¦ÓÃ´Ó¸ÃpoolÖĞ·ÖÅä³¬¹ıVkDescriptorPoolCreateInfo::maxSets µÄdescriptor set£¬ÊµÏÖÓ¦¸ÃÊ¹ÓÃmaxSets À´·ÖÅä³õÊ¼µÄdescriptor set£¬ÇÒmaxSets ¿ÉÒÔÖ¸¶¨Îª0
-		VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_POOLS_BIT_NV:  Ö¸¶¨ÊµÏÖÓ¦¸ÃÔÊĞípool·ÖÅä³¬¹ıÈÎºÎVkDescriptorPoolCreateInfo::poolSizeCountÒÔ¼°VkDescriptorPoolCreateInfo::pPoolSizesÖ¸¶¨µÄÔªËØÖĞVkDescriptorPoolSize::descriptorCountµÄdescriptor,ÊµÏÖ½«ÓÃÃ¿¸ödescriptor typeµÄdescriptorCount ·ÖÅä³õÊ¼µÄdescriptor set£¬ÇÒpoolSizeCount ¿ÉÒÔÖ¸¶¨Îª0£¬pPoolSizesÖĞÔªËØµÄdescriptorCount ¿ÉÒÔÖ¸¶¨Îª0
+		VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT : æŒ‡æ˜é‡Šæ”¾descriptor setsçš„åˆ†é…æ˜¯ç‹¬ç«‹çš„ï¼Œå³å¯ä»¥ä½¿ç”¨vkAllocateDescriptorSetsï¼ŒvkFreeDescriptorSetsï¼ŒvkResetDescriptorPoolï¼Œå¦åˆ™åªèƒ½ä½¿ç”¨vkAllocateDescriptorSetsä»¥åŠvkResetDescriptorPool
+		VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT:  æŒ‡æ˜è¿™ä¸ªpoolä¸Šåˆ†é…çš„descriptor setå¯ä»¥å«æœ‰åŒ…å«VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BITçš„bindingï¼Œä»å«æœ‰VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BITåˆ›å»ºçš„poolä¸Šåˆ†é…ä¸€ä¸ªå…¶bindingä¸å«VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT çš„descriptor setæ˜¯æœ‰æ•ˆçš„
+		VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT:  æŒ‡æ˜è¿™ä¸ªpoolä¸Šåˆ†é…çš„descriptor setåªèƒ½åœ¨ä¸»æœºå†…å­˜ä¸­åˆ†é…ï¼Œå¹¶ä¸”ä¸èƒ½è¢«ç»‘å®šã€‚ç±»ä¼¼äºä¸å«æœ‰è¯¥æ ‡å¿—åˆ†é…çš„descriptor setsï¼Œåº”ç”¨ç¨‹åºå¯ä»¥åœ¨è¿™ä¸ªpoolåˆ†é…çš„descriptor setsé—´è¿›è¡Œæ‹·è´æ“ä½œã€‚ä»è¿™ä¸ªpoolä¸­åˆ†é…çš„descriptor setséƒ¨åˆ†åœ°å…é™¤äº†åœ¨vkUpdateDescriptorSetWithTemplateKHRå’ŒvkUpdateDescriptorSetsä¸­çš„å¤–éƒ¨åŒæ­¥è¦æ±‚ã€‚descriptor setsåŠå…¶descriptorå¯ä»¥åœ¨ä¸åŒçš„çº¿ç¨‹ä¸­åŒæ—¶æ›´æ–°ï¼Œå°½ç®¡ç›¸åŒçš„descriptorä¸èƒ½è¢«ä¸¤ä¸ªçº¿ç¨‹åŒæ—¶æ›´æ–°ã€‚
+		VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NV:  æŒ‡å®šå®ç°åº”è¯¥å…è®¸åº”ç”¨ä»è¯¥poolä¸­åˆ†é…è¶…è¿‡VkDescriptorPoolCreateInfo::maxSets çš„descriptor setï¼Œå®ç°åº”è¯¥ä½¿ç”¨maxSets æ¥åˆ†é…åˆå§‹çš„descriptor setï¼Œä¸”maxSets å¯ä»¥æŒ‡å®šä¸º0
+		VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_POOLS_BIT_NV:  æŒ‡å®šå®ç°åº”è¯¥å…è®¸poolåˆ†é…è¶…è¿‡ä»»ä½•VkDescriptorPoolCreateInfo::poolSizeCountä»¥åŠVkDescriptorPoolCreateInfo::pPoolSizesæŒ‡å®šçš„å…ƒç´ ä¸­VkDescriptorPoolSize::descriptorCountçš„descriptor,å®ç°å°†ç”¨æ¯ä¸ªdescriptor typeçš„descriptorCount åˆ†é…åˆå§‹çš„descriptor setï¼Œä¸”poolSizeCount å¯ä»¥æŒ‡å®šä¸º0ï¼ŒpPoolSizesä¸­å…ƒç´ çš„descriptorCount å¯ä»¥æŒ‡å®šä¸º0
 
 		*/
-		descriptorPoolCreateInfo.poolSizeCount = 1;// pPoolSizesµÄÔªËØ¸öÊı
+		descriptorPoolCreateInfo.poolSizeCount = 1;// pPoolSizesçš„å…ƒç´ ä¸ªæ•°
 			VkDescriptorPoolSize descriptorPoolSize{};
 			{
-				descriptorPoolSize.descriptorCount = 1;//Õâ¸öÀàĞÍ¿ÉÒÔ·ÖÅäµÄdescriptorÊıÁ¿£¬±ØĞë´óÓÚ0£¬Èç¹ûtypeÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòdescriptorCountÎªÕâ¸öÀàĞÍ¿ÉÒÔ·ÖÅäµÄ×Ö½ÚÊıÁ¿ÇÒ±ØĞëÊÇ4µÄ±¶Êı
-				descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//descriptorÀàĞÍ
+				descriptorPoolSize.descriptorCount = 1;//è¿™ä¸ªç±»å‹å¯ä»¥åˆ†é…çš„descriptoræ•°é‡ï¼Œå¿…é¡»å¤§äº0ï¼Œå¦‚æœtypeä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™descriptorCountä¸ºè¿™ä¸ªç±»å‹å¯ä»¥åˆ†é…çš„å­—èŠ‚æ•°é‡ä¸”å¿…é¡»æ˜¯4çš„å€æ•°
+				descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//descriptorç±»å‹
 			}
 
-		descriptorPoolCreateInfo.pPoolSizes = &descriptorPoolSize;//Ò»×éVkDescriptorPoolSize µÄÊı×éÖ¸Õë£¬Ã¿Ò»¸öÔªËØÃèÊöÁËpoolÖĞ¿ÉÒÔ·ÖÅäµÄdescriptorµÄÀàĞÍºÍÊıÁ¿
-		descriptorPoolCreateInfo.maxSets = 1;//ÊÇ´ÓÕâ¸öpoolÉÏÄÜ¹»·ÖÅäµÄdescriptor setµÄ×î´óÊıÁ¿
+		descriptorPoolCreateInfo.pPoolSizes = &descriptorPoolSize;//ä¸€ç»„VkDescriptorPoolSize çš„æ•°ç»„æŒ‡é’ˆï¼Œæ¯ä¸€ä¸ªå…ƒç´ æè¿°äº†poolä¸­å¯ä»¥åˆ†é…çš„descriptorçš„ç±»å‹å’Œæ•°é‡
+		descriptorPoolCreateInfo.maxSets = 1;//æ˜¯ä»è¿™ä¸ªpoolä¸Šèƒ½å¤Ÿåˆ†é…çš„descriptor setçš„æœ€å¤§æ•°é‡
 		/*
-		VkDescriptorPoolCreateInfoÓĞĞ§ÓÃ·¨:
-		1.Èç¹ûdescriptorPoolOverallocation ÌØĞÔÃ»ÓĞ¿ªÆô£¬»òÕßflags²»°üº¬VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NV£¬ÔòmaxSets ±ØĞë´óÓÚ0
-		2.Èç¹ûflags°üº¬VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NV»òÕßVK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_POOLS_BIT_NV £¬ÔòdescriptorPoolOverallocation ÌØĞÔ±ØĞë¿ªÆô
-		3.Èç¹ûflags°üº¬VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT£¬Ôò¾Í²»ÄÜ°üº¬VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT
-		4.Èç¹ûVkPhysicalDeviceMutableDescriptorTypeFeaturesEXT::mutableDescriptorType Ã»ÓĞ¿ªÆô£¬ÔòpPoolSizes ÖĞ²»ÄÜ°üº¬descriptorTypeÎª VK_DESCRIPTOR_TYPE_MUTABLE_EXTµÄÔªËØ
-		5.Èç¹ûflagsº¬ÓĞVK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT£¬ÔòVkPhysicalDeviceMutableDescriptorTypeFeaturesEXT::mutableDescriptorType ±ØĞë¿ªÆô
-		6.Èç¹ûpPoolSizes °üº¬descriptorType ÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT µÄÔªËØ£¬ÔòpPoolSizesÖĞÈÎºÎÆäËûº¬ÓĞVK_DESCRIPTOR_TYPE_MUTABLE_EXTµÄÔªËØÆädescriptor setÖ§³ÖµÄdescriptor ÀàĞÍ²»ÄÜÓë¸ÃÔªËØµÄdescriptor setÖ§³ÖµÄdescriptor ÀàĞÍ²¿·ÖÖØµş
-		7.Èç¹ûpPoolSizes °üº¬descriptorType ÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK µÄÔªËØ£¬ÔòpNextÖĞ±ØĞë°üº¬Ò»¸ömaxInlineUniformBlockBindings ²»Îª0µÄVkDescriptorPoolInlineUniformBlockCreateInfo½á¹¹Ìå
+		VkDescriptorPoolCreateInfoæœ‰æ•ˆç”¨æ³•:
+		1.å¦‚æœdescriptorPoolOverallocation ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œæˆ–è€…flagsä¸åŒ…å«VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NVï¼Œåˆ™maxSets å¿…é¡»å¤§äº0
+		2.å¦‚æœflagsåŒ…å«VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_SETS_BIT_NVæˆ–è€…VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_POOLS_BIT_NV ï¼Œåˆ™descriptorPoolOverallocation ç‰¹æ€§å¿…é¡»å¼€å¯
+		3.å¦‚æœflagsåŒ…å«VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXTï¼Œåˆ™å°±ä¸èƒ½åŒ…å«VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT
+		4.å¦‚æœVkPhysicalDeviceMutableDescriptorTypeFeaturesEXT::mutableDescriptorType æ²¡æœ‰å¼€å¯ï¼Œåˆ™pPoolSizes ä¸­ä¸èƒ½åŒ…å«descriptorTypeä¸º VK_DESCRIPTOR_TYPE_MUTABLE_EXTçš„å…ƒç´ 
+		5.å¦‚æœflagså«æœ‰VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXTï¼Œåˆ™VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT::mutableDescriptorType å¿…é¡»å¼€å¯
+		6.å¦‚æœpPoolSizes åŒ…å«descriptorType ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXT çš„å…ƒç´ ï¼Œåˆ™pPoolSizesä¸­ä»»ä½•å…¶ä»–å«æœ‰VK_DESCRIPTOR_TYPE_MUTABLE_EXTçš„å…ƒç´ å…¶descriptor setæ”¯æŒçš„descriptor ç±»å‹ä¸èƒ½ä¸è¯¥å…ƒç´ çš„descriptor setæ”¯æŒçš„descriptor ç±»å‹éƒ¨åˆ†é‡å 
+		7.å¦‚æœpPoolSizes åŒ…å«descriptorType ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK çš„å…ƒç´ ï¼Œåˆ™pNextä¸­å¿…é¡»åŒ…å«ä¸€ä¸ªmaxInlineUniformBlockBindings ä¸ä¸º0çš„VkDescriptorPoolInlineUniformBlockCreateInfoç»“æ„ä½“
 
 		*/
 
 
-		//VkDescriptorPoolInlineUniformBlockCreateInfo    µÈÍ¬ÓÚVkDescriptorPoolInlineUniformBlockCreateInfoEXT
-		//ÎªÁË´´½¨º¬ÓĞ inline uniform block bindingµÄdescriptor set£¬ĞèÒªÔÚVkDescriptorPoolCreateInfoµÄpNextÖĞ°üº¬VkDescriptorPoolInlineUniformBlockCreateInfo½á¹¹ÌåÀ´Ö¸Ã÷descriptor poolµÄinline uniform block binding ÈİÁ¿
+		//VkDescriptorPoolInlineUniformBlockCreateInfo    ç­‰åŒäºVkDescriptorPoolInlineUniformBlockCreateInfoEXT
+		//ä¸ºäº†åˆ›å»ºå«æœ‰ inline uniform block bindingçš„descriptor setï¼Œéœ€è¦åœ¨VkDescriptorPoolCreateInfoçš„pNextä¸­åŒ…å«VkDescriptorPoolInlineUniformBlockCreateInfoç»“æ„ä½“æ¥æŒ‡æ˜descriptor poolçš„inline uniform block binding å®¹é‡
 		VkDescriptorPoolInlineUniformBlockCreateInfo& inlineUniformBlockCreateInfo = descriptorPoolCreateInfoEXT.descriptorPoolInlineUniformBlockCreateInfo;
-		inlineUniformBlockCreateInfo.maxInlineUniformBlockBindings = 1;//inline uniform block bindingµÄ×î´óÊıÁ¿
+		inlineUniformBlockCreateInfo.maxInlineUniformBlockBindings = 1;//inline uniform block bindingçš„æœ€å¤§æ•°é‡
 
 
 
@@ -621,211 +621,211 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 
 
 		vkDestroyDescriptorPool(device, descriptorPool, nullptr);/*
-		vkDestroyDescriptorPoolÓĞĞ§ÓÃ·¨:
-		1.ÒıÓÃµ½¸ÃdescriptorPool£¨Í¨¹ıÈÎºÎ·ÖÅäµÄdescriptor sets£©µÄÒÑ¾­Ìá½»µÄcommand buffer±ØĞëÒÑ¾­Íê³ÉÖ´ĞĞ
-		2.Èç¹û´´½¨descriptorPool Ìá¹©ÁËVkAllocationCallbacks£¬ÔòÕâÀïĞèÒªÌá¹©Ò»¸ö¼æÈİµÄVkAllocationCallbacks£¬·ñÔòÉèÖÃÎªNULL
+		vkDestroyDescriptorPoolæœ‰æ•ˆç”¨æ³•:
+		1.å¼•ç”¨åˆ°è¯¥descriptorPoolï¼ˆé€šè¿‡ä»»ä½•åˆ†é…çš„descriptor setsï¼‰çš„å·²ç»æäº¤çš„command bufferå¿…é¡»å·²ç»å®Œæˆæ‰§è¡Œ
+		2.å¦‚æœåˆ›å»ºdescriptorPool æä¾›äº†VkAllocationCallbacksï¼Œåˆ™è¿™é‡Œéœ€è¦æä¾›ä¸€ä¸ªå…¼å®¹çš„VkAllocationCallbacksï¼Œå¦åˆ™è®¾ç½®ä¸ºNULL
 
 		*/
 
 		VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
 		descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		VkDescriptorSetVariableDescriptorCountAllocateInfo descriptorSetVariableDescriptorCountAllocateInfo{};//Ö¸¶¨ variable-sized descriptor bindingsÖĞµÄÒ»×édescriptor count£¬Ã¿¸ö½á¹¹Ìå¶ÔÓ¦Ò»¸ödescriptor set£¬µÈ¼ÛÓÚVkDescriptorSetVariableDescriptorCountAllocateInfoEXT
+		VkDescriptorSetVariableDescriptorCountAllocateInfo descriptorSetVariableDescriptorCountAllocateInfo{};//æŒ‡å®š variable-sized descriptor bindingsä¸­çš„ä¸€ç»„descriptor countï¼Œæ¯ä¸ªç»“æ„ä½“å¯¹åº”ä¸€ä¸ªdescriptor setï¼Œç­‰ä»·äºVkDescriptorSetVariableDescriptorCountAllocateInfoEXT
 		{
 			descriptorSetVariableDescriptorCountAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO;
 			descriptorSetVariableDescriptorCountAllocateInfo.pNext = nullptr;
-			descriptorSetVariableDescriptorCountAllocateInfo.descriptorSetCount = 1;//pDescriptorCounts ÖĞµÄÔªËØ¸öÊı£¬Èç¹û²»Îª0Ôò±ØĞëµÈÓÚVkDescriptorSetAllocateInfo::descriptorSetCount
-				uint32_t descriptorCount = 10;//Ã¿Ò»¸ödescriptor setµÄvariable descriptor count
-			descriptorSetVariableDescriptorCountAllocateInfo.pDescriptorCounts = &descriptorCount;//Îª¸ø¶¨descriptor setÉÏÃ¿¸ö variable-sized descriptor binding ÉÏµÄdescriptor ÊıÁ¿µÄÊı×éÖ¸Õë
+			descriptorSetVariableDescriptorCountAllocateInfo.descriptorSetCount = 1;//pDescriptorCounts ä¸­çš„å…ƒç´ ä¸ªæ•°ï¼Œå¦‚æœä¸ä¸º0åˆ™å¿…é¡»ç­‰äºVkDescriptorSetAllocateInfo::descriptorSetCount
+				uint32_t descriptorCount = 10;//æ¯ä¸€ä¸ªdescriptor setçš„variable descriptor count
+			descriptorSetVariableDescriptorCountAllocateInfo.pDescriptorCounts = &descriptorCount;//ä¸ºç»™å®šdescriptor setä¸Šæ¯ä¸ª variable-sized descriptor binding ä¸Šçš„descriptor æ•°é‡çš„æ•°ç»„æŒ‡é’ˆ
 		}
 
-		descriptorSetAllocateInfo.pNext = &descriptorSetVariableDescriptorCountAllocateInfo;//¿ÉÒÔº¬ÓĞÒ»¸öVkDescriptorSetVariableDescriptorCountAllocateInfo
-		descriptorSetAllocateInfo.descriptorPool = VkDescriptorPool{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDescriptorPool*/ };//Ö¸Ã÷descriptor set´ÓÄÄ¸öpoolÖĞ·ÖÅä
-		descriptorSetAllocateInfo.descriptorSetCount = 1;//Òª·ÖÅäµÄdescriptor setµÄÊıÁ¿
-		descriptorSetAllocateInfo.pSetLayouts = &descriptorSetLayout;//ÊÇÒ»×éVkDescriptorSetLayout µÄÊı×éÖ¸Õë£¬Ã¿Ò»¸öÔªËØÖ¸ÏòÒ»¸ödescriptor set layout£¬ÃèÊöÁËÒª·ÖÅädescriptor setµÄ²¼¾Ö
+		descriptorSetAllocateInfo.pNext = &descriptorSetVariableDescriptorCountAllocateInfo;//å¯ä»¥å«æœ‰ä¸€ä¸ªVkDescriptorSetVariableDescriptorCountAllocateInfo
+		descriptorSetAllocateInfo.descriptorPool = VkDescriptorPool{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorPool*/ };//æŒ‡æ˜descriptor setä»å“ªä¸ªpoolä¸­åˆ†é…
+		descriptorSetAllocateInfo.descriptorSetCount = 1;//è¦åˆ†é…çš„descriptor setçš„æ•°é‡
+		descriptorSetAllocateInfo.pSetLayouts = &descriptorSetLayout;//æ˜¯ä¸€ç»„VkDescriptorSetLayout çš„æ•°ç»„æŒ‡é’ˆï¼Œæ¯ä¸€ä¸ªå…ƒç´ æŒ‡å‘ä¸€ä¸ªdescriptor set layoutï¼Œæè¿°äº†è¦åˆ†é…descriptor setçš„å¸ƒå±€
 		/*
-		VkDescriptorSetAllocateInfoÓĞĞ§ÓÃ·¨:
-		1.Èç¹ûVK_KHR_maintenance1 ÍØÕ¹Ã»ÓĞ¿ªÆôÇÒVkPhysicalDeviceProperties::apiVersion Ğ¡ÓÚVulkan 1.1£¬Ôò£¨1£©descriptorSetCount ²»ÄÜ´óÓÚdescriptorPool ÖĞ¿É·ÖÅäµÄdescriptor setÊıÁ¿
-																										 £¨2£©descriptorPool ÖĞÊ£ÓàµÄdescriptor capacity ±ØĞë×ã¹»·ÖÅäÖ¸¶¨layout µÄdescriptor set¡£
-		2.pSetLayoutsµÄÃ¿¸öÔªËØ²»ÄÜÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR ´´½¨
-		3.Èç¹ûpSetLayouts µÄÈÎÒâÔªËØÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨£¬ÔòdescriptorPool ±ØĞëÒÔVK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT ´´½¨
-		4.Èç¹ûpSetLayouts[i] ÒÔÆäpBindingFlags º¬ÓĞVK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT£¬ÇÒÆäpNextÖĞº¬ÓĞÒ»¸ödescriptorSetCount ²»Îª0µÄVkDescriptorSetVariableDescriptorCountAllocateInfo£¬ÔòVkDescriptorSetVariableDescriptorCountAllocateInfo::pDescriptorCounts[i]
-																	µÄÖµ±ØĞëĞ¡ÓÚ»òµÈÓÚVkDescriptorSetLayoutBinding::descriptorCount ¶ÔÓ¦´´½¨pSetLayouts[i]µÄbindingµÄµÄÊıÁ¿¡£
-		5.Èç¹ûpSetLayouts µÄÈÎºÎÔªËØÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT£¬ÔòdescriptorPool ±ØĞëÒÔVK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT ´´½¨
-		6.pSetLayoutsÖĞµÄÃ¿¸öÔªËØ²»ÄÜÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT ´´½¨
+		VkDescriptorSetAllocateInfoæœ‰æ•ˆç”¨æ³•:
+		1.å¦‚æœVK_KHR_maintenance1 æ‹“å±•æ²¡æœ‰å¼€å¯ä¸”VkPhysicalDeviceProperties::apiVersion å°äºVulkan 1.1ï¼Œåˆ™ï¼ˆ1ï¼‰descriptorSetCount ä¸èƒ½å¤§äºdescriptorPool ä¸­å¯åˆ†é…çš„descriptor setæ•°é‡
+																										 ï¼ˆ2ï¼‰descriptorPool ä¸­å‰©ä½™çš„descriptor capacity å¿…é¡»è¶³å¤Ÿåˆ†é…æŒ‡å®šlayout çš„descriptor setã€‚
+		2.pSetLayoutsçš„æ¯ä¸ªå…ƒç´ ä¸èƒ½ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR åˆ›å»º
+		3.å¦‚æœpSetLayouts çš„ä»»æ„å…ƒç´ ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºï¼Œåˆ™descriptorPool å¿…é¡»ä»¥VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT åˆ›å»º
+		4.å¦‚æœpSetLayouts[i] ä»¥å…¶pBindingFlags å«æœ‰VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BITï¼Œä¸”å…¶pNextä¸­å«æœ‰ä¸€ä¸ªdescriptorSetCount ä¸ä¸º0çš„VkDescriptorSetVariableDescriptorCountAllocateInfoï¼Œåˆ™VkDescriptorSetVariableDescriptorCountAllocateInfo::pDescriptorCounts[i]
+																	çš„å€¼å¿…é¡»å°äºæˆ–ç­‰äºVkDescriptorSetLayoutBinding::descriptorCount å¯¹åº”åˆ›å»ºpSetLayouts[i]çš„bindingçš„çš„æ•°é‡ã€‚
+		5.å¦‚æœpSetLayouts çš„ä»»ä½•å…ƒç´ ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXTï¼Œåˆ™descriptorPool å¿…é¡»ä»¥VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT åˆ›å»º
+		6.pSetLayoutsä¸­çš„æ¯ä¸ªå…ƒç´ ä¸èƒ½ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT åˆ›å»º
 
 		*/
 
 
 		VkDescriptorSet descriptorSet{};
-		//·ÖÅädescriptor set
-		vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &descriptorSet);//ÏêÇé¼ûp1290
+		//åˆ†é…descriptor set
+		vkAllocateDescriptorSets(device, &descriptorSetAllocateInfo, &descriptorSet);//è¯¦æƒ…è§p1290
 
 
-		//ÊÍ·Ådescriptor set
+		//é‡Šæ”¾descriptor set
 		vkFreeDescriptorSets(device, descriptorPool, 1, &descriptorSet);/*
-		vkFreeDescriptorSetsÓĞĞ§ÓÃ·¨:
-		1.ÒıÓÃµ½pDescriptorSets µÄÈÎºÎÔªËØµÄÒÑ¾­Ìá½»µÄcommand buffer±ØĞëÒÑ¾­Íê³ÉÖ´ĞĞ
-		2.pDescriptorSets ±ØĞëÊÇ descriptorSetCount ¸öÓĞĞ§µÄVkDescriptorSet»òÕßVK_NULL_HANDLE
-		3.descriptorPool ±ØĞëÒÔVK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT´´½¨
+		vkFreeDescriptorSetsæœ‰æ•ˆç”¨æ³•:
+		1.å¼•ç”¨åˆ°pDescriptorSets çš„ä»»ä½•å…ƒç´ çš„å·²ç»æäº¤çš„command bufferå¿…é¡»å·²ç»å®Œæˆæ‰§è¡Œ
+		2.pDescriptorSets å¿…é¡»æ˜¯ descriptorSetCount ä¸ªæœ‰æ•ˆçš„VkDescriptorSetæˆ–è€…VK_NULL_HANDLE
+		3.descriptorPool å¿…é¡»ä»¥VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BITåˆ›å»º
 		*/
 
 
-		//½«poolÉÏ·ÖÅäµÄËùÓĞdescriptor set»ØÊÕµ½pool¶ø²»ÊÇµ¥¶ÀÊÍ·ÅÒ»¸ödescriptor set
-		vkResetDescriptorPool(device, descriptorPool, 0);/* ËùÓĞÒıÓÃµ½descriptorPool£¨Í¨¹ıÈÎºÎ·ÖÅäµÄdescriptor sets£©µÄ²Ù×÷±ØĞëÒÑ¾­Íê³É   */
+		//å°†poolä¸Šåˆ†é…çš„æ‰€æœ‰descriptor setå›æ”¶åˆ°poolè€Œä¸æ˜¯å•ç‹¬é‡Šæ”¾ä¸€ä¸ªdescriptor set
+		vkResetDescriptorPool(device, descriptorPool, 0);/* æ‰€æœ‰å¼•ç”¨åˆ°descriptorPoolï¼ˆé€šè¿‡ä»»ä½•åˆ†é…çš„descriptor setsï¼‰çš„æ“ä½œå¿…é¡»å·²ç»å®Œæˆ   */
 
 	}
 
 
-	//Descriptor Set Updates ¸üĞÂdescriptor set
+	//Descriptor Set Updates æ›´æ–°descriptor set
 	{
 
-		//·ÖÅäÁËdescriptor setºó±ã¿ÉÍ¨¹ıĞ´Èë»òÕß¿½±´À´Íê³Édescriptor setµÄ¸üĞÂ
+		//åˆ†é…äº†descriptor setåä¾¿å¯é€šè¿‡å†™å…¥æˆ–è€…æ‹·è´æ¥å®Œæˆdescriptor setçš„æ›´æ–°
 
 		//write  
-		// VkWriteDescriptorSetµÄ pImageInfo, pBufferInfo, »òÕß pTexelBufferViewÈı¸öÖĞÖ»Ê¹ÓÃÒ»¸ö£¬»òÕß¶¼²»Ê¹ÓÃ£¬ÔÚ VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK,VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR»òÕßVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NVÇé¿öÏÂ
-		//Ê¹ÓÃ VkWriteDescriptorSetInlineUniformBlock£¬ VkWriteDescriptorSetAccelerationStructureKHR»òÕß VkWriteDescriptorSetAccelerationStructureNV À´Ö¸¶¨Ïà¹Ø²ÎÊı
+		// VkWriteDescriptorSetçš„ pImageInfo, pBufferInfo, æˆ–è€… pTexelBufferViewä¸‰ä¸ªä¸­åªä½¿ç”¨ä¸€ä¸ªï¼Œæˆ–è€…éƒ½ä¸ä½¿ç”¨ï¼Œåœ¨ VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK,VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHRæˆ–è€…VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NVæƒ…å†µä¸‹
+		//ä½¿ç”¨ VkWriteDescriptorSetInlineUniformBlockï¼Œ VkWriteDescriptorSetAccelerationStructureKHRæˆ–è€… VkWriteDescriptorSetAccelerationStructureNV æ¥æŒ‡å®šç›¸å…³å‚æ•°
 		VkWriteDescriptorSet writeDescriptorSet{};
 		writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			WriteDescriptorSetEXT writeDescriptorSetEXT{};
 		writeDescriptorSet.pNext = &writeDescriptorSetEXT.writeDescriptorSetAccelerationStructureKHR;
-		writeDescriptorSet.descriptorCount = 1;//Õâ¸öbindingÖĞ´ÓdstArrayElement¿ªÊ¼Òª¸üĞÂµÄdescriptorÊıÁ¿£¬Èç¹ûÍ¨¹ıdstSetºÍdstBinding Ö¸¶¨µÄbindingµÄdescriptorTypeÎª VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòÕâ¸öÖ¸Ã÷ÎªÕâ¸öbindingÖĞÒª¸üĞÂµÄ×Ö½Ú´óĞ¡£¬·ñÔòÎªpImageInfoÖĞµÄÔªËØ¸öÊı£¬ pBufferInfoÖĞµÄÔªËØ¸öÊı£¬ pTexelBufferViewÖĞµÄÔªËØ¸öÊı£¬VkWriteDescriptorSetInlineUniformBlock.dataSize»òÕßVkWriteDescriptorSetAccelerationStructureKHR.accelerationStructureCountÖĞµÄÒ»¸ö
-		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;/*ÊÇÒ»¸öVkDescriptorType Ö¸Ã÷pImageInfo, pBufferInfo, »òÕß pTexelBufferViewÖĞ descriptorµÄÀàĞÍ£¬Èç¹ûÍ¨¹ıdstSetºÍdstBinding Ö¸¶¨µÄbindingµÄdescriptorType²»Îª VK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬ÔòÕâ¸öÀàĞÍ±ØĞëºÍÆäÏàÍ¬
+		writeDescriptorSet.descriptorCount = 1;//è¿™ä¸ªbindingä¸­ä»dstArrayElementå¼€å§‹è¦æ›´æ–°çš„descriptoræ•°é‡ï¼Œå¦‚æœé€šè¿‡dstSetå’ŒdstBinding æŒ‡å®šçš„bindingçš„descriptorTypeä¸º VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™è¿™ä¸ªæŒ‡æ˜ä¸ºè¿™ä¸ªbindingä¸­è¦æ›´æ–°çš„å­—èŠ‚å¤§å°ï¼Œå¦åˆ™ä¸ºpImageInfoä¸­çš„å…ƒç´ ä¸ªæ•°ï¼Œ pBufferInfoä¸­çš„å…ƒç´ ä¸ªæ•°ï¼Œ pTexelBufferViewä¸­çš„å…ƒç´ ä¸ªæ•°ï¼ŒVkWriteDescriptorSetInlineUniformBlock.dataSizeæˆ–è€…VkWriteDescriptorSetAccelerationStructureKHR.accelerationStructureCountä¸­çš„ä¸€ä¸ª
+		writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;/*æ˜¯ä¸€ä¸ªVkDescriptorType æŒ‡æ˜pImageInfo, pBufferInfo, æˆ–è€… pTexelBufferViewä¸­ descriptorçš„ç±»å‹ï¼Œå¦‚æœé€šè¿‡dstSetå’ŒdstBinding æŒ‡å®šçš„bindingçš„descriptorTypeä¸ä¸º VK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œåˆ™è¿™ä¸ªç±»å‹å¿…é¡»å’Œå…¶ç›¸åŒ
 		VkDescriptorType:
 
-        VK_DESCRIPTOR_TYPE_SAMPLER:  Ö¸Ã÷Ò»¸ö sampler descriptor.
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:  Ö¸Ã÷Ò»¸ö combined image sampler descriptor.
-        VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:  Ö¸Ã÷Ò»¸ö sampled image descriptor.
-        VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:  Ö¸Ã÷Ò»¸ö storage image descriptor.
-        VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:  Ö¸Ã÷Ò»¸ö uniform texel buffer descriptor.
-        VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:  Ö¸Ã÷Ò»¸ö storage texel buffer descriptor.
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:  Ö¸Ã÷Ò»¸ö uniform buffer descriptor.
-        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:  Ö¸Ã÷Ò»¸ö storage buffer descriptor.
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:  Ö¸Ã÷Ò»¸ö dynamic uniform buffer descriptor.
-        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:  Ö¸Ã÷Ò»¸ö dynamic storage buffer descriptor.
-        VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:  Ö¸Ã÷Ò»¸ön input attachment descriptor.
-        VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK:  Ö¸Ã÷Ò»¸ö inline uniform block.
-        VK_DESCRIPTOR_TYPE_MUTABLE_EXT:  Ö¸Ã÷Ò»¸ö descriptor of mutable type.
-        VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM:  Ö¸Ã÷Ò»¸ö sampled weight image descriptor.
-        VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM:  Ö¸Ã÷Ò»¸ö block matching image descriptor.
+        VK_DESCRIPTOR_TYPE_SAMPLER:  æŒ‡æ˜ä¸€ä¸ª sampler descriptor.
+        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:  æŒ‡æ˜ä¸€ä¸ª combined image sampler descriptor.
+        VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:  æŒ‡æ˜ä¸€ä¸ª sampled image descriptor.
+        VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:  æŒ‡æ˜ä¸€ä¸ª storage image descriptor.
+        VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:  æŒ‡æ˜ä¸€ä¸ª uniform texel buffer descriptor.
+        VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:  æŒ‡æ˜ä¸€ä¸ª storage texel buffer descriptor.
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:  æŒ‡æ˜ä¸€ä¸ª uniform buffer descriptor.
+        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:  æŒ‡æ˜ä¸€ä¸ª storage buffer descriptor.
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:  æŒ‡æ˜ä¸€ä¸ª dynamic uniform buffer descriptor.
+        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:  æŒ‡æ˜ä¸€ä¸ª dynamic storage buffer descriptor.
+        VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:  æŒ‡æ˜ä¸€ä¸ªn input attachment descriptor.
+        VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK:  æŒ‡æ˜ä¸€ä¸ª inline uniform block.
+        VK_DESCRIPTOR_TYPE_MUTABLE_EXT:  æŒ‡æ˜ä¸€ä¸ª descriptor of mutable type.
+        VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM:  æŒ‡æ˜ä¸€ä¸ª sampled weight image descriptor.
+        VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM:  æŒ‡æ˜ä¸€ä¸ª block matching image descriptor.
 		
 		*/
 		
-		writeDescriptorSet.dstArrayElement = 0;//Õâ¸öbindingÖĞdescriptorÊı×éÖĞµÄÆğÊ¼ÔªËØ£¬Èç¹ûÍ¨¹ıdstSetºÍdstBinding Ö¸¶¨µÄbindingµÄdescriptorTypeÎª VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòÕâ¸öÖ¸Ã÷ÎªÕâ¸öbindingÖĞ¿ªÊ¼×Ö½ÚµÄÆ«ÒÆÁ¿
-		writeDescriptorSet.dstBinding = 0;//Òª¸üĞÂµÄdescriptor setµÄ descriptor binding
-		writeDescriptorSet.dstSet = VkDescriptorSet{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDescriptorSet*/ };//Òª¸üĞÂµÄdescriptor set
+		writeDescriptorSet.dstArrayElement = 0;//è¿™ä¸ªbindingä¸­descriptoræ•°ç»„ä¸­çš„èµ·å§‹å…ƒç´ ï¼Œå¦‚æœé€šè¿‡dstSetå’ŒdstBinding æŒ‡å®šçš„bindingçš„descriptorTypeä¸º VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™è¿™ä¸ªæŒ‡æ˜ä¸ºè¿™ä¸ªbindingä¸­å¼€å§‹å­—èŠ‚çš„åç§»é‡
+		writeDescriptorSet.dstBinding = 0;//è¦æ›´æ–°çš„descriptor setçš„ descriptor binding
+		writeDescriptorSet.dstSet = VkDescriptorSet{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorSet*/ };//è¦æ›´æ–°çš„descriptor set
 			VkDescriptorBufferInfo descriptorBufferInfo{};
 			{
-				descriptorBufferInfo.buffer = VkBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer*/ };//ÎªVK_NULL_HANDLE»òÕßÖ¸¶¨buffer×ÊÔ´£¬Èç¹û nullDescriptorÃ»ÓĞ¿ªÆôÔò²»ÄÜÎªVK_NULL_HANDLE£¬Èç¹ûÎªVK_NULL_HANDLE£¬Ôòoffset±ØĞëÎª0£¬range±ØĞëÎªVK_WHOLE_SIZE
-				descriptorBufferInfo.offset = 0;//Ö¸Ã÷bufferµÄÆğÊ¼×Ö½ÚÆ«ÒÆÁ¿£¬Í¨¹ıÕâ¸ödescriptor·ÃÎÊbuffer½«»ùÓÚÕâ¸öÆ«ÒÆÁ¿µÄÏà¶ÔµØÖ·½øĞĞ·ÃÎÊ£¬±ØĞëĞ¡ÓÚbufferµÄ´óĞ¡
-				descriptorBufferInfo.range = 1;//Ö¸Ã÷Õâ¸ödescriptorÒª¸üĞÂµÄbufferµÄ×Ö½ÚÊı£¬Èç¹ûÎªVK_WHOLE_SIZEÔò±íÊ¾´Óoffset¿ªÊ¼µ½buffer½áÊø£¬Èç¹ûÉèÖÃÎªVK_WHOLE_SIZE£¬ÔòÓĞĞ§·¶Î§£¨offsetµ½½áÊø£©²»ÄÜ´óÓÚ maxUniformBufferRange »òÕß maxStorageBufferRange£¬ÇÒ0 < range <= buffer´óĞ¡ - offset
+				descriptorBufferInfo.buffer = VkBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuffer*/ };//ä¸ºVK_NULL_HANDLEæˆ–è€…æŒ‡å®šbufferèµ„æºï¼Œå¦‚æœ nullDescriptoræ²¡æœ‰å¼€å¯åˆ™ä¸èƒ½ä¸ºVK_NULL_HANDLEï¼Œå¦‚æœä¸ºVK_NULL_HANDLEï¼Œåˆ™offsetå¿…é¡»ä¸º0ï¼Œrangeå¿…é¡»ä¸ºVK_WHOLE_SIZE
+				descriptorBufferInfo.offset = 0;//æŒ‡æ˜bufferçš„èµ·å§‹å­—èŠ‚åç§»é‡ï¼Œé€šè¿‡è¿™ä¸ªdescriptorè®¿é—®bufferå°†åŸºäºè¿™ä¸ªåç§»é‡çš„ç›¸å¯¹åœ°å€è¿›è¡Œè®¿é—®ï¼Œå¿…é¡»å°äºbufferçš„å¤§å°
+				descriptorBufferInfo.range = 1;//æŒ‡æ˜è¿™ä¸ªdescriptorè¦æ›´æ–°çš„bufferçš„å­—èŠ‚æ•°ï¼Œå¦‚æœä¸ºVK_WHOLE_SIZEåˆ™è¡¨ç¤ºä»offsetå¼€å§‹åˆ°bufferç»“æŸï¼Œå¦‚æœè®¾ç½®ä¸ºVK_WHOLE_SIZEï¼Œåˆ™æœ‰æ•ˆèŒƒå›´ï¼ˆoffsetåˆ°ç»“æŸï¼‰ä¸èƒ½å¤§äº maxUniformBufferRange æˆ–è€… maxStorageBufferRangeï¼Œä¸”0 < range <= bufferå¤§å° - offset
 			}
-		writeDescriptorSet.pBufferInfo = &descriptorBufferInfo;//ÊÇÒ»×é   VkDescriptorBufferInfo µÄÊı×éµØÖ·
+		writeDescriptorSet.pBufferInfo = &descriptorBufferInfo;//æ˜¯ä¸€ç»„   VkDescriptorBufferInfo çš„æ•°ç»„åœ°å€
 			VkDescriptorImageInfo descriptorImageInfo{};
 			{
-				descriptorImageInfo.sampler = VkSampler{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSampler*/ };//ÊÇÒ»¸öVkSampler¾ä±ú£¬Ê¹ÓÃÔÚVK_DESCRIPTOR_TYPE_SAMPLER ÒÔ¼° VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERÀàĞÍÇÒÃ»ÓĞÊ¹ÓÃimmutable samplers µÄdescriptorµÄ¸üĞÂÖĞ
-				descriptorImageInfo.imageView = VkImageView{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkImageView*/ };//ÎªVK_NULL_HANDLE»òÕßVkImageView¾ä±ú£¬Ê¹ÓÃÔÚVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ÒÔ¼° VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT ÀàĞÍµÄdescriptorµÄ¸üĞÂÖĞ
-				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;//ÊÇÔÚdescriptor·ÃÎÊÊ±´ÓimageView·ÃÎÊµÄimage subresourceµÄVkImageLayout²¼¾Ö£¬ÓÃÔÚVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ÒÔ¼° VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENTÀàĞÍµÄdescriptorµÄ¸üĞÂÖĞ
+				descriptorImageInfo.sampler = VkSampler{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkSampler*/ };//æ˜¯ä¸€ä¸ªVkSamplerå¥æŸ„ï¼Œä½¿ç”¨åœ¨VK_DESCRIPTOR_TYPE_SAMPLER ä»¥åŠ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERç±»å‹ä¸”æ²¡æœ‰ä½¿ç”¨immutable samplers çš„descriptorçš„æ›´æ–°ä¸­
+				descriptorImageInfo.imageView = VkImageView{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkImageView*/ };//ä¸ºVK_NULL_HANDLEæˆ–è€…VkImageViewå¥æŸ„ï¼Œä½¿ç”¨åœ¨VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ä»¥åŠ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT ç±»å‹çš„descriptorçš„æ›´æ–°ä¸­
+				descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;//æ˜¯åœ¨descriptorè®¿é—®æ—¶ä»imageViewè®¿é—®çš„image subresourceçš„VkImageLayoutå¸ƒå±€ï¼Œç”¨åœ¨VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, ä»¥åŠ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENTç±»å‹çš„descriptorçš„æ›´æ–°ä¸­
 				/*
-				VkDescriptorImageInfoÓĞĞ§ÓÃ·¨:
-				1.imageView ²»ÄÜÊÇ´Ó3D imageÉÏ´´½¨µÄ2D array image view
-				2.Èç¹ûimageView ÊÇ´Ó3D imageÉÏ´´½¨µÄ2D image view£¬Ôò£¨1£©descriptorType±ØĞëÎª VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, »òÕß VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
-																	 £¨2£©image±ØĞëÒÔVK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT´´½¨
-				3.Èç¹ûimage2DViewOf3D ÌØĞÔÃ»ÓĞ¿ªÆô»òÕßdescriptorType ²»ÊÇ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE£¬VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE »òÕß VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER£¬ÔòimageView ²»ÄÜÊÇ´Ó3D imageÉÏ´´½¨µÄ2D image view
+				VkDescriptorImageInfoæœ‰æ•ˆç”¨æ³•:
+				1.imageView ä¸èƒ½æ˜¯ä»3D imageä¸Šåˆ›å»ºçš„2D array image view
+				2.å¦‚æœimageView æ˜¯ä»3D imageä¸Šåˆ›å»ºçš„2D image viewï¼Œåˆ™ï¼ˆ1ï¼‰descriptorTypeå¿…é¡»ä¸º VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, æˆ–è€… VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+																	 ï¼ˆ2ï¼‰imageå¿…é¡»ä»¥VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXTåˆ›å»º
+				3.å¦‚æœimage2DViewOf3D ç‰¹æ€§æ²¡æœ‰å¼€å¯æˆ–è€…descriptorType ä¸æ˜¯ VK_DESCRIPTOR_TYPE_STORAGE_IMAGEï¼ŒVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE æˆ–è€… VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERï¼Œåˆ™imageView ä¸èƒ½æ˜¯ä»3D imageä¸Šåˆ›å»ºçš„2D image view
 				
-				4.Èç¹ûimageView´ÓÒ»¸ödepth/stencil image ÉÏ´´½¨£¬ÔòÓÃÀ´´´½¨imageViewµÄaspectMask ±ØĞë°üº¬VK_IMAGE_ASPECT_DEPTH_BIT »òÕß VK_IMAGE_ASPECT_STENCIL_BIT ÖĞµÄÒ»¸ö
-				5.Èç¹ûimageLayout ÎªVK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL£¬ÔòÓÃÀ´´´½¨imageViewµÄaspectMask ²»ÄÜ°üº¬VK_IMAGE_ASPECT_DEPTH_BIT »òÕß VK_IMAGE_ASPECT_STENCIL_BIT ÖĞµÄÒ»¸ö
-				6.Èç¹ûimageLayout ÎªVK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL,
+				4.å¦‚æœimageViewä»ä¸€ä¸ªdepth/stencil image ä¸Šåˆ›å»ºï¼Œåˆ™ç”¨æ¥åˆ›å»ºimageViewçš„aspectMask å¿…é¡»åŒ…å«VK_IMAGE_ASPECT_DEPTH_BIT æˆ–è€… VK_IMAGE_ASPECT_STENCIL_BIT ä¸­çš„ä¸€ä¸ª
+				5.å¦‚æœimageLayout ä¸ºVK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMALï¼Œåˆ™ç”¨æ¥åˆ›å»ºimageViewçš„aspectMask ä¸èƒ½åŒ…å«VK_IMAGE_ASPECT_DEPTH_BIT æˆ–è€… VK_IMAGE_ASPECT_STENCIL_BIT ä¸­çš„ä¸€ä¸ª
+				6.å¦‚æœimageLayout ä¸ºVK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL,
 									VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL,
 									VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
 									VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL,
-									VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL »òÕß
-									VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL£¬ÔòÓÃÀ´´´½¨imageViewµÄaspectMask ²»ÄÜ°üº¬VK_IMAGE_ASPECT_COLOR_BIT
-				7.ÔÚdescriptor·ÃÎÊµÄÊ±ºò imageLayout ±ØĞëºÍÊµ¼ÊµÄ´ÓimageView¿É·ÃÎÊµÄimage subresourceµÄVkImageLayout²¼¾ÖÆ¥Åä£¬²Î¼ûÆ¥Åä¹æÔò image layout matching rules p1083
-				8.Èç¹ûÊ¹ÓÃÁËsamplerÇÒimageµÄVkFormatÊÇÒ»¸ömulti-planar format£¬Ôòimage±ØĞëÒÔVK_IMAGE_CREATE_MUTABLE_FORMAT_BIT´´½¨£¬ÇÒimageView´´½¨µÄaspectMask±ØĞëÊÇÒ»¸öÓĞĞ§µÄmulti-planar aspect mask±ÈÌØÎ»
-				9.Èç¹ûVK_KHR_portability_subset ÍØÕ¹¿ªÆô£¬ÇÒVkPhysicalDevicePortabilitySubsetFeaturesKHR::mutableComparisonSamplersÎª VK_FALSE£¬Ôòsampler±ØĞëÒÔVkSamplerCreateInfo::compareEnableÉèÖÃÎªVK_FALSE´´½¨
+									VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL æˆ–è€…
+									VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMALï¼Œåˆ™ç”¨æ¥åˆ›å»ºimageViewçš„aspectMask ä¸èƒ½åŒ…å«VK_IMAGE_ASPECT_COLOR_BIT
+				7.åœ¨descriptorè®¿é—®çš„æ—¶å€™ imageLayout å¿…é¡»å’Œå®é™…çš„ä»imageViewå¯è®¿é—®çš„image subresourceçš„VkImageLayoutå¸ƒå±€åŒ¹é…ï¼Œå‚è§åŒ¹é…è§„åˆ™ image layout matching rules p1083
+				8.å¦‚æœä½¿ç”¨äº†samplerä¸”imageçš„VkFormatæ˜¯ä¸€ä¸ªmulti-planar formatï¼Œåˆ™imageå¿…é¡»ä»¥VK_IMAGE_CREATE_MUTABLE_FORMAT_BITåˆ›å»ºï¼Œä¸”imageViewåˆ›å»ºçš„aspectMaskå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„multi-planar aspect maskæ¯”ç‰¹ä½
+				9.å¦‚æœVK_KHR_portability_subset æ‹“å±•å¼€å¯ï¼Œä¸”VkPhysicalDevicePortabilitySubsetFeaturesKHR::mutableComparisonSamplersä¸º VK_FALSEï¼Œåˆ™samplerå¿…é¡»ä»¥VkSamplerCreateInfo::compareEnableè®¾ç½®ä¸ºVK_FALSEåˆ›å»º
 
 				*/
 			}
-		writeDescriptorSet.pImageInfo = &descriptorImageInfo;//ÊÇÒ»×é VkDescriptorImageInfo µÄÊı×éµØÖ·
+		writeDescriptorSet.pImageInfo = &descriptorImageInfo;//æ˜¯ä¸€ç»„ VkDescriptorImageInfo çš„æ•°ç»„åœ°å€
 			VkBufferView texelBufferView{};
-		writeDescriptorSet.pTexelBufferView = &texelBufferView;//ÊÇÒ»×é  VkBufferView µÄÊı×éµØÖ·
+		writeDescriptorSet.pTexelBufferView = &texelBufferView;//æ˜¯ä¸€ç»„  VkBufferView çš„æ•°ç»„åœ°å€
 		/*
-		VkWriteDescriptorSetÓĞĞ§ÓÃ·¨:
-		1.dstBinding ±ØĞëĞ¡ÓÚµÈÓÚdstSetµÄ descriptor set layout´´½¨Ê±Ö¸Ã÷µÄ×î´óµÄbindingµÄÊıÁ¿
-		2.dstBinding ±ØĞëÊÇÒ»¸öº¬ÓĞ·Ç0descriptorCountÖµµÄbinding
-		3.ËùÓĞÍ¨¹ıµ¥¶ÀµÄVkWriteDescriptorSet¸üĞÂµÄÁ¬ĞøµÄbinding£¬³ıÁËÄÇĞ©descriptorCountÎª0µÄbinding£¬ÕâĞ©binding±ØĞëÓĞÏàÍ¬µÄdescriptorType ÒÔ¼° stageFlags£¬±ØĞëÈ«²¿Ê¹ÓÃ»òÕß²»Ê¹ÓÃimmutable samplers
-		4.descriptorType±ØĞëºÍdstSetÖĞµÄdstBindingÆ¥Åä
-		5.dstSet±ØĞëÊÇÓĞĞ§µÄ VkDescriptorSet¾ä±ú
-		6.dstArrayElement + descriptorCount±ØĞëĞ¡ÓÚµÈÓÚdstBindingÖĞÖ¸¶¨µÄdescriptorÊı×éÖĞÔªËØµÄÊıÁ¿£¬ÒÔ¼°consecutive binding updates p1301ÖĞÃèÊöµÄÁ¬ĞøbindingÖĞËùÓĞ¿ÉÓÃµÄdescriptorµÄ×ÜÊı
-		7.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòdstArrayElementÒÔ¼°descriptorCount ±ØĞëÊÇ4µÄÕûÊı±¶
-		8.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER »òÕßVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER£¬Ôò£¨1£©pTexelBufferViewÖĞµÄÔªËØ±ØĞëÊÇÓĞĞ§µÄVkBufferView¾ä±ú»òÕßVK_NULL_HANDLE
-																													 £¨2£©Èç¹ûnullDescriptor ÌØĞÔÃ»ÓĞ¿ªÆô£¬ÔòpTexelBufferViewÖĞµÄÃ¿¸öÔªËØ¾Í²»ÄÜÎªVK_NULL_HANDLE
-		9.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, »òÕß VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC£¬pBufferInfo ±ØĞëÊÇdescriptorCount¸öÓĞĞ§VkDescriptorBufferInfoµÄÊı×éÖ¸Õë
-		10.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLER »òÕßVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER£¬ÇÒdstSet²»ÒÔÒ»¸ö descriptorTypeÀàĞÍµÄdstBindingº¬ÓĞimmutable samplersµÄlayout·ÖÅä£¬ÔòpImageInfoÖĞµÄÃ¿¸öÔªËØµÄsampler±ØĞëÊÇÒ»¸öÓĞĞ§µÄVkSampler
-		11.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER£¬VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE »òÕßVK_DESCRIPTOR_TYPE_STORAGE_IMAGE£¬Ôò£¨1£©pImageInfoÖĞµÄÔªËØµÄimageView ±ØĞëÊÇÓĞĞ§µÄVkImageView»òÕßVK_NULL_HANDLE
-																																				   £¨2£©Èç¹ûnullDescriptorÌØĞÔÃ»ÓĞ¿ªÆô£¬ÔòpImageInfoÖĞµÄÔªËØµÄimageView ²»ÄÜÎªVK_NULL_HANDLE
-		12.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT£¬ÔòpImageInfoÖĞµÄÔªËØµÄimageView ²»ÄÜÎªVK_NULL_HANDLE
-		13.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòpNextÖĞ±ØĞë°üº¬Ò»¸ödataSize µÈÓÚdescriptorCountµÄVkWriteDescriptorSetInlineUniformBlock
-		14.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR£¬ÔòpNextÖĞ±ØĞë°üº¬Ò»¸öaccelerationStructureCount µÈÓÚdescriptorCountµÄVkWriteDescriptorSetAccelerationStructureKHR
-		15.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV£¬ÔòpNextÖĞ±ØĞë°üº¬Ò»¸öaccelerationStructureCount µÈÓÚdescriptorCountµÄVkWriteDescriptorSetAccelerationStructureNV
-		16.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE£¬ÔòpImageInfoÖĞµÄÔªËØµÄimageView ²»ÄÜÒÔÆäpNextº¬ÓĞÒ»¸öVkSamplerYcbcrConversionInfo ½øĞĞ´´½¨
-		17.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER£¬Ôò£¨1£©Èç¹ûpImageInfoÖĞµÄÔªËØµÄimageView ÒÔÆäpNextº¬ÓĞÒ»¸öVkSamplerYcbcrConversionInfo ½øĞĞ´´½¨£¬ÔòdstSet±ØĞëÒÔdstBindingº¬ÓĞimmutable samplersµÄlayout½øĞĞ´´½¨£¬ÇÒ¶ÔÓ¦µÄimmutable samplers ±ØĞëºÍVkSamplerYcbcrConversionInfoÖĞ¶¨ÒåµÄÏàÍ¬
-																			£¨2£©Èç¹ûdstSet²»ÒÔdstBindingº¬ÓĞimmutable samplersµÄlayout½øĞĞ´´½¨£¬ÔòpImageInfo ÖĞµÄÃ¿¸öÔªËØµÄ¶ÔÓ¦µ½Ò»¸öÆôÓÃÁËsampler Y¡äCBCR conversionµÄimmutable samplerµÄ imageView ±ØĞëÒÔº¬ÓĞÒ»¸öºÍ¶ÔÓ¦immutable samplerÏàÍ¬¶¨ÒåµÄVkSamplerYcbcrConversionInfo ½øĞĞ´´½¨
-																			£¨3£©Èç¹ûdstSetÒÔdstBindingº¬ÓĞimmutable samplersµÄlayout½øĞĞ´´½¨£¬ÇÒÕâĞ©samplersÆôÓÃÁËsampler Y¡äCBCR conversion£¬ÔòpImageInfo ÖĞµÄÃ¿¸öÔªËØµÄ¶ÔÓ¦µ½Ò»¸öÆôÓÃÁËsampler Y¡äCBCR conversionµÄimmutable samplerµÄ imageView ±ØĞë²»ÄÜÎªVK_NULL_HANDLE
-		18.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER»òÕß VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC£¬ÔòpBufferInfoÖĞÃ¿¸öÔªËØµÄ offset ±ØĞëÎªVkPhysicalDeviceLimits::minUniformBufferOffsetAlignmentµÄ±¶Êı
-		19.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_STORAGE_BUFFER»òÕß VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC£¬ÔòpBufferInfoÖĞÃ¿¸öÔªËØµÄ offset ±ØĞëÎªVkPhysicalDeviceLimits::minStorageBufferOffsetAlignmentµÄ±¶Êı
-		20.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER£¬VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC£¬VK_DESCRIPTOR_TYPE_STORAGE_BUFFER»òÕß VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC£¬ÇÒpBufferInfoÖĞÈÎºÎÔªËØµÄbufferÎªnon-sparseµÄ£¬Ôòbuffer±ØĞë°ó¶¨µ½Ò»¸öµ¥¶ÀµÄÍêÕûµÄÁ¬ĞøµÄVkDeviceMemoryÉÏ
-		21.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER »òÕß VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC£¬ÔòpBufferInfoÖĞÈÎºÎÔªËØµÄbuffer±ØĞëÒÔVK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ´´½¨
-		22.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_STORAGE_BUFFER »òÕß VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC£¬Ôò£¨1£©pBufferInfoÖĞÈÎºÎÔªËØµÄbuffer±ØĞëÒÔVK_BUFFER_USAGE_STORAGE_BUFFER_BIT ´´½¨
-																												   £¨2£©ÔòpBufferInfoÖĞÈÎºÎÔªËØµÄrange ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxUniformBufferRange£¬»òÕßÎªVK_WHOLE_SIZE
-		23.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER »òÕß VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC£¬ÇÒ£¨1£©pBufferInfoÖĞÈÎºÎÔªËØµÄbuffer±ØĞëÒÔVK_BUFFER_USAGE_STORAGE_BUFFER_BIT ´´½¨
-																												   £¨2£©ÔòpBufferInfoÖĞÈÎºÎÔªËØµÄrange ±ØĞëĞ¡ÓÚµÈÓÚ VkPhysicalDeviceLimits::maxStorageBufferRange£¬»òÕßÎªVK_WHOLE_SIZE
-		24.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER£¬ÔòpTexelBufferView µÄÔªËØ´´½¨±ØĞëº¬ÓĞVK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT
-		25.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER£¬ÔòpTexelBufferView µÄÔªËØ´´½¨±ØĞëº¬ÓĞVK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT
-		26.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_STORAGE_IMAGE »òÕßVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT£¬ÔòpImageInfoÖĞÃ¿¸öÔªËØµÄimageView ±ØĞëÒÔidentity swizzle ´´½¨
-		27.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE »òÕßVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER£¬ÔòpImageInfoÖĞÃ¿¸öÔªËØµÄimageView ±ØĞëÒÔVK_IMAGE_USAGE_SAMPLED_BIT ´´½¨
-		28.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE£¬ÔòpImageInfoÖĞÃ¿¸öÔªËØµÄimageLayout ±ØĞëÊÇÒ»¸öÁĞ¾ÙÔÚSampled Image p1243ÖĞµÄÔªËØ
-		29.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER£¬ÔòpImageInfoÖĞÃ¿¸öÔªËØµÄimageLayout ±ØĞëÊÇÒ»¸öÁĞ¾ÙÔÚCombined Image Sampler p1243ÖĞµÄÔªËØ
-		30.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT£¬Ôò£¨1£©pImageInfoÖĞÃ¿¸öÔªËØµÄimageLayout ±ØĞëÊÇÒ»¸öÁĞ¾ÙÔÚInput Attachment p1246ÖĞµÄÔªËØ
-																	  £¨2£©pImageInfoÖĞÃ¿¸öÔªËØµÄimageView ±ØĞëÒÔVK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT´´½¨
-		31.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_STORAGE_IMAGE£¬Ôò£¨1£©pImageInfoÖĞÃ¿¸öÔªËØµÄimageLayout ±ØĞëÊÇÒ»¸öÁĞ¾ÙÔÚStorage Image p1242ÖĞµÄÔªËØ
-																   £¨2£©pImageInfoÖĞÃ¿¸öÔªËØµÄimageView ±ØĞëÒÔVK_IMAGE_USAGE_STORAGE_BIT´´½¨
-																   £¨3£©pImageInfoÖĞÃ¿¸öÔªËØµÄimageView ±ØĞëÒÔÆäpNextÖĞ²»º¬ÓĞÒ»¸öVkImageViewMinLodCreateInfoEXT »òÕß º¬ÓĞÒ»¸öminLodÎª0µÄVkImageViewMinLodCreateInfoEXT ´´½¨
-		32.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLER£¬ÔòdstSet ²»ÄÜÒÔÒ»¸ödstBindingº¬ÓĞimmutable samplers µÄlayout·ÖÅä
-		33.Èç¹ûdstSetµÄdstBindingËù¶ÔµÄVkDescriptorSetLayoutBindingÊÇVK_DESCRIPTOR_TYPE_MUTABLE_EXTÀàĞÍµÄ£¬ÔòĞÂµÄ¼¤»îµÄdescriptorType ±ØĞëÁĞ¾ÙÔÚdstBinding¶ÔÓ¦µÄpMutableDescriptorTypeListsÖĞ
-		34.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM£¬Ôò£¨1£©pImageInfoÖĞÃ¿¸öÔªËØµÄimageView ±ØĞëÒÔVK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM ´´½¨
-		35.Èç¹ûdescriptorTypeÎªVK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM£¬Ôò£¨1£©pImageInfoÖĞÃ¿¸öÔªËØµÄimageView ±ØĞëÒÔVK_IMAGE_USAGE_SAMPLE_BLOCK_MATCH_BIT_QCOM ´´½¨
+		VkWriteDescriptorSetæœ‰æ•ˆç”¨æ³•:
+		1.dstBinding å¿…é¡»å°äºç­‰äºdstSetçš„ descriptor set layoutåˆ›å»ºæ—¶æŒ‡æ˜çš„æœ€å¤§çš„bindingçš„æ•°é‡
+		2.dstBinding å¿…é¡»æ˜¯ä¸€ä¸ªå«æœ‰é0descriptorCountå€¼çš„binding
+		3.æ‰€æœ‰é€šè¿‡å•ç‹¬çš„VkWriteDescriptorSetæ›´æ–°çš„è¿ç»­çš„bindingï¼Œé™¤äº†é‚£äº›descriptorCountä¸º0çš„bindingï¼Œè¿™äº›bindingå¿…é¡»æœ‰ç›¸åŒçš„descriptorType ä»¥åŠ stageFlagsï¼Œå¿…é¡»å…¨éƒ¨ä½¿ç”¨æˆ–è€…ä¸ä½¿ç”¨immutable samplers
+		4.descriptorTypeå¿…é¡»å’ŒdstSetä¸­çš„dstBindingåŒ¹é…
+		5.dstSetå¿…é¡»æ˜¯æœ‰æ•ˆçš„ VkDescriptorSetå¥æŸ„
+		6.dstArrayElement + descriptorCountå¿…é¡»å°äºç­‰äºdstBindingä¸­æŒ‡å®šçš„descriptoræ•°ç»„ä¸­å…ƒç´ çš„æ•°é‡ï¼Œä»¥åŠconsecutive binding updates p1301ä¸­æè¿°çš„è¿ç»­bindingä¸­æ‰€æœ‰å¯ç”¨çš„descriptorçš„æ€»æ•°
+		7.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™dstArrayElementä»¥åŠdescriptorCount å¿…é¡»æ˜¯4çš„æ•´æ•°å€
+		8.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER æˆ–è€…VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFERï¼Œåˆ™ï¼ˆ1ï¼‰pTexelBufferViewä¸­çš„å…ƒç´ å¿…é¡»æ˜¯æœ‰æ•ˆçš„VkBufferViewå¥æŸ„æˆ–è€…VK_NULL_HANDLE
+																													 ï¼ˆ2ï¼‰å¦‚æœnullDescriptor ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™pTexelBufferViewä¸­çš„æ¯ä¸ªå…ƒç´ å°±ä¸èƒ½ä¸ºVK_NULL_HANDLE
+		9.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, æˆ–è€… VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICï¼ŒpBufferInfo å¿…é¡»æ˜¯descriptorCountä¸ªæœ‰æ•ˆVkDescriptorBufferInfoçš„æ•°ç»„æŒ‡é’ˆ
+		10.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLER æˆ–è€…VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERï¼Œä¸”dstSetä¸ä»¥ä¸€ä¸ª descriptorTypeç±»å‹çš„dstBindingå«æœ‰immutable samplersçš„layoutåˆ†é…ï¼Œåˆ™pImageInfoä¸­çš„æ¯ä¸ªå…ƒç´ çš„samplerå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkSampler
+		11.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERï¼ŒVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE æˆ–è€…VK_DESCRIPTOR_TYPE_STORAGE_IMAGEï¼Œåˆ™ï¼ˆ1ï¼‰pImageInfoä¸­çš„å…ƒç´ çš„imageView å¿…é¡»æ˜¯æœ‰æ•ˆçš„VkImageViewæˆ–è€…VK_NULL_HANDLE
+																																				   ï¼ˆ2ï¼‰å¦‚æœnullDescriptorç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™pImageInfoä¸­çš„å…ƒç´ çš„imageView ä¸èƒ½ä¸ºVK_NULL_HANDLE
+		12.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENTï¼Œåˆ™pImageInfoä¸­çš„å…ƒç´ çš„imageView ä¸èƒ½ä¸ºVK_NULL_HANDLE
+		13.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™pNextä¸­å¿…é¡»åŒ…å«ä¸€ä¸ªdataSize ç­‰äºdescriptorCountçš„VkWriteDescriptorSetInlineUniformBlock
+		14.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHRï¼Œåˆ™pNextä¸­å¿…é¡»åŒ…å«ä¸€ä¸ªaccelerationStructureCount ç­‰äºdescriptorCountçš„VkWriteDescriptorSetAccelerationStructureKHR
+		15.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NVï¼Œåˆ™pNextä¸­å¿…é¡»åŒ…å«ä¸€ä¸ªaccelerationStructureCount ç­‰äºdescriptorCountçš„VkWriteDescriptorSetAccelerationStructureNV
+		16.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLED_IMAGEï¼Œåˆ™pImageInfoä¸­çš„å…ƒç´ çš„imageView ä¸èƒ½ä»¥å…¶pNextå«æœ‰ä¸€ä¸ªVkSamplerYcbcrConversionInfo è¿›è¡Œåˆ›å»º
+		17.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœpImageInfoä¸­çš„å…ƒç´ çš„imageView ä»¥å…¶pNextå«æœ‰ä¸€ä¸ªVkSamplerYcbcrConversionInfo è¿›è¡Œåˆ›å»ºï¼Œåˆ™dstSetå¿…é¡»ä»¥dstBindingå«æœ‰immutable samplersçš„layoutè¿›è¡Œåˆ›å»ºï¼Œä¸”å¯¹åº”çš„immutable samplers å¿…é¡»å’ŒVkSamplerYcbcrConversionInfoä¸­å®šä¹‰çš„ç›¸åŒ
+																			ï¼ˆ2ï¼‰å¦‚æœdstSetä¸ä»¥dstBindingå«æœ‰immutable samplersçš„layoutè¿›è¡Œåˆ›å»ºï¼Œåˆ™pImageInfo ä¸­çš„æ¯ä¸ªå…ƒç´ çš„å¯¹åº”åˆ°ä¸€ä¸ªå¯ç”¨äº†sampler Yâ€²CBCR conversionçš„immutable samplerçš„ imageView å¿…é¡»ä»¥å«æœ‰ä¸€ä¸ªå’Œå¯¹åº”immutable samplerç›¸åŒå®šä¹‰çš„VkSamplerYcbcrConversionInfo è¿›è¡Œåˆ›å»º
+																			ï¼ˆ3ï¼‰å¦‚æœdstSetä»¥dstBindingå«æœ‰immutable samplersçš„layoutè¿›è¡Œåˆ›å»ºï¼Œä¸”è¿™äº›samplerså¯ç”¨äº†sampler Yâ€²CBCR conversionï¼Œåˆ™pImageInfo ä¸­çš„æ¯ä¸ªå…ƒç´ çš„å¯¹åº”åˆ°ä¸€ä¸ªå¯ç”¨äº†sampler Yâ€²CBCR conversionçš„immutable samplerçš„ imageView å¿…é¡»ä¸èƒ½ä¸ºVK_NULL_HANDLE
+		18.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFERæˆ–è€… VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMICï¼Œåˆ™pBufferInfoä¸­æ¯ä¸ªå…ƒç´ çš„ offset å¿…é¡»ä¸ºVkPhysicalDeviceLimits::minUniformBufferOffsetAlignmentçš„å€æ•°
+		19.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFERæˆ–è€… VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICï¼Œåˆ™pBufferInfoä¸­æ¯ä¸ªå…ƒç´ çš„ offset å¿…é¡»ä¸ºVkPhysicalDeviceLimits::minStorageBufferOffsetAlignmentçš„å€æ•°
+		20.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFERï¼ŒVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMICï¼ŒVK_DESCRIPTOR_TYPE_STORAGE_BUFFERæˆ–è€… VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICï¼Œä¸”pBufferInfoä¸­ä»»ä½•å…ƒç´ çš„bufferä¸ºnon-sparseçš„ï¼Œåˆ™bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå•ç‹¬çš„å®Œæ•´çš„è¿ç»­çš„VkDeviceMemoryä¸Š
+		21.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER æˆ–è€… VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMICï¼Œåˆ™pBufferInfoä¸­ä»»ä½•å…ƒç´ çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT åˆ›å»º
+		22.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER æˆ–è€… VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICï¼Œåˆ™ï¼ˆ1ï¼‰pBufferInfoä¸­ä»»ä½•å…ƒç´ çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_STORAGE_BUFFER_BIT åˆ›å»º
+																												   ï¼ˆ2ï¼‰åˆ™pBufferInfoä¸­ä»»ä½•å…ƒç´ çš„range å¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxUniformBufferRangeï¼Œæˆ–è€…ä¸ºVK_WHOLE_SIZE
+		23.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER æˆ–è€… VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMICï¼Œä¸”ï¼ˆ1ï¼‰pBufferInfoä¸­ä»»ä½•å…ƒç´ çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_STORAGE_BUFFER_BIT åˆ›å»º
+																												   ï¼ˆ2ï¼‰åˆ™pBufferInfoä¸­ä»»ä½•å…ƒç´ çš„range å¿…é¡»å°äºç­‰äº VkPhysicalDeviceLimits::maxStorageBufferRangeï¼Œæˆ–è€…ä¸ºVK_WHOLE_SIZE
+		24.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFERï¼Œåˆ™pTexelBufferView çš„å…ƒç´ åˆ›å»ºå¿…é¡»å«æœ‰VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT
+		25.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFERï¼Œåˆ™pTexelBufferView çš„å…ƒç´ åˆ›å»ºå¿…é¡»å«æœ‰VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT
+		26.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_STORAGE_IMAGE æˆ–è€…VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENTï¼Œåˆ™pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageView å¿…é¡»ä»¥identity swizzle åˆ›å»º
+		27.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE æˆ–è€…VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERï¼Œåˆ™pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageView å¿…é¡»ä»¥VK_IMAGE_USAGE_SAMPLED_BIT åˆ›å»º
+		28.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLED_IMAGEï¼Œåˆ™pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageLayout å¿…é¡»æ˜¯ä¸€ä¸ªåˆ—ä¸¾åœ¨Sampled Image p1243ä¸­çš„å…ƒç´ 
+		29.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERï¼Œåˆ™pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageLayout å¿…é¡»æ˜¯ä¸€ä¸ªåˆ—ä¸¾åœ¨Combined Image Sampler p1243ä¸­çš„å…ƒç´ 
+		30.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENTï¼Œåˆ™ï¼ˆ1ï¼‰pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageLayout å¿…é¡»æ˜¯ä¸€ä¸ªåˆ—ä¸¾åœ¨Input Attachment p1246ä¸­çš„å…ƒç´ 
+																	  ï¼ˆ2ï¼‰pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageView å¿…é¡»ä»¥VK_IMAGE_USAGE_INPUT_ATTACHMENT_BITåˆ›å»º
+		31.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_STORAGE_IMAGEï¼Œåˆ™ï¼ˆ1ï¼‰pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageLayout å¿…é¡»æ˜¯ä¸€ä¸ªåˆ—ä¸¾åœ¨Storage Image p1242ä¸­çš„å…ƒç´ 
+																   ï¼ˆ2ï¼‰pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageView å¿…é¡»ä»¥VK_IMAGE_USAGE_STORAGE_BITåˆ›å»º
+																   ï¼ˆ3ï¼‰pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageView å¿…é¡»ä»¥å…¶pNextä¸­ä¸å«æœ‰ä¸€ä¸ªVkImageViewMinLodCreateInfoEXT æˆ–è€… å«æœ‰ä¸€ä¸ªminLodä¸º0çš„VkImageViewMinLodCreateInfoEXT åˆ›å»º
+		32.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLERï¼Œåˆ™dstSet ä¸èƒ½ä»¥ä¸€ä¸ªdstBindingå«æœ‰immutable samplers çš„layoutåˆ†é…
+		33.å¦‚æœdstSetçš„dstBindingæ‰€å¯¹çš„VkDescriptorSetLayoutBindingæ˜¯VK_DESCRIPTOR_TYPE_MUTABLE_EXTç±»å‹çš„ï¼Œåˆ™æ–°çš„æ¿€æ´»çš„descriptorType å¿…é¡»åˆ—ä¸¾åœ¨dstBindingå¯¹åº”çš„pMutableDescriptorTypeListsä¸­
+		34.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOMï¼Œåˆ™ï¼ˆ1ï¼‰pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageView å¿…é¡»ä»¥VK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM åˆ›å»º
+		35.å¦‚æœdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOMï¼Œåˆ™ï¼ˆ1ï¼‰pImageInfoä¸­æ¯ä¸ªå…ƒç´ çš„imageView å¿…é¡»ä»¥VK_IMAGE_USAGE_SAMPLE_BLOCK_MATCH_BIT_QCOM åˆ›å»º
 
 		*/
 
 
 		//VkWriteDescriptorSetInlineUniformBlock
-		//Ö¸¶¨ÒªĞ´Èëµ½descriptor setµÄÊı¾İµ±descriptorÀàĞÍÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+		//æŒ‡å®šè¦å†™å…¥åˆ°descriptor setçš„æ•°æ®å½“descriptorç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
 		VkWriteDescriptorSetInlineUniformBlock& writeDescriptorSetInlineUniformBlock = writeDescriptorSetEXT.writeDescriptorSetInlineUniformBlock;
-		writeDescriptorSetInlineUniformBlock.dataSize = 0;//Ö¸Ã÷pDataÖĞinline uniform block Êı¾İµÄ×Ö½ÚÊı£¬±ØĞëÎª4µÄ±¶Êı
-		writeDescriptorSetInlineUniformBlock.pData = nullptr;//ÒªĞ´Èëµ½descriptorµÄinline uniform block Êı¾İ
+		writeDescriptorSetInlineUniformBlock.dataSize = 0;//æŒ‡æ˜pDataä¸­inline uniform block æ•°æ®çš„å­—èŠ‚æ•°ï¼Œå¿…é¡»ä¸º4çš„å€æ•°
+		writeDescriptorSetInlineUniformBlock.pData = nullptr;//è¦å†™å…¥åˆ°descriptorçš„inline uniform block æ•°æ®
 
 
 		//VkWriteDescriptorSetAccelerationStructureKHR
 		VkWriteDescriptorSetAccelerationStructureKHR& writeDescriptorSetAccelerationStructureKHR = writeDescriptorSetEXT.writeDescriptorSetAccelerationStructureKHR;
-		writeDescriptorSetAccelerationStructureKHR.accelerationStructureCount = 0;//ÊÇpAccelerationStructuresÖĞ¼ÓËÙ½á¹¹ÔªËØ¸öÊı
-		writeDescriptorSetAccelerationStructureKHR.pAccelerationStructures = VK_NULL_HANDLE;//ÊÇÒ»×éVkAccelerationStructureKHR µÄÊı×éÖ¸Õë£¬Ö¸Ã÷Òª¸üĞÂµÄ¼ÓËÙ½á¹¹
+		writeDescriptorSetAccelerationStructureKHR.accelerationStructureCount = 0;//æ˜¯pAccelerationStructuresä¸­åŠ é€Ÿç»“æ„å…ƒç´ ä¸ªæ•°
+		writeDescriptorSetAccelerationStructureKHR.pAccelerationStructures = VK_NULL_HANDLE;//æ˜¯ä¸€ç»„VkAccelerationStructureKHR çš„æ•°ç»„æŒ‡é’ˆï¼ŒæŒ‡æ˜è¦æ›´æ–°çš„åŠ é€Ÿç»“æ„
 		/*
-		VkWriteDescriptorSetAccelerationStructureKHRÓĞĞ§ÓÃ·¨:
-		1.accelerationStructureCount ±ØĞëµÈÓÚ±»ÍØÕ¹µÄVkWriteDescriptorSetµÄdescriptorCount
-		2.pAccelerationStructuresµÄÃ¿¸ö¼ÓËÙ½á¹¹±ØĞëÒÔVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR »òÕßVK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHRÀàĞÍ´´½¨
-		3.Èç¹ûnullDescriptor ÌØĞÔÃ»ÓĞ¿ªÆô£¬ÔòpAccelerationStructuresÖĞµÄÃ¿¸öÔªËØ²»ÄÜÎªVK_NULL_HANDLE
+		VkWriteDescriptorSetAccelerationStructureKHRæœ‰æ•ˆç”¨æ³•:
+		1.accelerationStructureCount å¿…é¡»ç­‰äºè¢«æ‹“å±•çš„VkWriteDescriptorSetçš„descriptorCount
+		2.pAccelerationStructuresçš„æ¯ä¸ªåŠ é€Ÿç»“æ„å¿…é¡»ä»¥VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR æˆ–è€…VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHRç±»å‹åˆ›å»º
+		3.å¦‚æœnullDescriptor ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™pAccelerationStructuresä¸­çš„æ¯ä¸ªå…ƒç´ ä¸èƒ½ä¸ºVK_NULL_HANDLE
 		*/
 
 		//VkWriteDescriptorSetAccelerationStructureNV
 		VkWriteDescriptorSetAccelerationStructureNV& writeDescriptorSetAccelerationStructureNV = writeDescriptorSetEXT.writeDescriptorSetAccelerationStructureNV;
-		writeDescriptorSetAccelerationStructureNV.accelerationStructureCount = 0;//ÊÇpAccelerationStructuresÖĞ¼ÓËÙ½á¹¹ÔªËØ¸öÊı
-		writeDescriptorSetAccelerationStructureNV.pAccelerationStructures = VK_NULL_HANDLE;//ÊÇÒ»×éVkAccelerationStructureKHR µÄÊı×éÖ¸Õë£¬Ö¸Ã÷Òª¸üĞÂµÄ¼ÓËÙ½á¹¹
+		writeDescriptorSetAccelerationStructureNV.accelerationStructureCount = 0;//æ˜¯pAccelerationStructuresä¸­åŠ é€Ÿç»“æ„å…ƒç´ ä¸ªæ•°
+		writeDescriptorSetAccelerationStructureNV.pAccelerationStructures = VK_NULL_HANDLE;//æ˜¯ä¸€ç»„VkAccelerationStructureKHR çš„æ•°ç»„æŒ‡é’ˆï¼ŒæŒ‡æ˜è¦æ›´æ–°çš„åŠ é€Ÿç»“æ„
 		/*
-		VkWriteDescriptorSetAccelerationStructureNVÓĞĞ§ÓÃ·¨:
-		1.accelerationStructureCount ±ØĞëµÈÓÚ±»ÍØÕ¹µÄVkWriteDescriptorSetµÄdescriptorCount
-		2.pAccelerationStructuresµÄÃ¿¸ö¼ÓËÙ½á¹¹±ØĞëÒÔVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR ÀàĞÍ´´½¨
-		3.Èç¹ûnullDescriptor ÌØĞÔÃ»ÓĞ¿ªÆô£¬ÔòpAccelerationStructuresÖĞµÄÃ¿¸öÔªËØ²»ÄÜÎªVK_NULL_HANDLE
+		VkWriteDescriptorSetAccelerationStructureNVæœ‰æ•ˆç”¨æ³•:
+		1.accelerationStructureCount å¿…é¡»ç­‰äºè¢«æ‹“å±•çš„VkWriteDescriptorSetçš„descriptorCount
+		2.pAccelerationStructuresçš„æ¯ä¸ªåŠ é€Ÿç»“æ„å¿…é¡»ä»¥VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR ç±»å‹åˆ›å»º
+		3.å¦‚æœnullDescriptor ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™pAccelerationStructuresä¸­çš„æ¯ä¸ªå…ƒç´ ä¸èƒ½ä¸ºVK_NULL_HANDLE
 		*/
 
 
@@ -833,57 +833,366 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 		VkCopyDescriptorSet copyDescriptorSet{};
 		copyDescriptorSet.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
 		copyDescriptorSet.pNext = nullptr;
-		copyDescriptorSet.descriptorCount = 1;//Ö¸Ã÷Òª¿½±´µÄdescriptor¸öÊı£¬Èç¹ûÍ¨¹ısrcSetºÍsrcBinding Ö¸¶¨µÄbindingµÄdescriptorTypeÎª VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòÕâ¸öÖ¸Ã÷Òª¿½±´µÄ×Ö½Ú´óĞ¡
-		copyDescriptorSet.dstArrayElement = 0;//Õâ¸ödstBindingÖĞdescriptorÊı×éÖĞµÄÆğÊ¼ÔªËØ£¬Èç¹ûÍ¨¹ıdstSetºÍdstBinding Ö¸¶¨µÄbindingµÄdescriptorTypeÎª VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòÕâ¸öÖ¸Ã÷ÎªÕâ¸öbindingÖĞ¿ªÊ¼×Ö½ÚµÄÆ«ÒÆÁ¿
-		copyDescriptorSet.dstBinding = 0;////Ö¸¶¨Òª¿½±´µ½µÄdestination descriptor setµÄbinding
-		copyDescriptorSet.dstSet = VkDescriptorSet{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDescriptorSet*/ }; //Ö¸Ã÷Òª¿½±´µ½µÄdestination descriptor set
-		copyDescriptorSet.srcArrayElement = 0;//Õâ¸ösrcBindingÖĞdescriptorÊı×éÖĞµÄÆğÊ¼ÔªËØ£¬Èç¹ûÍ¨¹ısrcSetºÍsrcBinding Ö¸¶¨µÄbindingµÄdescriptorTypeÎª VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòÕâ¸öÖ¸Ã÷ÎªÕâ¸öbindingÖĞ¿ªÊ¼×Ö½ÚµÄÆ«ÒÆÁ¿
-		copyDescriptorSet.srcBinding = 0;//Ö¸¶¨Òª¿½±´µÄsource descriptor setµÄbinding
-		copyDescriptorSet.srcSet = VkDescriptorSet{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDescriptorSet*/ };//Ö¸Ã÷Òª¿½±´µÄsource descriptor set
+		copyDescriptorSet.descriptorCount = 1;//æŒ‡æ˜è¦æ‹·è´çš„descriptorä¸ªæ•°ï¼Œå¦‚æœé€šè¿‡srcSetå’ŒsrcBinding æŒ‡å®šçš„bindingçš„descriptorTypeä¸º VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™è¿™ä¸ªæŒ‡æ˜è¦æ‹·è´çš„å­—èŠ‚å¤§å°
+		copyDescriptorSet.dstArrayElement = 0;//è¿™ä¸ªdstBindingä¸­descriptoræ•°ç»„ä¸­çš„èµ·å§‹å…ƒç´ ï¼Œå¦‚æœé€šè¿‡dstSetå’ŒdstBinding æŒ‡å®šçš„bindingçš„descriptorTypeä¸º VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™è¿™ä¸ªæŒ‡æ˜ä¸ºè¿™ä¸ªbindingä¸­å¼€å§‹å­—èŠ‚çš„åç§»é‡
+		copyDescriptorSet.dstBinding = 0;////æŒ‡å®šè¦æ‹·è´åˆ°çš„destination descriptor setçš„binding
+		copyDescriptorSet.dstSet = VkDescriptorSet{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorSet*/ }; //æŒ‡æ˜è¦æ‹·è´åˆ°çš„destination descriptor set
+		copyDescriptorSet.srcArrayElement = 0;//è¿™ä¸ªsrcBindingä¸­descriptoræ•°ç»„ä¸­çš„èµ·å§‹å…ƒç´ ï¼Œå¦‚æœé€šè¿‡srcSetå’ŒsrcBinding æŒ‡å®šçš„bindingçš„descriptorTypeä¸º VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™è¿™ä¸ªæŒ‡æ˜ä¸ºè¿™ä¸ªbindingä¸­å¼€å§‹å­—èŠ‚çš„åç§»é‡
+		copyDescriptorSet.srcBinding = 0;//æŒ‡å®šè¦æ‹·è´çš„source descriptor setçš„binding
+		copyDescriptorSet.srcSet = VkDescriptorSet{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorSet*/ };//æŒ‡æ˜è¦æ‹·è´çš„source descriptor set
 		/*
-		VkCopyDescriptorSetÓĞĞ§ÓÃ·¨:
-		1.srcBinding ±ØĞëÊÇsrcSetÖĞÓĞĞ§µÄbinding
-		2.srcArrayElement + descriptorCount ±ØĞëĞ¡ÓÚµÈÓÚsrcSetÖĞsrcBindingµÄdescriptor µÄÊıÁ¿£¬ÒÔ¼°consecutive binding updates p1301ÖĞÃèÊöµÄÁ¬ĞøbindingÖĞËùÓĞ¿ÉÓÃµÄdescriptorµÄ×ÜÊı
-		3.dstBinding ±ØĞëÊÇdstSetÖĞÓĞĞ§µÄbinding
-		4.dstArrayElement + descriptorCount ±ØĞëĞ¡ÓÚµÈÓÚsrcSetÖĞdstBindingµÄdescriptor µÄÊıÁ¿£¬ÒÔ¼°consecutive binding updates p1301ÖĞÃèÊöµÄÁ¬ĞøbindingÖĞËùÓĞ¿ÉÓÃµÄdescriptorµÄ×ÜÊı
-		5.dstSetÖĞdstBinding µÄÀàĞÍ±ØĞëµÈÓÚsrcSetÖĞsrcBinding µÄÀàĞÍ
-		6.Èç¹ûsrcSet µÈÓÚdstSet£¬ÔòsourceºÍdestinationÖĞdescriptorsµÄ·¶Î§²»ÄÜÖØµş£¬ÕâĞ©·¶Î§ÖĞ¿ÉÄÜ°üº¬consecutive binding updates p1301ÖĞÃèÊöµÄÁ¬Ğøbinding
-		7.Èç¹ûsrcBinding Ö¸Ã÷µÄdescriptor ÀàĞÍÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòsrcArrayElement ±ØĞëÊÇ4µÄÕûÊı±¶
-		8.Èç¹ûdstBinding Ö¸Ã÷µÄdescriptor ÀàĞÍÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòdstArrayElement ±ØĞëÊÇ4µÄÕûÊı±¶
-		9.Èç¹ûsrcBinding »òÕß dstBinding Ö¸Ã÷µÄdescriptor ÀàĞÍÎªVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK£¬ÔòdescriptorCount ±ØĞëÊÇ4µÄÕûÊı±¶
-		10.Èç¹ûsrcSet µÄlayoutÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT´´½¨£¬ÔòdstSet µÄlayout ±ØĞëÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT´´½¨
-		11.Èç¹ûsrcSet µÄlayout²»ÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT »òÕßVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT ´´½¨£¬ÔòdstSet µÄlayout ¾Í²»ÄÜÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT´´½¨
-		12.Èç¹û·ÖÅäsrcSet µÄdescriptor pool ÒÔVK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT´´½¨£¬Ôò·ÖÅädstSet µÄdescriptor pool Ò²±ØĞëÒÔVK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT´´½¨
-		13.Èç¹û·ÖÅäsrcSet µÄdescriptor pool ²»ÒÔVK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT »òÕß VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT´´½¨£¬Ôò·ÖÅädstSet µÄdescriptor pool ²»ÄÜÒÔVK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT´´½¨
-		14.Èç¹ûdstBinding Ö¸Ã÷µÄdescriptor ÀàĞÍÎªVK_DESCRIPTOR_TYPE_SAMPLER£¬ÔòdstSet ²»ÄÜÒÔÒ»¸ödstBinding º¬ÓĞimmutable samplersµÄlayout½øĞĞ·ÖÅä
-		15.Èç¹ûdstSetµÄdstBindingµÄÀàĞÍÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬ÔòÈç¹ûĞÂµÄ¸ÃdstBindingµÄdescriptor ÀàĞÍ²»ÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬Ôò±ØĞëÁĞ¾ÙÔÚ¸ÃdstBinding¶ÔÓ¦µÄpMutableDescriptorTypeListsÁĞ±íÖĞ
-		16.Èç¹ûsrcSetµÄsrcBindingµÄÀàĞÍÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬ÇÒdstSetµÄdstBindingµÄÀàĞÍ²»ÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬Ôòsource descriptorµÄÀàĞÍ±ØĞëºÍdstBindingÉÏµÄdescriptorÀàĞÍÆ¥Åä
-		17.Èç¹ûdstSetµÄdstBindingµÄÀàĞÍÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬ÇÒÈç¹ûĞÂµÄ¸ÃdstBindingµÄdescriptor ÀàĞÍÎªVK_DESCRIPTOR_TYPE_MUTABLE_EXT£¬Ôò¶ÔÓ¦srcBindingºÍdstBindingµÄpMutableDescriptorTypeListsÖĞµÄÔªËØ±ØĞëÍêÈ«Æ¥Åä
+		VkCopyDescriptorSetæœ‰æ•ˆç”¨æ³•:
+		1.srcBinding å¿…é¡»æ˜¯srcSetä¸­æœ‰æ•ˆçš„binding
+		2.srcArrayElement + descriptorCount å¿…é¡»å°äºç­‰äºsrcSetä¸­srcBindingçš„descriptor çš„æ•°é‡ï¼Œä»¥åŠconsecutive binding updates p1301ä¸­æè¿°çš„è¿ç»­bindingä¸­æ‰€æœ‰å¯ç”¨çš„descriptorçš„æ€»æ•°
+		3.dstBinding å¿…é¡»æ˜¯dstSetä¸­æœ‰æ•ˆçš„binding
+		4.dstArrayElement + descriptorCount å¿…é¡»å°äºç­‰äºsrcSetä¸­dstBindingçš„descriptor çš„æ•°é‡ï¼Œä»¥åŠconsecutive binding updates p1301ä¸­æè¿°çš„è¿ç»­bindingä¸­æ‰€æœ‰å¯ç”¨çš„descriptorçš„æ€»æ•°
+		5.dstSetä¸­dstBinding çš„ç±»å‹å¿…é¡»ç­‰äºsrcSetä¸­srcBinding çš„ç±»å‹
+		6.å¦‚æœsrcSet ç­‰äºdstSetï¼Œåˆ™sourceå’Œdestinationä¸­descriptorsçš„èŒƒå›´ä¸èƒ½é‡å ï¼Œè¿™äº›èŒƒå›´ä¸­å¯èƒ½åŒ…å«consecutive binding updates p1301ä¸­æè¿°çš„è¿ç»­binding
+		7.å¦‚æœsrcBinding æŒ‡æ˜çš„descriptor ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™srcArrayElement å¿…é¡»æ˜¯4çš„æ•´æ•°å€
+		8.å¦‚æœdstBinding æŒ‡æ˜çš„descriptor ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™dstArrayElement å¿…é¡»æ˜¯4çš„æ•´æ•°å€
+		9.å¦‚æœsrcBinding æˆ–è€… dstBinding æŒ‡æ˜çš„descriptor ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™descriptorCount å¿…é¡»æ˜¯4çš„æ•´æ•°å€
+		10.å¦‚æœsrcSet çš„layoutä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BITåˆ›å»ºï¼Œåˆ™dstSet çš„layout å¿…é¡»ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BITåˆ›å»º
+		11.å¦‚æœsrcSet çš„layoutä¸ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT æˆ–è€…VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT åˆ›å»ºï¼Œåˆ™dstSet çš„layout å°±ä¸èƒ½ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BITåˆ›å»º
+		12.å¦‚æœåˆ†é…srcSet çš„descriptor pool ä»¥VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BITåˆ›å»ºï¼Œåˆ™åˆ†é…dstSet çš„descriptor pool ä¹Ÿå¿…é¡»ä»¥VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BITåˆ›å»º
+		13.å¦‚æœåˆ†é…srcSet çš„descriptor pool ä¸ä»¥VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT æˆ–è€… VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BITåˆ›å»ºï¼Œåˆ™åˆ†é…dstSet çš„descriptor pool ä¸èƒ½ä»¥VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BITåˆ›å»º
+		14.å¦‚æœdstBinding æŒ‡æ˜çš„descriptor ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_SAMPLERï¼Œåˆ™dstSet ä¸èƒ½ä»¥ä¸€ä¸ªdstBinding å«æœ‰immutable samplersçš„layoutè¿›è¡Œåˆ†é…
+		15.å¦‚æœdstSetçš„dstBindingçš„ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œåˆ™å¦‚æœæ–°çš„è¯¥dstBindingçš„descriptor ç±»å‹ä¸ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œåˆ™å¿…é¡»åˆ—ä¸¾åœ¨è¯¥dstBindingå¯¹åº”çš„pMutableDescriptorTypeListsåˆ—è¡¨ä¸­
+		16.å¦‚æœsrcSetçš„srcBindingçš„ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œä¸”dstSetçš„dstBindingçš„ç±»å‹ä¸ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œåˆ™source descriptorçš„ç±»å‹å¿…é¡»å’ŒdstBindingä¸Šçš„descriptorç±»å‹åŒ¹é…
+		17.å¦‚æœdstSetçš„dstBindingçš„ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œä¸”å¦‚æœæ–°çš„è¯¥dstBindingçš„descriptor ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_MUTABLE_EXTï¼Œåˆ™å¯¹åº”srcBindingå’ŒdstBindingçš„pMutableDescriptorTypeListsä¸­çš„å…ƒç´ å¿…é¡»å®Œå…¨åŒ¹é…
 
 		*/
 
 
 		vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 1, &copyDescriptorSet);
 		/*
-		vkUpdateDescriptorSetsÓĞĞ§ÓÃ·¨:
-		1.¶ÔÓÚpDescriptorWritesÖĞÃ¿¸ödescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER »òÕß VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFERµÄÔªËØ£¬Ôò¸ÃÔªËØµÄpTexelBufferView ±ØĞëÒÑ¾­ÔÚdeviceÉÏ´´½¨
-		2.¶ÔÓÚpDescriptorWritesÖĞÃ¿¸ödescriptorTypeÎªVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, »òÕß VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICµÄÔªËØ£¬Ôò¸ÃÔªËØµÄpBufferInfoµÄbuffer ±ØĞëÒÑ¾­ÔÚdeviceÉÏ´´½¨
-		3.¶ÔÓÚpDescriptorWritesÖĞÃ¿¸ödescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLER »òÕß VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERµÄÔªËØ£¬Èç¹ûÆädstSet ²»ÒÔÒ»¸ödescriptorTypeÀàĞÍµÄdstBinding °üº¬ immutable samplersµÄlayout½øĞĞ·ÖÅä£¬ÔòÔò¸ÃÔªËØµÄpImageInfoµÄ sampler±ØĞëÒÑ¾­ÔÚdeviceÉÏ´´½¨
-		4.¶ÔÓÚpDescriptorWritesÖĞÃ¿¸ödescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLED_IMAGE£¬VK_DESCRIPTOR_TYPE_STORAGE_IMAGE£¬VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT »òÕß VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERµÄÔªËØ£¬Ôò¸ÃÔªËØµÄpImageInfoµÄ imageView ±ØĞëÒÑ¾­ÔÚdeviceÉÏ´´½¨
-		5.¶ÔÓÚpDescriptorWritesÖĞÃ¿¸ödescriptorTypeÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR µÄÔªËØ£¬Ôò¸ÃÔªËØµÄpNextÖĞµÄVkWriteDescriptorSetAccelerationStructureKHR.pAccelerationStructures ÖĞµÄ¼ÓËÙ½á¹¹±ØĞëÒÑ¾­ÔÚdeviceÉÏ´´½¨
-		6.¶ÔÓÚpDescriptorWritesÖĞÃ¿¸ödescriptorTypeÎªVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV µÄÔªËØ£¬Ôò¸ÃÔªËØµÄpNextÖĞµÄVkWriteDescriptorSetAccelerationStructureNV.pAccelerationStructures ÖĞµÄ¼ÓËÙ½á¹¹±ØĞëÒÑ¾­ÔÚdeviceÉÏ´´½¨
-		7.¶ÔÓÚpDescriptorWritesÖĞÃ¿¸ödescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM »òÕß VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM µÄÔªËØ£¬Ôò¸ÃÔªËØµÄpImageInfoµÄ imageView  ±ØĞëÒÑ¾­ÔÚdeviceÉÏ´´½¨
-		8.¶ÔÓÚpDescriptorWritesÖĞÃ¿¸ödescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, »òÕß
-                                     VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT µÄÔªËØ£¬Ôò¸ÃÔªËØµÄpImageInfo±ØĞëÊÇ¸ÃÔªËØËùÖ¸descriptorCount¸öÓĞĞ§VkDescriptorImageInfoÊı×éµÄÖ¸Õë
-		9.¶ÔÓÚpDescriptorWritesÖĞÃ¿¸ödescriptorTypeÎªVK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM »òÕß VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM µÄÔªËØ£¬Ôò¸ÃÔªËØµÄpImageInfo±ØĞëÊÇ¸ÃÔªËØËùÖ¸descriptorCount¸öÓĞĞ§VkDescriptorImageInfoÊı×éµÄÖ¸Õë
-		10.pDescriptorWrites ÖĞÃ¿¸öÔªËØµÄdstSet»òÕß pDescriptorCopiesÖĞbinding²»ÒÔVK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT»òÕß VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT´´½¨µÄÔªËØ²»ÄÜÔÚÈÎºÎÒ»¸ö¼ÇÂ¼µ½pending state ×´Ì¬µÄcommand bufferµÄcommandÖĞÊ¹ÓÃ
-		11.host·ÃÎÊpDescriptorWritesÖĞµÄdstSetÒÔ¼°pDescriptorCopiesÖĞµÄdstSet ±ØĞëÊÇÍâ²¿Í¬²½µÄ£¬³ı·ÇÓĞÌØÊâµÄ±êÖ¾ÉèÖÃ¡£
+		vkUpdateDescriptorSetsæœ‰æ•ˆç”¨æ³•:
+		1.å¯¹äºpDescriptorWritesä¸­æ¯ä¸ªdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER æˆ–è€… VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFERçš„å…ƒç´ ï¼Œåˆ™è¯¥å…ƒç´ çš„pTexelBufferView å¿…é¡»å·²ç»åœ¨deviceä¸Šåˆ›å»º
+		2.å¯¹äºpDescriptorWritesä¸­æ¯ä¸ªdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, æˆ–è€… VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICçš„å…ƒç´ ï¼Œåˆ™è¯¥å…ƒç´ çš„pBufferInfoçš„buffer å¿…é¡»å·²ç»åœ¨deviceä¸Šåˆ›å»º
+		3.å¯¹äºpDescriptorWritesä¸­æ¯ä¸ªdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLER æˆ–è€… VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERçš„å…ƒç´ ï¼Œå¦‚æœå…¶dstSet ä¸ä»¥ä¸€ä¸ªdescriptorTypeç±»å‹çš„dstBinding åŒ…å« immutable samplersçš„layoutè¿›è¡Œåˆ†é…ï¼Œåˆ™åˆ™è¯¥å…ƒç´ çš„pImageInfoçš„ samplerå¿…é¡»å·²ç»åœ¨deviceä¸Šåˆ›å»º
+		4.å¯¹äºpDescriptorWritesä¸­æ¯ä¸ªdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLED_IMAGEï¼ŒVK_DESCRIPTOR_TYPE_STORAGE_IMAGEï¼ŒVK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT æˆ–è€… VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERçš„å…ƒç´ ï¼Œåˆ™è¯¥å…ƒç´ çš„pImageInfoçš„ imageView å¿…é¡»å·²ç»åœ¨deviceä¸Šåˆ›å»º
+		5.å¯¹äºpDescriptorWritesä¸­æ¯ä¸ªdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR çš„å…ƒç´ ï¼Œåˆ™è¯¥å…ƒç´ çš„pNextä¸­çš„VkWriteDescriptorSetAccelerationStructureKHR.pAccelerationStructures ä¸­çš„åŠ é€Ÿç»“æ„å¿…é¡»å·²ç»åœ¨deviceä¸Šåˆ›å»º
+		6.å¯¹äºpDescriptorWritesä¸­æ¯ä¸ªdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV çš„å…ƒç´ ï¼Œåˆ™è¯¥å…ƒç´ çš„pNextä¸­çš„VkWriteDescriptorSetAccelerationStructureNV.pAccelerationStructures ä¸­çš„åŠ é€Ÿç»“æ„å¿…é¡»å·²ç»åœ¨deviceä¸Šåˆ›å»º
+		7.å¯¹äºpDescriptorWritesä¸­æ¯ä¸ªdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM æˆ–è€… VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM çš„å…ƒç´ ï¼Œåˆ™è¯¥å…ƒç´ çš„pImageInfoçš„ imageView  å¿…é¡»å·²ç»åœ¨deviceä¸Šåˆ›å»º
+		8.å¯¹äºpDescriptorWritesä¸­æ¯ä¸ªdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, æˆ–è€…
+                                     VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT çš„å…ƒç´ ï¼Œåˆ™è¯¥å…ƒç´ çš„pImageInfoå¿…é¡»æ˜¯è¯¥å…ƒç´ æ‰€æŒ‡descriptorCountä¸ªæœ‰æ•ˆVkDescriptorImageInfoæ•°ç»„çš„æŒ‡é’ˆ
+		9.å¯¹äºpDescriptorWritesä¸­æ¯ä¸ªdescriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM æˆ–è€… VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM çš„å…ƒç´ ï¼Œåˆ™è¯¥å…ƒç´ çš„pImageInfoå¿…é¡»æ˜¯è¯¥å…ƒç´ æ‰€æŒ‡descriptorCountä¸ªæœ‰æ•ˆVkDescriptorImageInfoæ•°ç»„çš„æŒ‡é’ˆ
+		10.pDescriptorWrites ä¸­æ¯ä¸ªå…ƒç´ çš„dstSetæˆ–è€… pDescriptorCopiesä¸­bindingä¸ä»¥VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BITæˆ–è€… VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BITåˆ›å»ºçš„å…ƒç´ ä¸èƒ½åœ¨ä»»ä½•ä¸€ä¸ªè®°å½•åˆ°pending state çŠ¶æ€çš„command bufferçš„commandä¸­ä½¿ç”¨
+		11.hostè®¿é—®pDescriptorWritesä¸­çš„dstSetä»¥åŠpDescriptorCopiesä¸­çš„dstSet å¿…é¡»æ˜¯å¤–éƒ¨åŒæ­¥çš„ï¼Œé™¤éæœ‰ç‰¹æ®Šçš„æ ‡å¿—è®¾ç½®ã€‚
 	
 		*/
 	
 	}
 
 
+
+	//Descriptor Update Templates
+	{
+		//ä¸€ä¸ªdescriptor update templateæŒ‡çš„æ˜¯ä¸€ä¸ªdescriptoræ›´æ–°ä¿¡æ¯åˆ°descriptorçš„æ˜ å°„ï¼Œè¿™ä¸ªçš„è®¾è®¡æ˜¯ä¸ºäº†é¿å…åœ¨è¿‡äºé¢‘ç¹åœ°æ›´æ–°descriptor setsä¸­çš„åŒä¸€descriptor setä¸­ hostç«¯å‘é©±åŠ¨ä¼ é€’å†—ä½™çš„æ›´æ–°ä¿¡æ¯,å³å½“å¸Œæœ›æ›´æ–°å¤šä¸ªä½¿ç”¨ç›¸åŒ VkDescriptorSetLayoutåˆ†é…çš„descriptor setsä¸­çš„ä¸€ç»„ç›¸åŒçš„descriptorsçš„æ—¶å€™ï¼Œå°±å¯ä»¥ä½¿ç”¨ vkUpdateDescriptorSetWithTemplate æ¥æ›¿æ¢ vkUpdateDescriptorSets
+		//VkDescriptorUpdateTemplate åŠŸèƒ½è¯¦ç»†è¯´æ˜è§p1318
+		VkDescriptorUpdateTemplate descriptorUpdateTemplate{};//ç­‰åŒäºVkDescriptorUpdateTemplateKHR
+
+
+		VkDescriptorUpdateTemplateCreateInfo descriptorUpdateTemplateCreateInfo{};//ç­‰åŒäºVkDescriptorUpdateTemplateCreateInfoKHR
+		descriptorUpdateTemplateCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO;
+		descriptorUpdateTemplateCreateInfo.pNext = nullptr;
+		descriptorUpdateTemplateCreateInfo.flags = 0;//ä¿ç•™æœªæ¥ä½¿ç”¨
+		descriptorUpdateTemplateCreateInfo.descriptorSetLayout = VkDescriptorSetLayout{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorSetLayout*/ };//ç”¨æ¥æ„å»ºdescriptor update templateçš„  descriptor set layoutï¼Œé€šè¿‡descriptor update template æ›´æ–°çš„descriptor setså¿…é¡»ä»¥å’Œè¯¥layoutç›¸åŒ¹é…çš„å¸ƒå±€åˆ›å»ºï¼Œä¸”è¯¥å‚æ•°åªåœ¨templateTypeä¸ºVK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SETæ‰æœ‰æ•ˆ
+		descriptorUpdateTemplateCreateInfo.descriptorUpdateEntryCount = 1;//pDescriptorUpdateEntriesä¸­å…ƒç´ ä¸ªæ•°
+			VkDescriptorUpdateTemplateEntry descriptorUpdateTemplateEntry{};//ç­‰ä»·äºVkDescriptorUpdateTemplateEntryKHR
+			{
+			descriptorUpdateTemplateEntry.stride = 1;//æ˜¯åŸå§‹æ•°æ®ç»“æ„ä¸­ä¸¤ä¸ªdescriptor æ›´æ–°ä¿¡æ¯æ•°ç»„å…ƒç´ ä¹‹é—´çš„å­—èŠ‚æ­¥é•¿ï¼Œæ›´æ–°å®ä½“içš„æ›´æ–°ä¿¡æ¯jçš„å®é™…åœ°å€ï¼šÂ  const char *ptr = (const char *)pData + pDescriptorUpdateEntries[i].offset + j *pDescriptorUpdateEntries[i].stride
+			descriptorUpdateTemplateEntry.offset = 0;//æ˜¯åŸå§‹æ•°æ®ç»“æ„ä¸­ç¬¬ä¸€ä¸ªbindingçš„èµ·å§‹å­—èŠ‚åç§»é‡
+			descriptorUpdateTemplateEntry.dstBinding = 0;//æŒ‡æ˜ä½¿ç”¨ descriptor update templateè¦æ›´æ–°çš„binding
+			descriptorUpdateTemplateEntry.dstArrayElement = 0;//dstBindingä¸Šçš„è¦æ›´æ–°çš„èµ·å§‹å…ƒç´ ï¼Œå¦‚æœdstBindingçš„ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™è¡¨ç¤ºè¦æ›´æ–°çš„èµ·å§‹å­—èŠ‚åç§»é‡
+			descriptorUpdateTemplateEntry.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//æ˜¯ä¸€ä¸ª VkDescriptorTypeå€¼ æŒ‡æ˜descriptorçš„ç±»å‹
+			descriptorUpdateTemplateEntry.descriptorCount = 1;//è¦æ›´æ–°çš„descriptorçš„æ•°é‡ï¼Œå¦‚æœdstBindingçš„ç±»å‹ä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼Œåˆ™è¡¨ç¤ºè¦æ›´æ–°çš„å­—èŠ‚æ•°é‡
+			/*
+			VkDescriptorUpdateTemplateEntryæœ‰æ•ˆç”¨æ³•:
+			1.dstBindingå¿…é¡»æ˜¯ä½¿ç”¨descriptor update templateæ›´æ–°descriptorsæ—¶descriptor set layoutéšå¼æŒ‡å®šçš„æœ‰æ•ˆçš„binding
+			2.dstArrayElement + descriptorCountå¿…é¡»å°äºç­‰äºä½¿ç”¨descriptor update templateæ›´æ–°descriptorsæ˜¯descriptor set layoutéšå¼æŒ‡å®šçš„æœ‰æ•ˆçš„bindingä¸­å…ƒç´ çš„ä¸ªæ•°ï¼Œä»¥åŠæ‰€æœ‰å¯ç”¨è¿ç»­bindingä¸­çš„descriptorsçš„æ•°é‡ï¼Œè§consecutive binding updates p1301 æè¿°
+			3.å¦‚æœdescriptorä¸ºVK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCKï¼ŒdstArrayElementå’ŒdescriptorCount å¿…é¡»æ˜¯4çš„æ•´æ•°å€
+			*/
+		}
+
+		descriptorUpdateTemplateCreateInfo.pDescriptorUpdateEntries = &descriptorUpdateTemplateEntry;//ä¸€ç»„VkDescriptorUpdateTemplateEntryçš„æ•°ç»„åœ°å€ï¼Œæè¿°ä¸€ç»„é€šè¿‡descriptor update templateæ›´æ–°çš„descriptors
+		descriptorUpdateTemplateCreateInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;//æ˜¯ä¸€ä¸ªVkPipelineBindPoint æŒ‡æ˜å“ªä¸€ä¸ªç±»å‹çš„pipelineå°†ä½¿ç”¨è¿™äº›descriptorsï¼Œä¸”è¯¥å‚æ•°åªåœ¨templateTypeä¸ºVK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHRæ‰æœ‰æ•ˆ
+		descriptorUpdateTemplateCreateInfo.pipelineLayout = VkPipelineLayout{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayout*/ };//æ˜¯ä¸€ä¸ª VkPipelineLayout å¯¹è±¡ç®¡ç†è¿™äº›bindingsï¼Œä¸”è¯¥å‚æ•°åªåœ¨templateTypeä¸ºVK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHRæ‰æœ‰æ•ˆ
+		descriptorUpdateTemplateCreateInfo.set = 0;//æ˜¯pipeline layoutä¸­è¦æ›´æ–°çš„descriptor setçš„ç¼–å·ï¼Œä¸”è¯¥å‚æ•°åªåœ¨templateTypeä¸ºVK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHRæ‰æœ‰æ•ˆ
+		descriptorUpdateTemplateCreateInfo.templateType = VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SET;/*æŒ‡å®šdescriptor update template çš„ç±»å‹ï¼Œ
+			å¦‚æœä¸ºVK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SET åˆ™åªèƒ½ç”¨æ¥æ›´æ–°ä½¿ç”¨descriptorSetLayoutçš„descriptor setsï¼Œ
+			å¦‚æœä¸ºVK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHRï¼Œåˆ™å¯ä»¥ç”¨æ¥æ¨é€pipelineBindPoint, pipelineLayout, ä»¥åŠ setæŒ‡æ˜çš„descriptor sets
+		*/
+
+
+		/*
+		VkDescriptorUpdateTemplateCreateInfoæœ‰æ•ˆç”¨æ³•:
+		1.å¦‚æœtemplateType æ˜¯VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SETï¼Œåˆ™descriptorSetLayoutå¿…é¡»æ˜¯æœ‰æ•ˆçš„VkDescriptorSetLayout å¥æŸ„ï¼Œä¸”descriptorSetLayoutä¸èƒ½åŒ…å«VK_DESCRIPTOR_TYPE_MUTABLE_EXTç±»å‹çš„binding
+		2.å¦‚æœtemplateType æ˜¯VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHRï¼Œåˆ™pipelineBindPointå¿…é¡»æ˜¯æœ‰æ•ˆçš„VkPipelineBindPoint å€¼ï¼ŒpipelineLayoutå¿…é¡»æ˜¯æœ‰æ•ˆçš„VkPipelineLayoutå¥æŸ„ï¼Œsetå¿…é¡»æ˜¯ä½¿ç”¨VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR åˆ›å»ºçš„pipeline layoutä¸­çš„å•ç‹¬çš„descriptor setç¼–å·
+
+		*/
+
+
+		//åˆ›å»ºVkDescriptorUpdateTemplate   ç­‰åŒäºvkCreateDescriptorUpdateTemplateKHR
+		vkCreateDescriptorUpdateTemplate(device, &descriptorUpdateTemplateCreateInfo, nullptr, &descriptorUpdateTemplate);
+
+		//é”€æ¯VkDescriptorUpdateTemplate   ç­‰åŒäºvkDestroyDescriptorUpdateTemplateKHR
+		vkDestroyDescriptorUpdateTemplate(device, descriptorUpdateTemplate, nullptr);
+
+
+		void* rawData;
+		//ä¸€æ—¦åˆ›å»ºä»¥ä¸€ä¸ªVkDescriptorUpdateTemplateï¼Œä¾¿å¯è¿›è¡Œdescriptoræ›´æ–°    ç­‰åŒäºvkUpdateDescriptorSetWithTemplateKHR
+		vkUpdateDescriptorSetWithTemplate(device, VkDescriptorSet{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorSet*/ }, descriptorUpdateTemplate, rawData);/*
+		vkUpdateDescriptorSetWithTemplateå…³é”®å‚æ•°:
+		descriptorSet : ä¸ºè¦æ›´æ–°çš„ descriptor set 
+		descriptorUpdateTemplate : æ˜¯ä¸€ä¸ªVkDescriptorUpdateTemplate å¥æŸ„ï¼ŒæŒ‡æ˜ä¸€ä¸ªpDataåˆ°è¦æ›´æ–°çš„descriptor setä¹‹é—´çš„æ›´æ–°æ˜ å°„
+		pData  :  æ˜¯ä¸€ä¸ªåŒ…å«ä¸€ä¸ªæˆ–å¤šä¸ªkDescriptorImageInfo, VkDescriptorBufferInfo, æˆ–è€… VkBufferView  æˆ–è€… VkAccelerationStructureKHR æˆ–è€… VkAccelerationStructureNVå¥æŸ„çš„ç”¨äºå†™å…¥descriptorçš„åœ°å€æŒ‡é’ˆ
+		
+		---------------------------------------------------
+		vkUpdateDescriptorSetWithTemplateæœ‰æ•ˆç”¨æ³•:
+		1.pData å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„åŒ…å«ä¸€ä¸ªæˆ–å¤šä¸ªä»¥åˆ›å»ºdescriptorUpdateTemplateæ—¶æŒ‡å®šçš„layoutå¸ƒå±€åˆ›å»ºçš„ VkDescriptorImageInfo, VkDescriptorBufferInfo, æˆ–è€… VkBufferView å¥æŸ„çš„ç”¨äºå†™å…¥descriptorçš„åœ°å€æŒ‡é’ˆ
+		2.é™¤éæœ‰ç‰¹æ®Šçš„æ ‡å¿—è¯´æ˜ï¼Œåˆ™hostå¯¹descriptorSet çš„è®¿é—®å¿…é¡»æ—¶å¤–éƒ¨åŒæ­¥çš„
+		
+		
+		*/
+
+		//ä½¿ç”¨VkDescriptorUpdateTemplate æ›´æ–°descriptor setçš„ä»£ç ç¤ºä¾‹è§p1326
+	}
+
+
+
+	//Descriptor Set Binding  ç»‘å®šdescriptor set
+	{
+		//ç»‘å®šä¸€ä¸ªæˆ–è€…å¤šä¸ªdescriptor setåˆ°command buffer
+		VkDescriptorSet descriptorSet{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorSet*/ };
+		VkCommandBuffer commandBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkCommandBuffer*/ };
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+			VkPipelineLayout{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayout*/ }, 0, 1, & descriptorSet, 0, nullptr);
+		/*
+		vkCmdBindDescriptorSetsé‡è¦å‚æ•°:
+		commandBuffer: ä¸ºdescriptor setè¦ç»‘å®šåˆ°çš„command buffer 
+		pipelineBindPoint:  æ˜¯ä¸€ä¸ªVkPipelineBindPoint æŒ‡å®šä½¿ç”¨descriptorsçš„pipelineç±»å‹ï¼Œä¸åŒpipelineç±»å‹çš„ç»‘å®šä¸ä¼šäº’ç›¸å¹²æ‰°ï¼Œè§descriptor ç»‘å®šå¹²æ‰°Pipeline Layout Compatibility p1280
+		layout: æ˜¯ä¸€ä¸ªVkPipelineLayoutï¼Œ ç”¨æ¥ç»„ç»‡ bindings.
+		firstSet: æ˜¯ç¬¬ä¸€ä¸ªè¦ç»‘å®šçš„descriptor setçš„setç¼–å·
+		descriptorSetCount: pDescriptorSetsä¸­å…ƒç´ ä¸ªæ•°
+		pDescriptorSets:  æ˜¯ä¸€ç»„æè¿°è¦ç»‘å®šçš„descriptor setsçš„VkDescriptorSet å¥æŸ„çš„æ•°ç»„æŒ‡é’ˆ
+		dynamicOffsetCount:  pDynamicOffsetsä¸­å…ƒç´ ä¸ªæ•°
+		pDynamicOffsets: ä¸€ç»„æŒ‡æ˜dynamic offsetsçš„uint32_tå€¼çš„æ•°ç»„æŒ‡é’ˆ
+
+		ç»‘å®špDescriptorSets[0..descriptorSetCount-1] åˆ° [firstSet..firstSet+descriptorSetCount-1]
+
+		dynamicOffsetCountä»¥åŠpDynamicOffsets ç”¨åœ¨è¦ç»‘å®šçš„descriptor setsä¸­å«æœ‰dynamic uniform æˆ–è€… storage buffersç±»å‹çš„descriptorçš„æ—¶å€™ï¼Œå…·ä½“åŠŸèƒ½æè¿°è§p1329
+
+		-------------------------------------
+		vkCmdBindDescriptorSetsæœ‰æ•ˆç”¨æ³•:
+		1.pDescriptorSetsä¸­æ¯ä¸ªå…ƒç´ åˆ†é…æ—¶çš„VkDescriptorSetLayoutå¿…é¡»åŒ¹é…layoutï¼ˆVkPipelineLayoutï¼‰ä¸­firstSet + pDescriptorSetsä¸­è¯¥å…ƒç´ ç´¢å¼• å¯¹åº”çš„ VkDescriptorSetLayout
+		2.dynamicOffsetCount å¿…é¡»ç­‰äºpDescriptorSetsä¸­dynamic descriptorsçš„æ€»æ•°
+		3.firstSet + descriptorSetCountå¿…é¡»å°äºç­‰äºlayout åˆ›å»ºæ—¶çš„VkPipelineLayoutCreateInfo::setLayoutCount
+		4.pDynamicOffsetsä¸­çš„æ¯ä¸ªå¯¹åº”åˆ°descriptor bindingä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMICç±»å‹çš„å…ƒç´ å€¼å¿…é¡»æ˜¯VkPhysicalDeviceLimits::minUniformBufferOffsetAlignmentçš„å€æ•°
+		5.pDynamicOffsetsä¸­çš„æ¯ä¸ªå¯¹åº”åˆ°descriptor bindingä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICç±»å‹çš„å…ƒç´ å€¼å¿…é¡»æ˜¯VkPhysicalDeviceLimits::minStorageBufferOffsetAlignmentçš„å€æ•°
+		6.å¯¹äºpDescriptorSetsä¸­æ¯ä¸ªdynamic uniform æˆ–è€… storage buffer bindingï¼Œåˆ™ï¼ˆ1ï¼‰å…¶æœ‰æ•ˆçš„offset + rangeå¿…é¡»å°äºbufferçš„å¤§å°
+																				  ï¼ˆ2ï¼‰å¦‚æœå…¶rangeä¸ºrangeï¼Œåˆ™pDynamicOffsets å¯¹åº”åˆ°è¯¥bindingçš„å…ƒç´ å¿…é¡»ä¸º0
+		7.pDescriptorSetsä¸­çš„æ¯ä¸ªå…ƒç´ ä¸èƒ½ä»ä¸€ä¸ªä»¥VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXTåˆ›å»ºçš„VkDescriptorPool ä¸­åˆ†é…
+		8.å¦‚æœgraphicsPipelineLibrary æ²¡æœ‰å¯ç”¨ï¼Œåˆ™pDescriptorSetsçš„æ¯ä¸ªå…ƒç´ å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorSet
+		9.pDescriptorSetsä¸­çš„æ¯ä¸ªå…ƒç´ ä¸èƒ½ä»ä¸€ä¸ªä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»ºçš„VkDescriptorSetLayout æ¥è¿›è¡Œåˆ†é…
+		10.pipelineBindPoint å¿…é¡»ç”±commandBufferæ‰€åœ¨çš„VkCommandPoolå¯¹åº”çš„é˜Ÿåˆ—æ—æ‰€æ”¯æŒ
+
+		*/
+
+
+
+		//ä½¿ç”¨vkCmdBindDescriptorSets2KHR 
+		{
+			// Provided by VK_KHR_maintenance6
+			typedef struct VkBindDescriptorSetsInfoKHR {
+				VkStructureType sType;
+				const void* pNext;//å¯ä»¥åŒ…å«ä¸€ä¸ª VkPipelineLayoutCreateInfoï¼Œåªåœ¨layoutä¸ºVK_NULL_HANDLEçš„æƒ…å†µä¸‹æ‰åŒ…å«
+				VkShaderStageFlags stageFlags;//æ˜¯VkShaderStageFlagBitsç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜descriptorè¦ç»‘å®šçš„shader stages
+				VkPipelineLayout layout;//æ˜¯ä¸€ä¸ªVkPipelineLayoutï¼Œ ç”¨æ¥ç»„ç»‡ bindingsï¼Œå¦‚æœ dynamicPipelineLayoutç‰¹æ€§å¼€å¯ï¼Œè¿™ä¸ªå‚æ•°å¯ä»¥ä¸ºVK_NULL_HANDLEä½†å¿…é¡»åœ¨pNextä¸­æ·»åŠ ä¸€ä¸ªVkPipelineLayoutCreateInfoè¿›è¡ŒæŒ‡å®š
+				uint32_t firstSet;//æ˜¯ç¬¬ä¸€ä¸ªè¦ç»‘å®šçš„descriptor setçš„setç¼–å·
+				uint32_t descriptorSetCount;//pDescriptorSetsä¸­å…ƒç´ ä¸ªæ•°
+				const VkDescriptorSet* pDescriptorSets;//æ˜¯ä¸€ç»„æè¿°è¦ç»‘å®šçš„descriptor setsçš„VkDescriptorSet å¥æŸ„çš„æ•°ç»„æŒ‡é’ˆ
+				uint32_t dynamicOffsetCount;//pDynamicOffsetsä¸­å…ƒç´ ä¸ªæ•°
+				const uint32_t* pDynamicOffsets;//ä¸€ç»„æŒ‡æ˜dynamic offsetsçš„uint32_tå€¼çš„æ•°ç»„æŒ‡é’ˆ
+			} VkBindDescriptorSetsInfoKHR;
+			/*
+			VkBindDescriptorSetsInfoKHRæœ‰æ•ˆç”¨æ³•:
+			1.pDescriptorSetsä¸­æ¯ä¸ªå…ƒç´ åˆ†é…æ—¶çš„VkDescriptorSetLayoutå¿…é¡»åŒ¹é…layoutï¼ˆVkPipelineLayoutï¼‰ä¸­firstSet + pDescriptorSetsä¸­è¯¥å…ƒç´ ç´¢å¼• å¯¹åº”çš„ VkDescriptorSetLayout
+			2.dynamicOffsetCount å¿…é¡»ç­‰äºpDescriptorSetsä¸­dynamic descriptorsçš„æ€»æ•°
+			3.firstSet + descriptorSetCountå¿…é¡»å°äºç­‰äºlayout åˆ›å»ºæ—¶çš„VkPipelineLayoutCreateInfo::setLayoutCount
+			4.pDynamicOffsetsä¸­çš„æ¯ä¸ªå¯¹åº”åˆ°descriptor bindingä¸ºVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMICç±»å‹çš„å…ƒç´ å€¼å¿…é¡»æ˜¯VkPhysicalDeviceLimits::minUniformBufferOffsetAlignmentçš„å€æ•°
+			5.pDynamicOffsetsä¸­çš„æ¯ä¸ªå¯¹åº”åˆ°descriptor bindingä¸ºVK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICç±»å‹çš„å…ƒç´ å€¼å¿…é¡»æ˜¯VkPhysicalDeviceLimits::minStorageBufferOffsetAlignmentçš„å€æ•°
+			6.å¯¹äºpDescriptorSetsä¸­æ¯ä¸ªdynamic uniform æˆ–è€… storage buffer bindingï¼Œåˆ™ï¼ˆ1ï¼‰å…¶æœ‰æ•ˆçš„offset + rangeå¿…é¡»å°äºbufferçš„å¤§å°
+																				      ï¼ˆ2ï¼‰å¦‚æœå…¶rangeä¸ºrangeï¼Œåˆ™pDynamicOffsets å¯¹åº”åˆ°è¯¥bindingçš„å…ƒç´ å¿…é¡»ä¸º0
+			7.pDescriptorSetsä¸­çš„æ¯ä¸ªå…ƒç´ ä¸èƒ½ä»ä¸€ä¸ªä»¥VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXTåˆ›å»ºçš„VkDescriptorPool ä¸­åˆ†é…
+			8.å¦‚æœgraphicsPipelineLibrary æ²¡æœ‰å¯ç”¨ï¼Œåˆ™pDescriptorSetsçš„æ¯ä¸ªå…ƒç´ å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorSet
+			9.pDescriptorSetsä¸­çš„æ¯ä¸ªå…ƒç´ ä¸èƒ½ä»ä¸€ä¸ªä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»ºçš„VkDescriptorSetLayout æ¥è¿›è¡Œåˆ†é…
+			10.å¦‚æœdynamicPipelineLayout ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™layout å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayout å¥æŸ„
+			11.å¦‚æœlayout ä¸ºVK_NULL_HANDLEï¼Œåˆ™pNextä¸­å¿…é¡»åŒ…å«ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayoutCreateInfo
+
+			*/
+
+
+
+			// Provided by VK_KHR_maintenance6
+			auto vkCmdBindDescriptorSets2KHR = [](
+				VkCommandBuffer commandBuffer,
+				const VkBindDescriptorSetsInfoKHR* pBindDescriptorSetsInfo/* pBindDescriptorSetsInfo->stageFlagsä¸­çš„æ¯ä¸ªæ¯”ç‰¹ä½éƒ½å¿…é¡»ç”±commandBufferæ‰€åœ¨çš„VkCommandPoolå¯¹åº”çš„é˜Ÿåˆ—æ—æ‰€æ”¯æŒ*/
+				) {
+
+				};//ç”±äºvkCmdBindDescriptorSets2KHRè¿™ä¸ªæ¥å£æ²¡æœ‰å®šä¹‰ï¼Œè¿™é‡Œå°±ç›´æ¥å®šä¹‰æˆlambdaå½¢å¼
+		
+			VkBindDescriptorSetsInfoKHR bindDescriptorSetsInfoKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBindDescriptorSetsInfoKHR*/ };
+			vkCmdBindDescriptorSets2KHR(commandBuffer, &bindDescriptorSetsInfoKHR);
+		}
+
+
+
+
+	
+	}
+
+
+
+	// Push Descriptor Updates
+	{
+	//é™¤äº†å°†descriptor setsç»‘å®šåˆ°command bufferå¤–ï¼Œè¿˜å¯ä»¥é€šè¿‡å°†descriptor çš„æ›´æ–°ä¿¡æ¯è®°å½•åˆ°command buffer,è¿™äº›push descriptorsç”±command bufferè¿›è¡Œå†…å­˜ç®¡ç†åˆ™ä¾¿ä¸éœ€è¦ç®¡ç†descriptor setsçš„ç”Ÿå‘½å‘¨æœŸ
+		VkCommandBuffer commandBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkCommandBuffer*/ };
+		VkWriteDescriptorSet writeDescriptorSet{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkWriteDescriptorSet*/ };
+		
+		vkCmdPushDescriptorSetKHR(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VkPipelineLayout{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayout*/ },
+			0, 1, & writeDescriptorSet);
+		/*
+		vkCmdPushDescriptorSetKHRå‚æ•°:
+
+		commandBuffer: æ˜¯descriptorså°†è¢«è®°å½•åˆ°çš„command buffer
+		pipelineBindPoint:  æ˜¯ä¸€ä¸ªVkPipelineBindPoint æŒ‡å®šä½¿ç”¨descriptorsçš„pipelineç±»å‹ï¼Œä¸åŒpipelineç±»å‹çš„ç»‘å®šä¸ä¼šäº’ç›¸å¹²æ‰°ï¼Œè§descriptor ç»‘å®šå¹²æ‰°Pipeline Layout Compatibility p1280
+		layout:  æ˜¯ä¸€ä¸ªVkPipelineLayoutï¼Œ ç”¨æ¥ç»„ç»‡ bindings.
+		set:  æ˜¯pipeline layoutä¸­è¦æ›´æ–°çš„descriptor setçš„setç¼–å·
+		descriptorWriteCount:  pDescriptorWritesä¸­å…ƒç´ ä¸ªæ•°
+		pDescriptorWrites:  æ˜¯ä¸€ç»„æè¿°è¦æ›´æ–°çš„descriptorsçš„VkWriteDescriptorSet æ•°ç»„æŒ‡é’ˆ
+
+		å…·ä½“çš„åŠŸèƒ½æè¿°è§p1336
+		------------------------------------
+		vkCmdPushDescriptorSetKHRæœ‰æ•ˆç”¨æ³•:
+		1.setå¿…é¡»å°äºç­‰äºlayout åˆ›å»ºæ—¶çš„VkPipelineLayoutCreateInfo::setLayoutCount
+		2.setå¿…é¡»æ˜¯pipeline layoutä¸­ä½¿ç”¨VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHRåˆ›å»ºçš„å•ç‹¬æœ‰æ•ˆçš„setç¼–å·
+		3.å¯¹äºæ¯ä¸ªpDescriptorWritesä¸­descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, æˆ–è€…
+								VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT çš„å…ƒç´ ï¼Œè¯¥å…ƒç´ çš„pImageInfo å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„è¯¥å…ƒç´ çš„descriptorCountä¸ªVkDescriptorImageInfoçš„æ•°ç»„æŒ‡é’ˆ
+		4.pipelineBindPointå¿…é¡»ç”±commandBufferæ‰€åœ¨çš„VkCommandPoolå¯¹åº”çš„é˜Ÿåˆ—æ—æ‰€æ”¯æŒ
+		
+		*/
+
+	
+
+		//ä½¿ç”¨vkCmdPushDescriptorSet2KHR
+		{
+			
+			// Provided by VK_KHR_maintenance6 with VK_KHR_push_descriptor
+			typedef struct VkPushDescriptorSetInfoKHR {
+				VkStructureType sType;
+				const void* pNext;//å¯ä»¥åŒ…å«ä¸€ä¸ª VkPipelineLayoutCreateInfoï¼Œåªåœ¨layoutä¸ºVK_NULL_HANDLEçš„æƒ…å†µä¸‹æ‰åŒ…å«
+				VkShaderStageFlags stageFlags;//æ˜¯VkShaderStageFlagBitsç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜è¦ä½¿ç”¨descriptorsçš„shader stages
+				VkPipelineLayout layout;//æ˜¯ä¸€ä¸ªVkPipelineLayoutï¼Œ ç”¨æ¥ç»„ç»‡ bindingsï¼Œå¦‚æœ dynamicPipelineLayoutç‰¹æ€§å¼€å¯ï¼Œè¿™ä¸ªå‚æ•°å¯ä»¥ä¸ºVK_NULL_HANDLEä½†å¿…é¡»åœ¨pNextä¸­æ·»åŠ ä¸€ä¸ªVkPipelineLayoutCreateInfoè¿›è¡ŒæŒ‡å®š
+				uint32_t set;//æ˜¯è¦æ›´æ–°pipeline layoutä¸­çš„descriptor setçš„setç¼–å·
+				uint32_t descriptorWriteCount;// pDescriptorWritesä¸­å…ƒç´ ä¸ªæ•°
+				const VkWriteDescriptorSet* pDescriptorWrites;//æ˜¯ä¸€ç»„æè¿°è¦æ›´æ–°çš„descriptorsçš„  VkWriteDescriptorSetæ•°ç»„æŒ‡é’ˆ
+			} VkPushDescriptorSetInfoKHR;//æ²¡æœ‰å®šä¹‰æ‰€ä»¥è¿™é‡Œå®šä¹‰ä¸€ä¸ªä¸´æ—¶VkPushDescriptorSetInfoKHRçš„ç”¨ä½œç¤ºä¾‹
+			/*
+			VkPushDescriptorSetInfoKHRæœ‰æ•ˆç”¨æ³•:
+			1.setå¿…é¡»å°äºç­‰äºlayout åˆ›å»ºæ—¶çš„VkPipelineLayoutCreateInfo::setLayoutCount
+			2.setå¿…é¡»æ˜¯pipeline layoutä¸­ä½¿ç”¨VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHRåˆ›å»ºçš„å•ç‹¬æœ‰æ•ˆçš„setç¼–å·
+			3.å¯¹äºæ¯ä¸ªpDescriptorWritesä¸­descriptorTypeä¸ºVK_DESCRIPTOR_TYPE_SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, æˆ–è€…
+									VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT çš„å…ƒç´ ï¼Œè¯¥å…ƒç´ çš„pImageInfo å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„è¯¥å…ƒç´ çš„descriptorCountä¸ªVkDescriptorImageInfoçš„æ•°ç»„æŒ‡é’ˆ
+			4.å¦‚æœdynamicPipelineLayout ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™layoutå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayout å¥æŸ„
+			5.å¦‚æœlayoutä¸ºVK_NULL_HANDLEï¼Œåˆ™pNextä¸­å¿…é¡»åŒ…å«ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayoutCreateInfo 
+			
+			
+			*/
+
+
+
+			// Provided by VK_KHR_maintenance6 with VK_KHR_push_descriptor
+			auto vkCmdPushDescriptorSet2KHR = [](
+				VkCommandBuffer commandBuffer,
+				const VkPushDescriptorSetInfoKHR* pPushDescriptorSetInfo/* pPushDescriptorSetInfo->stageFlagsä¸­çš„æ¯ä¸ªæ¯”ç‰¹ä½éƒ½å¿…é¡»ç”±commandBufferæ‰€åœ¨çš„VkCommandPoolå¯¹åº”çš„é˜Ÿåˆ—æ—æ‰€æ”¯æŒ*/
+				) {
+
+				};//æ²¡æœ‰å®šä¹‰æ‰€ä»¥è¿™é‡Œç›´æ¥å®šä¹‰ä¸ºlambdaå½¢å¼çš„
+		
+			VkPushDescriptorSetInfoKHR pushDescriptorSetInfoKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkPushDescriptorSetInfoKHR*/ };
+			vkCmdPushDescriptorSet2KHR(commandBuffer, &pushDescriptorSetInfoKHR);
+		}
+	
+	}
+
+
+	// Push Descriptor Updates With Descriptor Update Templates  ä½¿ç”¨descriptor update templateæ¥æ›´æ–°push descriptor
+	{
+		VkCommandBuffer commandBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkCommandBuffer*/};
+
+		void* rawData;
+		vkCmdPushDescriptorSetWithTemplateKHR(commandBuffer, VkDescriptorUpdateTemplate{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDescriptorUpdateTemplate*/ },
+			VkPipelineLayout{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayout*/ }, 0, rawData);
+		/*
+		vkCmdPushDescriptorSetWithTemplateKHRå‚æ•°:
+		commandBuffer: æ˜¯descriptorsè¦è¢«è®°å½•åˆ°çš„command buffer
+		descriptorUpdateTemplate:  æ˜¯ä¸€ä¸ªå®šä¹‰å¦‚ä½•è§£é‡ŠpDataä¸­çš„descriptorä¿¡æ¯çš„VkDescriptorUpdateTemplateå¥æŸ„
+		layout:  æ˜¯ä¸€ä¸ªç»„ç»‡bindings çš„VkPipelineLayoutå¥æŸ„ï¼Œå¿…é¡»å’Œåˆ›å»ºdescriptorUpdateTemplateçš„pipeline layoutå…¼å®¹
+		set:  æ˜¯pipeline layoutä¸­è¦æ›´æ–°çš„descriptor setçš„ç¼–å·ï¼Œå¿…é¡»å’Œåˆ›å»ºdescriptorUpdateTemplateçš„setç›¸åŒ
+		pData:  æ˜¯åŒ…å«descriptorsç›¸å…³å¥æŸ„çš„æŒ‡é’ˆ
+
+		---------------------------------------------
+		vkCmdPushDescriptorSetWithTemplateKHRæœ‰æ•ˆç”¨æ³•:
+		1.åˆ›å»ºdescriptorUpdateTemplate æ—¶æŒ‡å®šçš„pipelineBindPointå¿…é¡»ç”± commandBufferæ‰€åœ¨çš„VkCommandPoolå¯¹åº”çš„é˜Ÿåˆ—æ—æ‰€æ”¯æŒ
+		2.pData å¿…é¡»æ˜¯ä¸€ä¸ªåŒ…å«ä¸€ä¸ªæˆ–å¤šä¸ªåœ¨åˆ›å»ºdescriptorUpdateTemplateçš„æ—¶å€™layoutä¸­å®šä¹‰çš„ä¸€ä¸ªæˆ–å¤šä¸ªVkDescriptorImageInfo, VkDescriptorBufferInfo, æˆ–è€… VkBufferView æœ‰æ•ˆå®ä¾‹çš„å¥æŸ„çš„æ•°ç»„æŒ‡é’ˆ
+		3.layoutå¿…é¡»å’Œåˆ›å»ºdescriptorUpdateTemplateçš„pipeline layoutåŒ¹é…
+		4.descriptorUpdateTemplate å¿…é¡»ä»¥VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHRç±»å‹åˆ›å»º
+		5.setå¿…é¡»å’Œåˆ›å»ºdescriptorUpdateTemplateçš„setç›¸åŒï¼Œä¸”setå¿…é¡»å°äºåˆ›å»ºlayoutæ—¶VkPipelineLayoutCreateInfo::setLayoutCountæŒ‡å®šçš„å€¼ï¼Œ
+				ä¸”setå¿…é¡»æ˜¯ä½¿ç”¨ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHRåˆ›å»ºdescriptor set layoutçš„pipeline layoutä¸­ä¸€ä¸ªå•ç‹¬çš„ç¼–å·
+		
+		*/
+	
+
+
+		//ä½¿ç”¨vkCmdPushDescriptorSetWithTemplate2KHR
+		{
+		
+			// Provided by VK_KHR_maintenance6 with VK_KHR_push_descriptor
+			typedef struct VkPushDescriptorSetWithTemplateInfoKHR {
+				VkStructureType sType;
+				const void* pNext;//å¯ä»¥åŒ…å«ä¸€ä¸ªVkPipelineLayoutCreateInfoï¼Œåªåœ¨layoutä¸ºVK_NULL_HANDLEçš„æƒ…å†µä¸‹æ‰åŒ…å«
+				VkDescriptorUpdateTemplate descriptorUpdateTemplate;//æ˜¯ä¸€ä¸ªå®šä¹‰å¦‚ä½•è§£é‡ŠpDataä¸­çš„descriptorä¿¡æ¯çš„VkDescriptorUpdateTemplateå¥æŸ„
+				VkPipelineLayout layout;//æ˜¯ä¸€ä¸ªç»„ç»‡bindings çš„VkPipelineLayoutå¥æŸ„ï¼Œå¿…é¡»å’Œåˆ›å»ºdescriptorUpdateTemplateçš„pipeline layoutå…¼å®¹,å¦‚æœ dynamicPipelineLayout ç‰¹æ€§å¼€å¯ï¼Œåˆ™å¯ä»¥ä¸ºVK_NULL_HANDLEï¼Œä½†å¿…é¡»åœ¨pNextä¸­æ·»åŠ ä¸€ä¸ªVkPipelineLayoutCreateInfo
+				uint32_t set;//æ˜¯pipeline layoutä¸­è¦æ›´æ–°çš„descriptor setçš„ç¼–å·ï¼Œå¿…é¡»å’Œåˆ›å»ºdescriptorUpdateTemplateçš„setç›¸åŒ
+				const void* pData;//æ˜¯åŒ…å«descriptorsç›¸å…³å¥æŸ„çš„æŒ‡é’ˆ
+			} VkPushDescriptorSetWithTemplateInfoKHR;//è¿™ä¸ªæ•°æ®ç»“æ„æ²¡æœ‰å®šä¹‰æ‰€ä»¥å®šä¹‰ä¸€ä¸ªç¤ºä¾‹çš„VkPushDescriptorSetWithTemplateInfoKHR
+			/*
+			VkPushDescriptorSetWithTemplateInfoKHRæœ‰æ•ˆç”¨æ³•:
+			
+			1.åˆ›å»ºdescriptorUpdateTemplate æ—¶æŒ‡å®šçš„pipelineBindPointå¿…é¡»ç”± commandBufferæ‰€åœ¨çš„VkCommandPoolå¯¹åº”çš„é˜Ÿåˆ—æ—æ‰€æ”¯æŒ
+			2.pData å¿…é¡»æ˜¯ä¸€ä¸ªåŒ…å«ä¸€ä¸ªæˆ–å¤šä¸ªåœ¨åˆ›å»ºdescriptorUpdateTemplateçš„æ—¶å€™layoutä¸­å®šä¹‰çš„ä¸€ä¸ªæˆ–å¤šä¸ªVkDescriptorImageInfo, VkDescriptorBufferInfo, æˆ–è€… VkBufferView æœ‰æ•ˆå®ä¾‹çš„å¥æŸ„çš„æ•°ç»„æŒ‡é’ˆ
+			3.layoutå¿…é¡»å’Œåˆ›å»ºdescriptorUpdateTemplateçš„pipeline layoutåŒ¹é…
+			4.descriptorUpdateTemplate å¿…é¡»ä»¥VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHRç±»å‹åˆ›å»º
+			5.setå¿…é¡»å’Œåˆ›å»ºdescriptorUpdateTemplateçš„setç›¸åŒï¼Œä¸”setå¿…é¡»å°äºåˆ›å»ºlayoutæ—¶VkPipelineLayoutCreateInfo::setLayoutCountæŒ‡å®šçš„å€¼ï¼Œ
+				 ä¸”setå¿…é¡»æ˜¯ä½¿ç”¨ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHRåˆ›å»ºdescriptor set layoutçš„pipeline layoutä¸­ä¸€ä¸ªå•ç‹¬çš„ç¼–å·
+			6.å¦‚æœdynamicPipelineLayout ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™layoutå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayout å¥æŸ„
+			7.å¦‚æœlayoutä¸ºVK_NULL_HANDLEï¼Œåˆ™pNextä¸­å¿…é¡»åŒ…å«ä¸€ä¸ªæœ‰æ•ˆçš„VkPipelineLayoutCreateInfo 
+			*/
+
+
+			// Provided by VK_KHR_maintenance6 with VK_KHR_push_descriptor
+			auto vkCmdPushDescriptorSetWithTemplate2KHR = [=](
+				VkCommandBuffer commandBuffer,
+				const VkPushDescriptorSetWithTemplateInfoKHR* pPushDescriptorSetWithTemplateInfo) {};//è¿™ä¸ªæ¥å£æ²¡æœ‰å®šä¹‰æ‰€ä»¥è¿™é‡Œæ‰‹åŠ¨å®šä¹‰ä¸€ä¸ªlambdaå½¢å¼çš„
+
+			VkPushDescriptorSetWithTemplateInfoKHR pushDescriptorSetWithTemplateInfoKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkPushDescriptorSetWithTemplateInfoKHR*/ };
+			vkCmdPushDescriptorSetWithTemplate2KHR(commandBuffer, &pushDescriptorSetWithTemplateInfoKHR);
+
+		}
+
+
+
+	}
 
 
 }

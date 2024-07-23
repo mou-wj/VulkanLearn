@@ -1195,6 +1195,121 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 	}
 
 
+
+	//Push Constant Updates
+	{
+		//pipeline layout定义了一些shader push constants，这些push constants可以通过Vulkan commands而不是通过写入内存或者拷贝操作来进行更新
+
+		VkCommandBuffer commandBuffer{};
+		uint32_t sampleConstantValue{};
+		vkCmdPushConstants(commandBuffer, VkPipelineLayout{/*假设这是一个有效的VkPipelineLayout*/ }, VK_SHADER_STAGE_ALL, 0, sizeof(uint32_t), & sampleConstantValue);
+		/*
+		vkCmdPushConstants参数:
+		commandBuffer:  是push constant 要被记录到的command buffer
+		layout:  是一个组织push constant的VkPipelineLayout句柄
+		stageFlags:  是VkShaderStageFlagBits组合值位掩码，指明要使用push constant的shader stages
+		offset:  是push constant的起始偏移量，单位为字节
+		size:  是要更新的push constant的大小，单位为字节
+		pValues:  是指向包含push constant新值的数组的指针
+
+		-------------------------
+		vkCmdPushConstants有效用法:
+		1.对于每个字节的范围[offset, offset+size)和每个shader stage，layout必须包含一个push constant范围，该范围包括该字节，且该stage被包含在stageFlags中
+		2.对于每个[offset, offset+size)中和 push constant range重叠的字节，stageFlags 必须包含在push constant range的所有VkPushConstantRange::stageFlags
+		3.offset 以及size 必须是4的倍数
+		4.offset必须小于VkPhysicalDeviceLimits::maxPushConstantsSize
+		5.size必须小于或等于VkPhysicalDeviceLimits::maxPushConstantsSize 减去 offset
+		6.stageFlags不能为0
+		*/
+
+		//VkPushConstantsInfoKHR
+		{
+		
+			// Provided by VK_KHR_maintenance6
+			typedef struct VkPushConstantsInfoKHR {
+				VkStructureType sType;
+				const void* pNext;//可以包含一个VkPipelineLayoutCreateInfo，只在layout为VK_NULL_HANDLE的情况下才包含
+				VkPipelineLayout layout;//是一个组织push constant的VkPipelineLayout句柄,如果 dynamicPipelineLayout 特性开启，则可以为VK_NULL_HANDLE，但必须在pNext中添加一个VkPipelineLayoutCreateInfo
+				VkShaderStageFlags stageFlags;//是VkShaderStageFlagBits组合值位掩码，指明要使用push constant的shader stages
+				uint32_t offset;//是push constant的起始偏移量，单位为字节
+				uint32_t size;//是要更新的push constant的大小，单位为字节
+				const void* pValues;//是指向包含push constant新值的数组的指针
+			} VkPushConstantsInfoKHR;//没有定义所以这里定义一个临时VkPushConstantsInfoKHR的用作示例
+			/*
+			VkPushConstantsInfoKHR有效用法:
+			1.对于每个字节的范围[offset, offset+size)和每个shader stage，layout必须包含一个push constant范围，该范围包括该字节，且该stage被包含在stageFlags中
+			2.对于每个[offset, offset+size)中和 push constant range重叠的字节，stageFlags 必须包含在push constant range的所有VkPushConstantRange::stageFlags
+			3.offset 以及size 必须是4的倍数
+			4.offset必须小于VkPhysicalDeviceLimits::maxPushConstantsSize
+			5.size必须小于或等于VkPhysicalDeviceLimits::maxPushConstantsSize 减去 offset
+			6.stageFlags不能为0
+			7.如果dynamicPipelineLayout 特性没有开启，则layout必须是一个有效的VkPipelineLayout 句柄
+			8.如果layout为VK_NULL_HANDLE，则pNext中必须包含一个有效的VkPipelineLayoutCreateInfo
+			*/
+
+			// Provided by VK_KHR_maintenance6
+			auto vkCmdPushConstants2KHR = [](
+					VkCommandBuffer commandBuffer,
+					const VkPushConstantsInfoKHR* pPushConstantsInfo) {};//
+
+			VkPushConstantsInfoKHR pushConstantsInfoKHR{};
+			vkCmdPushConstants2KHR(commandBuffer, &pushConstantsInfoKHR);
+
+		}
+
+	
+	}
+
+}
+
+void ResourceDescriptorsTest::PhysicalStorageBufferAccessTest()
+{
+	//查询在shader中可以访问的buffer memory的64位地址  ，在shader中使用 PhysicalStorageBuffer 进行访问查询的buffer的地址
+	VkBufferDeviceAddressInfo bufferDeviceAddressInfo{};//等同于VkBufferDeviceAddressInfoKHR, VkBufferDeviceAddressInfoEXT
+	bufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+	bufferDeviceAddressInfo.pNext = nullptr;
+	bufferDeviceAddressInfo.buffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//指明要查询地址的buffer
+	/*
+	VkBufferDeviceAddressInfo有效用法:
+	1.如果buffer是non-sparse的且不以VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT 创建，则该buffer必须绑定到一个连续的完整的单个VkDeviceMemory 上
+	2.buffer 必须以VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT 创建
+
+	*/
+
+
+	//获取buffer的64位地址  等价于vkGetBufferDeviceAddressKHR，vkGetBufferDeviceAddressEXT，其他信息见p1352
+	VkDeviceAddress deviceAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);
+	/*
+	vkGetBufferDeviceAddress有效用法:
+	1.bufferDeviceAddress 或者VkPhysicalDeviceBufferDeviceAddressFeaturesEXT::bufferDeviceAddress 特性必须开启
+	2.如果device是以多physical device创建的，则bufferDeviceAddressMultiDevice 或者VkPhysicalDeviceBufferDeviceAddressFeaturesEXT::bufferDeviceAddressMultiDevice 特性必须开启
+
+	*/
+
+
+	//查询64位的opaque buffer地址  等价于vkGetBufferOpaqueCaptureAddressKHR 
+	VkDeviceAddress opaqueAddress = vkGetBufferOpaqueCaptureAddress(device, &bufferDeviceAddressInfo);
+	/*
+	vkGetBufferOpaqueCaptureAddress有效用法:
+	1.bufferDeviceAddress 特性必须开启
+	2.如果device是以多physical device创建的，则bufferDeviceAddressMultiDevice 特性必须开启
+
+	*/
+
+
+	VkStridedDeviceAddressRegionKHR stridedDeviceAddressRegion{};//这个结构体会在某些vkCmd**命令中使用，用来描述一个buffer的64位地址范围，例如见p3365
+	stridedDeviceAddressRegion.deviceAddress = vkGetBufferDeviceAddress(device, &bufferDeviceAddressInfo);//使用过调用vkGetBufferDeviceAddress返回的指针
+	stridedDeviceAddressRegion.stride = 1;//指明两个连续元素之间的字节步长
+	stridedDeviceAddressRegion.size = 0;//指明从deviceAddress开始的范围的字节大小
+	/*
+	VkStridedDeviceAddressRegionKHR有效用法:
+	1.如果size 不为0，则（1）所有[deviceAddress,deviceAddress + size -1]之间的地址必须在同一个buffer的device address范围内
+						（2）stride必须小于等于deviceAddress 所查询的buffer的大小
+
+	*/
+
+
+
 }
 
 

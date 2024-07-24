@@ -1214,8 +1214,8 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 
 		-------------------------
 		vkCmdPushConstants有效用法:
-		1.对于每个字节的范围[offset, offset+size)和每个shader stage，layout必须包含一个push constant范围，该范围包括该字节，且该stage被包含在stageFlags中
-		2.对于每个[offset, offset+size)中和 push constant range重叠的字节，stageFlags 必须包含在push constant range的所有VkPushConstantRange::stageFlags
+		1.对于每个字节范围[offset, offset+size)和每个stageFlags中的shader stage，layout必须包含一个push constant范围，该范围包括该字节范围，且layout必须包含stageFlags中指明的shader stage中
+		2.对于每个包含[offset, offset+size)的 push constant range的字节范围，stageFlags 必须包含在这个push constant range的所有VkPushConstantRange::stageFlags
 		3.offset 以及size 必须是4的倍数
 		4.offset必须小于VkPhysicalDeviceLimits::maxPushConstantsSize
 		5.size必须小于或等于VkPhysicalDeviceLimits::maxPushConstantsSize 减去 offset
@@ -1237,8 +1237,8 @@ void ResourceDescriptorsTest::DescriptorSetsTest()
 			} VkPushConstantsInfoKHR;//没有定义所以这里定义一个临时VkPushConstantsInfoKHR的用作示例
 			/*
 			VkPushConstantsInfoKHR有效用法:
-			1.对于每个字节的范围[offset, offset+size)和每个shader stage，layout必须包含一个push constant范围，该范围包括该字节，且该stage被包含在stageFlags中
-			2.对于每个[offset, offset+size)中和 push constant range重叠的字节，stageFlags 必须包含在push constant range的所有VkPushConstantRange::stageFlags
+			1.对于每个字节范围[offset, offset+size)和每个stageFlags中的shader stage，layout必须包含一个push constant范围，该范围包括该字节范围，且layout必须包含stageFlags中指明的shader stage中
+			2.对于每个包含[offset, offset+size)的 push constant range的字节范围，stageFlags 必须包含在这个push constant range的所有VkPushConstantRange::stageFlags
 			3.offset 以及size 必须是4的倍数
 			4.offset必须小于VkPhysicalDeviceLimits::maxPushConstantsSize
 			5.size必须小于或等于VkPhysicalDeviceLimits::maxPushConstantsSize 减去 offset
@@ -1309,6 +1309,152 @@ void ResourceDescriptorsTest::PhysicalStorageBufferAccessTest()
 	*/
 
 
+
+}
+
+void ResourceDescriptorsTest::DescriptorBuffersTest()
+{
+	//如果descriptorBuffer 特性开启，则可以通过buffer来指定descriptor set而不是使用descriptor set对象
+	//见p1356
+
+
+	// Putting Descriptors in Memory  将descriptor直接放到内存中
+	{
+		VkDeviceSize descriptorSetNeedSize{};
+		//获取指定descriptor set layout存储descriptor set所需要内存字节大小
+		vkGetDescriptorSetLayoutSizeEXT(device, VkDescriptorSetLayout{/*假设这是一个有效的VkDescriptorSetLayout,这里指要查询的layout*/ }, &descriptorSetNeedSize);/*
+		vkGetDescriptorSetLayoutSizeEXT有效用法:
+		 1.descriptorBuffer 特性必须开启
+		 2.layout 必须以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建
+		*/
+
+		VkDeviceSize bindingOffset{};
+		//获取了存储descriptor set的内存字节大小后，获取descriptor set layout中每个binding的在内存中的字节偏移量
+		vkGetDescriptorSetLayoutBindingOffsetEXT(device, VkDescriptorSetLayout{/*假设这是一个有效的VkDescriptorSetLayout,这里指要查询的layout*/ }, 0/*指descriptor set layout中要查询的binding号*/, &bindingOffset);/*
+		vkGetDescriptorSetLayoutBindingOffsetEXT有效用法:
+		1.descriptorBuffer 特性必须开启
+		2.layout 必须以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建
+		*/
+
+
+		//每个descriptor的内存大小通过VkPhysicalDeviceDescriptorBufferPropertiesEXT查询
+
+
+		//获取了descriptor set的内存字节大小以及descriptor set layout中每个binding的在内存中的字节偏移量后，可以调用
+		//vkCmdBindDescriptorBuffersEXT设置绑定的descriptor set buffer和 vkCmdSetDescriptorBufferOffsetsEXT设置其binding的偏移信息，这样shader中就可以通过buffer访问descriptor   
+
+
+		size_t descriptorDataSize{};
+		std::vector<char> descriptorData{};
+		descriptorData.resize(descriptorSetNeedSize);
+
+		VkDescriptorGetInfoEXT descriptorGetInfoEXT{};
+		descriptorGetInfoEXT.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_GET_INFO_EXT;
+		descriptorGetInfoEXT.pNext = nullptr;
+		descriptorGetInfoEXT.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;//指明要获取数据的descriptor类型
+			VkDescriptorDataEXT descriptorDataEXT{};
+			{
+				VkDescriptorImageInfo testDescriptorImageInfo{};
+				testDescriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				testDescriptorImageInfo.imageView = VkImageView{/*假设这是一个有效的VkImageView*/ };
+				testDescriptorImageInfo.sampler = VkSampler{/*假设这是一个有效的VkSampler*/ };
+
+				VkDescriptorAddressInfoEXT testDescriptorAddressInfo{};
+				testDescriptorAddressInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_ADDRESS_INFO_EXT;
+				testDescriptorAddressInfo.pNext = nullptr;
+				testDescriptorAddressInfo.address = 0;//是0或者是基于buffer基地址的一个偏移地址，buffer基地址可以通过 vkGetBufferDeviceAddress获取
+				testDescriptorAddressInfo.format = VK_FORMAT_UNDEFINED;//是buffer view中数据元素的格式，但对于buffer而言这个参数不起作用,是buffer view还是buffer取决于descriptor 类型
+				testDescriptorAddressInfo.range = 1;//是这个descriptor 使用的buffer view或者buffer的字节大小
+				/*
+				VkDescriptorAddressInfoEXT有效用法:
+				1.如果address 不为0，则（1）如果descriptor类型为VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER 或者 VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,则format不能为VK_FORMAT_UNDEFINED
+									   （2）range不能为VK_WHOLE_SIZE
+									   （3）address必须是一个有效的VkBuffer中的含偏移的设备地址
+				2.如果nullDescriptor 特性没有开启，则address 不能为0
+				3.如果address 为0，则range必须为VK_WHOLE_SIZE
+				4.range必须小于等于buffer的最大地址减去buffer基于基地址的偏移地址
+				5.range不能为0
+				*/
+
+
+				descriptorDataEXT.accelerationStructure = 0;//是一个  VkAccelerationStructureKHR的地址 指明 VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR类型的descriptor的参数，或者是一个  VkAccelerationStructureNV的地址指明 VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV类型的descriptor的参数
+				descriptorDataEXT.pCombinedImageSampler = VK_NULL_HANDLE;//是一个 VkDescriptorImageInfo的指针指明 VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER类型的descriptor的参数
+				descriptorDataEXT.pInputAttachmentImage = VK_NULL_HANDLE;//是一个 VkDescriptorImageInfo的指针指明 VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT类型的descriptor的参数
+				descriptorDataEXT.pSampledImage = &testDescriptorImageInfo;//是一个 VkDescriptorImageInfo的指针指明 VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE类型的descriptor的参数
+				descriptorDataEXT.pStorageImage = VK_NULL_HANDLE;//是一个 VkDescriptorImageInfo的指针指明 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE类型的descriptor的参数
+				descriptorDataEXT.pSampler = VK_NULL_HANDLE;//是一个 VkSampler的指针指明 VK_DESCRIPTOR_TYPE_SAMPLER类型的descriptor的参数
+				descriptorDataEXT.pStorageBuffer = &testDescriptorAddressInfo;//是一个 VkDescriptorAddressInfoEXT的指针指明  VK_DESCRIPTOR_TYPE_STORAGE_BUFFER类型的descriptor的参数
+				descriptorDataEXT.pStorageTexelBuffer = VK_NULL_HANDLE;//是一个 VkDescriptorAddressInfoEXT的指针指明 VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER类型的descriptor的参数
+				descriptorDataEXT.pUniformBuffer = VK_NULL_HANDLE;//是一个 VkDescriptorAddressInfoEXT的指针指明 VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER类型的descriptor的参数
+				descriptorDataEXT.pUniformTexelBuffer = VK_NULL_HANDLE;//是一个 VkDescriptorAddressInfoEXT的指针指明 VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER类型的descriptor的参数
+
+				/*
+				VkDescriptorDataEXT有效用法:
+				1.如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER，且pUniformBuffer->address 是一个non-sparse的buffer的地址，的则个buffer必须已经绑定到一个完整连续单独的VkDeviceMemory上了
+				2.如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER，且pStorageBuffer->address 是一个non-sparse的buffer的地址，的则个buffer必须已经绑定到一个完整连续单独的VkDeviceMemory上了
+				3.如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER，且pUniformTexelBuffer->address 是一个non-sparse的buffer的地址，的则个buffer必须已经绑定到一个完整连续单独的VkDeviceMemory上了
+				4.如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER，且pStorageTexelBuffer->address 是一个non-sparse的buffer的地址，的则个buffer必须已经绑定到一个完整连续单独的VkDeviceMemory上了
+				5.如果nullDescriptor 特性没有开启 ，则（1）如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，则pCombinedImageSampler->imageView不能为VK_NULL_HANDLE
+													  （2）如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE，如果pSampledImage 不为NULL，则pSampledImage->imageView不能为VK_NULL_HANDLE
+													  （3）如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_STORAGE_IMAGE，如果pStorageImage 不为NULL，则pStorageImage->imageView不能为VK_NULL_HANDLE
+													  （4）如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER，则pUniformTexelBuffer不能为VK_NULL_HANDLE
+													  （5）如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER，则pStorageTexelBuffer不能为VK_NULL_HANDLE
+													  （6）如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER，则pUniformBuffer不能为VK_NULL_HANDLE
+													  （7）如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER，则pStorageBuffer不能为VK_NULL_HANDLE
+													  （8）如果VkDescriptorGetInfoEXT:type 为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR 或者VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV，则accelerationStructure不能为0
+
+				*/
+
+			}
+		descriptorGetInfoEXT.data = descriptorDataEXT;//需要获取的descriptor的信息,简单来说type为什么，其中对应的descriptor的指针就必须有效
+		/*
+		VkDescriptorGetInfoEXT有效用法:
+		1.type不能为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC，VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC 或者 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+		2.如果type 为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER，则（1）data.pCombinedImageSampler->sampler必须已经在device上创建
+																  （2）data.pCombinedImageSampler->imageView必须已经在device上创建或者为VK_NULL_HANDLE
+		3.如果type 为VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT，则data.pInputAttachmentImage->sampler必须已经在device上创建
+		4.如果type 为VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE，如果pSampledImage不为NULL，则data.pSampledImage->imageView必须已经在device上创建或者为VK_NULL_HANDLE
+		5.如果type 为VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE，如果pStorageImage不为NULL，则data.pStorageImage->imageView必须已经在device上创建或者为VK_NULL_HANDLE
+		6.如果type 为VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER，如果pUniformTexelBuffer不为NULL且pUniformTexelBuffer->address不为0，则pUniformTexelBuffer->address必须是一个已经在device上创建的VkBuffer中的地址
+		7.如果type 为VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER，如果pStorageTexelBuffer不为NULL且pStorageTexelBuffer->address不为0，则pStorageTexelBuffer->address必须是一个已经在device上创建的VkBuffer中的地址
+		8.如果type 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER，如果pUniformBuffer不为NULL且pUniformBuffer->address不为0，则pUniformBuffer->address必须是一个已经在device上创建的VkBuffer中的地址
+		9.如果type 为VK_DESCRIPTOR_TYPE_STORAGE_BUFFER，如果pStorageBuffer不为NULL且pStorageBuffer->address不为0，则pStorageBuffer->address必须是一个已经在device上创建的VkBuffer中的地址
+		10.如果type 为VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER，如果pUniformBuffer不为NULL，则通过 (⌊pUniformBuffer->range / (texel block size)⌋ × (texels perblock))指定的texel buffer中元素的个数必须小于等于VkPhysicalDeviceLimits::maxTexelBufferElements，其中 texel block size 和 texels per block的定义参见 Compatible Format p4067 中对应pUniformBuffer->format的定义
+		11.如果type 为VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER，如果pStorageBuffer不为NULL，则通过 (⌊pStorageBuffer->range / (texel block size)⌋ × (texels perblock))指定的texel buffer中元素的个数必须小于等于VkPhysicalDeviceLimits::maxTexelBufferElements，其中 texel block size 和 texels per block的定义参见 Compatible Format p4067 中对应pStorageBuffer->format的定义
+		12.如果type 为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR且accelerationStructure 不为0，则accelerationStructure 必须包含一个在device上创建的VkAccelerationStructureKHR的地址
+		13.如果type 为VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV且accelerationStructure 不为0，则accelerationStructure 必须包含一个在device上创建的VkAccelerationStructureNV的从vkGetAccelerationStructureHandleNV 获得的句柄
+
+		*/
+
+
+
+
+
+		//获取要写入buffer的descriptor的内存数据
+		vkGetDescriptorEXT(device, &descriptorGetInfoEXT/*参数pDescriptorInfo，指明要获取的descriptor的信息*/,
+						descriptorDataSize/*参数dataSize，指明该descriptor的字节大小，参见VkPhysicalDeviceDescriptorBufferPropertiesEXT*/, descriptorData.data()/*参数pDescriptor，指明descriptor的数据将被写到这个内存中*/);
+		/*
+		vkGetDescriptorEXT有效用法:
+		1.descriptorBuffer 特性必须开启
+		2.如果pDescriptorInfo->type 不为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER 或者pDescriptorInfo->data.pCombinedImageSampler有一个创建时pNext中不含VkSamplerYcbcrConversionInfo的VkImageView,则
+							dataSize必须等于VkPhysicalDeviceDescriptorBufferPropertiesEXT中VkDescriptorGetInfoEXT::type指定的类型对应的descriptor的大小，或者是等于VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT::combinedImageSamplerDensityMapDescriptorSize如果
+							pDescriptorInfo.type指定了VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER且其VkSampler是以VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT创建的
+		3.如果pDescriptorInfo->type 为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER 且pDescriptorInfo->data.pCombinedImageSampler有一个创建时pNext中含VkSamplerYcbcrConversionInfo的VkImageView,则
+							dataSize必须等于VkPhysicalDeviceDescriptorBufferPropertiesEXT::combinedImageSamplerDescriptorSize * VkSamplerYcbcrConversionImageFormatProperties::combinedImageSamplerDescriptorCount
+		4.如果pDescriptorInfo->type 为VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER 且含有一个不为VK_NULL_HANDLE的imageView，则dataSize 必须等于VkPhysicalDeviceDescriptorBufferPropertiesEXT::combinedImageSamplerDescriptorSize
+		*/
+
+
+
+
+	}
+
+
+	//Binding Descriptor Buffers
+	{
+	
+	
+	}
 
 }
 

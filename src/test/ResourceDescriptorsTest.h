@@ -16,6 +16,7 @@ private:
 	void DescriptorTypeTest();
 	void DescriptorSetsTest();
 	void PhysicalStorageBufferAccessTest();
+	void DescriptorBuffersTest();
 
 private:
 

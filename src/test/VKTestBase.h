@@ -2,6 +2,7 @@
 
 #include "../common/TestBase.h"
 #include "TestFwd.h"
+#include "VKCustomDefine.h"
 
 
 #include <vector>

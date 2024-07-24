@@ -1452,7 +1452,85 @@ void ResourceDescriptorsTest::DescriptorBuffersTest()
 
 	//Binding Descriptor Buffers
 	{
-	
+		VkCommandBuffer commandBuffer{};
+		VkDescriptorBufferBindingInfoEXT descriptorBufferBindingInfoEXT{};
+		descriptorBufferBindingInfoEXT.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
+		//VkDescriptorBufferBindingInfoEXT.pNext
+		VkBufferUsageFlags2CreateInfoKHR bufferUsageFlags2CreateInfoKHR{};
+		VkDescriptorBufferBindingPushDescriptorBufferHandleEXT descriptorBufferBindingPushDescriptorBufferHandleEXT{};//只在VkPhysicalDeviceDescriptorBufferPropertiesEXT::bufferlessPushDescriptors为VK_FALSE情况下，使用这个传递含push constant的buffer的句柄
+		{
+			bufferUsageFlags2CreateInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;
+			bufferUsageFlags2CreateInfoKHR.pNext = nullptr;
+			bufferUsageFlags2CreateInfoKHR.usage = 0;
+
+			descriptorBufferBindingPushDescriptorBufferHandleEXT.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_PUSH_DESCRIPTOR_BUFFER_HANDLE_EXT;
+			descriptorBufferBindingPushDescriptorBufferHandleEXT.pNext = nullptr;
+			descriptorBufferBindingPushDescriptorBufferHandleEXT.buffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//是push constants所在的buffer句柄
+		}
+
+		descriptorBufferBindingInfoEXT.pNext = &bufferUsageFlags2CreateInfoKHR;//可以包含一个VkBufferUsageFlags2CreateInfoKHR，包含后将不再使用usage，也可以包含VkDescriptorBufferBindingPushDescriptorBufferHandleEXT
+		descriptorBufferBindingInfoEXT.address = VkDeviceAddress{/*假设这是一个有效的VkDeviceAddress*/ };//是一个 VkDeviceAddress 指明descriptor buffer的绑定的设备地址
+		descriptorBufferBindingInfoEXT.usage = VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT;//是VkBufferUsageFlagBits 组合值的位掩码，指明为要查询address的buffer的 VkBufferCreateInfo::usage
+		/*
+		1.如果pNext中不含有VkBufferUsageFlags2CreateInfoKHR，则usage必须是有效的VkBufferUsageFlagBits 组合值，且usage不能为0
+		2.如果VkPhysicalDeviceDescriptorBufferPropertiesEXT::bufferlessPushDescriptors 为VK_FALSE, 且usage包含VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT, 则pNext链中必须包含VkDescriptorBufferBindingPushDescriptorBufferHandleEXT结构
+		3.address 必须对齐到VkPhysicalDeviceDescriptorBufferPropertiesEXT::descriptorBufferOffsetAlignment
+		4.如果usage包含VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT, 则address 必须是一个有效的以VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT创建的VkBuffer中的设备地址
+		5.如果usage包含VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT, 则address 必须是一个有效的以VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT创建的VkBuffer中的设备地址
+		6.如果usage包含VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT, 则address 必须是一个有效的以VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT创建的VkBuffer中的设备地址
+
+		*/
+
+
+
+		//绑定descriptor buffer
+		vkCmdBindDescriptorBuffersEXT(commandBuffer, 1, &descriptorBufferBindingInfoEXT);
+		/*
+		vkCmdBindDescriptorBuffersEXT有效用法:
+		1.descriptorBuffer 特性必须开启
+		2.不能有超过VkPhysicalDeviceDescriptorBufferPropertiesEXT::maxDescriptorBufferBindings个绑定的descriptor buffer包含sampler descriptor data
+		3.不能有超过VkPhysicalDeviceDescriptorBufferPropertiesEXT::maxResourceDescriptorBufferBindings个绑定的descriptor buffer包含resource descriptor data
+		4.不能有超过1个绑定的descriptor buffer以VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT 创建
+		5.bufferCount 必须小于等于VkPhysicalDeviceDescriptorBufferPropertiesEXT::maxDescriptorBufferBindings
+		6.对于任何pBindingInfos 中的元素，如果address 所在的的buffer是non-sparse的，则该buffer必须被完全和连续地绑定到一个单独的VkDeviceMemory对象中
+		7.对于任何pBindingInfos 中的元素，address 所在的的buffer如果其中包含sampler descriptor data 则必须以VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT创建
+		8.对于任何pBindingInfos 中的元素，address 所在的的buffer如果其中包含resource descriptor data 则必须以VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT创建
+		9.对于任何pBindingInfos 中的元素，usage必须比配address 所在的的buffer创建时候的usage
+
+		*/
+
+
+
+		uint32_t bufferIndex;
+		VkDeviceSize bindingOffset;
+		//绑定descriptor binding offset
+		//绑定layout中  [firstSet..firstSet+descriptorSetCount-1]的descriptor set到vkCmdBindDescriptorBuffersEXT中绑定的对应descriptor buffer，且pOffsets 指定每个descriptor set绑定的偏移量
+		vkCmdSetDescriptorBufferOffsetsEXT(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VkPipelineLayout{/*假设这是一个有效的VkPipelineLayout*/ }, 0, 1, & bufferIndex,& bindingOffset);
+		/*
+		vkCmdSetDescriptorBufferOffsetsEXT参数:
+		commandBuffer : descriptor buffer offsetsy要设置到的 command buffer 
+		pipelineBindPoint  : 一个 VkPipelineBindPoint 指明使用descriptors的pipeline 类型
+		layout :  一个用来组织bindings的 VkPipelineLayout 对象
+		firstSet : 是第一个要绑定的descriptor set的编号
+		setCount :  pBufferIndices 以及 pOffsets 中元素个数
+		pBufferIndices :  是一组通过vkCmdBindDescriptorBuffersEXT 设置的descriptor buffer绑定数组的索引值
+		pOffsets :  是一组VkDeviceSize 值，用于偏移descriptor buffers 中每个descriptor buffer的偏移量
+
+
+		-----------------------------------------------
+		vkCmdSetDescriptorBufferOffsetsEXT有效用法:
+		1.pOffsets 中的元素值必须对齐到VkPhysicalDeviceDescriptorBufferPropertiesEXT::descriptorBufferOffsetAlignment
+		2.pOffsets 中的元素值必须足够小以便于layout中不以VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT创建的descriptor binding能够在底层VkBuffer中计算出一个有效的地址
+		3.pOffsets 中的元素值必须足够小以便于任何被shader作为sampler descriptor访问的location必须在该sampler descriptor buffer binding的VkPhysicalDeviceDescriptorBufferPropertiesEXT::maxSamplerDescriptorBufferRange 的范围内
+		4.pOffsets 中的元素值必须足够小以便于任何被shader作为resource descriptor访问的location必须在该resource descriptor buffer binding的VkPhysicalDeviceDescriptorBufferPropertiesEXT::maxResourceDescriptorBufferRange 的范围内
+		5.pBufferIndices 中的元素值必须小于等于VkPhysicalDeviceDescriptorBufferPropertiesEXT::maxDescriptorBufferBindings
+		6.pBufferIndices 中的每个元素必须引用一个有效的通过之前的vkCmdBindDescriptorBuffersEXT 设置到commandBuffer的descriptor buffer binding
+		7.firstSet + setCount必须小于等于layout创建时候的VkPipelineLayoutCreateInfo::setLayoutCount
+		8.每一个从firstSet 到 firstSet + setCount的descriptor set的VkDescriptorSetLayout 必须以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT 标志创建
+		9.descriptorBuffer 特性必须开启
+		10. pipelineBindPoint 必须被commandBuffer所在的VkCommandPool的队列族支持	
+		
+		*/
 	
 	}
 

@@ -42,7 +42,7 @@ void ShadersInterfaceTest::InterfaceTest()
 
 		//User-defined Variable Interface   参见p1395
 
-
+		// Interface Matching 参见p1396
 
 	}
 

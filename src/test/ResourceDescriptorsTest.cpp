@@ -1502,13 +1502,13 @@ void ResourceDescriptorsTest::DescriptorBuffersTest()
 
 
 		uint32_t bufferIndex;
-		VkDeviceSize bindingOffset;
+		VkDeviceSize bufferOffset;
 		//绑定descriptor binding offset
 		//绑定layout中  [firstSet..firstSet+descriptorSetCount-1]的descriptor set到vkCmdBindDescriptorBuffersEXT中绑定的对应descriptor buffer，且pOffsets 指定每个descriptor set绑定的偏移量
-		vkCmdSetDescriptorBufferOffsetsEXT(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VkPipelineLayout{/*假设这是一个有效的VkPipelineLayout*/ }, 0, 1, & bufferIndex,& bindingOffset);
+		vkCmdSetDescriptorBufferOffsetsEXT(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VkPipelineLayout{/*假设这是一个有效的VkPipelineLayout*/ }, 0, 1, & bufferIndex, & bufferOffset);
 		/*
 		vkCmdSetDescriptorBufferOffsetsEXT参数:
-		commandBuffer : descriptor buffer offsetsy要设置到的 command buffer 
+		commandBuffer : descriptor buffer offsetsy要设置到的 command buffer
 		pipelineBindPoint  : 一个 VkPipelineBindPoint 指明使用descriptors的pipeline 类型
 		layout :  一个用来组织bindings的 VkPipelineLayout 对象
 		firstSet : 是第一个要绑定的descriptor set的编号
@@ -1528,11 +1528,205 @@ void ResourceDescriptorsTest::DescriptorBuffersTest()
 		7.firstSet + setCount必须小于等于layout创建时候的VkPipelineLayoutCreateInfo::setLayoutCount
 		8.每一个从firstSet 到 firstSet + setCount的descriptor set的VkDescriptorSetLayout 必须以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT 标志创建
 		9.descriptorBuffer 特性必须开启
-		10. pipelineBindPoint 必须被commandBuffer所在的VkCommandPool的队列族支持	
-		
+		10. pipelineBindPoint 必须被commandBuffer所在的VkCommandPool的队列族支持
+
 		*/
-	
+
+		
+		VkSetDescriptorBufferOffsetsInfoEXT setDescriptorBufferOffsetsInfoEXT{};
+		setDescriptorBufferOffsetsInfoEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义，这里定义为非法值
+		setDescriptorBufferOffsetsInfoEXT.pNext = nullptr;//可以包含一个 VkPipelineLayoutCreateInfo，只在layout为VK_NULL_HANDLE情况下才包含
+		setDescriptorBufferOffsetsInfoEXT.firstSet = 0;//是第一个要绑定的descriptor set的编号
+		setDescriptorBufferOffsetsInfoEXT.setCount = 1;//pBufferIndices 以及 pOffsets 中元素个数
+		setDescriptorBufferOffsetsInfoEXT.layout = VkPipelineLayout{/*假设这是一个有效的VkPipelineLayout*/ }; //一个用来组织bindings的 VkPipelineLayout 对象,如果 dynamicPipelineLayout 特性开启，则可以为VK_NULL_HANDLE，但必须在pNext中包含一个VkPipelineLayoutCreateInfo 
+		setDescriptorBufferOffsetsInfoEXT.pBufferIndices = &bufferIndex;//是一组通过vkCmdBindDescriptorBuffersEXT 设置的descriptor buffer绑定数组的索引值
+		setDescriptorBufferOffsetsInfoEXT.pOffsets = &bufferOffset;//是一组通过vkCmdBindDescriptorBuffersEXT 设置的descriptor buffer绑定数组的索引值
+		setDescriptorBufferOffsetsInfoEXT.stageFlags = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;//是 VkShaderStageFlagBits组合值的位掩码，指明descriptor sets要绑定到的着色器阶段
+		/*
+		VkSetDescriptorBufferOffsetsInfoEXT有效用法:
+		1.pOffsets 中的元素值必须对齐到VkPhysicalDeviceDescriptorBufferPropertiesEXT::descriptorBufferOffsetAlignment
+		2.pOffsets 中的元素值必须足够小以便于layout中不以VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT创建的descriptor binding能够在底层VkBuffer中计算出一个有效的地址
+		3.pOffsets 中的元素值必须足够小以便于任何被shader作为sampler descriptor访问的location必须在该sampler descriptor buffer binding的VkPhysicalDeviceDescriptorBufferPropertiesEXT::maxSamplerDescriptorBufferRange 的范围内
+		4.pOffsets 中的元素值必须足够小以便于任何被shader作为resource descriptor访问的location必须在该resource descriptor buffer binding的VkPhysicalDeviceDescriptorBufferPropertiesEXT::maxResourceDescriptorBufferRange 的范围内
+		5.pBufferIndices 中的元素值必须小于等于VkPhysicalDeviceDescriptorBufferPropertiesEXT::maxDescriptorBufferBindings
+		6.pBufferIndices 中的每个元素必须引用一个有效的通过之前的vkCmdBindDescriptorBuffersEXT 设置到commandBuffer的descriptor buffer binding
+		7.firstSet + setCount必须小于等于layout创建时候的VkPipelineLayoutCreateInfo::setLayoutCount
+		8.每一个从firstSet 到 firstSet + setCount的descriptor set的VkDescriptorSetLayout 必须以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT 标志创建
+		9.如果dynamicPipelineLayout 特性没有开启，则layout必须是一个有效的VkPipelineLayout句柄
+		10. 如果layout为 VK_NULL_HANDLE，则pNext中必须包含一个VkPipelineLayoutCreateInfo
+
+		*/
+
+		//绑定descriptor binding offset
+		vkCmdSetDescriptorBufferOffsets2EXT(commandBuffer, &setDescriptorBufferOffsetsInfoEXT);
+		/*
+		vkCmdSetDescriptorBufferOffsets2EXT有效用法
+		1.descriptorBuffer 特性必须开启
+		2.pSetDescriptorBufferOffsetsInfo->stageFlags中的每一个比特表示的管线阶段必须被commandBuffer所在的VkCommandPool所在的队列族支持
+		*/
+
+
+
+
+		//绑定一个embedded immutable sampler set到command buffer
+		vkCmdBindDescriptorBufferEmbeddedSamplersEXT(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VkPipelineLayout{/*假设这是一个有效的VkPipelineLayout*/ }, 0);
+		/*
+		vkCmdBindDescriptorBufferEmbeddedSamplersEXT参数:
+		commandBuffer:  embedded immutable samplers 要绑定到的command buffer.
+		pipelineBindPoint:  一个VkPipelineBindPoint 指明要使用embedded immutable samplers的pipeline 类型
+		layout:  一个组织bindings的VkPipelineLayout 对象
+		set: 要绑定的descriptor set的编号
+
+
+		vkCmdBindDescriptorBufferEmbeddedSamplersEXT有效用法:
+		1.layout中的在set处的VkDescriptorSetLayout对象必须以VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT 创建
+		2.set 必须小于等于创建layout时指定的VkPipelineLayoutCreateInfo::setLayoutCount
+		3.descriptorBuffer 特性必须开启
+		4.pipelineBindPoint 必须被commandBuffer所在的VkCommandPool的队列族支持 		
+		*/
+
+		VkBindDescriptorBufferEmbeddedSamplersInfoEXT bindDescriptorBufferEmbeddedSamplersInfoEXT{};
+		bindDescriptorBufferEmbeddedSamplersInfoEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//因为这个是手动定义的，所以这里设置为非法值
+		bindDescriptorBufferEmbeddedSamplersInfoEXT.pNext = nullptr;//可以包含一个 VkPipelineLayoutCreateInfo，只在layout为VK_NULL_HANDLE情况下才包含
+		bindDescriptorBufferEmbeddedSamplersInfoEXT.layout = VkPipelineLayout{/*假设这是一个有效的VkPipelineLayout*/ }; //一个组织bindings的VkPipelineLayout 对象,如果 dynamicPipelineLayout 特性开启，则可以为VK_NULL_HANDLE，但必须在pNext中包含一个VkPipelineLayoutCreateInfo 
+		bindDescriptorBufferEmbeddedSamplersInfoEXT.set = 0;//要绑定的descriptor set的编号
+		bindDescriptorBufferEmbeddedSamplersInfoEXT.stageFlags = VK_SHADER_STAGE_ALL;//是 VkShaderStageFlagBits组合值的位掩码，指明将使用embedded immutable samplers的着色器阶段
+		/*
+		VkBindDescriptorBufferEmbeddedSamplersInfoEXT有效用法:
+		1.layout中的在set处的VkDescriptorSetLayout对象必须以VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT 创建
+		2.set 必须小于等于创建layout时指定的VkPipelineLayoutCreateInfo::setLayoutCount
+		3.如果dynamicPipelineLayout 特性没有开启，则layout必须是一个有效的VkPipelineLayout句柄
+		4. 如果layout为 VK_NULL_HANDLE，则pNext中必须包含一个VkPipelineLayoutCreateInfo
+
+		*/
+
+		//绑定一个embedded immutable sampler set到command buffer
+		vkCmdBindDescriptorBufferEmbeddedSamplers2EXT(commandBuffer, &bindDescriptorBufferEmbeddedSamplersInfoEXT);
+		/*
+		vkCmdBindDescriptorBufferEmbeddedSamplers2EXT有效用法:
+		1.descriptorBuffer 特性必须开启
+		2.pBindDescriptorBufferEmbeddedSamplersInfo->stageFlags中的每一个比特表示的管线阶段必须被commandBuffer所在的VkCommandPool所在的队列族支持
+		*/
+
 	}
+
+
+	// Capture and Replay p1382
+	{
+		//类似 bufferDeviceAddressCaptureReplay， descriptorBufferCaptureReplay特性允许在capture期间 可以传递给后续replay创建调用的对象的opaque handle的创建,这可以让descriptors使用相同的数据进行创建
+		//这些资源使用的任何内存的opaque memory address必须已经通过vkGetDeviceMemoryOpaqueCaptureAddress 捕获，且通过VkMemoryOpaqueCaptureAddressAllocateInfo回放
+
+	
+		VkBufferCaptureDescriptorDataInfoEXT bufferCaptureDescriptorDataInfoEXT{};//指定获取descriptor buffer capture data的buffer信息的结构体
+		bufferCaptureDescriptorDataInfoEXT.sType = VK_STRUCTURE_TYPE_BUFFER_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+		bufferCaptureDescriptorDataInfoEXT.pNext = nullptr;
+		bufferCaptureDescriptorDataInfoEXT.buffer = VkBuffer{/*假设只是一个有效的VkBuffer*/ };//是一个VkBuffer句柄，指明要获取opaque capture data的buffer，该buffer必须以VK_BUFFER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建
+		std::vector<char> data{};
+		//获取一个buffer的 opaque descriptor data
+		vkGetBufferOpaqueCaptureDescriptorDataEXT(device, &bufferCaptureDescriptorDataInfoEXT, data.data());
+		/*
+		vkGetBufferOpaqueCaptureDescriptorDataEXT有效用法:
+		1.descriptorBufferCaptureReplay 特性必须开启
+		2.pData必须是一个大小至少为VkPhysicalDeviceDescriptorBufferPropertiesEXT::bufferCaptureReplayDescriptorDataSize 字节的内存指针
+		3.如果device是以多physical device创建的，则bufferDeviceAddressMultiDevice 特性必须开启
+		*/
+
+
+		VkImageCaptureDescriptorDataInfoEXT imageCaptureDescriptorDataInfoEXT{};//指定获取 descriptor buffer capture data的image信息的结构体
+		imageCaptureDescriptorDataInfoEXT.sType = VK_STRUCTURE_TYPE_IMAGE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+		imageCaptureDescriptorDataInfoEXT.pNext = nullptr;
+		imageCaptureDescriptorDataInfoEXT.image = VkImage{/*假设这是一个有效的VkImage*/ };//是一个VkImage句柄，指明要获取opaque capture data的image，该image必须以VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建
+
+
+		//获取一个image的 opaque descriptor data
+		vkGetImageOpaqueCaptureDescriptorDataEXT(device, &imageCaptureDescriptorDataInfoEXT, data.data());
+		/*
+		vkGetImageOpaqueCaptureDescriptorDataEXT有效用法:
+		1.descriptorBufferCaptureReplay 特性必须开启
+		2.pData必须是一个大小至少为VkPhysicalDeviceDescriptorBufferPropertiesEXT::imageCaptureReplayDescriptorDataSize 字节的内存指针
+		3.如果device是以多physical device创建的，则bufferDeviceAddressMultiDevice 特性必须开启
+		*/
+
+
+		VkImageViewCaptureDescriptorDataInfoEXT imageViewCaptureDescriptorDataInfoEXT{};//指定获取 descriptor buffer capture data的image view信息的结构体
+		imageViewCaptureDescriptorDataInfoEXT.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+		imageViewCaptureDescriptorDataInfoEXT.pNext = nullptr;
+		imageViewCaptureDescriptorDataInfoEXT.imageView = VkImageView{/*假设这是一个有效的VkImageView*/ };//是一个VkImageView句柄，指明要获取opaque capture data的image view，该image view必须以VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建
+
+
+
+		//获取一个image view的 opaque descriptor data
+		vkGetImageViewOpaqueCaptureDescriptorDataEXT(device, &imageViewCaptureDescriptorDataInfoEXT, data.data());
+		/*
+		vkGetImageViewOpaqueCaptureDescriptorDataEXT有效用法:
+		1.descriptorBufferCaptureReplay 特性必须开启
+		2.pData必须是一个大小至少为VkPhysicalDeviceDescriptorBufferPropertiesEXT::imageViewCaptureReplayDescriptorDataSize 字节的内存指针
+		3.如果device是以多physical device创建的，则bufferDeviceAddressMultiDevice 特性必须开启
+		*/
+
+
+		VkSamplerCaptureDescriptorDataInfoEXT samplerCaptureDescriptorDataInfoEXT{};//指定获取 descriptor buffer capture data的sampler信息的结构体
+		samplerCaptureDescriptorDataInfoEXT.sType = VK_STRUCTURE_TYPE_SAMPLER_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+		samplerCaptureDescriptorDataInfoEXT.pNext = nullptr;
+		samplerCaptureDescriptorDataInfoEXT.sampler = VkSampler{/*假设这是一个有效的VkSampler*/ };//是一个VkSampler句柄，指明要获取opaque capture data的sampler，该sampler必须以VK_SAMPLER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建
+
+
+
+		//获取一个sampler的 opaque descriptor data
+		vkGetSamplerOpaqueCaptureDescriptorDataEXT(device, &samplerCaptureDescriptorDataInfoEXT, data.data());
+		/*
+		vkGetSamplerOpaqueCaptureDescriptorDataEXT有效用法:
+		1.descriptorBufferCaptureReplay 特性必须开启
+		2.pData必须是一个大小至少为VkPhysicalDeviceDescriptorBufferPropertiesEXT::samplerCaptureReplayDescriptorDataSize 字节的内存指针
+		3.如果device是以多physical device创建的，则bufferDeviceAddressMultiDevice 特性必须开启
+		*/
+
+
+		VkAccelerationStructureCaptureDescriptorDataInfoEXT accelerationStructureCaptureDescriptorDataInfoEXT{};//指定获取 descriptor buffer capture data的加速结构信息的结构体
+		accelerationStructureCaptureDescriptorDataInfoEXT.sType = VK_STRUCTURE_TYPE_SAMPLER_CAPTURE_DESCRIPTOR_DATA_INFO_EXT;
+		accelerationStructureCaptureDescriptorDataInfoEXT.pNext = nullptr;
+		accelerationStructureCaptureDescriptorDataInfoEXT.accelerationStructure = VkAccelerationStructureKHR{/*假设这是一个有效的VkAccelerationStructureKHR*/ };//是一个VkAccelerationStructureKHR句柄，指明要获取opaque capture data的加速结构，该加速结构必须以VK_SAMPLER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建
+		accelerationStructureCaptureDescriptorDataInfoEXT.accelerationStructureNV = VkAccelerationStructureNV{/*假设这是一个有效的VkAccelerationStructureNV*/ };//是一个VkAccelerationStructureNV句柄，指明要获取opaque capture data的加速结构，该加速结构必须以VK_SAMPLER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建
+		/*
+		VkAccelerationStructureCaptureDescriptorDataInfoEXT有效用法:
+		1.如果accelerationStructure 不为VK_NULL_HANDLE，则accelerationStructure 必须以VkAccelerationStructureCreateInfoKHR::createFlags 含VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建
+		2.如果accelerationStructureNV 不为VK_NULL_HANDLE，则accelerationStructureNV 必须以VkAccelerationStructureCreateInfoNV::info.flags 含VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT 创建
+		3.accelerationStructure 和accelerationStructureNV 必须有一个为VK_NULL_HANDLE，一个不为VK_NULL_HANDLE
+		*/
+
+		//获取一个加速结构的 opaque descriptor data
+		vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT(device, &accelerationStructureCaptureDescriptorDataInfoEXT, data.data());
+		/*
+		vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT有效用法:
+		1.descriptorBufferCaptureReplay 特性必须开启
+		2.pData必须是一个大小至少为VkPhysicalDeviceDescriptorBufferPropertiesEXT::accelerationStructureCaptureReplayDescriptorDataSize 字节的内存指针
+		3.如果device是以多physical device创建的，则bufferDeviceAddressMultiDevice 特性必须开启
+		*/
+
+
+
+		//在replay期间，可以通过在VkBufferCreateInfo, VkImageCreateInfo, VkImageViewCreateInfo, VkSamplerCreateInfo,
+		//VkAccelerationStructureCreateInfoNV 或者 VkAccelerationStructureCreateInfoKHR 的pNext包含该结构体来指定opaque descriptor capture data
+		VkOpaqueCaptureDescriptorDataCreateInfoEXT opaqueCaptureDescriptorDataCreateInfoEXT{};
+		opaqueCaptureDescriptorDataCreateInfoEXT.sType = VK_STRUCTURE_TYPE_OPAQUE_CAPTURE_DESCRIPTOR_DATA_CREATE_INFO_EXT;
+		opaqueCaptureDescriptorDataCreateInfoEXT.pNext = nullptr;
+		opaqueCaptureDescriptorDataCreateInfoEXT.opaqueCaptureDescriptorData = data.data();/*是通过前面vkGetBufferOpaqueCaptureDescriptorDataEXT,
+																									   vkGetImageOpaqueCaptureDescriptorDataEXT,
+																									   vkGetImageViewOpaqueCaptureDescriptorDataEXT,
+																									   vkGetSamplerOpaqueCaptureDescriptorDataEXT, 或者
+																									   vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT 返回的数据*/
+
+
+
+	}
+
+
+
+
+
+
+
+
 
 }
 

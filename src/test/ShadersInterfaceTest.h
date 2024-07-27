@@ -14,6 +14,7 @@ public:
 
 private:
 	void InterfaceTest();
+	void BuildInVariableTest();
 private:
 
 

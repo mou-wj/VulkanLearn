@@ -115,4 +115,28 @@ void vkCmdSetRenderingInputAttachmentIndicesKHR(
 	VkCommandBuffer commandBuffer,
 	const VkRenderingInputAttachmentIndexInfoKHR* pLocationInfo) {}
 
+typedef uint32_t StdVideoAV1Profile;//这里先自己定义
+// Provided by VK_KHR_video_decode_av1
+typedef struct VkVideoDecodeAV1ProfileInfoKHR {
+	VkStructureType       sType;
+	const void* pNext;
+	StdVideoAV1Profile    stdProfile;
+	VkBool32              filmGrainSupport;
+} VkVideoDecodeAV1ProfileInfoKHR;
+
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264ProfileInfoKHR {
+	VkStructureType           sType;
+	const void* pNext;
+	StdVideoH264ProfileIdc    stdProfileIdc;
+} VkVideoEncodeH264ProfileInfoKHR;
+
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265ProfileInfoKHR {
+	VkStructureType           sType;
+	const void* pNext;
+	StdVideoH265ProfileIdc    stdProfileIdc;
+} VkVideoEncodeH265ProfileInfoKHR;
 NS_TEST_END

@@ -367,6 +367,91 @@ void QueriesTest::QueryOperationsTest()
 		如果不设置 VK_QUERY_CONTROL_PRECISE_BIT，则一般用在只需要判断有没有采样点通过测试的情况，如果需要返回有多少个采样点通过测试，则需要设置
 	*/ 
 
+
+	// Pipeline Statistics Queries
+	{
+		//Pipeline statistics queries 允许应用采样指定VkPipeline的一组contours信息，是否能查询参见VkPhysicalDeviceFeatures.pipelineStatisticsQuery ,VkQueryPoolCreateInfo::pipelineStatistics 或者 VkCommandBufferInheritanceInfo::pipelineStatistics来指定要采样的统计信息
+
+
+		VkQueryPipelineStatisticFlagBits queryPipelineStatisticFlagBits = VkQueryPipelineStatisticFlagBits::VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT;
+		/*
+		VkQueryPipelineStatisticFlagBits:
+
+		
+		VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT:   指定pool管理的queries将统计输入装配阶段处理的顶点数。顶点对应于不完整的图元可能也会被统计。
+        VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT:   指定pool管理的queries将统计输入装配阶段处理的图元数。如果primitive restart，则重新进行图元拓扑不会进行统计。不完整的图元可能也会被统计。
+		VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT:    指定pool管理的queries将统计vertex shader invocations的数量，即vertex shader被调用的次数。计数器的值会在每次调用vertex shader后递增
+        VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_INVOCATIONS_BIT:   指定pool管理的queries将统计geometry shader invocations的数量，即geometry shader被调用的次数。计数器的值会在每次调用geometry shader后递增，对于instanced geometry shader，计数器的值会在每个单独instanced geometry shader 调用后递增
+        VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_PRIMITIVES_BIT:    指定pool管理的queries将统计geometry shader 产生的图元的数量。计数器的值会在每次geometry shader发射一个图元后递增，使用SPIR-V 指令 OpEndPrimitive 或者 OpEndStreamPrimitive重新进行图元拓扑不会影响计数器的值
+        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT:  指定pool管理的queries将统计pipeline的Primitive Clipping阶段处理的图元的数量。计数器的值会在每次图元到达 primitive clipping阶段的时候递增
+        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT:   指定pool管理的queries将统计pipeline的Primitive Clipping阶段输出的图元的数量。计数器的值会在每次图元通过 primitive clipping阶段的时候递增
+        VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT:   指定pool管理的queries将统计fragment shader invocations的数量，即fragment shader被调用的次数。计数器的值会在每次调用fragment shader后递增 
+        VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT:   指定pool管理的queries将统计tessellation control shader处理的patches的数量。计数器的值会在每次调用tessellation control shader处理patch后递增 
+        VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT:    指定pool管理的queries将统计tessellation evaluation shader invocations的数量，即tessellation evaluation shader被调用的次数。计数器的值会在每次调用tessellation evaluation shader后递增   
+        VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT:  指定pool管理的queries将统计compute shader invocations的数量，即compute shader被调用的次数。计数器的值会在每次调用compute shader后递增     
+        VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT:   指定pool管理的queries将统计task shader invocations的数量，即task shader被调用的次数。计数器的值会在每次调用task shader后递增     
+        VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT:   指定pool管理的queries将统计mesh shader invocations的数量，即mesh shader被调用的次数。计数器的值会在每次调用mesh shader后递增     
+		*/
+
+
+	}
+
+
+
+	//Timestamp Queries  参见p1576
+	{
+		//Timestamps 允许应用计时命令执行的时间  不使用 vkCmdBeginQuery 或者 vkCmdEndQuery，直接通过vkGetQueryPoolResults 或者vkCmdCopyQueryPoolResults 将时间戳获得，然后host端计算比较，以纳秒为单位
+
+		//将时间戳信息写入query pool   等同于vkCmdWriteTimestamp2KHR
+		vkCmdWriteTimestamp2(commandBuffer, VK_PIPELINE_STAGE_2_VERTEX_INPUT_BIT/*指明pipeline阶段*/, validQueryPool, 0/*指明写入时间戳的query索引*/);
+		/*
+		vkCmdWriteTimestamp2有效用法:
+		1.如果geometryShader 特性没有开启，stage不能包含VK_PIPELINE_STAGE_2_GEOMETRY_SHADER_BIT
+		2.如果tessellationShader 特性没有开启，stage不能包含VK_PIPELINE_STAGE_2_TESSELLATION_CONTROL_SHADER_BIT 或 VK_PIPELINE_STAGE_2_TESSELLATION_EVALUATION_SHADER_BIT
+		3.如果conditionalRendering 特性没有开启，stage不能包含VK_PIPELINE_STAGE_2_CONDITIONAL_RENDERING_BIT_EXT
+		4.如果fragmentDensityMap 特性没有开启，stage不能包含VK_PIPELINE_STAGE_2_FRAGMENT_DENSITY_PROCESS_BIT_EXT
+		5.如果transformFeedback 特性没有开启，stage不能包含VK_PIPELINE_STAGE_2_TRANSFORM_FEEDBACK_BIT_EXT
+		6.如果meshShader 特性没有开启，stage不能包含VK_PIPELINE_STAGE_2_MESH_SHADER_BIT_EXT
+		7.如果taskShader 特性没有开启，stage不能包含VK_PIPELINE_STAGE_2_TASK_SHADER_BIT_EXT
+		8.如果shadingRateImage 或者 attachmentFragmentShadingRate没有一个开启，则stage不能包含VK_PIPELINE_STAGE_2_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR
+		9.如果subpassShading 特性没有开启，stage不能包含VK_PIPELINE_STAGE_2_SUBPASS_SHADER_BIT_HUAWEI
+		10.如果invocationMask 特性没有开启，stage不能包含VK_PIPELINE_STAGE_2_INVOCATION_MASK_BIT_HUAWEI
+		11.如果VK_NV_ray_tracing 拓展 或者 rayTracingPipeline 特性没有一个开启，则stage不能包含VK_PIPELINE_STAGE_2_RAY_TRACING_SHADER_BIT_KHR
+		12.synchronization2 特性必须开启
+		13.stage只能包含一个单独的阶段
+		14.stage必须包含一个commandBuffer所在的VkCommandPool创建时的队列族支持的阶段
+		15.queryPool 必须以queryType 为VK_QUERY_TYPE_TIMESTAMP 创建
+		16.commandBuffer所在的VkCommandPool创建时的队列族必须支持一个非零的timestampValidBits
+		17.query 必须小于queryPool中queries的数量
+		18.当前命令使用的queris必须时无效的
+		19.如果该命令vkCmdWriteTimestamp2 在一个 render pass instance中调用，则query和当前subpass的view mask中设置的位的总和必须小于或等于queryPool中的queries数量
+		*/
+
+
+		vkCmdWriteTimestamp(commandBuffer, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT/*指明pipeline阶段*/, validQueryPool, 0/*指明写入时间戳的query索引*/);
+		/*
+		vkCmdWriteTimestamp有效用法:
+		1.pipelineStage必须为一个commandBuffer所在的VkCommandPool创建时的队列族支持的阶段
+		2.如果geometryShader 特性没有开启，pipelineStage不能包含VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT
+		3.如果tessellationShader 特性没有开启，pipelineStage不能包含VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT 或 VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT
+		4.如果conditionalRendering 特性没有开启，pipelineStage不能包含VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT
+		5.如果fragmentDensityMap 特性没有开启，pipelineStage不能包含VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT
+		6.如果transformFeedback 特性没有开启，pipelineStage不能包含VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT
+		7.如果meshShader 特性没有开启，pipelineStage不能包含VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT
+		8.如果taskShader 特性没有开启，pipelineStage不能包含VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT
+		9.如果shadingRateImage 或者 attachmentFragmentShadingRate没有一个开启，则pipelineStage不能包含VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR
+		10.如果synchronization2 未开启，则pipelineStage不能包含VK_PIPELINE_STAGE_NONE
+		11.如果VK_NV_ray_tracing 拓展 或者 rayTracingPipeline 特性没有一个开启，则pipelineStage不能包含VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR
+		12.queryPool 必须以queryType 为VK_QUERY_TYPE_TIMESTAMP 创建
+		13.commandBuffer所在的VkCommandPool创建时的队列族必须支持一个非零的timestampValidBits
+		14.query 必须小于queryPool中queries的数量
+		15.当前命令使用的queris必须时无效的
+		16.如果该命令vkCmdWriteTimestamp 在一个 render pass instance中调用，则query和当前subpass的view mask中设置的位的总和必须小于或等于queryPool中的queries数量
+
+
+
+		*/
+	}
 }
 
 

@@ -187,9 +187,9 @@ void QueriesTest::QueryOperationsTest()
 		7.创建queryPool的 queryType 为VK_QUERY_TYPE_PIPELINE_STATISTICS且pipelineStatistics 中任何一个指定了compute operations，则commandBuffer所在的VkCommandPool创建时的队列族必须支持compute operations
 		8.commandBuffer 不能是一个protected command buffer
 		9.如果该命令在一个render pass instance中调用，命令开始的query的数量以及在当前subpass的view mask中设置的bits的数量必须小于等于queryPool中queries的数量
-		10.如果创建queryPool的 queryType 为VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR，则commandBuffer所在的VkCommandPool创建时的队列族必须支持 result status queries，参见VkQueueFamilyQueryResultStatusPropertiesKHR::queryResultStatusSupport 
+		10.如果创建queryPool的 queryType 为VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR，则commandBuffer所在的VkCommandPool创建时的队列族必须支持 result status queries，参见VkQueueFamilyQueryResultStatusPropertiesKHR::queryResultStatusSupport
 		11.如果调用命令这里为一个绑定的video session，则（1）不能有激活的queries
-													    （2）该video session不能以VK_VIDEO_SESSION_CREATE_INLINE_QUERIES_BIT_KHR 创建
+														（2）该video session不能以VK_VIDEO_SESSION_CREATE_INLINE_QUERIES_BIT_KHR 创建
 		12.如果创建queryPool的 queryType 为VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR且调用命令这里为一个绑定的video session，则queryPool的创建必须在其VkQueryPoolCreateInfo.pNext中包含一个和创建该绑定的video session的VkVideoSessionCreateInfoKHR::pVideoProfile相同的VkVideoProfileInfoKHR
 		13.如果创建queryPool的 queryType 为VK_QUERY_TYPE_VIDEO_ENCODE_FEEDBACK_KHR，则（1）调用该命令的位置必须有一个绑定的video session
 																					  （2）如果调用该命令的位置有一个绑定的video session，则queryPool的创建必须在其VkQueryPoolCreateInfo.pNext中包含一个和创建该绑定的video session的VkVideoSessionCreateInfoKHR::pVideoProfile相同的VkVideoProfileInfoKHR
@@ -226,8 +226,8 @@ void QueriesTest::QueryOperationsTest()
 
 
 		//开始一个 indexed query
-		vkCmdBeginQueryIndexedEXT(commandBuffer, validQueryPool, 0/*指明queryPool中用来存放结果的query的索引*/, VK_QUERY_CONTROL_PRECISE_BIT/* VkQueryControlFlagBits 组合值位掩码，指明能被执行的query的类型限制*/, 
-																	1/*query type特定的索引，如果query type为VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT 或者 VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT，则这个参数表示vertex stream*/ );//
+		vkCmdBeginQueryIndexedEXT(commandBuffer, validQueryPool, 0/*指明queryPool中用来存放结果的query的索引*/, VK_QUERY_CONTROL_PRECISE_BIT/* VkQueryControlFlagBits 组合值位掩码，指明能被执行的query的类型限制*/,
+		1/*query type特定的索引，如果query type为VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT 或者 VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT，则这个参数表示vertex stream*/);//
 		/*
 		vkCmdBeginQueryIndexedEXT有效用法:
 		1.所有这个命令使用的queries必须是无效的
@@ -252,7 +252,7 @@ void QueriesTest::QueryOperationsTest()
 																						  （2）index 必须小于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackStreams
 		17.如果创建queryPool的queryType 不为VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT 且不为VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT ，则index 必须为0
 		18.如果创建queryPool的 queryType 为VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT，则（1）commandBuffer所在的VkCommandPool创建时的队列族必须支持graphics operations
-																				     （2）index 必须小于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackStreams
+																					 （2）index 必须小于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackStreams
 																					 （3）如果primitivesGeneratedQueryWithNonZeroStreams 特性没有开启，则index 必须为0
 																					 （4）primitivesGeneratedQuery 必须启用
 		19.如果创建queryPool的 queryType 为VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT，则必须支持VkPhysicalDeviceTransformFeedbackPropertiesEXT::transformFeedbackQueries
@@ -263,7 +263,7 @@ void QueriesTest::QueryOperationsTest()
 																				  （4）如果用于创建queryPool的counters中的一个为VK_PERFORMANCE_COUNTER_SCOPE_RENDER_PASS_KHR，则该命令不能记录在一个render pass instance中
 																				  （5）如果其他以queryType 为VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR创建的queryPool也在该commandBuffer中使用，其父primary command buffer 或者 secondary command buffer记录在和commandBuffer相同的parent primary command buffer中，则performanceCounterMultipleQueryPools 特性必须开启
 																				  （6）这个命令就不能直接或间接记录在一个影响相同query查询的包含vkCmdResetQueryPool 命令的command buffer中
-
+		
 		*/
 
 
@@ -278,12 +278,94 @@ void QueriesTest::QueryOperationsTest()
 		5.如果创建queryPool的 queryType 为VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT 或者 VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT，则index 必须小于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackStreams，且index必须等于 vkCmdBeginQueryIndexedEXT 中指定的index
 		6.如果创建queryPool的queryType 不为VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT 且不为VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT ，则index 必须为0
 		7.如果在render pass instance的一个subpass中调用该命令，则对应的vkCmdBeginQuery* 命令必须在该subpass中的前面被调用
-
+		
 		*/
-
+		
 	}
 
 
+	//查询完后query结果的存储排布，状态情况以及query的值的类型情况等信息  见p1563
+	//获取查询结果
+	{
+		VkQueryResultStatusKHR resultStatus{};
+		/*
+		VkQueryResultStatusKHR
+        VK_QUERY_RESULT_STATUS_NOT_READY_KHR:  指明query的结果还不是有效的
+        VK_QUERY_RESULT_STATUS_ERROR_KHR:  指明操作并没有完全成功
+        VK_QUERY_RESULT_STATUS_COMPLETE_KHR:  指明操作完全成功且query结果是有效的
+        VK_QUERY_RESULT_STATUS_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_KHR:  指明video encode 操作没有完全成功，原因为destination video bitstream buffer不够大，不能容纳encoded bitstream data
+		*/
+
+
+		VkQueryResultFlagBits queryResultFlagBits = VkQueryResultFlagBits::VK_QUERY_RESULT_WAIT_BIT;
+		/*
+		VkQueryResultFlagBits:
+		VK_QUERY_RESULT_64_BIT:  指定结果将以64-bit 无符号整数来写，如果没有设置，将以32-bit 无符号整数来写
+        VK_QUERY_RESULT_WAIT_BIT:  指定vulkan将等待每个query的结果有效后才去获取  
+        VK_QUERY_RESULT_WITH_AVAILABILITY_BIT:  指定query结果伴随availability status
+        VK_QUERY_RESULT_PARTIAL_BIT:  指明允许返回部分结果
+        VK_QUERY_RESULT_WITH_STATUS_BIT_KHR:  指明最后返回的结果值为VkQueryResultStatusKHR类型，参见 result status query p1602
+		*/
+
+		std::vector<uint64_t> data{};//返回的结果内存排布见p1564
+		vkGetQueryPoolResults(device, validQueryPool, 0/*获取的第一个query的索引*/, 1/*获取的query的数量*/, 
+			sizeof(uint64_t) * data.size()/*pData的字节大小*/, data.data()/*pData ，存放要写入的结果数据*/,
+			sizeof(uint64_t) /*pData中每个单独query结果的字节步长*/, queryResultFlagBits/* VkQueryResultFlagBits位掩码，指明结果如何返回*/);
+		/*
+		vkGetQueryPoolResults有效用法:
+		1.firstQuery 必须小于queryPool中queries的数量
+		2.firstQuery + queryCount必须小于等于queryPool中queries的数量
+		3.如果queryCount 大于1，stride不能为0
+		4.如果创建queryPool的 queryType 为VK_QUERY_TYPE_TIMESTAMP，flags不能包含VK_QUERY_RESULT_PARTIAL_BIT
+		5.如果创建queryPool的 queryType 为VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR，则（1）flags不能包含VK_QUERY_RESULT_WITH_AVAILABILITY_BIT, VK_QUERY_RESULT_WITH_STATUS_BIT_KHR, VK_QUERY_RESULT_PARTIAL_BIT, 或者 VK_QUERY_RESULT_64_BIT
+																				 （2）queryPool必须对通过vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR调用获得的每个pass记录一次
+		6.如果创建queryPool的 queryType 为VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR，flags必须包含VK_QUERY_RESULT_WITH_STATUS_BIT_KHR
+		7.如果flags包含VK_QUERY_RESULT_WITH_STATUS_BIT_KHR，则flags不能包含VK_QUERY_RESULT_WITH_AVAILABILITY_BIT
+		8.这个命令使用的queries不能是未初始化的
+		9.如果flags 中没有设置VK_QUERY_RESULT_64_BIT，且创建queryPool的 queryType 为VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR，则pData的大小以及stride必须是4的倍数
+		10.如果flags 中设置了VK_QUERY_RESULT_64_BIT，则pData的大小以及stride必须是8的倍数
+		11.如果flags中没有设置VK_QUERY_RESULT_WITH_AVAILABILITY_BIT，stride必须足够大以至于能够包含query结果额外的表示availability 或者 status的无符号整形数
+		12.如果创建queryPool的 queryType 为VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR，则（1）pData的大小以及stride必须是VkPerformanceCounterResultKHR.size的倍数
+																				  （2）则stride必须足够大以至于能够包含VkQueryPoolPerformanceCreateInfoKHR::counterIndexCount * VkPerformanceCounterResultKHR.size 的字节大小
+		13.dataSize必须足够大以容纳每一个query的结果，参见p1562 对查询结果的内存需求描述
+		*/
+
+
+		//拷贝query结果到VkBuffer    同步域 类比与SyncronizationAncCacheControl章节，看作是transfer操作
+		vkCmdCopyQueryPoolResults(commandBuffer, validQueryPool, 0/*获取的第一个query的索引*/, 1/*获取的query的数量*/, 
+						VkBuffer{/*假设这是一个有效的VkBuffer*/ }/*容纳获取的query结果值的VkBuffer*/, 0/*dstBuffer的偏移*/,
+						sizeof(uint64_t)/*dstBuffer中每个单独query结果的字节步长*/, queryResultFlagBits/* VkQueryResultFlagBits位掩码，指明结果如何返回*/);
+		/*
+		vkCmdCopyQueryPoolResults有效用法:
+		1.firstQuery 必须小于queryPool中queries的数量
+		2.firstQuery + queryCount必须小于等于queryPool中queries的数量
+		3.如果queryCount 大于1，stride不能为0
+		4.如果创建queryPool的 queryType 为VK_QUERY_TYPE_TIMESTAMP，flags不能包含VK_QUERY_RESULT_PARTIAL_BIT
+		5.如果创建queryPool的 queryType 为VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR，则（1）flags不能包含VK_QUERY_RESULT_WITH_AVAILABILITY_BIT, VK_QUERY_RESULT_WITH_STATUS_BIT_KHR, VK_QUERY_RESULT_PARTIAL_BIT, 或者 VK_QUERY_RESULT_64_BIT
+																				 （2）queryPool必须对通过vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR调用获得的每个pass记录一次
+		6.如果创建queryPool的 queryType 为VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR，flags必须包含VK_QUERY_RESULT_WITH_STATUS_BIT_KHR
+		7.如果flags包含VK_QUERY_RESULT_WITH_STATUS_BIT_KHR，则flags不能包含VK_QUERY_RESULT_WITH_AVAILABILITY_BIT
+		8.这个命令执行时使用的queries不能是未初始化的
+		9.dstOffset必须小于dstBuffer的大小
+		10.如果flags 中没有设置VK_QUERY_RESULT_64_BIT，则dstOffset 以及 stride必须是4的倍数
+		11.如果flags 中设置了VK_QUERY_RESULT_64_BIT，则dstOffset 以及stride必须是8的倍数
+		12.dstBuffer必须有足够大的空间，从dstOffset开始，能够容纳每一个query的结果,参见p1562 对查询结果的内存需求描述
+		13.dstBuffer必须以VK_BUFFER_USAGE_TRANSFER_DST_BIT 创建
+		14.如果dstBuffer是 non-sparse的，则dstBuffer必须已经绑定到一个完整的连续的单独的VkDeviceMemory上
+		15.如果创建queryPool的 queryType 为VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR，则VkPhysicalDevicePerformanceQueryPropertiesKHR::allowCommandBufferQueryCopies 必须为VK_TRUE
+		16.如果创建queryPool的 queryType 为VK_QUERY_TYPE_PERFORMANCE_QUERY_INTEL，则不能使用该命令拷贝query结果
+		17.这个命令使用的所有queries不能是激活的，且必须在该命令前的调用后变为有效的
+	
+		*/
+	}
+
+
+
+	//Occlusion Queries  
+	/*
+		用来查询一组绘制命令过程中，通过per-fragment tests的采样点的数量，
+		如果不设置 VK_QUERY_CONTROL_PRECISE_BIT，则一般用在只需要判断有没有采样点通过测试的情况，如果需要返回有多少个采样点通过测试，则需要设置
+	*/ 
 
 }
 

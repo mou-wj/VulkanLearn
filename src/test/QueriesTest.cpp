@@ -452,6 +452,194 @@ void QueriesTest::QueryOperationsTest()
 
 		*/
 	}
+
+
+
+	//Performance Queries 参见p1584
+	{
+		//Performance queries提供给应用一个机制获取 command buffers, render passes, 以及 commands执行的性能计数信息
+		//queue上的性能计数器见 vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR.
+		//查询使用vkCmdBeginQuery 以及 vkCmdEndQuery
+		//获取查询结果vkGetQueryPoolResults.   结果为VkPerformanceCounterResultKHR形式，具体是什么参见VkPerformanceCounterKHR::storage
+
+		VkPerformanceCounterResultKHR performanceCounterResultKHR{};
+		performanceCounterResultKHR.float32;
+		performanceCounterResultKHR.float64;
+		performanceCounterResultKHR.int32;
+		performanceCounterResultKHR.int64;
+		performanceCounterResultKHR.uint32;
+		performanceCounterResultKHR.uint64;
+
+
+		//Profiling Lock
+		{
+			//profiling lock 必须在进行性能计数查询调用 vkBeginCommandBuffer前获取
+
+
+			VkAcquireProfilingLockInfoKHR acquireProfilingLockInfoKHR{};
+			acquireProfilingLockInfoKHR.sType = VK_STRUCTURE_TYPE_ACQUIRE_PROFILING_LOCK_INFO_KHR;
+			acquireProfilingLockInfoKHR.pNext = nullptr;
+			acquireProfilingLockInfoKHR.flags = 0;//保留未来使用
+			acquireProfilingLockInfoKHR.timeout = 1000;//如果profiling lock还不可以获取的化，指定获取操作等待的毫秒数，如果为 UINT64_MAX，将一直等待到获取为止
+			//获取profiling lock
+			vkAcquireProfilingLockKHR(device, &acquireProfilingLockInfoKHR);
+
+
+
+			//释放profiling lock
+			vkReleaseProfilingLockKHR(device);
+		}
+
+	}
+
+	//Transform Feedback Queries 参见p1587
+	//Transform feedback queries 查询捕获vertex stream时要写的图元以及实际写的图元的数量
+	//使用 vkCmdBeginQuery 以及 vkCmdEndQuery,  vkCmdBeginQueryIndexedEXT 以及 vkCmdEndQueryIndexedEXT
+
+	
+	//Primitives Generated Queries 参见p1587
+	//Primitives generated queries 查询每一个发送到stream到达 transform feedback stage阶段的图元的数量
+	//使用 vkCmdBeginQuery 以及 vkCmdEndQuery,  vkCmdBeginQueryIndexedEXT 以及 vkCmdEndQueryIndexedEXT
+	//获取 vkCmdCopyQueryPoolResults 以及 vkGetQueryPoolResults
+
+
+	//Mesh Shader Queries  参见p1587
+	/*
+	Mesh shader queries 查询每一个mesh shader 产生的图元到达 fragment shader stage阶段的图元的数量
+	*/
+
+	
+	//Intel Performance Queries  参见p1588
+	{
+		//Intel Performance Queries允许捕获一组commands的性能数据，相比与其他查询，这个查询并不直接读取查询结果，而是处理结果并转换为人可读的信息
+
+
+		VkInitializePerformanceApiInfoINTEL  initializePerformanceApiInfoINTEL{};
+		initializePerformanceApiInfoINTEL.sType = VK_STRUCTURE_TYPE_INITIALIZE_PERFORMANCE_API_INFO_INTEL;
+		initializePerformanceApiInfoINTEL.pNext = nullptr;
+		initializePerformanceApiInfoINTEL.pUserData = nullptr;//为应用数据的指针
+		//创建query pool前初始化performance query
+		vkInitializePerformanceApiINTEL(device, &initializePerformanceApiInfoINTEL);
+
+		//performance query查询结束后，取消performance query的初始化
+		vkUninitializePerformanceApiINTEL(device);
+
+		VkPerformanceParameterTypeINTEL performanceParameterTypeINTEL{};
+		performanceParameterTypeINTEL = VkPerformanceParameterTypeINTEL::VK_PERFORMANCE_PARAMETER_TYPE_HW_COUNTERS_SUPPORTED_INTEL;
+		/*
+		VkPerformanceParameterTypeINTEL
+		VK_PERFORMANCE_PARAMETER_TYPE_HW_COUNTERS_SUPPORTED_INTEL:  指明结果含有说明是否启用捕获硬件计数的boolean值
+		VK_PERFORMANCE_PARAMETER_TYPE_STREAM_MARKER_VALID_BITS_INTEL:  指明结果含有说明多少比特可以写入VkPerformanceValueINTEL的32-bits 整型值
+		*/
+
+		VkPerformanceValueINTEL performanceValueINTEL{};//获取查询特性
+		performanceValueINTEL.type = VK_PERFORMANCE_VALUE_TYPE_UINT32_INTEL;//指明返回的数据类型的 VkPerformanceValueTypeINTEL
+		/*
+		VkPerformanceValueTypeINTEL:
+		VK_PERFORMANCE_VALUE_TYPE_UINT32_INTEL:    指明返回 unsigned 32-bit integer数据到data.value32.
+		VK_PERFORMANCE_VALUE_TYPE_UINT64_INTEL:    指明返回 unsigned 64-bit integer数据到data.value64.
+		VK_PERFORMANCE_VALUE_TYPE_FLOAT_INTEL:    指明返回 floating-point数据到data.valueFloat.
+		VK_PERFORMANCE_VALUE_TYPE_BOOL_INTEL:    指明返回 VkBool32 数据到data.valueBool.
+		VK_PERFORMANCE_VALUE_TYPE_STRING_INTEL:    指明返回一个 null-terminated UTF-8字符串数据到 in data.valueString.
+		*/
+
+		performanceValueINTEL.data.value32;//存放uint32_t的返回数据
+		performanceValueINTEL.data.value64;//存放uint64_t的返回数据
+		performanceValueINTEL.data.valueBool;//存放VkBool32的返回数据
+		performanceValueINTEL.data.valueFloat;//存放float的返回数据
+		performanceValueINTEL.data.valueString;//存放c风格字符串null-terminated UTF-8的返回数据
+		//获取 performance query 查询的特性
+		vkGetPerformanceParameterINTEL(device, performanceParameterTypeINTEL, &performanceValueINTEL);
+
+
+
+		//VkQueryPoolPerformanceQueryCreateInfoINTEL
+		//这个架构体加到 VkQueryPoolCreateInfo.pNext中用来启用该类型的query
+		VkQueryPoolPerformanceQueryCreateInfoINTEL queryPoolPerformanceQueryCreateInfoINTEL{};
+		queryPoolPerformanceQueryCreateInfoINTEL.sType = VK_STRUCTURE_TYPE_QUERY_POOL_PERFORMANCE_QUERY_CREATE_INFO_INTEL;
+		queryPoolPerformanceQueryCreateInfoINTEL.pNext = nullptr;
+		queryPoolPerformanceQueryCreateInfoINTEL.performanceCountersSampling = VK_QUERY_POOL_SAMPLING_MODE_MANUAL_INTEL;//描述如何捕获performance queries，VK_QUERY_POOL_SAMPLING_MODE_MANUAL_INTEL指明应用使用默认模式调用vkCmdBeginQuery 以及 vkCmdEndQuery来记录performance数据
+
+
+		VkPerformanceMarkerInfoINTEL performanceMarkerInfoINTEL{};
+		performanceMarkerInfoINTEL.sType = VK_STRUCTURE_TYPE_PERFORMANCE_MARKER_INFO_INTEL;
+		performanceMarkerInfoINTEL.pNext = nullptr;
+		performanceMarkerInfoINTEL.marker = 0;//记录到查询结果的一个不透明的标记值
+		//为了帮助将查询结果与应用程序发出命令的特定点关联起来，可以将标记设置到命令缓冲区中
+		vkCmdSetPerformanceMarkerINTEL(commandBuffer, &performanceMarkerInfoINTEL);
+
+
+
+		VkPerformanceStreamMarkerInfoINTEL performanceStreamMarkerInfoINTEL{};
+		performanceStreamMarkerInfoINTEL.sType = VK_STRUCTURE_TYPE_PERFORMANCE_STREAM_MARKER_INFO_INTEL;
+		performanceStreamMarkerInfoINTEL.pNext = nullptr;
+		performanceStreamMarkerInfoINTEL.marker = 0;//是将被记录到外部应用程序使用的报告中的标记值。这个值必须使用vkGetPerformanceParameterINTEL传入VK_PERFORMANCE_PARAMETER_TYPE_STREAM_MARKER_VALID_BITS_INTEL返回的值
+		/*
+		当监视由在系统上运行的整个应用程序集生成的数据集中的应用程序的行为时，在潜在的大量性能数据中识别绘制调用是很有用的。为此，应用程序可以生成流标记，这些流标记将用于跟踪具有特定性能数据项的特定绘制调用
+		*/
+		vkCmdSetPerformanceStreamMarkerINTEL(commandBuffer, &performanceStreamMarkerInfoINTEL);
+
+
+		VkPerformanceOverrideInfoINTEL performanceOverrideInfoINTEL{};
+		performanceOverrideInfoINTEL.sType = VK_STRUCTURE_TYPE_PERFORMANCE_OVERRIDE_INFO_INTEL;
+		performanceOverrideInfoINTEL.pNext = nullptr;
+		performanceOverrideInfoINTEL.type = VK_PERFORMANCE_OVERRIDE_TYPE_FLUSH_GPU_CACHES_INTEL;/*指明类型的 VkPerformanceOverrideTypeINTEL值
+		VkPerformanceOverrideTypeINTEL:
+		VK_PERFORMANCE_OVERRIDE_TYPE_NULL_HARDWARE_INTEL:  将所有渲染操作变为空操作
+		VK_PERFORMANCE_OVERRIDE_TYPE_FLUSH_GPU_CACHES_INTEL:  停止命令流，直到以前发出的所有命令都完成，所有缓存都被刷新并无效
+		*/
+		performanceOverrideInfoINTEL.enable = VK_TRUE;//表明是否启用重写设置操作
+		performanceOverrideInfoINTEL.parameter = 0;//是重写设置可能需要的参数
+
+		//一些应用程序可能希望使用不同的设置来测量一组命令的效果。重写设置调用
+		vkCmdSetPerformanceOverrideINTEL(commandBuffer, &performanceOverrideInfoINTEL);
+
+		//在将包含性能查询命令的命令缓冲区提交到设备队列之前，应用程序必须获取并设置性能查询配置。
+
+		VkPerformanceConfigurationINTEL performanceConfigurationINTEL{};
+
+		VkPerformanceConfigurationAcquireInfoINTEL performanceConfigurationAcquireInfoINTEL{};
+		performanceConfigurationAcquireInfoINTEL.sType = VK_STRUCTURE_TYPE_PERFORMANCE_CONFIGURATION_ACQUIRE_INFO_INTEL;
+		performanceConfigurationAcquireInfoINTEL.pNext = nullptr;
+		performanceConfigurationAcquireInfoINTEL.type = VK_PERFORMANCE_CONFIGURATION_TYPE_COMMAND_QUEUE_METRICS_DISCOVERY_ACTIVATED_INTEL;//指明将获取的performance configuration的 VkPerformanceConfigurationTypeINTEL类型值
+		//获取性能查询配置performance configuration
+		vkAcquirePerformanceConfigurationINTEL(device, &performanceConfigurationAcquireInfoINTEL, &performanceConfigurationINTEL);
+
+
+		//设置performance configuration
+		vkQueueSetPerformanceConfigurationINTEL(VkQueue{/*假设这是一个有效的VkQueue*/ }, performanceConfigurationINTEL);
+
+		//释放performance configuration
+		vkReleasePerformanceConfigurationINTEL(device, performanceConfigurationINTEL);//configuration不能在所有设置了configuration的已经提交的command buffers处于pending状态前释放
+
+	}
+
+	// Result Status Queries 参见p1603
+	/*
+	Result status queries 允许应用确定一组命令是否已经成功结束，通过VkQueryResultStatusKHR 指明
+
+	是否支持该查询参见 vkGetPhysicalDeviceQueueFamilyProperties2返回的 VkQueueFamilyQueryResultStatusPropertiesKHR::queryResultStatusSupport
+	*/
+
+	//Video Encode Feedback Queries 参见p1603
+	{
+		//Video encode feedback queries允许应用获取video encode operations产生的 feedback values
+		//是否支持该查询参见  vkGetPhysicalDeviceVideoCapabilitiesKHR返回的  VkVideoEncodeCapabilitiesKHR::supportedEncodeFeedbackFlags
+
+
+		//VkQueryPoolVideoEncodeFeedbackCreateInfoKHR
+		//在VkQueryPoolCreateInfo.pNext中添加该结构体启用该查询
+		VkQueryPoolVideoEncodeFeedbackCreateInfoKHR queryPoolVideoEncodeFeedbackCreateInfoKHR{};
+		queryPoolVideoEncodeFeedbackCreateInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义这里设置为非法值
+		queryPoolVideoEncodeFeedbackCreateInfoKHR.pNext = nullptr;
+		queryPoolVideoEncodeFeedbackCreateInfoKHR.encodeFeedbackFlags = VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BUFFER_OFFSET_BIT_KHR;/*是 VkVideoEncodeFeedbackFlagBitsKHR组合值位掩码，指明启用哪些 video encode feedback values的捕获
+		VkVideoEncodeFeedbackFlagBitsKHR:
+
+        VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BUFFER_OFFSET_BIT_KHR: 指定由池管理的查询将捕获由视频编码操作向VkVideoEncodeInfoKHR::dstBuffer中指定的位流缓冲区写入位流数据的相对于VkVideoEncodeInfoKHR::dstBufferOffset中指定的偏移量的字节偏移量,对于由任何视频编码命令发出的第一个视频编码操作，该值将始终为零，这意味着位流数据总是从VkVideoEncodeInfoKHR::dstBufferOffset.中指定的偏移量开始写入VkVideoEncodeInfoKHR::dstBuffer中指定的缓冲区
+        VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BYTES_WRITTEN_BIT_KHR: 指定由池管理的查询将捕获由视频编码操作写入到在VkVideoEncodeInfoKHR::dstBuffer.中指定的位流缓冲区的字节数
+        VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_HAS_OVERRIDES_BIT_KHR:  指定由池管理的查询将捕获一个布尔值，这表明写入到VkVideoEncodeInfoKHR::dstBuffer中指定的位流缓冲区的数据包含被复写的参数。
+		*/
+	}
 }
 
 

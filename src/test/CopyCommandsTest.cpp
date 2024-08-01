@@ -196,7 +196,7 @@ void CopyCommandsTest::CommandsTest()
 		copyImageInfo2.dstImage = dstImage;//指明要拷贝的destination image
 		copyImageInfo2.dstImageLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;//指明destination image的subresources的layout
 		copyImageInfo2.regionCount = 1;//指明要拷贝的数量
-		VkImageCopy2 copyImage2{};
+		VkImageCopy2 copyImage2{};//等价于VkImageCopy2KHR
 		{
 			copyImage2.sType = VK_STRUCTURE_TYPE_IMAGE_COPY_2;
 			copyImage2.pNext = nullptr;
@@ -205,6 +205,12 @@ void CopyCommandsTest::CommandsTest()
 			copyImage2.dstOffset = VkOffset3D{ .x = 0,.y = 0,.z = 0 };//destination image中的x，y，z的基于texel的偏移量
 			copyImage2.dstSubresource = VkImageSubresourceLayers{/*假设这是一个有效的VkImageSubresourceLayers，参见前面对VkImageSubresourceLayers的描述*/ };//指明destination image的subresource的 VkImageSubresourceLayers
 			copyImage2.extent = VkExtent3D{ .width = 1,.height = 1,.depth = 1 };//是要拷贝的image 基于texel的width, height 以及 depth.
+			/*
+			VkImageCopy2有效用法:
+			1.如果VK_KHR_sampler_ycbcr_conversion 拓展没有开启，且VkPhysicalDeviceProperties::apiVersion小于Vulkan 1.1,则srcSubresource 以及 dstSubresource的aspectMask，layerCount必须匹配
+			2.extent.width，extent.height，extent.depth 不能为0
+			*/
+
 		}
 		copyImageInfo2.pRegions = &copyImage2;//是一组 VkImageCopy2 数组指针指明要拷贝的区域
 		/*
@@ -268,7 +274,7 @@ void CopyCommandsTest::CommandsTest()
 		52.pRegions的每个元素的dstSubresource.mipLevel必须小于创建dstImage的VkImageCreateInfo指定的mipLevels
 		53.如果pRegions的每个元素的dstSubresource.layerCount不为VK_REMAINING_ARRAY_LAYERS，则该元素的dstSubresource.baseArrayLayer + dstSubresource.layerCount 必须小于等于创建dstImage的VkImageCreateInfo指定的arrayLayers
 		54.dstImage不能以VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT创建
-		
+
 		*/
 
 
@@ -283,6 +289,74 @@ void CopyCommandsTest::CommandsTest()
 
 	}
 
+
+
+
+	// Copying Data Between Buffers and Images 参见p1648
+	{
+		//在buffer和image之间拷贝数据，拷贝以whole texel blocks为基本单位  参见p1649 - p1652
+		VkBuffer srcBuffer{/*假设这是一个有效的VkBuffer*/};
+		VkImage dstImage{/*假设这是一个有效的VkImage*/ };
+		VkBufferImageCopy bufferImageCopyRegion{};
+		bufferImageCopyRegion.bufferImageHeight = 1;
+		bufferImageCopyRegion.bufferOffset = 0;
+		bufferImageCopyRegion.bufferRowLength = 1;
+		bufferImageCopyRegion.imageExtent = VkExtent3D{ .width = 1,.height = 1,.depth = 1 };
+		bufferImageCopyRegion.imageOffset = VkOffset3D{ .x = 0,.y = 0,.z = 0 };
+		bufferImageCopyRegion.imageSubresource = VkImageSubresourceLayers //指明destination image的subresource的 VkImageSubresourceLayers
+		{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,//是 VkImageAspectFlagBits组合值位掩码，指明要拷贝的color, depth 以及/或者 stencil aspects
+			.mipLevel = 0,//要拷贝的mipmap level
+			.baseArrayLayer = 0,//要拷贝的第一个layer
+			.layerCount = 1//要拷贝的layer的个数 
+		};
+
+		//拷贝buffer到image  
+		vkCmdCopyBufferToImage(commandBuffer, srcBuffer/*srcBuffer,指明source VkBuffer*/, dstImage/*dstImage，指明destination VkImage*/, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL/*dstImageLayout , destination image 的subresources 的layout*/, 
+			1/*regionCount，要拷贝的区域数*/, &bufferImageCopyRegion/*pRegions，一组 VkBufferImageCopy 数组指针，指明要拷贝的区域*/);
+		/*
+		vkCmdCopyBufferToImage有效用法:
+		1.如果dstImage 为non-sparse的或者指定的disjoint plane 必须已经绑定到一个完整的连续的单独的VkDeviceMemory上
+		2.pRegions的每个元素的imageSubresource.mipLevel必须小于创建srcImage的VkImageCreateInfo指定的mipLevels
+		3.如果pRegions的每个元素的imageSubresource.layerCount不为VK_REMAINING_ARRAY_LAYERS，则该元素的imageSubresource.baseArrayLayer + imageSubresource.layerCount 必须小于等于创建dstImage的VkImageCreateInfo指定的arrayLayers
+		4.dstImage不能以VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT创建
+		5.pRegions的每个元素指定的image region必须包含在dstImage的imageSubresource指定的subresource范围内
+		6.对pRegions的每个元素的，imageOffset.x以及(imageExtent.width + imageOffset.x)必须同时大于等于0且小于等于dstImage指定的imageSubresource的width,  imageOffset.y以及(imageExtent.height + imageExtent.y)必须同时大于等于0且小于等于dstImage指定的imageSubresource的height，
+					imageOffset.z以及(imageExtent.depth + imageExtent.z)必须同时大于等于0且小于等于dstImage指定的imageSubresource的depth
+		7.dstImage的sample count 必须为 VK_SAMPLE_COUNT_1_BIT
+		8.如果commandBuffer为unprotected command buffer，且不支持protectedNoFault，则srcBuffer 不能是一个protected buffer,dstImage不能为一个protected image
+		9.如果commandBuffer为protected command buffer，且不支持protectedNoFault，则dstImage不能为一个unprotected image
+		10.如果commandBuffer所在的VkCommandPool的队列族不支持VK_QUEUE_GRAPHICS_BIT 或者VK_QUEUE_COMPUTE_BIT，则pRegions的任何元素的bufferOffset必须是4的倍数
+		11.pRegions中每个元素的imageOffset和imageExtent必须符合commandBuffer所在的VkCommandPool的队列族的image的transfer granularity requirements，参见VkQueueFamilyProperties
+		12.如果commandBuffer所在的VkCommandPool的队列族不支持VK_QUEUE_GRAPHICS_BIT，则对于pRegions中的每个元素，其imageSubresource.aspectMask不能为VK_IMAGE_ASPECT_DEPTH_BIT 或者VK_IMAGE_ASPECT_STENCIL_BIT
+		13.对于pRegions中每个元素， srcBuffer必须足够大以能够供  Buffer 和 Image Addressing访问
+		14.pRegions的元素指明的source region的并集以及destination region的并集不能在内存上有重叠
+		15.srcBuffer必须以VK_BUFFER_USAGE_TRANSFER_SRC_BIT 创建
+		16.dstImage的format features必须包含VK_FORMAT_FEATURE_TRANSFER_DST_BIT
+		17.如果srcBuffer 为non-sparse的则其必须已经绑定到一个完整的连续的单独的VkDeviceMemory上
+		18.dstImage必须以VK_IMAGE_USAGE_TRANSFER_DST_BIT 创建
+		19.dstImageLayout必须指明在这个命令执行在VkDevice上时pRegions中dstImage的subresources的layout
+		20.dstImageLayout必须为VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 或者 VK_IMAGE_LAYOUT_GENERAL
+		22.如果VK_EXT_depth_range_unrestricted 没有开启，则pRegions中的每个imageSubresource包含depth aspect的元素，其srcBuffer中的值必须在[0,1]范围内
+		23.如果dstImage类型为VK_IMAGE_TYPE_1D，则对pRegions的每个元素，imageOffset.y必须等于0且imageExtent.height必须为1
+		24.如果dstImage的类型为VK_IMAGE_TYPE_1D 或者 VK_IMAGE_TYPE_2D，则pRegions的每个元素的imageOffset.z必须等于0且imageExtent.depth必须为1
+		25.对pRegions的每个元素，imageOffset.x必须为dstImage的VkFormat的 texel block extent width的倍数，  imageOffset.y必须为dstImage的VkFormat的 texel block extent height的倍数, imageOffset.z必须为dstImage的VkFormat的 texel block extent depth的倍数
+		26.对pRegions的每个元素，则（1）如果imageOffset.x + extent.width不等于srcSubresource指定的subresource的width，则extent.width必须为dstImage的VkFormat的 texel block extent width的倍数，
+								   （2）如果imageOffset.y + extent.height不等于srcSubresource指定的subresource的height，则extent.height必须为dstImage的VkFormat的 texel block extent height的倍数，
+								   （3）如果imageOffset.z + extent.depth不等于srcSubresource指定的subresource的depth，则extent.depth必须为dstImage的VkFormat的 texel block extent depth的倍数
+		27.pRegions的每个元素，imageSubresource.aspectMask必须指明dstImage中的aspects
+		29.如果dstImage含有一个multi-planar image format，则pRegions中每个元素的imageSubresource.aspectMask必须是一个单独有效的multi-planar aspect mask bit
+		30.如果dstImage类型为VK_IMAGE_TYPE_3D，则pRegions的每个元素，imageSubresource.baseArrayLayer必须为0，且imageSubresource.layerCount必须为1
+		31.对于pRegions的每个元素，bufferRowLength 必须是dstImage的VkFormat的 texel block extent width的倍数，bufferImageHeight 必须是dstImage的VkFormat的 texel block extent height的倍数
+		32.对于pRegions的每个元素，bufferRowLength除以texel block extent width 然后乘以 dstImage的texel block size 必须小于等于pow(2,31) -1
+		33.如果dstImage 既不含一个depth/stencil format 又不含一个multi-planar format，则对pRegions的每个元素，bufferOffset 必须是texel block size的倍数
+		34.如果dstImage 含一个multi-planar format，则对pRegions的每个元素，bufferOffset 必须是和imageSubresource 的format 和 aspectMask兼容的format的元素大小的倍数，参见 Compatible Formats of Planes of Multi-Planar Formats p4057
+		35.如果dstImage 含一个depth/stencil format，则对pRegions的任何元素，bufferOffset 必须是4的倍数
+		*/
+
+
+
+	}
 
 }
 

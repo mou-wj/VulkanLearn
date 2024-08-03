@@ -1,6 +1,8 @@
 #include "../common/Global.h"
 #include "../common/TestBase.h"
 NS_TEST_BEGIN
+//有些安装的vulkan中不含的结构体或者接口会在这里自定义一下
+
 
 // Provided by VK_NV_device_generated_commands_compute
 typedef struct VkComputePipelineIndirectBufferInfoNV {
@@ -139,4 +141,70 @@ typedef struct VkVideoEncodeH265ProfileInfoKHR {
 	const void* pNext;
 	StdVideoH265ProfileIdc    stdProfileIdc;
 } VkVideoEncodeH265ProfileInfoKHR;
+
+
+
+// Provided by VK_EXT_host_image_copy
+typedef VkFlags VkHostImageCopyFlagsEXT;
+// Provided by VK_EXT_host_image_copy
+typedef struct VkImageToMemoryCopyEXT {
+	VkStructureType             sType;
+	const void* pNext;
+	void* pHostPointer;
+	uint32_t                    memoryRowLength;
+	uint32_t                    memoryImageHeight;
+	VkImageSubresourceLayers    imageSubresource;
+	VkOffset3D                  imageOffset;
+	VkExtent3D                  imageExtent;
+} VkImageToMemoryCopyEXT;
+
+// Provided by VK_EXT_host_image_copy
+typedef struct VkCopyImageToMemoryInfoEXT {
+	VkStructureType                  sType;
+	const void* pNext;
+	VkHostImageCopyFlagsEXT          flags;
+	VkImage                          srcImage;
+	VkImageLayout                    srcImageLayout;
+	uint32_t                         regionCount;
+	const VkImageToMemoryCopyEXT* pRegions;
+} VkCopyImageToMemoryInfoEXT;
+
+
+// Provided by VK_EXT_host_image_copy
+typedef struct VkCopyImageToImageInfoEXT {
+	VkStructureType            sType;
+	const void* pNext;
+	VkHostImageCopyFlagsEXT    flags;
+	VkImage                    srcImage;
+	VkImageLayout              srcImageLayout;
+	VkImage                    dstImage;
+	VkImageLayout              dstImageLayout;
+	uint32_t                   regionCount;
+	const VkImageCopy2* pRegions;
+} VkCopyImageToImageInfoEXT;
+
+// Provided by VK_QCOM_filter_cubic_weights
+typedef enum VkCubicFilterWeightsQCOM {
+	VK_CUBIC_FILTER_WEIGHTS_CATMULL_ROM_QCOM = 0,
+	VK_CUBIC_FILTER_WEIGHTS_ZERO_TANGENT_CARDINAL_QCOM = 1,
+	VK_CUBIC_FILTER_WEIGHTS_B_SPLINE_QCOM = 2,
+	VK_CUBIC_FILTER_WEIGHTS_MITCHELL_NETRAVALI_QCOM = 3,
+} VkCubicFilterWeightsQCOM;
+
+// Provided by VK_QCOM_filter_cubic_weights
+typedef struct VkBlitImageCubicWeightsInfoQCOM {
+	VkStructureType             sType;
+	const void* pNext;
+	VkCubicFilterWeightsQCOM    cubicWeights;
+} VkBlitImageCubicWeightsInfoQCOM;
+
+
+
+
+
+
+
+
+
+
 NS_TEST_END

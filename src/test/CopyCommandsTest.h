@@ -14,9 +14,9 @@ public:
 
 private:
 
-	void CommandsTest();
-
-
+	void CommonCopyCommandsTest();
+	void ScaleCopyAndResolveCommandsTest();
+	void BufferMarkersCommandsTest();
 
 };
 TEST_REGISTER(CopyCommandsTest)

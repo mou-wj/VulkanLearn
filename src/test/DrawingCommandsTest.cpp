@@ -416,6 +416,7 @@ void DrawingCommandsTest::PrimitiveTest()
                                         （10）以VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT动态state开启创建，则vkCmdSetColorBlendEnableEXT必须在该命令之前设置
                                         （11）以VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT动态state开启创建，则vkCmdSetColorBlendEquationEXT必须在该命令之前设置
                                         （12）以VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT动态state开启创建，则vkCmdSetColorWriteMaskEXT必须在该命令之前设置
+        
         99.如果一个shader object绑定到VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT stage，则vkCmdSetTessellationDomainOriginEXT必须在该命令之前设置   
         100.如果一个shader object绑定到任何graphics stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，则
                                                         （1）如果depthClamp特性启用，则vkCmdSetDepthClampEnableEXT必须在该命令之前设置   
@@ -431,9 +432,122 @@ void DrawingCommandsTest::PrimitiveTest()
                                             （2）如果绑定了color attachments，则vkCmdSetColorBlendEnableEXT必须在该命令之前设置
                                             （3）如果最近的vkCmdSetColorBlendEnableEXT设置任何附件在pColorBlendEnables中的值为VK_TRUE ，则vkCmdSetColorBlendEquationEXT必须在该命令之前设置
                                             （4）如果绑定了color attachments，则vkCmdSetColorWriteMaskEXT必须在该命令之前设置
-
+        103.如果绑定的graphics pipeline，（1）以VK_DYNAMIC_STATE_RASTERIZATION_STREAM_EXT动态state开启创建，则vkCmdSetRasterizationStreamEXT必须在该命令之前设置
+                                         （2）以VK_DYNAMIC_STATE_CONSERVATIVE_RASTERIZATION_MODE_EXT动态state开启创建，则vkCmdSetConservativeRasterizationModeEXT必须在该命令之前设置
+                                         （3）以VK_DYNAMIC_STATE_EXTRA_PRIMITIVE_OVERESTIMATION_SIZE_EXT动态state开启创建，则vkCmdSetExtraPrimitiveOverestimationSizeEXT必须在该命令之前设置
+                                         （4）以VK_DYNAMIC_STATE_DEPTH_CLIP_ENABLE_EXT动态state开启创建，则vkCmdSetDepthClipEnableEXT必须在该命令之前设置
+                                         （5）以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT动态state开启创建，则vkCmdSetSampleLocationsEnableEXT必须在该命令之前设置
+                                         （6）以VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT动态state开启创建，则vkCmdSetColorBlendAdvancedEXT必须在该命令之前设置
+                                         （7）以VK_DYNAMIC_STATE_PROVOKING_VERTEX_MODE_EXT动态state开启创建，则vkCmdSetProvokingVertexModeEXT必须在该命令之前设置
+                                         （8）以VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT动态state开启创建，则vkCmdSetLineRasterizationModeEXT必须在该命令之前设置
+                                         （9）以VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT动态state开启创建，则vkCmdSetLineStippleEnableEXT必须在该命令之前设置
+                                         （10）以VK_DYNAMIC_STATE_LINE_STIPPLE_KHR动态state开启创建，则vkCmdSetLineStippleKHR必须在该命令之前设置
+                                         （11）以VK_DYNAMIC_STATE_DEPTH_CLIP_NEGATIVE_ONE_TO_ONE_EXT动态state开启创建，则vkCmdSetDepthClipNegativeOneToOneEXT必须在该命令之前设置
+                                         （12）以VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_ENABLE_NV动态state开启创建，则vkCmdSetViewportWScalingEnableNV必须在该命令之前设置
+                                         （13）以VK_DYNAMIC_STATE_VIEWPORT_SWIZZLE_NV动态state开启创建，则vkCmdSetViewportSwizzleNV必须在该命令之前设置
+                                         （14）以VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_ENABLE_NV动态state开启创建，则vkCmdSetCoverageToColorEnableNV必须在该命令之前设置
+                                         （15）以VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_LOCATION_NV动态state开启创建，则vkCmdSetCoverageToColorLocationNV必须在该命令之前设置
+                                         （16）以VK_DYNAMIC_STATE_COVERAGE_MODULATION_MODE_NV动态state开启创建，则vkCmdSetCoverageModulationModeNV必须在该命令之前设置
+                                         （17）以VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_ENABLE_NV动态state开启创建，则vkCmdSetCoverageModulationTableEnableNV必须在该命令之前设置
+                                         （18）以VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_NV动态state开启创建，则vkCmdSetCoverageModulationTableNV必须在该命令之前设置
+                                         （19）以VK_DYNAMIC_STATE_SHADING_RATE_IMAGE_ENABLE_NV动态state开启创建，则vkCmdSetShadingRateImageEnableNV必须在该命令之前设置
+                                         （20）以VK_DYNAMIC_STATE_REPRESENTATIVE_FRAGMENT_TEST_ENABLE_NV动态state开启创建，则vkCmdSetRepresentativeFragmentTestEnableNV必须在该命令之前设置
+                                         （21）以VK_DYNAMIC_STATE_COVERAGE_REDUCTION_MODE_NV动态state开启创建，则vkCmdSetCoverageReductionModeNV必须在该命令之前设置
+        
+        104.如果一个shader object绑定到VK_SHADER_STAGE_GEOMETRY_BIT stage，且如果geometryStreams 特性开启，则vkCmdSetRasterizationStreamEXT必须在该命令之前设置
+        105.如果一个shader object绑定到任何graphics stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，则
+                                （1）vkCmdSetConservativeRasterizationModeEXT必须在该命令之前设置
+								（2）如果VK_EXT_conservative_rasterization 拓展开启，且最近的vkCmdSetConservativeRasterizationModeEXT设置conservativeRasterizationMode为VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT，则vkCmdSetExtraPrimitiveOverestimationSizeEXT必须在该命令之前设置
+		                        （3）如果VK_EXT_sample_locations 拓展开启，则vkCmdSetSampleLocationsEnableEXT必须在该命令之前设置
+        106.如果一个shader object绑定到任何graphics stage，且depthClipEnable 特性开启，则vkCmdSetDepthClipEnableEXT必须在该命令之前设置
+		107.如果如果一个shader object绑定到任何VK_SHADER_STAGE_FRAGMENT_BIT stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，且如果VK_EXT_blend_operation_advanced 拓展开启，则vkCmdSetColorBlendEquationEXT 和 vkCmdSetColorBlendAdvancedEXT中至少一个必须在该命令之前设置
+		108.如果一个shader object绑定到VK_SHADER_STAGE_VERTEX_BIT stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，如果VK_EXT_provoking_vertex拓展开启， 则vkCmdSetProvokingVertexModeEXT必须在该命令之前设置
+		109.如果VK_KHR_line_rasterization 或者 VK_EXT_line_rasterization拓展开启，则（1）如果一个shader object绑定到任意一个graphics stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，且最近的vkCmdSetPolygonModeEXT设置polygonMode 为VK_POLYGON_MODE_LINE ，则vkCmdSetLineRasterizationModeEXT必须在该命令之前设置
+                                                                                    （2）如果一个shader object绑定到VK_SHADER_STAGE_VERTEX_BIT stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，且最近的vkCmdSetPrimitiveTopology设置primitiveTopology 为任何line topology ，则vkCmdSetLineRasterizationModeEXT必须在该命令之前设置
+		                                                                            （3）如果一个输出为line primitive的shader object绑定到VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT 或 VK_SHADER_STAGE_GEOMETRY_BIT stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，则vkCmdSetLineRasterizationModeEXT必须在该命令之前设置
+                                                                                    （4）如果一个shader object绑定到任意一个graphics stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，且最近的vkCmdSetPolygonModeEXT设置polygonMode 为VK_POLYGON_MODE_LINE ，则vkCmdSetLineStippleEnableEXT必须在该命令之前设置
+                                                                                    （5）如果一个shader object绑定到VK_SHADER_STAGE_VERTEX_BIT stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，且最近的vkCmdSetPrimitiveTopology设置primitiveTopology 为任何line topology ，则vkCmdSetLineStippleEnableEXT必须在该命令之前设置
+                                                                                    （6）如果一个输出为line primitive的shader object绑定到VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT 或 VK_SHADER_STAGE_GEOMETRY_BIT stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，则vkCmdSetLineStippleEnableEXT必须在该命令之前设置
+                                                                                    （7）如果一个shader object绑定到任意一个graphics stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，且最近的vkCmdSetLineStippleEnableEXT设置stippledLineEnable 为VK_TRUE ，则vkCmdSetLineStippleEXT必须在该命令之前设置
+        110.如果一个shader object绑定到任何graphics stage，（1）如果depthClipControl 特性开启，则vkCmdSetDepthClipNegativeOneToOneEXT必须在该命令之前设置
+                                                           （2）VK_NV_clip_space_w_scaling 拓展开启，则vkCmdSetViewportWScalingEnableNV必须在该命令之前设置
+                                                           （3）VK_NV_viewport_swizzle 拓展开启，则vkCmdSetViewportSwizzleNV必须在该命令之前设置
+        111.如果如果一个shader object绑定到任何VK_SHADER_STAGE_FRAGMENT_BIT stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，则
+                            （1）如果VK_NV_fragment_coverage_to_color 拓展开启，则vkCmdSetCoverageToColorEnableNV 必须在该命令之前设置
+                            （2）如果VK_NV_fragment_coverage_to_color 拓展开启，且最近的vkCmdSetCoverageToColorEnableNV 设置coverageToColorEnable 为VK_TRUE，则vkCmdSetCoverageToColorLocationNV 必须在该命令之前设置
+		                    （3）如果pipelineFragmentShadingRate 特性开启，则vkCmdSetFragmentShadingRateKHR 必须在该命令之前设置
+        112.如果一个shader object绑定到任何graphics stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，则
+                                    （1）如果VK_NV_framebuffer_mixed_samples 拓展开启，则vkCmdSetCoverageModulationModeNV 必须在该命令之前设置
+                                    （2）如果VK_NV_framebuffer_mixed_samples 拓展开启，且最近的vkCmdSetCoverageModulationModeNV设置coverageModulationMode为任何除VK_COVERAGE_MODULATION_MODE_NONE_NV之外的值，则vkCmdSetCoverageModulationTableEnableNV 必须在该命令之前设置
+                                    （3）如果VK_NV_framebuffer_mixed_samples 拓展开启，最近的vkCmdSetCoverageModulationTableEnableNV设置coverageModulationTableEnable为VK_TRUE，则vkCmdSetCoverageModulationTableNV 必须在该命令之前设置
+                                    （4）如果shadingRateImage 特性开启，则vkCmdSetShadingRateImageEnableNV 必须在该命令之前设置
+                                    （5）如果representativeFragmentTest 特性开启，则vkCmdSetRepresentativeFragmentTestEnableNV 必须在该命令之前设置
+                                    （6）如果coverageReductionMode 特性开启，则vkCmdSetCoverageReductionModeNV 必须在该命令之前设置
+        113.如果绑定的graphics pipeline，（1）以VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT动态state开启创建，且最近的vkCmdSetColorBlendEnableEXT设置任何附件在pColorBlendEnables中的值为VK_TRUE 则subpas中这些附件对应的image view的format features中必须包含VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT
+			                             （2）以VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT动态state开启创建，且当前subpass不使用任何color和/或者 depth/stencil attachments，则最后的vkCmdSetRasterizationSamplesEXT设置的rasterizationSamples必须符合zero￾attachment subpass的规则
+                                         （3）以VK_DYNAMIC_STATE_SAMPLE_MASK_EXT不以VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT 动态state开启创建，则最后调用的vkCmdSetSampleMaskEXT中设置的samples参数必须大于等于创建该pipeline的VkPipelineMultisampleStateCreateInfo::rasterizationSamples
+                                         （4）以VK_DYNAMIC_STATE_SAMPLE_MASK_EXT和 VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT 动态state开启创建，则最后调用的vkCmdSetSampleMaskEXT中设置的samples参数必须大于等于最后的vkCmdSetRasterizationSamplesEXT设置的rasterizationSamples
+                                         （5）以VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT动态state开启创建，且VK_AMD_mixed_attachment_samples和VK_NV_framebuffer_mixed_samples拓展都没有开启，则最后的vkCmdSetRasterizationSamplesEXT设置的rasterizationSamples必须等于subpass中color和/或者 depth/stencil attachments使用的相同
+			                             （6）以VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT动态state开启创建，或者一个shader object绑定到任意graphics stage，且当前的subpass包含一个multisampledRenderToSingleSampledEnable 为VK_TRUE的VkMultisampledRenderToSingleSampledInfoEXT，则最后的vkCmdSetRasterizationSamplesEXT设置的rasterizationSamples必须等于该VkMultisampledRenderToSingleSampledInfoEXT中的对应成员
+                                         （7）以VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT动态state开启创建，则vkCmdSetColorBlendEnableEXT 必须在该命令之前设置，且vkCmdSetColorBlendEnableEXT必须为从firstAttachment开始的attachmentCount个当前subpass所有激活的color attachments指定值
+                                         （8）以VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT动态state开启创建，则vkCmdSetColorBlendEquationEXT 必须在该命令之前设置，且vkCmdSetColorBlendEquationEXT必须为从firstAttachment开始的attachmentCount个当前subpass所有激活的color attachments指定blend equations
+		                                 （9）以VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT动态state开启创建，则vkCmdSetColorWriteMaskEXT 必须在该命令之前设置，且vkCmdSetColorWriteMaskEXT必须为从firstAttachment开始的attachmentCount个当前subpass所有激活的color attachments指定color write mask
+                                         （10）以VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT动态state开启创建，则vkCmdSetColorBlendAdvancedEXT 必须在该命令之前设置，且vkCmdSetColorBlendAdvancedEXT必须为从firstAttachment开始的attachmentCount个当前subpass所有激活blend的color attachments指定advanced blend equations
+                                         （11）以VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT和VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT动态state开启创建，且最后的vkCmdSetColorBlendEnableEXT和vkCmdSetColorBlendAdvancedEXT设置启用了advanced blending，则当前subpass中激活的color attachments的数量不能超过advancedBlendMaxColorAttachments
+		                                 （12）以VK_DYNAMIC_STATE_RASTERIZATION_STREAM_EXT动态state开启创建，且如果primitivesGeneratedQueryWithNonZeroStreams特性未开启且VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT query已经激活，则最后的vkCmdSetRasterizationStreamEXT必须设置rasterizationStream为0
+		                                 （13）以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT但不以VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT动态state开启创建，则最后的vkCmdSetSampleLocationsEXT设置的pSampleLocationsInfo->sampleLocationsPerPixel必须等于创建pipeline的VkPipelineMultisampleStateCreateInfo::rasterizationSamples
+                                         （14）以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT和VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT动态state开启创建，则最后的vkCmdSetSampleLocationsEXT设置的pSampleLocationsInfo->sampleLocationsPerPixel必须等于最后vkCmdSetRasterizationSamplesEXT设置的rasterizationSamples
+		                                 （15）以VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT但不以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT动态state开启创建，且绑定的pipeline的VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsEnable为VK_TRUE 或者以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT动态state开启，则sampleLocationsInfo.sampleLocationsPerPixel 必须等于最后vkCmdSetRasterizationSamplesEXT设置的rasterizationSamples
+		                                 （16）以VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_ENABLE_NV动态state开启创建，且最后的vkCmdSetCoverageToColorEnableNV设置coverageToColorEnable为VK_TRUE，则当前subpass必须有color attachment，且该attachment的format必须为VK_FORMAT_R8_UINT, VK_FORMAT_R8_SINT, VK_FORMAT_R16_UINT, VK_FORMAT_R16_SINT, VK_FORMAT_R32_UINT, 或者 VK_FORMAT_R32_SINT，且该attachment的location 有最后的vkCmdSetCoverageToColorLocationNV设置的coverageToColorLocation决定
+		                                 （17）以VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_ENABLE_NV和VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT 动态state开启创建，且如果VK_NV_coverage_reduction_mode 拓展开启，则当前的 coverageReductionMode，rasterizationSamples 以及color 以及 depth/stencil attachments（如果subpass有）的sample count必须是有效的返回值vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV的值的组合
+		                                 （18）以VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT但不以VK_DYNAMIC_STATE_VIEWPORT_SWIZZLE_NV 动态state开启创建，则绑定的graphics pipeline的VkPipelineViewportSwizzleStateCreateInfoNV::viewportCount 必须大于等于最后vkCmdSetViewportWithCount设置的viewportCount
+                                         （19）以VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT和VK_DYNAMIC_STATE_VIEWPORT_SWIZZLE_NV 动态state开启创建，则最后vkCmdSetViewportSwizzleNV设置的viewportCount 必须大于等于最后vkCmdSetViewportWithCount设置的viewportCount
+		                                 （20）以VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT或者 VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT 动态state开启创建，如果当前的stippledLineEnable为VK_TRUE，且当前的lineRasterizationMode为VK_LINE_RASTERIZATION_MODE_RECTANGULAR_KHR，则stippledRectangularLines 特性必须开启
+                                         （21）以VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT或者 VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT 动态state开启创建，如果当前的stippledLineEnable为VK_TRUE，且当前的lineRasterizationMode为VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR，则stippledBresenhamLines 特性必须开启
+                                         （22）以VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT或者 VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT 动态state开启创建，如果当前的stippledLineEnable为VK_TRUE，且当前的lineRasterizationMode为VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR，则stippledSmoothLines 特性必须开启
+                                         （23）以VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT或者 VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT 动态state开启创建，如果当前的stippledLineEnable为VK_TRUE，且当前的lineRasterizationMode为VK_LINE_RASTERIZATION_MODE_DEFAULT_KHR，则stippledRectangularLines 特性必须开启且VkPhysicalDeviceLimits::strictLines 必须为VK_TRUE
+		                                 （24）以VK_DYNAMIC_STATE_CONSERVATIVE_RASTERIZATION_MODE_EXT 动态state开启创建，且conservativePointAndLineRasterization不支持，最后的 pre-rasterization shader stage输出的有效图元拓扑为点或者线，则最后vkCmdSetConservativeRasterizationModeEXT设置的conservativeRasterizationMode 必须为VK_CONSERVATIVE_RASTERIZATION_MODE_DISABLED_EXT
+                                         （25）以VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT 动态state开启创建，则vkCmdSetAttachmentFeedbackLoopEnableEXT 必须在该命令之前调用
+        114.如果一个shader object绑定到 VK_SHADER_STAGE_FRAGMENT_BIT stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，则
+                                                                                            （1）则vkCmdSetColorBlendEnableEXT 必须在该命令之前设置，且vkCmdSetColorBlendEnableEXT指定的firstAttachment开始的attachmentCount的值必须为当前subpass所有激活的color attachments指定
+                                                                                            （2）则vkCmdSetColorBlendEquationEXT 必须在该命令之前设置，且vkCmdSetColorBlendEquationEXT必须为从firstAttachment开始的attachmentCount个当前subpass所有激活的color attachments指定blend equations
+                                                                                            （3）则vkCmdSetColorWriteMaskEXT 必须在该命令之前设置，且vkCmdSetColorWriteMaskEXT必须为从firstAttachment开始的attachmentCount个当前subpass所有激活的color attachments指定color write mask
+		                                                                                    （4）如果VK_NV_fragment_coverage_to_color拓展开启， 最后的vkCmdSetCoverageToColorEnableNV设置coverageToColorEnable为VK_TRUE，则当前subpass必须有color attachment，且该attachment的format必须为VK_FORMAT_R8_UINT, VK_FORMAT_R8_SINT, VK_FORMAT_R16_UINT, VK_FORMAT_R16_SINT, VK_FORMAT_R32_UINT, 或者 VK_FORMAT_R32_SINT，且该attachment的location 有最后的vkCmdSetCoverageToColorLocationNV设置的coverageToColorLocation决定  
+        115.如果一个shader object绑定到 VK_SHADER_STAGE_FRAGMENT_BIT stage，（1）如果绑定的graphics pipeline以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT动态state开启创建，且最近的vkCmdSetSampleLocationsEnableEXT设置sampleLocationsEnable为VK_TRUE，且该subpass含有depth/stencil attachment，则该附件必须以VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT创建
+                                                                            （2）如果绑定的graphics pipeline以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT和VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT 动态state开启创建，且最近的vkCmdSetSampleLocationsEnableEXT设置sampleLocationsEnable为VK_TRUE，则 最后vkCmdSetSampleLocationsEXT设置的sampleLocationsInfo.sampleLocationGridSize.width以及height 必须等于被调用vkGetPhysicalDeviceMultisamplePropertiesEXT传入rasterizationSamples返回的VkMultisamplePropertiesEXT::sampleLocationGridSize.width以及height一一对应均匀整除
+		                                                                    （3）如果绑定的graphics pipeline以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT 动态state开启创建，且最近的vkCmdSetSampleLocationsEnableEXT设置sampleLocationsEnable为VK_TRUE，则fragment shader代码中不能静态使用扩展指令InterpolateAtSample
+                                                                            （4）如果绑定的graphics pipeline以VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT但不以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT 动态state开启创建，且绑定的pipeline的VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsEnable为VK_TRUE 或者以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT动态state开启，则 最后vkCmdSetRasterizationSamplesEXT设置的sampleLocationsInfo.sampleLocationGridSize.width以及height 必须等于被调用vkGetPhysicalDeviceMultisamplePropertiesEXT传入和vkCmdSetRasterizationSamplesEXT设置的相同rasterizationSamples的samples返回的VkMultisamplePropertiesEXT::sampleLocationGridSize.width以及height一一对应均匀整除
+		116.如果一个shader object绑定到任何graphics stage，（1）如果绑定的graphics pipeline以VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_ENABLE_NV 动态state开启创建，且最近的vkCmdSetCoverageModulationTableEnableNV设置coverageModulationTableEnable为VK_TRUE，则最近的vkCmdSetCoverageModulationTableNV 设置的coverageModulationTableCount 必须等于当前rasterizationSamples除以当前subppas的color samples
+		                                                   （2）如果VK_NV_viewport_swizzle 拓展开启，则最后vkCmdSetViewportSwizzleNV设置的viewportCount 必须大于等于最后vkCmdSetViewportWithCount设置的viewportCount
+        117.如果VK_NV_framebuffer_mixed_samples 拓展开启，且如果在绑定的graphics pipeline中当前subpass有一个depth/stencil attachment以及dep test, stencil test, 或depth bounds test 启用，则当前rasterizationSamples 必须等于depth/stencil attachment的sample count
+		118.如果VK_NV_framebuffer_mixed_samples 拓展开启，且如果最后的vkCmdSetRasterizationSamplesEXT设置的当前subpass的任何color attachments的rasterizationSamples 都大于 color samples，则sampleShadingEnable 特性必须开启
+        119.如果当前绑定的graphics pipeline以VkGraphicsPipelineCreateInfo::pStages中的元素的VkPipelineShaderStageCreateInfo::stage设置为VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT 或者 VK_SHADER_STAGE_GEOMETRY_BIT创建，则Mesh Shader Queries 不能激活
+        120.如果dynamic state继承自VkCommandBufferInheritanceViewportScissorInfoNV，则这些动态state的设置必须在该命令之前设置
+        121.如果没有绑定graphics pipeline，则（1）vkCmdBindShadersEXT必须在当前command buffer中调用，且参数pStages中含有一个VK_SHADER_STAGE_VERTEX_BIT
+                                             （2）如果tessellationShader 特性开启，vkCmdBindShadersEXT必须在当前command buffer中调用，且参数pStages中含有一个VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT，VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT
+                                             （3）如果geometryShader 特性开启，vkCmdBindShadersEXT必须在当前command buffer中调用，且参数pStages中含有一个VK_SHADER_STAGE_GEOMETRY_BIT
+                                             （4）vkCmdBindShadersEXT必须在当前command buffer中调用，且参数pStages中含有一个VK_SHADER_STAGE_FRAGMENT_BIT
+                                             （5）如果taskShader 特性开启，vkCmdBindShadersEXT必须在当前command buffer中调用，且参数pStages中含有一个VK_SHADER_STAGE_TASK_BIT_EXT
+                                             （6）如果meshShader 特性开启，vkCmdBindShadersEXT必须在当前command buffer中调用，且参数pStages中含有一个VK_SHADER_STAGE_MESH_BIT_EXT
+		                                     （8）如果至少taskShader 和 meshShader一个特性开启，VK_SHADER_STAGE_VERTEX_BIT 或者VK_SHADER_STAGE_MESH_BIT_EXT stages中的一个必须含有有效的VkShaderEXT绑定，另外一个则不含有VkShaderEXT绑定
+		                                     （9）如果taskShader 和 meshShader特性同时开启，且一个有效的VkShaderEXT 绑定到VK_SHADER_STAGE_MESH_BIT_EXT stage，且该VkShaderEXT不以VK_SHADER_CREATE_NO_TASK_SHADER_BIT_EXT 创建，则一个有效的VkShaderEXT必须绑定到VK_SHADER_STAGE_TASK_BIT_EXT stage
+                                             （10）如果taskShader 和 meshShader特性同时开启，且一个有效的VkShaderEXT 绑定到VK_SHADER_STAGE_MESH_BIT_EXT stage，且该VkShaderEXT以VK_SHADER_CREATE_NO_TASK_SHADER_BIT_EXT 创建，则不能有VkShaderEXT绑定到VK_SHADER_STAGE_TASK_BIT_EXT stage
+		                                     （11）如果一个有效的VkShaderEXT 绑定到VK_SHADER_STAGE_VERTEX_BIT stage，则不能有VkShaderEXT绑定到VK_SHADER_STAGE_TASK_BIT_EXT stage或者VK_SHADER_STAGE_MESH_BIT_EXT stage中的一个
+		122.如果任何绑定的graphics shader以VK_SHADER_CREATE_LINK_STAGE_BIT_EXT 创建，（1）所有在相同vkCreateShadersEXT中以VK_SHADER_CREATE_LINK_STAGE_BIT_EXT创建的shaders必须也要绑定
+		                                                                             （2）任何相同vkCreateShadersEXT中不以VK_SHADER_CREATE_LINK_STAGE_BIT_EXT创建的shaders不能有任何VkShaderEXT绑定
+		123.所有绑定的graphics shader objects 必须以相同或者相同定义的push constant ranges创建
+        124.所有绑定的graphics shader objects 必须以相同或者相同定义的descriptor set layouts的数组创建
+		125.如果当前的render pass instance以vkCmdBeginRendering开始，且VkRenderingInfo::colorAttachmentCount为1，且有一个resolve mode为 VK_RESOLVE_MODE_EXTERNAL_FORMAT_DOWNSAMPLE_ANDROID 的color attachment，且绑定了fragment shader，则DepthReplacing 和 StencilRefReplacingEXT execution modes 不能声明
+		126.如果一个shader object绑定到 VK_SHADER_STAGE_FRAGMENT_BIT stage，且最近的vkCmdSetRasterizerDiscardEnable设置rasterizerDiscardEnable为VK_FALSE，则 （1）如果attachmentFeedbackLoopDynamicState 特性开启，则 vkCmdSetAttachmentFeedbackLoopEnableEXT 必须在该命令之前调用
+		127.如果包含一个fragment shader stage的绑定的graphics pipeline，（1）且该pipeline以VkPipelineDynamicStateCreateInfo::pDynamicStates中设置有VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE创建，且该fragment shader声明了EarlyFragmentTests execution mode且使用了OpDepthAttachmentReadEXT，则最后vkCmdSetDepthWriteEnable 设置的 depthWriteEnable 必须为VK_FALSE
+                                                                        （2）且该pipeline以VkPipelineDynamicStateCreateInfo::pDynamicStates中设置有VK_DYNAMIC_STATE_STENCIL_WRITE_MASK创建，且该fragment shader声明了EarlyFragmentTests execution mode且使用了OpStencilAttachmentReadEXT，则最后vkCmdSetStencilWriteMask 设置的 writeMask 必须为0
+		128.如果一个shader object绑定到任何graphics stage 或者绑定的graphics pipeline 以VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT 动态state开启创建，且任何color attachment的format为VK_FORMAT_E5B9G9R9_UFLOAT_PACK32，则vkCmdSetColorWriteMaskEXT设置的pColorWriteMasks参数的对应元素必须包含VK_COLOR_COMPONENT_R_BIT, VK_COLOR_COMPONENT_G_BIT, 和 VK_COLOR_COMPONENT_B_BIT，或者都不包含
+		129.如果任何附件开启了blending，且该附件的source 或者 destination blend factors使用第二个颜色输入，则该命令执行的Fragment Execution Model静态使用的任何输出output attachment的Location的最大值必须小于maxFragmentDualSrcAttachments
+		130.如果当前的render pass instance以vkCmdBeginRendering开始，且没有任何shader object绑定到任何graphics stage，则vkCmdSetRenderingAttachmentLocationsKHR 设置的VkRenderingAttachmentLocationInfoKHR::pColorAttachmentLocations中的每个元素必须匹配设置在当前绑定的graphics pipeline中的对应元素
+        
+        //to do p1806 VUID-vkCmdDraw-None-09549
         */
-
+        
 
     }
 

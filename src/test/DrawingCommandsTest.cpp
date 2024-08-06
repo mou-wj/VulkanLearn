@@ -1,4 +1,4 @@
-#include "DrawingCommandsTest.h"
+ï»¿#include "DrawingCommandsTest.h"
 NS_TEST_BEGIN
 DrawingCommandsTest::DrawingCommandsTest()
 {
@@ -15,269 +15,422 @@ DrawingCommandsTest::~DrawingCommandsTest()
 void DrawingCommandsTest::PrimitiveTest()
 {
     /*
-    ¸ÅÊö ²Î¼û1741
-    Drawing commandsÎª´øÓĞdrawµÄÃüÁî£¬µ÷ÓÃ¸ÃÃüÁî»áÖ´ĞĞ°ó¶¨µÄgraphics pipeline£¬ËùÒÔÔÚ¸ÃÃüÁîÖ´ĞĞÖ®Ç°£¬±ØĞëÏÈ°ó¶¨graphics pipelineÒÔ¼°pipelineÖĞµÄshader¡£
+    æ¦‚è¿° å‚è§1741
+    Drawing commandsä¸ºå¸¦æœ‰drawçš„å‘½ä»¤ï¼Œè°ƒç”¨è¯¥å‘½ä»¤ä¼šæ‰§è¡Œç»‘å®šçš„graphics pipelineï¼Œæ‰€ä»¥åœ¨è¯¥å‘½ä»¤æ‰§è¡Œä¹‹å‰ï¼Œå¿…é¡»å…ˆç»‘å®šgraphics pipelineä»¥åŠpipelineä¸­çš„shaderã€‚
     
-    Ã¿¸ö»æÖÆÓÉ0¸ö»ò¶à¸ö¶¥µãºÍ0¸ö»ò¶à¸öÊµÀı×é³É£¬ÕâĞ©ÊµÀıÓÉÉè±¸´¦Àí£¬²¢½øĞĞÍ¼ÔªµÄ×é×°£¬Í¼ÔªµÄ×é×°¸ù¾İVkPipelineInputAssemblyStateCreateInfoµÄĞÅÏ¢½øĞĞ¡£
+    æ¯ä¸ªç»˜åˆ¶ç”±0ä¸ªæˆ–å¤šä¸ªé¡¶ç‚¹å’Œ0ä¸ªæˆ–å¤šä¸ªå®ä¾‹ç»„æˆï¼Œè¿™äº›å®ä¾‹ç”±è®¾å¤‡å¤„ç†ï¼Œå¹¶è¿›è¡Œå›¾å…ƒçš„ç»„è£…ï¼Œå›¾å…ƒçš„ç»„è£…æ ¹æ®VkPipelineInputAssemblyStateCreateInfoçš„ä¿¡æ¯è¿›è¡Œã€‚
     
     */
 
     VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo{
         .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
         .pNext = nullptr,
-        .flags = 0,//±£ÁôÎ´À´Ê¹ÓÃ
-        .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,// VkPrimitiveTopologyÖµ£¬¶¨ÒåÍ¼ÔªµÄÍØÆËÀàĞÍ
+        .flags = 0,//ä¿ç•™æœªæ¥ä½¿ç”¨
+        .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,// VkPrimitiveTopologyå€¼ï¼Œå®šä¹‰å›¾å…ƒçš„æ‹“æ‰‘ç±»å‹
         .primitiveRestartEnable = VK_TRUE/*
-        ¿ØÖÆÊÇ·ñ½«Ò»¸öÌØÊâµÄ¶¥µãË÷ÒıÖµÊÓÎªÖØĞÂÆô¶¯Í¼Ôª×é×°µÄ¿ª¹Ø
-        ÔÚ (vkCmdDrawIndexed, vkCmdDrawMultiIndexedEXT, ÒÔ¼° vkCmdDrawIndexedIndirect)ÖĞÊ¹ÓÃ
-        Õâ¸öÌØÊâµÄË÷ÒıÖµÎª:
-        0xFFFFFFFF >> µ±vkCmdBindIndexBuffer2KHR»òÕßvkCmdBindIndexBufferµÄindexType²ÎÊıÎªVK_INDEX_TYPE_UINT32Ê±
-        0xFFFF >> µ±vkCmdBindIndexBuffer2KHR»òÕßvkCmdBindIndexBufferµÄindexType²ÎÊıÎª VK_INDEX_TYPE_UINT16Ê±
+        æ§åˆ¶æ˜¯å¦å°†ä¸€ä¸ªç‰¹æ®Šçš„é¡¶ç‚¹ç´¢å¼•å€¼è§†ä¸ºé‡æ–°å¯åŠ¨å›¾å…ƒç»„è£…çš„å¼€å…³
+        åœ¨ (vkCmdDrawIndexed, vkCmdDrawMultiIndexedEXT, ä»¥åŠ vkCmdDrawIndexedIndirect)ä¸­ä½¿ç”¨
+        è¿™ä¸ªç‰¹æ®Šçš„ç´¢å¼•å€¼ä¸º:
+        0xFFFFFFFF >> å½“vkCmdBindIndexBuffer2KHRæˆ–è€…vkCmdBindIndexBufferçš„indexTypeå‚æ•°ä¸ºVK_INDEX_TYPE_UINT32æ—¶
+        0xFFFF >> å½“vkCmdBindIndexBuffer2KHRæˆ–è€…vkCmdBindIndexBufferçš„indexTypeå‚æ•°ä¸º VK_INDEX_TYPE_UINT16æ—¶
 
-        ²»ÔÊĞí½øĞĞ¡°list¡±ÍØÆËµÄÖØĞÂ×é×°£¬³ı·ÇprimitiveTopologyPatchListRestart »òÕß primitiveTopologyListRestart ÖĞµÄÒ»¸öÌØĞÔ¿ªÆô
+        ä¸å…è®¸è¿›è¡Œâ€œlistâ€æ‹“æ‰‘çš„é‡æ–°ç»„è£…ï¼Œé™¤éprimitiveTopologyPatchListRestart æˆ–è€… primitiveTopologyListRestart ä¸­çš„ä¸€ä¸ªç‰¹æ€§å¼€å¯
         */
     };
     /*
-    VkPipelineInputAssemblyStateCreateInfoÓĞĞ§ÓÃ·¨:
-    1.Èç¹ûprimitiveTopologyListRestart ÌØĞÔÎ´¿ªÆô£¬ÇÒtopology ÎªVK_PRIMITIVE_TOPOLOGY_POINT_LIST, VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
-    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY, »òÕß
-    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY£¬ÔòprimitiveRestartEnable ±ØĞëÎªVK_FALSE¡£
-    2.Èç¹ûprimitiveTopologyPatchListRestart ÌØĞÔÎ´¿ªÆô£¬ÇÒtopology ÎªVK_PRIMITIVE_TOPOLOGY_PATCH_LIST£¬ÔòprimitiveRestartEnable ±ØĞëÎªVK_FALSE¡£
-    3.Èç¹ûgeometryShader ÌØĞÔÎ´¿ªÆô£¬Ôòtopology ²»ÄÜÎªVK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY,
+    VkPipelineInputAssemblyStateCreateInfoæœ‰æ•ˆç”¨æ³•:
+    1.å¦‚æœprimitiveTopologyListRestart ç‰¹æ€§æœªå¼€å¯ï¼Œä¸”topology ä¸ºVK_PRIMITIVE_TOPOLOGY_POINT_LIST, VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
+    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY, æˆ–è€…
+    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCYï¼Œåˆ™primitiveRestartEnable å¿…é¡»ä¸ºVK_FALSEã€‚
+    2.å¦‚æœprimitiveTopologyPatchListRestart ç‰¹æ€§æœªå¼€å¯ï¼Œä¸”topology ä¸ºVK_PRIMITIVE_TOPOLOGY_PATCH_LISTï¼Œåˆ™primitiveRestartEnable å¿…é¡»ä¸ºVK_FALSEã€‚
+    3.å¦‚æœgeometryShader ç‰¹æ€§æœªå¼€å¯ï¼Œåˆ™topology ä¸èƒ½ä¸ºVK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY,
     VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY,
-    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY »òÕß
+    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY æˆ–è€…
     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY
-    4.Èç¹ûtessellationShader ÌØĞÔÎ´¿ªÆô£¬Ôòtopology ²»ÄÜÎªVK_PRIMITIVE_TOPOLOGY_PATCH_LIST¡£
-    5.Èç¹ûVK_KHR_portability_subset À©Õ¹±»ÆôÓÃ£¬ÇÒVkPhysicalDevicePortabilitySubsetFeaturesKHR::triangleFans ÌØĞÔÎªVK_FALSE£¬Ôòtopology ²»ÄÜÎªVK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN¡£
+    4.å¦‚æœtessellationShader ç‰¹æ€§æœªå¼€å¯ï¼Œåˆ™topology ä¸èƒ½ä¸ºVK_PRIMITIVE_TOPOLOGY_PATCH_LISTã€‚
+    5.å¦‚æœVK_KHR_portability_subset æ‰©å±•è¢«å¯ç”¨ï¼Œä¸”VkPhysicalDevicePortabilitySubsetFeaturesKHR::triangleFans ç‰¹æ€§ä¸ºVK_FALSEï¼Œåˆ™topology ä¸èƒ½ä¸ºVK_PRIMITIVE_TOPOLOGY_TRIANGLE_FANã€‚
     */
 
-    VkCommandBuffer commandBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkCommandBuffer*/ };
+    VkCommandBuffer commandBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkCommandBuffer*/ };
 
-    //¶¯Ì¬¿ØÖÆÊÇ·ñ½«Ò»¸öÌØÊâµÄ¶¥µãË÷ÒıÖµÊÓÎªÖØĞÂÆô¶¯Í¼Ôª×é×°µÄ¿ª¹Ø  , µÈÍ¬ÓÚvkCmdSetPrimitiveRestartEnableEXT
-    //Õâ¸öÃüÁîÔÚÊ¹ÓÃshader objects »æÖÆ»òÕßpipelineÒÔ¶¯Ì¬×´Ì¬º¬VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE´´½¨ÏÂÓĞĞ§
+    //åŠ¨æ€æ§åˆ¶æ˜¯å¦å°†ä¸€ä¸ªç‰¹æ®Šçš„é¡¶ç‚¹ç´¢å¼•å€¼è§†ä¸ºé‡æ–°å¯åŠ¨å›¾å…ƒç»„è£…çš„å¼€å…³  , ç­‰åŒäºvkCmdSetPrimitiveRestartEnableEXT
+    //è¿™ä¸ªå‘½ä»¤åœ¨ä½¿ç”¨shader objects ç»˜åˆ¶æˆ–è€…pipelineä»¥åŠ¨æ€çŠ¶æ€å«VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLEåˆ›å»ºä¸‹æœ‰æ•ˆ
 	vkCmdSetPrimitiveRestartEnable(commandBuffer, 
-        VK_TRUE/*primitiveRestartEnable,¿ØÖÆÊÇ·ñ½«Ò»¸öÌØÊâµÄ¶¥µãË÷ÒıÖµÊÓÎªÖØĞÂÆô¶¯Í¼Ôª×é×°µÄ¿ª¹Ø,µÈ¼ÛÓÚVkPipelineInputAssemblyStateCreateInfo::primitiveRestartEnable */);
+        VK_TRUE/*primitiveRestartEnable,æ§åˆ¶æ˜¯å¦å°†ä¸€ä¸ªç‰¹æ®Šçš„é¡¶ç‚¹ç´¢å¼•å€¼è§†ä¸ºé‡æ–°å¯åŠ¨å›¾å…ƒç»„è£…çš„å¼€å…³,ç­‰ä»·äºVkPipelineInputAssemblyStateCreateInfo::primitiveRestartEnable */);
     /*
-    vkCmdSetPrimitiveRestartEnableÓĞĞ§ÓÃ·¨:
-    1.ÒÔÏÂÖÁÉÙĞèÒªÓĞÒ»¸ö¿ªÆô
-           >  extendedDynamicState2 ÌØĞÔ¿ªÆô
-           >  shaderObject ÌØĞÔ¿ªÆô
-           >  ´´½¨commandBufferËùÔÚµÄVkInstanceµÄVkApplicationInfo::apiVersion Òª´óÓÚµÈÓÚVersion 1.3
+    vkCmdSetPrimitiveRestartEnableæœ‰æ•ˆç”¨æ³•:
+    1.ä»¥ä¸‹è‡³å°‘éœ€è¦æœ‰ä¸€ä¸ªå¼€å¯
+           >  extendedDynamicState2 ç‰¹æ€§å¼€å¯
+           >  shaderObject ç‰¹æ€§å¼€å¯
+           >  åˆ›å»ºcommandBufferæ‰€åœ¨çš„VkInstanceçš„VkApplicationInfo::apiVersion è¦å¤§äºç­‰äºVersion 1.3
 
     */
 
 
 
-    // Primitive Topologies  ²Î¼û1744
+    // Primitive Topologies  å‚è§1744
     {
-        //Primitive topology¾ö¶¨ÁËÈçºÎ½«Á¬ĞøµÄ¶¥µã×éÖ¯³ÉÍ¼Ôª£¬²¢¾ö¶¨ÁËÔÚÍ¼ĞÎ¹ÜµÀ¿ªÊ¼Ê±Ê¹ÓÃµÄÍ¼ÔªµÄÀàĞÍ,ºóĞø¿ÉÄÜÔÚtessellation »òÕß geometry ½×¶ÎÖĞ¸Ä±äÍ¼ÔªÀàĞÍ£¬ÔÚmesh shadingÖĞÓĞĞ§µÄÍ¼ÔªÔÚmesh shaderÖĞ¶¨Òå¡£
+        //Primitive topologyå†³å®šäº†å¦‚ä½•å°†è¿ç»­çš„é¡¶ç‚¹ç»„ç»‡æˆå›¾å…ƒï¼Œå¹¶å†³å®šäº†åœ¨å›¾å½¢ç®¡é“å¼€å§‹æ—¶ä½¿ç”¨çš„å›¾å…ƒçš„ç±»å‹,åç»­å¯èƒ½åœ¨tessellation æˆ–è€… geometry é˜¶æ®µä¸­æ”¹å˜å›¾å…ƒç±»å‹ï¼Œåœ¨mesh shadingä¸­æœ‰æ•ˆçš„å›¾å…ƒåœ¨mesh shaderä¸­å®šä¹‰ã€‚
         VkPrimitiveTopology primitiveTopology = VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         /*
         VkPrimitiveTopology:
 
-        VK_PRIMITIVE_TOPOLOGY_POINT_LIST:   Ö¸Ã÷Ò»ÏµÁĞÀëÉ¢µÄµãÍ¼Ôª.
-        VK_PRIMITIVE_TOPOLOGY_LINE_LIST:   Ö¸Ã÷Ò»ÏµÁĞÀëÉ¢µÄÏßÍ¼Ôª.
-        VK_PRIMITIVE_TOPOLOGY_LINE_STRIP:   Ö¸Ã÷Ò»ÏµÁĞÏàÁ¬µÄ¹²ÏíÒ»¸ö¶¥µãµÄÏßÍ¼Ôª
-        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST:   Ö¸Ã÷Ò»ÏµÁĞÀëÉ¢µÄÈı½ÇĞÎÍ¼Ôª.
-        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP:   Ö¸Ã÷Ò»ÏµÁĞÏàÁ¬µÄ¹²ÏíÒ»Ìõ±ßµÄÈı½ÇĞÎÍ¼Ôª.
-        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN:   Ö¸Ã÷Ò»ÏµÁĞÏàÁ¬µÄ¹²ÏíÒ»¸ö¹²Í¬¶¥µãµÄÈı½ÇĞÎÍ¼Ôª£¬Èç¹ûVK_KHR_portability_subsetÍØÕ¹¿ªÆô£¬ÇÒVkPhysicalDevicePortabilitySubsetFeaturesKHR::triangleFansÎªVK_FALSE£¬
-                Ôò²»Ö§³Ö¸ÄÍ¼ÔªÀàĞÍ£¬¼´VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN ²»ÄÜÊ¹ÓÃ
-        VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY:   Ö¸Ã÷Ò»ÏµÁĞÀëÉ¢µÄ´øÁÚ½Ó¹ØÏµµÄÏßÍ¼Ôª
-        VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY:   Ö¸Ã÷Ò»ÏµÁĞÏàÁ¬µÄ´øÁÚ½Ó¹ØÏµµÄÏßÍ¼Ôª£¬¼´Á¬ĞøµÄÏßÍ¼Ôª¼ä¹²ÏíÈı¸ö¶¥µã
-        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY:   Ö¸Ã÷Ò»ÏµÁĞÀëÉ¢µÄ´øÁÚ½Ó¹ØÏµµÄÈı½ÇĞÎÍ¼Ôª
-        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY:   Ö¸Ã÷ÏàÁ¬µÄ´øÁÚ½Ó¹ØÏµµÄÈı½ÇĞÎÍ¼Ôª£¬¼´Á¬ĞøµÄÈı½ÇĞÎÍ¼Ôª¼ä¹²ÏíÒ»Ìõ±ß
-        VK_PRIMITIVE_TOPOLOGY_PATCH_LIST:   Ö¸Ã÷ÀëÉ¢µÄ patch Í¼Ôª.
+        VK_PRIMITIVE_TOPOLOGY_POINT_LIST:   æŒ‡æ˜ä¸€ç³»åˆ—ç¦»æ•£çš„ç‚¹å›¾å…ƒ.
+        VK_PRIMITIVE_TOPOLOGY_LINE_LIST:   æŒ‡æ˜ä¸€ç³»åˆ—ç¦»æ•£çš„çº¿å›¾å…ƒ.
+        VK_PRIMITIVE_TOPOLOGY_LINE_STRIP:   æŒ‡æ˜ä¸€ç³»åˆ—ç›¸è¿çš„å…±äº«ä¸€ä¸ªé¡¶ç‚¹çš„çº¿å›¾å…ƒ
+        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST:   æŒ‡æ˜ä¸€ç³»åˆ—ç¦»æ•£çš„ä¸‰è§’å½¢å›¾å…ƒ.
+        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP:   æŒ‡æ˜ä¸€ç³»åˆ—ç›¸è¿çš„å…±äº«ä¸€æ¡è¾¹çš„ä¸‰è§’å½¢å›¾å…ƒ.
+        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN:   æŒ‡æ˜ä¸€ç³»åˆ—ç›¸è¿çš„å…±äº«ä¸€ä¸ªå…±åŒé¡¶ç‚¹çš„ä¸‰è§’å½¢å›¾å…ƒï¼Œå¦‚æœVK_KHR_portability_subsetæ‹“å±•å¼€å¯ï¼Œä¸”VkPhysicalDevicePortabilitySubsetFeaturesKHR::triangleFansä¸ºVK_FALSEï¼Œ
+                åˆ™ä¸æ”¯æŒæ”¹å›¾å…ƒç±»å‹ï¼Œå³VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN ä¸èƒ½ä½¿ç”¨
+        VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY:   æŒ‡æ˜ä¸€ç³»åˆ—ç¦»æ•£çš„å¸¦é‚»æ¥å…³ç³»çš„çº¿å›¾å…ƒ
+        VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY:   æŒ‡æ˜ä¸€ç³»åˆ—ç›¸è¿çš„å¸¦é‚»æ¥å…³ç³»çš„çº¿å›¾å…ƒï¼Œå³è¿ç»­çš„çº¿å›¾å…ƒé—´å…±äº«ä¸‰ä¸ªé¡¶ç‚¹
+        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY:   æŒ‡æ˜ä¸€ç³»åˆ—ç¦»æ•£çš„å¸¦é‚»æ¥å…³ç³»çš„ä¸‰è§’å½¢å›¾å…ƒ
+        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY:   æŒ‡æ˜ç›¸è¿çš„å¸¦é‚»æ¥å…³ç³»çš„ä¸‰è§’å½¢å›¾å…ƒï¼Œå³è¿ç»­çš„ä¸‰è§’å½¢å›¾å…ƒé—´å…±äº«ä¸€æ¡è¾¹
+        VK_PRIMITIVE_TOPOLOGY_PATCH_LIST:   æŒ‡æ˜ç¦»æ•£çš„ patch å›¾å…ƒ.
 
         
-        ÁÚ½Ó¹ØÏµ²»»áÓ°ÏìÍ¼ÔªÀàĞÍ£¬Ö»ÊÇÕâĞ©ÁÚ½Ó¹ØÏµÊı¾İ»áÔÚgeometry shaderÖĞÊ¹ÓÃ
+        é‚»æ¥å…³ç³»ä¸ä¼šå½±å“å›¾å…ƒç±»å‹ï¼Œåªæ˜¯è¿™äº›é‚»æ¥å…³ç³»æ•°æ®ä¼šåœ¨geometry shaderä¸­ä½¿ç”¨
         */
 
 
-        //¶¯Ì¬ÉèÖÃÍ¼ÔªÀàĞÍ   µÈ¼ÛÓÚvkCmdSetPrimitiveTopologyEXT£¬¸ÃÃüÁîÖ»ÓĞÔÚVkPipelineDynamicStateCreateInfo::pDynamicStatesÖĞ¶¯Ì¬¿ªÆôVK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGYÁË²ÅÓĞĞ§£¬·ñÔò½«Ê¹ÓÃVkPipelineInputAssemblyStateCreateInfo::topology
+        //åŠ¨æ€è®¾ç½®å›¾å…ƒç±»å‹   ç­‰ä»·äºvkCmdSetPrimitiveTopologyEXTï¼Œè¯¥å‘½ä»¤åªæœ‰åœ¨VkPipelineDynamicStateCreateInfo::pDynamicStatesä¸­åŠ¨æ€å¼€å¯VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGYäº†æ‰æœ‰æ•ˆï¼Œå¦åˆ™å°†ä½¿ç”¨VkPipelineInputAssemblyStateCreateInfo::topology
         vkCmdSetPrimitiveTopology(commandBuffer, VK_PRIMITIVE_TOPOLOGY_LINE_LIST);
         /*
-        vkCmdSetPrimitiveTopologyÓĞĞ§ÓÃ·¨:
-        1.ÒÔÏÂÖÁÉÙĞèÒªÓĞÒ»¸ö¿ªÆô
-               >  extendedDynamicState ÌØĞÔ¿ªÆô
-               >  shaderObject ÌØĞÔ¿ªÆô
-               >  ´´½¨commandBufferËùÔÚµÄVkInstanceµÄVkApplicationInfo::apiVersion Òª´óÓÚµÈÓÚVersion 1.3
+        vkCmdSetPrimitiveTopologyæœ‰æ•ˆç”¨æ³•:
+        1.ä»¥ä¸‹è‡³å°‘éœ€è¦æœ‰ä¸€ä¸ªå¼€å¯
+               >  extendedDynamicState ç‰¹æ€§å¼€å¯
+               >  shaderObject ç‰¹æ€§å¼€å¯
+               >  åˆ›å»ºcommandBufferæ‰€åœ¨çš„VkInstanceçš„VkApplicationInfo::apiVersion è¦å¤§äºç­‰äºVersion 1.3
         
         */
 
 
 
 
-        //Topology Class ÍØÆËÀàĞÍ±í   ²Î¼ûp1747 
+        //Topology Class æ‹“æ‰‘ç±»å‹è¡¨   å‚è§p1747 
 
-        // Point Lists µãÁĞ±í£¬ÀàĞÍVK_PRIMITIVE_TOPOLOGY_POINT_LIST £¬Ã¿¸öÁ¬ĞøµÄµã¶¨ÒåÒ»¸ö¶¥µã£¬×Ü¹²Í¼ÔªÊıvertexCount  ²Î¼ûp1747 
+        // Point Lists ç‚¹åˆ—è¡¨ï¼Œç±»å‹VK_PRIMITIVE_TOPOLOGY_POINT_LIST ï¼Œæ¯ä¸ªè¿ç»­çš„ç‚¹å®šä¹‰ä¸€ä¸ªé¡¶ç‚¹ï¼Œæ€»å…±å›¾å…ƒæ•°vertexCount  å‚è§p1747 
 
-        //  Line Lists ÏßÁĞ±í£¬ÀàĞÍ VK_PRIMITIVE_TOPOLOGY_LINE_LIST £¬Ã¿Ò»¶ÔÁ¬ĞøµÄµã¶¨ÒåÒ»ÌõÏß£¬×Ü¹²Í¼ÔªÊıvertexCount / 2 . ²Î¼ûp1748    Éæ¼°provokingVertexMode
+        //  Line Lists çº¿åˆ—è¡¨ï¼Œç±»å‹ VK_PRIMITIVE_TOPOLOGY_LINE_LIST ï¼Œæ¯ä¸€å¯¹è¿ç»­çš„ç‚¹å®šä¹‰ä¸€æ¡çº¿ï¼Œæ€»å…±å›¾å…ƒæ•°vertexCount / 2 . å‚è§p1748    æ¶‰åŠprovokingVertexMode
 
-        //Line Strips ÏßÁĞ±í£¬ÀàĞÍ VK_PRIMITIVE_TOPOLOGY_LINE_STRIP £¬Ã¿Ò»¸öµãºÍÆäºóĞøÒ»¸öµã¶¨ÒåÒ»ÌõÏß£¬×Ü¹²Í¼ÔªÊı(0,vertexCount-1). ²Î¼ûp1748
+        //Line Strips çº¿åˆ—è¡¨ï¼Œç±»å‹ VK_PRIMITIVE_TOPOLOGY_LINE_STRIP ï¼Œæ¯ä¸€ä¸ªç‚¹å’Œå…¶åç»­ä¸€ä¸ªç‚¹å®šä¹‰ä¸€æ¡çº¿ï¼Œæ€»å…±å›¾å…ƒæ•°(0,vertexCount-1). å‚è§p1748
     
-        //Triangle Lists Èı½ÇĞÎÁĞ±í£¬ÀàĞÍ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST £¬Ã¿Á¬ĞøµÄÒ»×éÈı¸ö¶¥µã×é³ÉÒ»¸öÈı½ÇĞÎ£¬×Ü¹²Í¼ÔªÊıvertexCount / 3. ²Î¼ûp1749   Éæ¼°provokingVertexMode
+        //Triangle Lists ä¸‰è§’å½¢åˆ—è¡¨ï¼Œç±»å‹ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST ï¼Œæ¯è¿ç»­çš„ä¸€ç»„ä¸‰ä¸ªé¡¶ç‚¹ç»„æˆä¸€ä¸ªä¸‰è§’å½¢ï¼Œæ€»å…±å›¾å…ƒæ•°vertexCount / 3. å‚è§p1749   æ¶‰åŠprovokingVertexMode
         
-        //Triangle Strips Èı½ÇĞÎÁĞ±í£¬ÀàĞÍ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP £¬Ã¿¸öµãºÍºóĞøÁ½¸ö¶¥µã×é³ÉÒ»¸öÈı½ÇĞÎ£¬×Ü¹²Í¼ÔªÊıvertexCount - 2 . ²Î¼ûp1750   Éæ¼°provokingVertexMode
+        //Triangle Strips ä¸‰è§’å½¢åˆ—è¡¨ï¼Œç±»å‹ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP ï¼Œæ¯ä¸ªç‚¹å’Œåç»­ä¸¤ä¸ªé¡¶ç‚¹ç»„æˆä¸€ä¸ªä¸‰è§’å½¢ï¼Œæ€»å…±å›¾å…ƒæ•°vertexCount - 2 . å‚è§p1750   æ¶‰åŠprovokingVertexMode
     
-        // Triangle Fans Èı½ÇĞÎÁĞ±í£¬ÀàĞÍ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN £¬ËùÓĞÈı½ÇĞÎÎ§ÈÆÒ»¸ö¹«¹²¶¥µã£¬¹«¹²¶¥µãÎªV0£¬×Ü¹²Í¼ÔªÊıvertexCount - 2 . ²Î¼ûp1751   Éæ¼°provokingVertexMode
+        // Triangle Fans ä¸‰è§’å½¢åˆ—è¡¨ï¼Œç±»å‹ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN ï¼Œæ‰€æœ‰ä¸‰è§’å½¢å›´ç»•ä¸€ä¸ªå…¬å…±é¡¶ç‚¹ï¼Œå…¬å…±é¡¶ç‚¹ä¸ºV0ï¼Œæ€»å…±å›¾å…ƒæ•°vertexCount - 2 . å‚è§p1751   æ¶‰åŠprovokingVertexMode
 
-        // Line Lists With AdjacencyÏßÁĞ±í£¬ÀàĞÍ  VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY £¬Ã¿Á¬ĞøµÄÒ»×éËÄ¸ö¶¥µã×é³ÉÒ»ÌõÏßÒÔ¼°ÆäÁÚ½ÓÊı¾İ£¬ÖĞ¼äÁ½¸öµãÎªÏßÍ¼Ôª£¬Ê×Î²Á½¸öµãÎªÁÚ½ÓÊı¾İ£¬×Ü¹²Í¼ÔªÊıvertexCount / 4. ²Î¼ûp1751   Éæ¼°provokingVertexMode
+        // Line Lists With Adjacencyçº¿åˆ—è¡¨ï¼Œç±»å‹  VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY ï¼Œæ¯è¿ç»­çš„ä¸€ç»„å››ä¸ªé¡¶ç‚¹ç»„æˆä¸€æ¡çº¿ä»¥åŠå…¶é‚»æ¥æ•°æ®ï¼Œä¸­é—´ä¸¤ä¸ªç‚¹ä¸ºçº¿å›¾å…ƒï¼Œé¦–å°¾ä¸¤ä¸ªç‚¹ä¸ºé‚»æ¥æ•°æ®ï¼Œæ€»å…±å›¾å…ƒæ•°vertexCount / 4. å‚è§p1751   æ¶‰åŠprovokingVertexMode
     
-        //Line Strips With AdjacencyÏßÁĞ±í£¬ÀàĞÍ  VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY £¬ËùÓĞµãµÄÖĞ¼äÃ¿Ò»¸öµãºÍÆäºóĞøÒ»¸öµã¶¨ÒåÒ»ÌõÏß£¬ËùÓĞ¶¥µãµÄÊ×Î²Á½¸öµãÎªÏßÍ¼Ôª£¬×Ü¹²Í¼ÔªÊıvertexCount - 3. ²Î¼ûp1752   Éæ¼°provokingVertexMode
+        //Line Strips With Adjacencyçº¿åˆ—è¡¨ï¼Œç±»å‹  VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY ï¼Œæ‰€æœ‰ç‚¹çš„ä¸­é—´æ¯ä¸€ä¸ªç‚¹å’Œå…¶åç»­ä¸€ä¸ªç‚¹å®šä¹‰ä¸€æ¡çº¿ï¼Œæ‰€æœ‰é¡¶ç‚¹çš„é¦–å°¾ä¸¤ä¸ªç‚¹ä¸ºçº¿å›¾å…ƒï¼Œæ€»å…±å›¾å…ƒæ•°vertexCount - 3. å‚è§p1752   æ¶‰åŠprovokingVertexMode
     
-        //Triangle Lists With Adjacency Èı½ÇĞÎÁĞ±í£¬ÀàĞÍ  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY £¬Ã¿Á¬ĞøµÄÒ»×éÁù¸ö¶¥µã×é³ÉÒ»¸öÈı½ÇĞÎÒÔ¼°ÆäÁÚ½ÓÊı¾İ£¬µÚÒ»¸ö£¬µÚÈı¸ö£¬µÚÎå¸öµã×é³ÉÈı½ÇĞÎ£¬ÆäÓàÈı¸öµãÎªÁÚ½ÓÊı¾İ£¬×Ü¹²Í¼ÔªÊıvertexCount / 6. ²Î¼ûp1752   Éæ¼°provokingVertexMode
+        //Triangle Lists With Adjacency ä¸‰è§’å½¢åˆ—è¡¨ï¼Œç±»å‹  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY ï¼Œæ¯è¿ç»­çš„ä¸€ç»„å…­ä¸ªé¡¶ç‚¹ç»„æˆä¸€ä¸ªä¸‰è§’å½¢ä»¥åŠå…¶é‚»æ¥æ•°æ®ï¼Œç¬¬ä¸€ä¸ªï¼Œç¬¬ä¸‰ä¸ªï¼Œç¬¬äº”ä¸ªç‚¹ç»„æˆä¸‰è§’å½¢ï¼Œå…¶ä½™ä¸‰ä¸ªç‚¹ä¸ºé‚»æ¥æ•°æ®ï¼Œæ€»å…±å›¾å…ƒæ•°vertexCount / 6. å‚è§p1752   æ¶‰åŠprovokingVertexMode
     
-        //Triangle Strips With Adjacency Èı½ÇĞÎÁĞ±í£¬ÀàĞÍ  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY £¬Ã¿Ò»¸öµãºÍÆäºóĞøÎå¸öµã¶¨ÒåÒ»¸öÈı½ÇĞÎ£¬µÚÒ»¸ö£¬µÚÈı¸ö£¬µÚÎå¸öµã×é³ÉÈı½ÇĞÎ£¬ÆäÓàÈı¸öµãÎªÁÚ½ÓÊı¾İ£¬×Ü¹²Í¼ÔªÊı(vertexCount - 4) / 2. ²Î¼ûp1752   Éæ¼°provokingVertexMode
+        //Triangle Strips With Adjacency ä¸‰è§’å½¢åˆ—è¡¨ï¼Œç±»å‹  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY ï¼Œæ¯ä¸€ä¸ªç‚¹å’Œå…¶åç»­äº”ä¸ªç‚¹å®šä¹‰ä¸€ä¸ªä¸‰è§’å½¢ï¼Œç¬¬ä¸€ä¸ªï¼Œç¬¬ä¸‰ä¸ªï¼Œç¬¬äº”ä¸ªç‚¹ç»„æˆä¸‰è§’å½¢ï¼Œå…¶ä½™ä¸‰ä¸ªç‚¹ä¸ºé‚»æ¥æ•°æ®ï¼Œæ€»å…±å›¾å…ƒæ•°(vertexCount - 4) / 2. å‚è§p1752   æ¶‰åŠprovokingVertexMode
     
-        //Patch Lists patchÁĞ±í£¬ÀàĞÍ  VK_PRIMITIVE_TOPOLOGY_PATCH_LIST £¬Ã¿Á¬ĞøµÄÒ»×é m ¸ö¶¥µã×é³ÉÒ»¸öpatch£¬m ÓÉ VkPipelineTessellationStateCreateInfo::patchControlPointsÖ¸¶¨£¬×Ü¹²Í¼ÔªÊıvertexCount / m. ²Î¼ûp1755 
+        //Patch Lists patchåˆ—è¡¨ï¼Œç±»å‹  VK_PRIMITIVE_TOPOLOGY_PATCH_LIST ï¼Œæ¯è¿ç»­çš„ä¸€ç»„ m ä¸ªé¡¶ç‚¹ç»„æˆä¸€ä¸ªpatchï¼Œm ç”± VkPipelineTessellationStateCreateInfo::patchControlPointsæŒ‡å®šï¼Œæ€»å…±å›¾å…ƒæ•°vertexCount / m. å‚è§p1755 
     }
 
 
 
-    //Primitive Order  Í¼ÔªµÄË³Ğò  ²Î¼ûp1756
+    //Primitive Order  å›¾å…ƒçš„é¡ºåº  å‚è§p1756
 
 
-    // Programmable Primitive Shading ¿É±à³ÌÍ¼Ôª»æÖÆ  ²Î¼ûp1756
+    // Programmable Primitive Shading å¯ç¼–ç¨‹å›¾å…ƒç»˜åˆ¶  å‚è§p1756
     {
-        //Ò»µ©Íê³ÉÍ¼Ôª×é×°£¬pipeline±ã½øÈëvertex shader½×¶Î£¬Èç¹û»æÖÆÎªmultiple instances,Ôò¶ÔÓÚÃ¿¸öinstance£¬ÕâĞ©Í¼Ôª»áÖØ¸´·¢ËÍµ½vertex shader½×¶Î£¬¸Ã½×¶Î»á½ÓÊÜÀ´×ÔÍ¼Ôª×°Åä½×¶ÎµÄÃ¿¸ö¶¥µã¶¼º¬ÓĞµÄÁ½¸öÊäÈë²ÎÊıvertexIndex ÒÔ¼° instanceIndex
+        //ä¸€æ—¦å®Œæˆå›¾å…ƒç»„è£…ï¼Œpipelineä¾¿è¿›å…¥vertex shaderé˜¶æ®µï¼Œå¦‚æœç»˜åˆ¶ä¸ºmultiple instances,åˆ™å¯¹äºæ¯ä¸ªinstanceï¼Œè¿™äº›å›¾å…ƒä¼šé‡å¤å‘é€åˆ°vertex shaderé˜¶æ®µï¼Œè¯¥é˜¶æ®µä¼šæ¥å—æ¥è‡ªå›¾å…ƒè£…é…é˜¶æ®µçš„æ¯ä¸ªé¡¶ç‚¹éƒ½å«æœ‰çš„ä¸¤ä¸ªè¾“å…¥å‚æ•°vertexIndex ä»¥åŠ instanceIndex
         /*
-        ·ÇË÷Òı»æÖÆÃüÁî:vkCmdDraw £¬ vkCmdDrawIndirect£¬ vkCmdDrawIndirectCount £¬vkCmdDrawIndirectCountKHR£¬ vkCmdDrawIndirectCountAMD£¬vkCmdDrawMultiEXT
-        Ë÷Òı»æÖÆÃüÁî: vkCmdDrawIndexed, vkCmdDrawIndexedIndirect, vkCmdDrawIndexedIndirectCount, vkCmdDrawIndexedIndirectCountKHR, vkCmdDrawIndexedIndirectCountAMD, vkCmdDrawMultiIndexedEXT
+        éç´¢å¼•ç»˜åˆ¶å‘½ä»¤:vkCmdDraw ï¼Œ vkCmdDrawIndirectï¼Œ vkCmdDrawIndirectCount ï¼ŒvkCmdDrawIndirectCountKHRï¼Œ vkCmdDrawIndirectCountAMDï¼ŒvkCmdDrawMultiEXT
+        ç´¢å¼•ç»˜åˆ¶å‘½ä»¤: vkCmdDrawIndexed, vkCmdDrawIndexedIndirect, vkCmdDrawIndexedIndirectCount, vkCmdDrawIndexedIndirectCountKHR, vkCmdDrawIndexedIndirectCountAMD, vkCmdDrawMultiIndexedEXT
         */
 
 
-        VkIndexType indexType = VK_INDEX_TYPE_UINT16;//Ö¸¶¨Ë÷ÒıµÄÀàĞÍÒÔ¼°×Ö½Ú´óĞ¡
+        VkIndexType indexType = VK_INDEX_TYPE_UINT16;//æŒ‡å®šç´¢å¼•çš„ç±»å‹ä»¥åŠå­—èŠ‚å¤§å°
         /*
         VkIndexType:
-        VK_INDEX_TYPE_UINT16:    Ö¸Ã÷Ë÷ÒıÎª16-bit unsigned integerÖµ.
-        VK_INDEX_TYPE_UINT32:    Ö¸Ã÷Ë÷ÒıÎª32-bit unsigned integerÖµ.
-        VK_INDEX_TYPE_NONE_KHR:    Ö¸Ã÷Ã»ÓĞÌá¹©Ë÷ÒıÊı¾İ.
-        VK_INDEX_TYPE_UINT8_KHR:    Ö¸Ã÷Ë÷ÒıÎª8-bit unsigned integerÖµ.
+        VK_INDEX_TYPE_UINT16:    æŒ‡æ˜ç´¢å¼•ä¸º16-bit unsigned integerå€¼.
+        VK_INDEX_TYPE_UINT32:    æŒ‡æ˜ç´¢å¼•ä¸º32-bit unsigned integerå€¼.
+        VK_INDEX_TYPE_NONE_KHR:    æŒ‡æ˜æ²¡æœ‰æä¾›ç´¢å¼•æ•°æ®.
+        VK_INDEX_TYPE_UINT8_KHR:    æŒ‡æ˜ç´¢å¼•ä¸º8-bit unsigned integerå€¼.
 
         
         */
 
-        //°ó¶¨Ë÷Òı»º³åÇø
-        vkCmdBindIndexBuffer(commandBuffer, VkBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer£¬±íÊ¾¶¥µãË÷Òı»º´æÇø*/ }/*buffer,Ö¸¶¨Òª°ó¶¨µÄbuffer*/,
-            0/*offset,ÓÃÓÚË÷Òı»º³åÇøË÷ÒıµØÖ·¼ÆËãµÄÆğÊ¼×Ö½ÚÆ«ÒÆÁ¿*/, indexType/*indexType£¬Ö¸Ã÷Ë÷ÒıµÄÀàĞÍºÍ´óĞ¡*/);
+        //ç»‘å®šç´¢å¼•ç¼“å†²åŒº
+        vkCmdBindIndexBuffer(commandBuffer, VkBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBufferï¼Œè¡¨ç¤ºé¡¶ç‚¹ç´¢å¼•ç¼“å­˜åŒº*/ }/*buffer,æŒ‡å®šè¦ç»‘å®šçš„buffer*/,
+            0/*offset,ç”¨äºç´¢å¼•ç¼“å†²åŒºç´¢å¼•åœ°å€è®¡ç®—çš„èµ·å§‹å­—èŠ‚åç§»é‡*/, indexType/*indexTypeï¼ŒæŒ‡æ˜ç´¢å¼•çš„ç±»å‹å’Œå¤§å°*/);
         /*
-        vkCmdBindIndexBufferÓĞĞ§ÓÃ·¨:
-        1.offset±ØĞëĞ¡ÓÚbufferµÄ´óĞ¡
-        2.offset + bufferÄÚ²¿VkDeviceMemoryµÄ»ùµØÖ·£¬±ØĞëÊÇindexTypeÖ¸Ã÷µÄ×Ö½Ú´óĞ¡µÄÕûÊı±¶
-        3.buffer±ØĞëÒÔVK_BUFFER_USAGE_INDEX_BUFFER_BIT ´´½¨
-        4.Èç¹ûbufferÊÇnon-sparseµÄ£¬ÔòÆä±ØĞëÒÑ¾­°ó¶¨µ½ÍêÕûÁ¬Ğøµ¥¶ÀµÄVkDeviceMemoryÉÏÁË
-        5.indexType²»ÄÜÎªVK_INDEX_TYPE_NONE_KHR
-        6.Èç¹ûindexTypeÎªVK_INDEX_TYPE_UINT8_KHR£¬ÔòindexTypeUint8 ÌØĞÔ±ØĞë¿ªÆô
-        7.Èç¹ûmaintenance6 Ã»ÓĞ¿ªÆô£¬Ôòbuffer²»ÄÜÎªVK_NULL_HANDLE
-        8.Èç¹ûbufferÎªVK_NULL_HANDLE£¬Ôòoffset±ØĞëÎª0
+        vkCmdBindIndexBufferæœ‰æ•ˆç”¨æ³•:
+        1.offsetå¿…é¡»å°äºbufferçš„å¤§å°
+        2.offset + bufferå†…éƒ¨VkDeviceMemoryçš„åŸºåœ°å€ï¼Œå¿…é¡»æ˜¯indexTypeæŒ‡æ˜çš„å­—èŠ‚å¤§å°çš„æ•´æ•°å€
+        3.bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_INDEX_BUFFER_BIT åˆ›å»º
+        4.å¦‚æœbufferæ˜¯non-sparseçš„ï¼Œåˆ™å…¶å¿…é¡»å·²ç»ç»‘å®šåˆ°å®Œæ•´è¿ç»­å•ç‹¬çš„VkDeviceMemoryä¸Šäº†
+        5.indexTypeä¸èƒ½ä¸ºVK_INDEX_TYPE_NONE_KHR
+        6.å¦‚æœindexTypeä¸ºVK_INDEX_TYPE_UINT8_KHRï¼Œåˆ™indexTypeUint8 ç‰¹æ€§å¿…é¡»å¼€å¯
+        7.å¦‚æœmaintenance6 æ²¡æœ‰å¼€å¯ï¼Œåˆ™bufferä¸èƒ½ä¸ºVK_NULL_HANDLE
+        8.å¦‚æœbufferä¸ºVK_NULL_HANDLEï¼Œåˆ™offsetå¿…é¡»ä¸º0
         */
 
 
-        //°ó¶¨Ë÷Òı»º³åÇøÒÔ¼°Æä´óĞ¡
-        vkCmdBindIndexBuffer2KHR(commandBuffer, VkBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer£¬±íÊ¾¶¥µãË÷Òı»º´æÇø*/ }/*buffer,Ö¸¶¨Òª°ó¶¨µÄbuffer*/,
-            0/*offset,ÓÃÓÚË÷Òı»º³åÇøË÷ÒıµØÖ·¼ÆËãµÄÆğÊ¼×Ö½ÚÆ«ÒÆÁ¿*/,1/*size,ÎªbufferÖĞÒª°ó¶¨µÄÄÚ´æ´óĞ¡*/, indexType/*indexType£¬Ö¸Ã÷Ë÷ÒıµÄÀàĞÍºÍ´óĞ¡*/);
+        //ç»‘å®šç´¢å¼•ç¼“å†²åŒºä»¥åŠå…¶å¤§å°
+        vkCmdBindIndexBuffer2KHR(commandBuffer, VkBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBufferï¼Œè¡¨ç¤ºé¡¶ç‚¹ç´¢å¼•ç¼“å­˜åŒº*/ }/*buffer,æŒ‡å®šè¦ç»‘å®šçš„buffer*/,
+            0/*offset,ç”¨äºç´¢å¼•ç¼“å†²åŒºç´¢å¼•åœ°å€è®¡ç®—çš„èµ·å§‹å­—èŠ‚åç§»é‡*/,1/*size,ä¸ºbufferä¸­è¦ç»‘å®šçš„å†…å­˜å¤§å°*/, indexType/*indexTypeï¼ŒæŒ‡æ˜ç´¢å¼•çš„ç±»å‹å’Œå¤§å°*/);
         /*
-        vkCmdBindIndexBuffer2KHRÓĞĞ§ÓÃ·¨:
-        1.offset±ØĞëĞ¡ÓÚbufferµÄ´óĞ¡
-        2.offset + bufferÄÚ²¿VkDeviceMemoryµÄ»ùµØÖ·£¬±ØĞëÊÇindexTypeÖ¸Ã÷µÄ×Ö½Ú´óĞ¡µÄÕûÊı±¶
-        3.buffer±ØĞëÒÔVK_BUFFER_USAGE_INDEX_BUFFER_BIT ´´½¨
-        4.Èç¹ûbufferÊÇnon-sparseµÄ£¬ÔòÆä±ØĞëÒÑ¾­°ó¶¨µ½ÍêÕûÁ¬Ğøµ¥¶ÀµÄVkDeviceMemoryÉÏÁË
-        5.indexType²»ÄÜÎªVK_INDEX_TYPE_NONE_KHR
-        6.Èç¹ûindexTypeÎªVK_INDEX_TYPE_UINT8_KHR£¬ÔòindexTypeUint8 ÌØĞÔ±ØĞë¿ªÆô
-        7.Èç¹ûmaintenance6 Ã»ÓĞ¿ªÆô£¬Ôòbuffer²»ÄÜÎªVK_NULL_HANDLE
-        8.Èç¹ûbufferÎªVK_NULL_HANDLE£¬Ôòoffset±ØĞëÎª0
-        9.Èç¹ûsize²»ÎªVK_WHOLE_SIZE,Ôò£¨1£©size±ØĞëÎªindexTypeÖ¸¶¨µÄ×Ö½Ú´óĞ¡µÄÕûÊı±¶
-                                      £¨2£©offset + size±ØĞëĞ¡ÓÚbufferµÄ´óĞ¡
+        vkCmdBindIndexBuffer2KHRæœ‰æ•ˆç”¨æ³•:
+        1.offsetå¿…é¡»å°äºbufferçš„å¤§å°
+        2.offset + bufferå†…éƒ¨VkDeviceMemoryçš„åŸºåœ°å€ï¼Œå¿…é¡»æ˜¯indexTypeæŒ‡æ˜çš„å­—èŠ‚å¤§å°çš„æ•´æ•°å€
+        3.bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_INDEX_BUFFER_BIT åˆ›å»º
+        4.å¦‚æœbufferæ˜¯non-sparseçš„ï¼Œåˆ™å…¶å¿…é¡»å·²ç»ç»‘å®šåˆ°å®Œæ•´è¿ç»­å•ç‹¬çš„VkDeviceMemoryä¸Šäº†
+        5.indexTypeä¸èƒ½ä¸ºVK_INDEX_TYPE_NONE_KHR
+        6.å¦‚æœindexTypeä¸ºVK_INDEX_TYPE_UINT8_KHRï¼Œåˆ™indexTypeUint8 ç‰¹æ€§å¿…é¡»å¼€å¯
+        7.å¦‚æœmaintenance6 æ²¡æœ‰å¼€å¯ï¼Œåˆ™bufferä¸èƒ½ä¸ºVK_NULL_HANDLE
+        8.å¦‚æœbufferä¸ºVK_NULL_HANDLEï¼Œåˆ™offsetå¿…é¡»ä¸º0
+        9.å¦‚æœsizeä¸ä¸ºVK_WHOLE_SIZE,åˆ™ï¼ˆ1ï¼‰sizeå¿…é¡»ä¸ºindexTypeæŒ‡å®šçš„å­—èŠ‚å¤§å°çš„æ•´æ•°å€
+                                      ï¼ˆ2ï¼‰offset + sizeå¿…é¡»å°äºbufferçš„å¤§å°
         */
 
 
 
-        //¼ÇÂ¼Ò»¸ö·ÇË÷Òı»æÖÆÃüÁî£¬  µ±Ö´ĞĞÕâ¸öÃüÁî£¬pipeline½«ÒÔ¶¥µãË÷ÒıÎªfirstVertex¿ªÊ¼×é×°vertexCount¸ö¶¥µã£¬ÒÔfirstInstance¿ªÊ¼»æÖÆinstanceCount¸öinstance
-        vkCmdDraw(commandBuffer, 1/*vertexCount,Ö¸Ã÷Òª»æÖÆµÄ¶¥µã¸öÊı*/, 1/*instanceCount,Ö¸Ã÷Òª»æÖÆµÄinstances¸öÊı*/,
-            0/*firstVertex,Ö¸Ã÷Òª»æÖÆµÄµÚÒ»¸ö¶¥µãµÄË÷Òı*/, 0/*firstInstance,Ö¸Ã÷Òª»æÖÆµÄµÚÒ»¸öinstanceµÄID*/);
+        //è®°å½•ä¸€ä¸ªéç´¢å¼•ç»˜åˆ¶å‘½ä»¤ï¼Œ  å½“æ‰§è¡Œè¿™ä¸ªå‘½ä»¤ï¼Œpipelineå°†ä»¥é¡¶ç‚¹ç´¢å¼•ä¸ºfirstVertexå¼€å§‹ç»„è£…vertexCountä¸ªé¡¶ç‚¹ï¼Œä»¥firstInstanceå¼€å§‹ç»˜åˆ¶instanceCountä¸ªinstance
+        vkCmdDraw(commandBuffer, 1/*vertexCount,æŒ‡æ˜è¦ç»˜åˆ¶çš„é¡¶ç‚¹ä¸ªæ•°*/, 1/*instanceCount,æŒ‡æ˜è¦ç»˜åˆ¶çš„instancesä¸ªæ•°*/,
+            0/*firstVertex,æŒ‡æ˜è¦ç»˜åˆ¶çš„ç¬¬ä¸€ä¸ªé¡¶ç‚¹çš„ç´¢å¼•*/, 0/*firstInstance,æŒ‡æ˜è¦ç»˜åˆ¶çš„ç¬¬ä¸€ä¸ªinstanceçš„ID*/);
         /*
-        vkCmdDrawÓĞĞ§ÓÃ·¨:
-        1.Èç¹ûÒ»¸öVkSamplerÒÔÆämagFilter»òÕßminFilterµÈÓÚVK_FILTER_LINEAR´´½¨£¬Ôò£¨1£©Èç¹ûreductionModeÎªVK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE£¬Èç¹ûÓÃÓÚ²ÉÑùÒ»¸öVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄcompareEnableÎªVK_FALSE£¬Ôò¸Ãimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
-                                                                                 £¨2£©Èç¹ûreductionModeÎªVK_SAMPLER_REDUCTION_MODE_MIN »òÕßVK_SAMPLER_REDUCTION_MODE_MAXÖ®Ò» ÓÃÓÚ²ÉÑùÒ»¸öVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹û£¬Ôò¸Ãimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT
-        2.Èç¹ûÒ»¸öVkSamplerÒÔÆämagFilter»òÕßminFilterµÈÓÚVK_SAMPLER_MIPMAP_MODE_LINEAR´´½¨£¬Ôò£¨1£©Èç¹ûreductionModeÎªVK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE£¬Èç¹ûÓÃÓÚ²ÉÑùÒ»¸öVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄcompareEnableÎªVK_FALSE£¬Ôò¸Ãimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
-                                                                                 £¨2£©Èç¹ûreductionModeÎªVK_SAMPLER_REDUCTION_MODE_MIN »òÕßVK_SAMPLER_REDUCTION_MODE_MAXÖ®Ò» ÓÃÓÚ²ÉÑùÒ»¸öVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹û£¬Ôò¸Ãimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT
-        3.Èç¹ûÒ»¸öVkSamplerÒÔÆäunnormalizedCoordinatesµÈÓÚVK_TRUEÓÃÓÚ²ÉÑùÒ»¸öVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹û´´½¨£¬Ôò£¨1£©¸Ãimage viewµÄlevelCountÒÔ¼°layerCount±ØĞëÎª1
-                                                                                                                £¨2£©¸Ãimage viewµÄviewType±ØĞëÎªVK_IMAGE_VIEW_TYPE_1D »òÕß VK_IMAGE_VIEW_TYPE_2D
-        4.Èç¹ûÒ»¸öVkImageViewµÄ²ÉÑù´ødepth comparison²Ù×÷£¬Ôòimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_DEPTH_COMPARISON_BIT
-        5.Èç¹ûÒ»¸öVkImageViewÊ¹ÓÃatomic operations×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôòimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT
-        6.Èç¹ûÒ»¸öVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFERÀàĞÍµÄ descriptorÊ¹ÓÃatomic operations×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôòstorage texel bufferµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT
-        7.Èç¹ûÒ»¸öÒÔVK_FILTER_CUBIC_EXT½øĞĞ²ÉÑùµÄVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹û£¬Ôòimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT
-        8.Èç¹ûVK_EXT_filter_cubicÍØÕ¹Ã»ÓĞ¿ªÆô£¬ÇÒÓĞÈÎºÎÒ»¸öÒÔVK_FILTER_CUBIC_EXT½øĞĞ²ÉÑùµÄVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹û£¬ÔòÆäVkImageViewType²»ÄÜÎªVK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_VIEW_TYPE_CUBE, »òÕß VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
-        9.ÈÎºÎÒ»¸öÒÔVK_FILTER_CUBIC_EXT½øĞĞ²ÉÑùµÄ×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄVkImageView£¬ÆäVkImageViewTypeºÍformat ±ØĞëÖ§³Öcubic filtering£¬²Î¼ûvkGetPhysicalDeviceImageFormatProperties2·µ»ØµÄVkFilterCubicImageViewImageFormatPropertiesEXT::filterCubic
-        10.ÈÎºÎÒ»¸öÒÔVK_FILTER_CUBIC_EXT½øĞĞ²ÉÑùÇÒreduction modeÎªVK_SAMPLER_REDUCTION_MODE_MIN »òÕß VK_SAMPLER_REDUCTION_MODE_MAXÖ®Ò»µÄ×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄVkImageView£¬ÆäVkImageViewTypeºÍformat ±ØĞëÖ§³Ö´øminmax filteringµÄcubic filtering£¬²Î¼ûvkGetPhysicalDeviceImageFormatProperties2·µ»ØµÄVkFilterCubicImageViewImageFormatPropertiesEXT::filterCubicMinmax
-        11.Èç¹ûcubicRangeClampÌØĞÔÃ»ÓĞ¿ªÆô£¬ÔòÓĞÈÎºÎÒ»¸öÒÔVK_FILTER_CUBIC_EXT½øĞĞ²ÉÑùVkImageViewµÄ×÷Îª¸ÃÃüÁîµÄ½á¹û£¬VkSamplerReductionModeCreateInfo::reductionMode²»ÄÜÎªVK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_RANGECLAMP_QCOM
-        12.ÈÎºÎÒ»¸öÒÔVkSamplerReductionModeCreateInfo::reductionModeÎªVK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_RANGECLAMP_QCOM½øĞĞ²ÉÑùµÄ×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄVkImageView±ØĞëÒÔVK_FILTER_CUBIC_EXT½øĞĞ²ÉÑù
-        13.Èç¹ûselectableCubicWeightsÌØĞÔÃ»ÓĞ¿ªÆô£¬ÔòÓĞÈÎºÎÒ»¸öÒÔVK_FILTER_CUBIC_EXT½øĞĞ²ÉÑùVkImageViewµÄ×÷Îª¸ÃÃüÁîµÄ½á¹û£¬VkSamplerCubicWeightsCreateInfoQCOM::cubicWeights±ØĞëÎªVK_CUBIC_FILTER_WEIGHTS_CATMULL_ROM_QCOM
-        14.ÈÎºÎÒ»¸öÒÔVkImageCreateInfo::flagsº¬VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV´´½¨µÄ²ÉÑù×÷Îª¸ÃÃüÁî½á¹ûµÄVkImage±ØĞëÒÔVkSamplerAddressModeÎªVK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE ½øĞĞ²ÉÑù
-        15.¶ÔÓÚÈÎºÎ×÷Îªstorage imageĞ´ÈëµÄVkImageView£¬ÇÒÆäOpTypeImageµÄformatÎ´Öª£¬Ôò¸Ãimage viewµÄ format features±ØĞë°üº¬VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT
-        16.¶ÔÓÚÈÎºÎ×÷Îªstorage image¶ÁÈ¡µÄVkImageView£¬ÇÒÆäOpTypeImageµÄformatÎ´Öª£¬Ôò¸Ãimage viewµÄ format features±ØĞë°üº¬VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT
-        17.¶ÔÓÚÈÎºÎ×÷Îªstorage storage texel bufferĞ´ÈëµÄVkBufferView£¬ÇÒÆäOpTypeImageµÄformatÎ´Öª£¬Ôò¸Ãbuffer viewµÄ buffer features±ØĞë°üº¬VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT
-        18.¶ÔÓÚÈÎºÎ×÷Îªstorage storage texel buffer¶ÁÈ¡µÄVkBufferView£¬ÇÒÆäOpTypeImageµÄformatÎ´Öª£¬Ôò¸Ãbuffer viewµÄ buffer features±ØĞë°üº¬VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT
-        19.¶ÔÓÚÃ¿¸öÔÚ°ó¶¨µÄshaderÖĞ¾²Ì¬Ê¹ÓÃµÄset n£¬Ò»¸ödescriptor set±ØĞë±»°ó¶¨µ½ÏàÍ¬pipeline bind pointµÄset n´¦£¬¸Ãset n±ØĞëºÍ´´½¨µ±Ç°VkPipelineµÄVkPipelineLayout»òÕßºÍ´´½¨µ±Ç°VkShaderEXTµÄVkDescriptorSetLayout Êı×éµÄset n´¦µÄ²¼¾Ö¼æÈİ£¬²Î¼ûPipeline Layout Compatibility p1280
-        20.¶ÔÓÚÃ¿¸öÔÚ°ó¶¨µÄshaderÖĞ¾²Ì¬Ê¹ÓÃµÄpush constant£¬Ò»¸öpush constantÖµ±ØĞë±»°ó¶¨µ½ÏàÍ¬pipeline bind pointµÄ¶ÔÓ¦´¦£¬¸Ãpush constant±ØĞëºÍ´´½¨µ±Ç°VkPipelineµÄVkPipelineLayout»òÕßºÍ´´½¨µ±Ç°VkShaderEXTµÄVkDescriptorSetLayout Êı×éÖĞµÄ¶ÔÓ¦´¦µÄ²¼¾Ö¼æÈİ£¬²Î¼ûPipeline Layout Compatibility p1280
-        21.Èç¹ûmaintenance4ÌØĞÔÃ»ÓĞ¿ªÆô£¬Ôò¶ÔÓÚÃ¿¸öÔÚ°ó¶¨µÄshaderÖĞ¾²Ì¬Ê¹ÓÃµÄpush constant£¬Ò»¸öpush constantÖµ±ØĞë±»ÉèÖÃµ½ÏàÍ¬pipeline bind pointµÄ¶ÔÓ¦´¦£¬¸Ãpush constant±ØĞëºÍ´´½¨µ±Ç°VkPipelineµÄVkPipelineLayout»òÕßºÍ´´½¨µ±Ç°VkShaderEXTµÄVkDescriptorSetLayout Êı×éÖĞµÄ¶ÔÓ¦´¦µÄ²¼¾Ö¼æÈİ£¬²Î¼ûPipeline Layout Compatibility p1280
-        22.Ã¿Ò»¸öÍ¨¹ıvkCmdBindDescriptorSets°ó¶¨µÄdescriptor setµÄdescriptors,Èç¹ûÊÇ±»²»ÒÔVK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT´´½¨µÄ£¬ÇÒÒÑ¾­°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointµÄVkPipeline¾²Ì¬Ê¹ÓÃµÄ£¬ÔòÕâĞ©descriptors±ØĞëÊÇÓĞĞ§µÄ£¬²Î¼û descriptor validity p1328
-        23.Èç¹ûÍ¨¹ıvkCmdBindDescriptorSetsÖ¸¶¨°ó¶¨µ½pipeline bind pointµÄVkPipelineÒªÊ¹ÓÃµÄdescriptors£¬Ôò°ó¶¨µÄVkPipeline²»ÄÜÒÔVK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT´´½¨
-		24.ÔÚvkCmdSetDescriptorBufferOffsetsEXTÖĞÖ¸¶¨°ó¶¨µÄdescriptor buffersµÄdescriptors£¬Ôò£¨1£©Èç¹û°ó¶¨µ½pipeline bind pointµÄ¸ÃÃüÁî»áÊ¹ÓÃµÄVkPipelineÒÔVK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT´´½¨£¬ÇÒÕâĞ©descriptorsÊÇ¶¯Ì¬Ê¹ÓÃµÄ£¬ÔòÕâĞ©descriptors±ØĞëÊÇÓĞĞ§µÄ
-                                                                                              £¨2£©Èç¹û°ó¶¨µ½pipeline bind pointµÄ¶ÔÓ¦stageµÄ¸ÃÃüÁî»áÊ¹ÓÃµÄVkShaderEXT£¬ÇÒÕâĞ©descriptorsÊÇ¶¯Ì¬Ê¹ÓÃµÄ£¬ÔòÕâĞ©descriptors±ØĞëÊÇÓĞĞ§µÄ
-        25.ÔÚvkCmdSetDescriptorBufferOffsetsEXTÖĞÖ¸¶¨µÄdescriptorsÔÚ°ó¶¨µ½pipeline bind pointµÄVkPipelineÖĞÊ¹ÓÃ£¬ÔòVkPipeline±ØĞëÒÔVK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT´´½¨
-        26.Èç¹ûÒ»¸ödescriptorÔÚÒÔVK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT´´½¨µÄVkPipelineÖĞ¶¯Ì¬Ê¹ÓÃ£¬Ôòdescriptor memory±ØĞëÊÇ×¤ÁôÄÚ´æ
-		27.Èç¹ûÒ»¸ödescriptorÔÚÒÔÆäVkDescriptorSetLayoutÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT´´½¨µÄVkShaderEXTÖĞ¶¯Ì¬Ê¹ÓÃ£¬Ôòdescriptor memory±ØĞëÊÇ×¤ÁôÄÚ´æ
-        28.Èç¹ûshaderObject ÌØĞÔÃ»ÓĞ¿ªÆô£¬Ò»¸öÓĞĞ§µÄpipeline±ØĞë°ó¶¨µ½Õâ¸öÃüÁîÊ¹ÓÃµÄ°ó¶¨µ½pipeline bind pointÉÏ
-		29.Èç¹ûÒ»¸öpipeline°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointÉÏ£¬Ôò²»ÄÜÓĞÈÎºÎ¶¯Ì¬state ÉèÖÃÃüÁîÉèÖÃÈÎºÎ¸ÃVkPipeline ÖĞÃ»ÓĞÖ¸¶¨µÄ¶¯Ì¬ state
-		30.Èç¹ûÒ»¸öVkPipeline°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointÉÏ »òÕßÈÎºÎÒ»¸ö»á·ÃÎÊÒ»¸öÊ¹ÓÃunnormalized coordinatesµÄVkSamplerµÄ VkShaderEXT°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointÉÏµÄpipelineµÄ¶ÔÓ¦stage£¬Ôò
-                                                                                    £¨1£©ÔÚÈÎºÎshader stageÖĞ£¬VkSampler²»ÄÜÓÃÀ´²ÉÑùÈÎºÎÀàĞÍÎªVK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_VIEW_TYPE_1D_ARRAY, VK_IMAGE_VIEW_TYPE_2D_ARRAY »òÕß VK_IMAGE_VIEW_TYPE_CUBE_ARRAYµÄVkImageView
-                                                                                    £¨2£©ÔÚÈÎºÎshader stageÖĞ£¬¸ÃVkSampler²»ÄÜºÍÈÎºÎ´øÓĞÃû×ÖÖĞ´øÓĞImplicitLod£¬Dref »òÕß Proj µÄSPIR-V OpImageSample* »òÕß OpImageSparseSample*Ö¸ÁîÒ»ÆğÊ¹ÓÃ
-                                                                                    £¨3£©ÔÚÈÎºÎshader stageÖĞ£¬¸ÃVkSampler²»ÄÜºÍÈÎºÎ°üº¬ LOD bias»òÕßoffset Öµ µÄSPIR-V OpImageSample* or OpImageSparseSample*Ö¸ÁîÒ»ÆğÊ¹ÓÃ
-		31.Èç¹ûshaderObject¿ªÆô£¬Ò»¸öÓĞĞ§µÄpipeline±ØĞë°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointÉÏ»òÕßÒ»¸öÓĞĞ§µÄshader objectsÒÔ¼°VK_NULL_HANDLEµÄ×éºÏ±ØĞë°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointÃ¿Ò»¸öÖ§³ÖµÄshader stageÉÏ
-        32.ÈçºÎ°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointÉÏµÄVkPipelineµÄÈÎºÎstage»á·ÃÎÊÒ»¸öuniform buffer£¬ÇÒ¸Ãstage¶ÔuniformBuffers²»ÒÔÆôÓÃVK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXT»òÕßVK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT ´´½¨£¬ÇÒrobustBufferAccessÌØĞÔÎ´¿ªÆô£¬Ôò¸Ãstage¾Í²»ÄÜ·ÃÎÊ°ó¶¨µ½ÏàÍ¬pipeline bind pointµÄdescriptor setÖ¸¶¨µÄbuffer·¶Î§ÍâµÄÖµ
-		33.Èç¹ûrobustBufferAccessÌØĞÔÎ´¿ªÆô£¬ÇÒÈÎºÎ»á·ÃÎÊuniform bufferµÄ°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointÉÏ¶ÔÓ¦shader stageµÄVkShaderEXT£¬ÔòÆä²»ÄÜ·ÃÎÊ°ó¶¨µ½ÏàÍ¬pipeline bind pointµÄdescriptor setÖ¸¶¨µÄbuffer·¶Î§ÍâµÄÖµ
-        34.ÈçºÎ°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointÉÏµÄVkPipelineµÄÈÎºÎstage»á·ÃÎÊÒ»¸östorage buffer£¬ÇÒ¸Ãstage¶ÔstorageBuffers²»ÒÔÆôÓÃVK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXT»òÕßVK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT ´´½¨£¬ÇÒrobustBufferAccessÌØĞÔÎ´¿ªÆô£¬Ôò¸Ãstage¾Í²»ÄÜ·ÃÎÊ°ó¶¨µ½ÏàÍ¬pipeline bind pointµÄdescriptor setÖ¸¶¨µÄbuffer·¶Î§ÍâµÄÖµ
-		35.Èç¹ûrobustBufferAccessÌØĞÔÎ´¿ªÆô£¬ÇÒÈÎºÎ»á·ÃÎÊstorage bufferµÄ°ó¶¨µ½¸ÃÃüÁîÊ¹ÓÃµÄpipeline bind pointÉÏ¶ÔÓ¦shader stageµÄVkShaderEXT£¬ÔòÆä²»ÄÜ·ÃÎÊ°ó¶¨µ½ÏàÍ¬pipeline bind pointµÄdescriptor setÖ¸¶¨µÄbuffer·¶Î§ÍâµÄÖµ
-        36.Èç¹ûcommandBuffer ÊÇÒ»¸öunprotected command buffer£¬ÇÒprotectedNoFault Î´Ö§³Ö£¬ÔòÈÎºÎ°ó¶¨µÄshaders·ÃÎÊµÄ×ÊÔ´²»ÄÜÊÇÒ»¸öprotected resource
-        37.Èç¹ûÒ»¸ö°ó¶¨µÄshader·ÃÎÊÒ»¸öVkSampler »òÕß VkImageView £¬ÇÒÆôÓÃÁËsampler Y¡äC BCR conversion£¬ÔòÖ»ÄÜÊ¹ÓÃOpImageSample* »òÕß OpImageSparseSample*Ö¸Áî£¬²»ÄÜÊ¹ÓÃConstOffset ÒÔ¼° Offset²Ù×÷·û
-        38.Èç¹ûÒ»¸öVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôò£¨1£©image view µÄviewType ±ØĞëÆ¥ÅäInstruction/Sampler/Image View Validation p1481ÖĞÃèÊöµÄOpTypeImageµÄDim²Ù×÷·û
-                                                          £¨2£©image view µÄfoamrtµÄnumeric type ±ØĞëÆ¥ÅäOpTypeImageµÄSampled Type²Ù×÷·û
-        39.Èç¹ûÒ»¸öVkImageViewÒÔÒ»¸ö²»ÊÇVK_FORMAT_A8_UNORM_KHRµÄformat´´½¨ÇÒÍ¨¹ıOpImageWrite×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôò¸ÃÃüÁîµÄTexel ²Ù×÷·ûµÄType±ØĞëÖÁÉÙ°üº¬ºÍ image viewµÄ formatº¬ÓĞµÄcomponentsµÄ¸öÊıÏàÍ¬µÄcomponents¸öÊı
-		40.Èç¹ûÒ»¸öVkImageViewÒÔVK_FORMAT_A8_UNORM_KHRµÄformat´´½¨ÇÒÍ¨¹ıOpImageWrite×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôò¸ÃÃüÁîµÄTexel ²Ù×÷·ûµÄType±ØĞë°üº¬4¸öcomponents
-		41.Èç¹ûÒ»¸öVkBufferViewÍ¨¹ıOpImageWrite×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôò¸ÃÃüÁîµÄTexel ²Ù×÷·ûµÄType±ØĞëÖÁÉÙ°üº¬ºÍ buffer viewµÄ formatº¬ÓĞµÄcomponentsµÄ¸öÊıÏàÍ¬µÄcomponents¸öÊı
-		42.Èç¹ûÒ»¸ö´ø64-bit componentµÄVkFormatµÄVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôò¸ÃÃüÁîµÄOpTypeImage²Ù×÷·ûµÄSampledTypeµÄ¿í¶È±ØĞëÎª64
-		43.Èç¹ûÒ»¸ö´øÉÙÓÚ64-bit componentµÄVkFormatµÄVkImageView×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôò¸ÃÃüÁîµÄOpTypeImage²Ù×÷·ûµÄSampledTypeµÄ¿í¶È±ØĞëÎª32
-		44.Èç¹ûÒ»¸ö´ø64-bit componentµÄVkFormatµÄVkBufferView×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôò¸ÃÃüÁîµÄOpTypeImage²Ù×÷·ûµÄSampledTypeµÄ¿í¶È±ØĞëÎª64Î»
-		45.Èç¹ûÒ»¸ö´øÉÙÓÚ64-bit componentµÄVkFormatµÄVkBufferView×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôò¸ÃÃüÁîµÄOpTypeImage²Ù×÷·ûµÄSampledTypeµÄ¿í¶È±ØĞëÎª32
-		46.Èç¹ûsparseImageInt64Atomics ÌØĞÔÎ´¿ªÆô£¬ÔòÒÔVK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT´´½¨µÄVkImage¶ÔÏó²»ÄÜ±»SampledType¿í¶ÈÎª64Î»µÄOpTypeImageµÄatomic instructions·ÃÎÊ
-		47.Èç¹ûsparseImageInt64Atomics ÌØĞÔÎ´¿ªÆô£¬ÔòÒÔVK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT´´½¨µÄVkBuffer¶ÔÏó²»ÄÜ±»SampledType¿í¶ÈÎª64Î»µÄOpTypeImageµÄatomic instructions·ÃÎÊ
-		48.Èç¹ûOpImageWeightedSampleQCOMÓÃÀ´²ÉÑùÒ»¸ö×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄVkImageView£¬Ôò¸Ãimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM
-        49.Èç¹ûOpImageWeightedSampleQCOMÓÃÀ´²ÉÑùÒ»¸ö×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄsample weight imageµÄVkImageView£¬Ôò¸Ãimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOM
-		50.Èç¹ûOpImageBoxFilterQCOMÓÃÀ´²ÉÑùÒ»¸ö×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄVkImageView£¬Ôò¸Ãimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_2_BOX_FILTER_SAMPLED_BIT_QCOM
-        51.Èç¹ûOpImageBlockMatchSSDQCOM£¬»òÕß OpImageBlockMatchSADQCOMÓÃÀ´¶ÁÈ¡Ò»¸ö×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄVkImageView£¬Ôò£¨1£©¸Ãimage viewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
-                                                                                                                   £¨2£©Ö¸¶¨µÄreference coordinates²»ÄÜÔÚinteger texel coordinate validation Ê±ºòÊ§°Ü
-        52.Èç¹ûOpImageWeightedSampleQCOM, OpImageBoxFilterQCOM, OpImageBlockMatchWindowSSDQCOM, OpImageBlockMatchWindowSADQCOM, OpImageBlockMatchGatherSSDQCOM,
-                                                    OpImageBlockMatchGatherSADQCOM, OpImageBlockMatchSSDQCOM, »òÕß OpImageBlockMatchSADQCOMÓÃÀ´²ÉÑùÒ»¸ö×÷Îª¸ÃÃüÁîµÄ½á¹ûµÄVkImageView£¬Ôò¸ÃVkSampler±ØĞëÒÔVK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM´´½¨
-        53.Èç¹ûÈÎºÎ³ıÁËOpImageWeightedSampleQCOM, OpImageBoxFilterQCOM, OpImageBlockMatchWindowSSDQCOM, OpImageBlockMatchWindowSADQCOM, OpImageBlockMatchGatherSSDQCOM, OpImageBlockMatchGatherSADQCOM, OpImageBlockMatchSSDQCOM, »òÕß OpImageBlockMatchSADQCOMÖ®ÍâµÄÖ¸ÁîÊ¹ÓÃVkSampler½øĞĞ²ÉÑù×÷Îª¸ÃÃüÁîµÄ½á¹û£¬Ôò¸Ãsampler²»ÄÜÒÔVK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM ´´½¨
-		54.Èç¹ûOpImageBlockMatchWindow*QCOM or OpImageBlockMatchGather*QCOMÖ¸ÁîÓÃÀ´¶ÁÈ¡VkImageView×÷Îª¸ÃÃüÁîµÄ½á¹û£¬Ôò£¨1£©VkImageViewµÄformat features±ØĞë°üº¬VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
-                                                                                                                      £¨2£©VkImageViewµÄformat±ØĞëÖ»º¬ÓĞÒ»¸öcomponent
-        55.Èç¹ûOpImageBlockMatchWindow*QCOM or OpImageBlockMatchGather*QCOMÖ¸ÁîÓÃÀ´¶ÁÈ¡Ò»¸öÒıÓÃµÄimage×÷Îª¸ÃÃüÁîµÄ½á¹û£¬ÔòÖ¸¶¨µÄ reference coordinates²»ÄÜÔÚinteger texel coordinate validation Ê±ºòÊ§°Ü
-        56.ÈÎºÎ¸ÃÃüÁîÖ´ĞĞµÄshader invocation±ØĞëÒÑ¾­ÖÕÖ¹
-        57.Èç¹ûÓĞÒ»¸öÀàĞÍÎ»ÎªVK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, »òÕß VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENTÖĞÈÎÒâÒ»¸öµÄdescriptor×÷Îª¸ÃÃüÁîµÄ½á¹û½øĞĞ·ÃÎÊ£¬Ôò¸ÃdescriptorËùÖ¸µÄimage subresourceµÄlayout±ØĞëºÍ¸Ãdescriptor±»Ğ´ÈëÊ±µÄlayoutÏàÍ¬¡£
-        58.µ±Ç°µÄ render pass  ±ØĞëºÍ°ó¶¨µ½VK_PIPELINE_BIND_POINT_GRAPHICSÉÏµÄVkPipeline ´´½¨Ê±ºòµÄVkGraphicsPipelineCreateInfoÖĞÖ¸¶¨µÄrenderPass¼æÈİ
-        59.µ±Ç°µÄ render pass  µÄsubpass index±ØĞëºÍ°ó¶¨µ½VK_PIPELINE_BIND_POINT_GRAPHICSÉÏµÄVkPipeline ´´½¨Ê±ºòµÄVkGraphicsPipelineCreateInfoÖĞÖ¸¶¨µÄsubpassÏàÍ¬
-		60.Èç¹ûÈÎºÎshader¾²Ì¬·ÃÎÊÒ»¸öinput attachment£¬ÔòÓĞĞ§µÄdescriptor±ØĞëÍ¨¹ıVkDescriptorSet±»°ó¶¨µ½¸ÃpipelineÖĞ
-		61.Èç¹ûÈÎºÎ¸ÃpipelineÖ´ĞĞshaderÒÔSubpassDataµÄDim²Ù×÷·û·ÃÎÊÒ»¸öOpTypeImage±äÁ¿£¬Ôò¸Ã±äÁ¿±ØĞë±»Ò»¸ö¶ÔÓ¦µ±Ç°subpassµÄinput attachmentµÄInputAttachmentIndexĞŞÊÎ
-		62.ÔÚsubpassÖĞ·ÃÎÊµÄInput attachment views±ØĞëÒÔºÍ¸ÃsubpassÏàÍ¬¶¨ÒåµÄVkFormat´´½¨£¬ÇÒ±ØĞëÒÔÒ»¸öºÍµ±Ç°°ó¶¨µÄVkFramebufferµÄ¸Ã¸½¼şÒıÓÃµÄsubpassµÄpInputAttachments[InputAttachmentIndex]¸½¼ş¼æÈİµÄVkImageView´´½¨£¬²Î¼ûFragment Input Attachment Compatibility p1408
-        63.ÔÚ¶¯Ì¬render passÖĞ·ÃÎÊÒÔVkRenderingInputAttachmentIndexInfoKHRµÄInputAttachmentIndex£¬»òÕßVkRenderingInputAttachmentIndexInfoKHR:pDepthInputAttachmentIndex »òÕß VkRenderingInputAttachmentIndexInfoKHR:pStencilInputAttachmentIndexÎªNULLÇé¿öÏÂ²»Ö¸¶¨InputAttachmentIndexµÄÒıÓÃµÄInput attachment views£¬±ØĞëÒÔºÍVkRenderingInfoÖĞ¶ÔÓ¦color, depth, »òÕß stencil attachment¼æÈİµÄVkImageView´´½¨
-        64.Èç¹ûVkRenderingInputAttachmentIndexInfoKHR::pDepthInputAttachmentIndex ÒÔ¼° VkRenderingInputAttachmentIndexInfoKHR::pStencilInputAttachmentIndex²»ÎªNULL£¬ÔòÔÚ¶¯Ì¬render passÖĞÍ¨¹ıshader object·ÃÎÊInput attachment views±ØĞëÖ¸Ã÷InputAttachmentIndex
-        65.Èç¹ûÔÚ¶¯Ì¬render passÖĞÍ¨¹ıshader object·ÃÎÊInput attachment viewsÖ¸Ã÷ÁËInputAttachmentIndex£¬ÔòInputAttachmentIndex±ØĞëÆ¥ÅäVkRenderingInputAttachmentIndexInfoKHRÖĞµÄindex
-        66.µ±Ç°render passËùÓÃµÄ¸½¼ş¶ÔÓ¦µÄimage subresourceµ×²ãÄÚ´æµÄĞ´ÈëÖ»ÄÜ×÷Îª¸ÃÃüÁîµÄÒ»¸ö¸½¼şĞ´Èë
-        67.Èç¹ûÒ»¸öcolor attachmentÔÚÖ®Ç°µÄ¸ÃsubpassµÄÃüÁîÖĞÒÔload, store, »òÕß resolve operations½øĞĞÁËĞ´Èë£¬ÔòÆälayout²»ÎªVK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT£¬ÇÒÓĞµ±Ç°°ó¶¨µÄpipelineÉèÓĞVK_PIPELINE_CREATE_COLOR_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT£¬»òÕß
-                                        ×îºóµÄvkCmdSetAttachmentFeedbackLoopEnableEXTµ÷ÓÃ°üº¬VK_IMAGE_ASPECT_COLOR_BITÒÔ¼° Ã»ÓĞ°ó¶¨µÄpipeline »òÕß°ó¶¨µÄpipelineÒÔVK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT´´½¨£¬Ôò¸Ã¸½¼şÖ»ÄÜÒÔ¸½¼ş½øĞĞ·ÃÎÊµÄ£¬ÕâÁ½ÖÖÇé¿öÖĞÖ®Ò»
-        68.Èç¹ûÒ»¸ödepth attachmentÔÚÖ®Ç°µÄ¸ÃsubpassµÄÃüÁîÖĞÒÔload, store, »òÕß resolve operations½øĞĞÁËĞ´Èë£¬ÔòÆälayout²»ÎªVK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT£¬ÇÒÓĞµ±Ç°°ó¶¨µÄpipelineÉèÓĞVK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT£¬»òÕß
-                                        ×îºóµÄvkCmdSetAttachmentFeedbackLoopEnableEXTµ÷ÓÃ°üº¬VK_IMAGE_ASPECT_DEPTH_BITÒÔ¼° Ã»ÓĞ°ó¶¨µÄpipeline »òÕß°ó¶¨µÄpipelineÒÔVK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT´´½¨£¬Ôò¸Ã¸½¼şÖ»ÄÜÒÔ¸½¼ş½øĞĞ·ÃÎÊµÄ£¬ÕâÁ½ÖÖÇé¿öÖĞÖ®Ò»
+        vkCmdDrawæœ‰æ•ˆç”¨æ³•:
+        1.å¦‚æœä¸€ä¸ªVkSamplerä»¥å…¶magFilteræˆ–è€…minFilterç­‰äºVK_FILTER_LINEARåˆ›å»ºï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœreductionModeä¸ºVK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGEï¼Œå¦‚æœç”¨äºé‡‡æ ·ä¸€ä¸ªVkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„compareEnableä¸ºVK_FALSEï¼Œåˆ™è¯¥image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+                                                                                 ï¼ˆ2ï¼‰å¦‚æœreductionModeä¸ºVK_SAMPLER_REDUCTION_MODE_MIN æˆ–è€…VK_SAMPLER_REDUCTION_MODE_MAXä¹‹ä¸€ ç”¨äºé‡‡æ ·ä¸€ä¸ªVkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœï¼Œåˆ™è¯¥image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT
+        2.å¦‚æœä¸€ä¸ªVkSamplerä»¥å…¶magFilteræˆ–è€…minFilterç­‰äºVK_SAMPLER_MIPMAP_MODE_LINEARåˆ›å»ºï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœreductionModeä¸ºVK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGEï¼Œå¦‚æœç”¨äºé‡‡æ ·ä¸€ä¸ªVkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„compareEnableä¸ºVK_FALSEï¼Œåˆ™è¯¥image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+                                                                                 ï¼ˆ2ï¼‰å¦‚æœreductionModeä¸ºVK_SAMPLER_REDUCTION_MODE_MIN æˆ–è€…VK_SAMPLER_REDUCTION_MODE_MAXä¹‹ä¸€ ç”¨äºé‡‡æ ·ä¸€ä¸ªVkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœï¼Œåˆ™è¯¥image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT
+        3.å¦‚æœä¸€ä¸ªVkSamplerä»¥å…¶unnormalizedCoordinatesç­‰äºVK_TRUEç”¨äºé‡‡æ ·ä¸€ä¸ªVkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœåˆ›å»ºï¼Œåˆ™ï¼ˆ1ï¼‰è¯¥image viewçš„levelCountä»¥åŠlayerCountå¿…é¡»ä¸º1
+                                                                                                                ï¼ˆ2ï¼‰è¯¥image viewçš„viewTypeå¿…é¡»ä¸ºVK_IMAGE_VIEW_TYPE_1D æˆ–è€… VK_IMAGE_VIEW_TYPE_2D
+        4.å¦‚æœä¸€ä¸ªVkImageViewçš„é‡‡æ ·å¸¦depth comparisonæ“ä½œï¼Œåˆ™image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_DEPTH_COMPARISON_BIT
+        5.å¦‚æœä¸€ä¸ªVkImageViewä½¿ç”¨atomic operationsä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT
+        6.å¦‚æœä¸€ä¸ªVK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFERç±»å‹çš„ descriptorä½¿ç”¨atomic operationsä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™storage texel bufferçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT
+        7.å¦‚æœä¸€ä¸ªä»¥VK_FILTER_CUBIC_EXTè¿›è¡Œé‡‡æ ·çš„VkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœï¼Œåˆ™image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT
+        8.å¦‚æœVK_EXT_filter_cubicæ‹“å±•æ²¡æœ‰å¼€å¯ï¼Œä¸”æœ‰ä»»ä½•ä¸€ä¸ªä»¥VK_FILTER_CUBIC_EXTè¿›è¡Œé‡‡æ ·çš„VkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœï¼Œåˆ™å…¶VkImageViewTypeä¸èƒ½ä¸ºVK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_VIEW_TYPE_CUBE, æˆ–è€… VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+        9.ä»»ä½•ä¸€ä¸ªä»¥VK_FILTER_CUBIC_EXTè¿›è¡Œé‡‡æ ·çš„ä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„VkImageViewï¼Œå…¶VkImageViewTypeå’Œformat å¿…é¡»æ”¯æŒcubic filteringï¼Œå‚è§vkGetPhysicalDeviceImageFormatProperties2è¿”å›çš„VkFilterCubicImageViewImageFormatPropertiesEXT::filterCubic
+        10.ä»»ä½•ä¸€ä¸ªä»¥VK_FILTER_CUBIC_EXTè¿›è¡Œé‡‡æ ·ä¸”reduction modeä¸ºVK_SAMPLER_REDUCTION_MODE_MIN æˆ–è€… VK_SAMPLER_REDUCTION_MODE_MAXä¹‹ä¸€çš„ä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„VkImageViewï¼Œå…¶VkImageViewTypeå’Œformat å¿…é¡»æ”¯æŒå¸¦minmax filteringçš„cubic filteringï¼Œå‚è§vkGetPhysicalDeviceImageFormatProperties2è¿”å›çš„VkFilterCubicImageViewImageFormatPropertiesEXT::filterCubicMinmax
+        11.å¦‚æœcubicRangeClampç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™æœ‰ä»»ä½•ä¸€ä¸ªä»¥VK_FILTER_CUBIC_EXTè¿›è¡Œé‡‡æ ·VkImageViewçš„ä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœï¼ŒVkSamplerReductionModeCreateInfo::reductionModeä¸èƒ½ä¸ºVK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_RANGECLAMP_QCOM
+        12.ä»»ä½•ä¸€ä¸ªä»¥VkSamplerReductionModeCreateInfo::reductionModeä¸ºVK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_RANGECLAMP_QCOMè¿›è¡Œé‡‡æ ·çš„ä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„VkImageViewå¿…é¡»ä»¥VK_FILTER_CUBIC_EXTè¿›è¡Œé‡‡æ ·
+        13.å¦‚æœselectableCubicWeightsç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™æœ‰ä»»ä½•ä¸€ä¸ªä»¥VK_FILTER_CUBIC_EXTè¿›è¡Œé‡‡æ ·VkImageViewçš„ä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœï¼ŒVkSamplerCubicWeightsCreateInfoQCOM::cubicWeightså¿…é¡»ä¸ºVK_CUBIC_FILTER_WEIGHTS_CATMULL_ROM_QCOM
+        14.ä»»ä½•ä¸€ä¸ªä»¥VkImageCreateInfo::flagså«VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NVåˆ›å»ºçš„é‡‡æ ·ä½œä¸ºè¯¥å‘½ä»¤ç»“æœçš„VkImageå¿…é¡»ä»¥VkSamplerAddressModeä¸ºVK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE è¿›è¡Œé‡‡æ ·
+        15.å¯¹äºä»»ä½•ä½œä¸ºstorage imageå†™å…¥çš„VkImageViewï¼Œä¸”å…¶OpTypeImageçš„formatæœªçŸ¥ï¼Œåˆ™è¯¥image viewçš„ format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT
+        16.å¯¹äºä»»ä½•ä½œä¸ºstorage imageè¯»å–çš„VkImageViewï¼Œä¸”å…¶OpTypeImageçš„formatæœªçŸ¥ï¼Œåˆ™è¯¥image viewçš„ format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT
+        17.å¯¹äºä»»ä½•ä½œä¸ºstorage storage texel bufferå†™å…¥çš„VkBufferViewï¼Œä¸”å…¶OpTypeImageçš„formatæœªçŸ¥ï¼Œåˆ™è¯¥buffer viewçš„ buffer featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT
+        18.å¯¹äºä»»ä½•ä½œä¸ºstorage storage texel bufferè¯»å–çš„VkBufferViewï¼Œä¸”å…¶OpTypeImageçš„formatæœªçŸ¥ï¼Œåˆ™è¯¥buffer viewçš„ buffer featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT
+        19.å¯¹äºæ¯ä¸ªåœ¨ç»‘å®šçš„shaderä¸­é™æ€ä½¿ç”¨çš„set nï¼Œä¸€ä¸ªdescriptor setå¿…é¡»è¢«ç»‘å®šåˆ°ç›¸åŒpipeline bind pointçš„set nå¤„ï¼Œè¯¥set nå¿…é¡»å’Œåˆ›å»ºå½“å‰VkPipelineçš„VkPipelineLayoutæˆ–è€…å’Œåˆ›å»ºå½“å‰VkShaderEXTçš„VkDescriptorSetLayout æ•°ç»„çš„set nå¤„çš„å¸ƒå±€å…¼å®¹ï¼Œå‚è§Pipeline Layout Compatibility p1280
+        20.å¯¹äºæ¯ä¸ªåœ¨ç»‘å®šçš„shaderä¸­é™æ€ä½¿ç”¨çš„push constantï¼Œä¸€ä¸ªpush constantå€¼å¿…é¡»è¢«ç»‘å®šåˆ°ç›¸åŒpipeline bind pointçš„å¯¹åº”å¤„ï¼Œè¯¥push constantå¿…é¡»å’Œåˆ›å»ºå½“å‰VkPipelineçš„VkPipelineLayoutæˆ–è€…å’Œåˆ›å»ºå½“å‰VkShaderEXTçš„VkDescriptorSetLayout æ•°ç»„ä¸­çš„å¯¹åº”å¤„çš„å¸ƒå±€å…¼å®¹ï¼Œå‚è§Pipeline Layout Compatibility p1280
+        21.å¦‚æœmaintenance4ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™å¯¹äºæ¯ä¸ªåœ¨ç»‘å®šçš„shaderä¸­é™æ€ä½¿ç”¨çš„push constantï¼Œä¸€ä¸ªpush constantå€¼å¿…é¡»è¢«è®¾ç½®åˆ°ç›¸åŒpipeline bind pointçš„å¯¹åº”å¤„ï¼Œè¯¥push constantå¿…é¡»å’Œåˆ›å»ºå½“å‰VkPipelineçš„VkPipelineLayoutæˆ–è€…å’Œåˆ›å»ºå½“å‰VkShaderEXTçš„VkDescriptorSetLayout æ•°ç»„ä¸­çš„å¯¹åº”å¤„çš„å¸ƒå±€å…¼å®¹ï¼Œå‚è§Pipeline Layout Compatibility p1280
+        22.æ¯ä¸€ä¸ªé€šè¿‡vkCmdBindDescriptorSetsç»‘å®šçš„descriptor setçš„descriptors,å¦‚æœæ˜¯è¢«ä¸ä»¥VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»ºçš„ï¼Œä¸”å·²ç»ç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointçš„VkPipelineé™æ€ä½¿ç”¨çš„ï¼Œåˆ™è¿™äº›descriptorså¿…é¡»æ˜¯æœ‰æ•ˆçš„ï¼Œå‚è§ descriptor validity p1328
+        23.å¦‚æœé€šè¿‡vkCmdBindDescriptorSetsæŒ‡å®šç»‘å®šåˆ°pipeline bind pointçš„VkPipelineè¦ä½¿ç”¨çš„descriptorsï¼Œåˆ™ç»‘å®šçš„VkPipelineä¸èƒ½ä»¥VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»º
+		24.åœ¨vkCmdSetDescriptorBufferOffsetsEXTä¸­æŒ‡å®šç»‘å®šçš„descriptor buffersçš„descriptorsï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœç»‘å®šåˆ°pipeline bind pointçš„è¯¥å‘½ä»¤ä¼šä½¿ç”¨çš„VkPipelineä»¥VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»ºï¼Œä¸”è¿™äº›descriptorsæ˜¯åŠ¨æ€ä½¿ç”¨çš„ï¼Œåˆ™è¿™äº›descriptorså¿…é¡»æ˜¯æœ‰æ•ˆçš„
+                                                                                              ï¼ˆ2ï¼‰å¦‚æœç»‘å®šåˆ°pipeline bind pointçš„å¯¹åº”stageçš„è¯¥å‘½ä»¤ä¼šä½¿ç”¨çš„VkShaderEXTï¼Œä¸”è¿™äº›descriptorsæ˜¯åŠ¨æ€ä½¿ç”¨çš„ï¼Œåˆ™è¿™äº›descriptorså¿…é¡»æ˜¯æœ‰æ•ˆçš„
+        25.åœ¨vkCmdSetDescriptorBufferOffsetsEXTä¸­æŒ‡å®šçš„descriptorsåœ¨ç»‘å®šåˆ°pipeline bind pointçš„VkPipelineä¸­ä½¿ç”¨ï¼Œåˆ™VkPipelineå¿…é¡»ä»¥VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»º
+        26.å¦‚æœä¸€ä¸ªdescriptoråœ¨ä»¥VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»ºçš„VkPipelineä¸­åŠ¨æ€ä½¿ç”¨ï¼Œåˆ™descriptor memoryå¿…é¡»æ˜¯é©»ç•™å†…å­˜
+		27.å¦‚æœä¸€ä¸ªdescriptoråœ¨ä»¥å…¶VkDescriptorSetLayoutä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»ºçš„VkShaderEXTä¸­åŠ¨æ€ä½¿ç”¨ï¼Œåˆ™descriptor memoryå¿…é¡»æ˜¯é©»ç•™å†…å­˜
+        28.å¦‚æœshaderObject ç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œä¸€ä¸ªæœ‰æ•ˆçš„pipelineå¿…é¡»ç»‘å®šåˆ°è¿™ä¸ªå‘½ä»¤ä½¿ç”¨çš„ç»‘å®šåˆ°pipeline bind pointä¸Š
+		29.å¦‚æœä¸€ä¸ªpipelineç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointä¸Šï¼Œåˆ™ä¸èƒ½æœ‰ä»»ä½•åŠ¨æ€state è®¾ç½®å‘½ä»¤è®¾ç½®ä»»ä½•è¯¥VkPipeline ä¸­æ²¡æœ‰æŒ‡å®šçš„åŠ¨æ€ state
+		30.å¦‚æœä¸€ä¸ªVkPipelineç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointä¸Š æˆ–è€…ä»»ä½•ä¸€ä¸ªä¼šè®¿é—®ä¸€ä¸ªä½¿ç”¨unnormalized coordinatesçš„VkSamplerçš„ VkShaderEXTç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointä¸Šçš„pipelineçš„å¯¹åº”stageï¼Œåˆ™
+                                                                                    ï¼ˆ1ï¼‰åœ¨ä»»ä½•shader stageä¸­ï¼ŒVkSamplerä¸èƒ½ç”¨æ¥é‡‡æ ·ä»»ä½•ç±»å‹ä¸ºVK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_VIEW_TYPE_1D_ARRAY, VK_IMAGE_VIEW_TYPE_2D_ARRAY æˆ–è€… VK_IMAGE_VIEW_TYPE_CUBE_ARRAYçš„VkImageView
+                                                                                    ï¼ˆ2ï¼‰åœ¨ä»»ä½•shader stageä¸­ï¼Œè¯¥VkSamplerä¸èƒ½å’Œä»»ä½•å¸¦æœ‰åå­—ä¸­å¸¦æœ‰ImplicitLodï¼ŒDref æˆ–è€… Proj çš„SPIR-V OpImageSample* æˆ–è€… OpImageSparseSample*æŒ‡ä»¤ä¸€èµ·ä½¿ç”¨
+                                                                                    ï¼ˆ3ï¼‰åœ¨ä»»ä½•shader stageä¸­ï¼Œè¯¥VkSamplerä¸èƒ½å’Œä»»ä½•åŒ…å« LOD biasæˆ–è€…offset å€¼ çš„SPIR-V OpImageSample* or OpImageSparseSample*æŒ‡ä»¤ä¸€èµ·ä½¿ç”¨
+		31.å¦‚æœshaderObjectå¼€å¯ï¼Œä¸€ä¸ªæœ‰æ•ˆçš„pipelineå¿…é¡»ç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointä¸Šæˆ–è€…ä¸€ä¸ªæœ‰æ•ˆçš„shader objectsä»¥åŠVK_NULL_HANDLEçš„ç»„åˆå¿…é¡»ç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointæ¯ä¸€ä¸ªæ”¯æŒçš„shader stageä¸Š
+        32.å¦‚ä½•ç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointä¸Šçš„VkPipelineçš„ä»»ä½•stageä¼šè®¿é—®ä¸€ä¸ªuniform bufferï¼Œä¸”è¯¥stageå¯¹uniformBuffersä¸ä»¥å¯ç”¨VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXTæˆ–è€…VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT åˆ›å»ºï¼Œä¸”robustBufferAccessç‰¹æ€§æœªå¼€å¯ï¼Œåˆ™è¯¥stageå°±ä¸èƒ½è®¿é—®ç»‘å®šåˆ°ç›¸åŒpipeline bind pointçš„descriptor setæŒ‡å®šçš„bufferèŒƒå›´å¤–çš„å€¼
+		33.å¦‚æœrobustBufferAccessç‰¹æ€§æœªå¼€å¯ï¼Œä¸”ä»»ä½•ä¼šè®¿é—®uniform bufferçš„ç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointä¸Šå¯¹åº”shader stageçš„VkShaderEXTï¼Œåˆ™å…¶ä¸èƒ½è®¿é—®ç»‘å®šåˆ°ç›¸åŒpipeline bind pointçš„descriptor setæŒ‡å®šçš„bufferèŒƒå›´å¤–çš„å€¼
+        34.å¦‚ä½•ç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointä¸Šçš„VkPipelineçš„ä»»ä½•stageä¼šè®¿é—®ä¸€ä¸ªstorage bufferï¼Œä¸”è¯¥stageå¯¹storageBuffersä¸ä»¥å¯ç”¨VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXTæˆ–è€…VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT åˆ›å»ºï¼Œä¸”robustBufferAccessç‰¹æ€§æœªå¼€å¯ï¼Œåˆ™è¯¥stageå°±ä¸èƒ½è®¿é—®ç»‘å®šåˆ°ç›¸åŒpipeline bind pointçš„descriptor setæŒ‡å®šçš„bufferèŒƒå›´å¤–çš„å€¼
+		35.å¦‚æœrobustBufferAccessç‰¹æ€§æœªå¼€å¯ï¼Œä¸”ä»»ä½•ä¼šè®¿é—®storage bufferçš„ç»‘å®šåˆ°è¯¥å‘½ä»¤ä½¿ç”¨çš„pipeline bind pointä¸Šå¯¹åº”shader stageçš„VkShaderEXTï¼Œåˆ™å…¶ä¸èƒ½è®¿é—®ç»‘å®šåˆ°ç›¸åŒpipeline bind pointçš„descriptor setæŒ‡å®šçš„bufferèŒƒå›´å¤–çš„å€¼
+        36.å¦‚æœcommandBuffer æ˜¯ä¸€ä¸ªunprotected command bufferï¼Œä¸”protectedNoFault æœªæ”¯æŒï¼Œåˆ™ä»»ä½•ç»‘å®šçš„shadersè®¿é—®çš„èµ„æºä¸èƒ½æ˜¯ä¸€ä¸ªprotected resource
+        37.å¦‚æœä¸€ä¸ªç»‘å®šçš„shaderè®¿é—®ä¸€ä¸ªVkSampler æˆ–è€… VkImageView ï¼Œä¸”å¯ç”¨äº†sampler Yâ€²C BCR conversionï¼Œåˆ™åªèƒ½ä½¿ç”¨OpImageSample* æˆ–è€… OpImageSparseSample*æŒ‡ä»¤ï¼Œä¸èƒ½ä½¿ç”¨ConstOffset ä»¥åŠ Offsetæ“ä½œç¬¦
+        38.å¦‚æœä¸€ä¸ªVkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™ï¼ˆ1ï¼‰image view çš„viewType å¿…é¡»åŒ¹é…Instruction/Sampler/Image View Validation p1481ä¸­æè¿°çš„OpTypeImageçš„Dimæ“ä½œç¬¦
+                                                          ï¼ˆ2ï¼‰image view çš„foamrtçš„numeric type å¿…é¡»åŒ¹é…OpTypeImageçš„Sampled Typeæ“ä½œç¬¦
+        39.å¦‚æœä¸€ä¸ªVkImageViewä»¥ä¸€ä¸ªä¸æ˜¯VK_FORMAT_A8_UNORM_KHRçš„formatåˆ›å»ºä¸”é€šè¿‡OpImageWriteä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™è¯¥å‘½ä»¤çš„Texel æ“ä½œç¬¦çš„Typeå¿…é¡»è‡³å°‘åŒ…å«å’Œ image viewçš„ formatå«æœ‰çš„componentsçš„ä¸ªæ•°ç›¸åŒçš„componentsä¸ªæ•°
+		40.å¦‚æœä¸€ä¸ªVkImageViewä»¥VK_FORMAT_A8_UNORM_KHRçš„formatåˆ›å»ºä¸”é€šè¿‡OpImageWriteä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™è¯¥å‘½ä»¤çš„Texel æ“ä½œç¬¦çš„Typeå¿…é¡»åŒ…å«4ä¸ªcomponents
+		41.å¦‚æœä¸€ä¸ªVkBufferViewé€šè¿‡OpImageWriteä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™è¯¥å‘½ä»¤çš„Texel æ“ä½œç¬¦çš„Typeå¿…é¡»è‡³å°‘åŒ…å«å’Œ buffer viewçš„ formatå«æœ‰çš„componentsçš„ä¸ªæ•°ç›¸åŒçš„componentsä¸ªæ•°
+		42.å¦‚æœä¸€ä¸ªå¸¦64-bit componentçš„VkFormatçš„VkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™è¯¥å‘½ä»¤çš„OpTypeImageæ“ä½œç¬¦çš„SampledTypeçš„å®½åº¦å¿…é¡»ä¸º64
+		43.å¦‚æœä¸€ä¸ªå¸¦å°‘äº64-bit componentçš„VkFormatçš„VkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™è¯¥å‘½ä»¤çš„OpTypeImageæ“ä½œç¬¦çš„SampledTypeçš„å®½åº¦å¿…é¡»ä¸º32
+		44.å¦‚æœä¸€ä¸ªå¸¦64-bit componentçš„VkFormatçš„VkBufferViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™è¯¥å‘½ä»¤çš„OpTypeImageæ“ä½œç¬¦çš„SampledTypeçš„å®½åº¦å¿…é¡»ä¸º64ä½
+		45.å¦‚æœä¸€ä¸ªå¸¦å°‘äº64-bit componentçš„VkFormatçš„VkBufferViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™è¯¥å‘½ä»¤çš„OpTypeImageæ“ä½œç¬¦çš„SampledTypeçš„å®½åº¦å¿…é¡»ä¸º32
+		46.å¦‚æœsparseImageInt64Atomics ç‰¹æ€§æœªå¼€å¯ï¼Œåˆ™ä»¥VK_IMAGE_CREATE_SPARSE_RESIDENCY_BITåˆ›å»ºçš„VkImageå¯¹è±¡ä¸èƒ½è¢«SampledTypeå®½åº¦ä¸º64ä½çš„OpTypeImageçš„atomic instructionsè®¿é—®
+		47.å¦‚æœsparseImageInt64Atomics ç‰¹æ€§æœªå¼€å¯ï¼Œåˆ™ä»¥VK_BUFFER_CREATE_SPARSE_RESIDENCY_BITåˆ›å»ºçš„VkBufferå¯¹è±¡ä¸èƒ½è¢«SampledTypeå®½åº¦ä¸º64ä½çš„OpTypeImageçš„atomic instructionsè®¿é—®
+		48.å¦‚æœOpImageWeightedSampleQCOMç”¨æ¥é‡‡æ ·ä¸€ä¸ªä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„VkImageViewï¼Œåˆ™è¯¥image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM
+        49.å¦‚æœOpImageWeightedSampleQCOMç”¨æ¥é‡‡æ ·ä¸€ä¸ªä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„sample weight imageçš„VkImageViewï¼Œåˆ™è¯¥image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOM
+		50.å¦‚æœOpImageBoxFilterQCOMç”¨æ¥é‡‡æ ·ä¸€ä¸ªä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„VkImageViewï¼Œåˆ™è¯¥image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_BOX_FILTER_SAMPLED_BIT_QCOM
+        51.å¦‚æœOpImageBlockMatchSSDQCOMï¼Œæˆ–è€… OpImageBlockMatchSADQCOMç”¨æ¥è¯»å–ä¸€ä¸ªä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„VkImageViewï¼Œåˆ™ï¼ˆ1ï¼‰è¯¥image viewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
+                                                                                                                   ï¼ˆ2ï¼‰æŒ‡å®šçš„reference coordinatesä¸èƒ½åœ¨integer texel coordinate validation æ—¶å€™å¤±è´¥
+        52.å¦‚æœOpImageWeightedSampleQCOM, OpImageBoxFilterQCOM, OpImageBlockMatchWindowSSDQCOM, OpImageBlockMatchWindowSADQCOM, OpImageBlockMatchGatherSSDQCOM,
+                                                    OpImageBlockMatchGatherSADQCOM, OpImageBlockMatchSSDQCOM, æˆ–è€… OpImageBlockMatchSADQCOMç”¨æ¥é‡‡æ ·ä¸€ä¸ªä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœçš„VkImageViewï¼Œåˆ™è¯¥VkSamplerå¿…é¡»ä»¥VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOMåˆ›å»º
+        53.å¦‚æœä»»ä½•é™¤äº†OpImageWeightedSampleQCOM, OpImageBoxFilterQCOM, OpImageBlockMatchWindowSSDQCOM, OpImageBlockMatchWindowSADQCOM, OpImageBlockMatchGatherSSDQCOM, OpImageBlockMatchGatherSADQCOM, OpImageBlockMatchSSDQCOM, æˆ–è€… OpImageBlockMatchSADQCOMä¹‹å¤–çš„æŒ‡ä»¤ä½¿ç”¨VkSamplerè¿›è¡Œé‡‡æ ·ä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœï¼Œåˆ™è¯¥samplerä¸èƒ½ä»¥VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM åˆ›å»º
+		54.å¦‚æœOpImageBlockMatchWindow*QCOM or OpImageBlockMatchGather*QCOMæŒ‡ä»¤ç”¨æ¥è¯»å–VkImageViewä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœï¼Œåˆ™ï¼ˆ1ï¼‰VkImageViewçš„format featureså¿…é¡»åŒ…å«VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
+                                                                                                                      ï¼ˆ2ï¼‰VkImageViewçš„formatå¿…é¡»åªå«æœ‰ä¸€ä¸ªcomponent
+        55.å¦‚æœOpImageBlockMatchWindow*QCOM or OpImageBlockMatchGather*QCOMæŒ‡ä»¤ç”¨æ¥è¯»å–ä¸€ä¸ªå¼•ç”¨çš„imageä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœï¼Œåˆ™æŒ‡å®šçš„ reference coordinatesä¸èƒ½åœ¨integer texel coordinate validation æ—¶å€™å¤±è´¥
+        56.ä»»ä½•è¯¥å‘½ä»¤æ‰§è¡Œçš„shader invocationå¿…é¡»å·²ç»ç»ˆæ­¢
+        57.å¦‚æœæœ‰ä¸€ä¸ªç±»å‹ä½ä¸ºVK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, æˆ–è€… VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENTä¸­ä»»æ„ä¸€ä¸ªçš„descriptorä½œä¸ºè¯¥å‘½ä»¤çš„ç»“æœè¿›è¡Œè®¿é—®ï¼Œåˆ™è¯¥descriptoræ‰€æŒ‡çš„image subresourceçš„layoutå¿…é¡»å’Œè¯¥descriptorè¢«å†™å…¥æ—¶çš„layoutç›¸åŒã€‚
+        58.å½“å‰çš„ render pass  å¿…é¡»å’Œç»‘å®šåˆ°VK_PIPELINE_BIND_POINT_GRAPHICSä¸Šçš„VkPipeline åˆ›å»ºæ—¶å€™çš„VkGraphicsPipelineCreateInfoä¸­æŒ‡å®šçš„renderPasså…¼å®¹
+        59.å½“å‰çš„ render pass  çš„subpass indexå¿…é¡»å’Œç»‘å®šåˆ°VK_PIPELINE_BIND_POINT_GRAPHICSä¸Šçš„VkPipeline åˆ›å»ºæ—¶å€™çš„VkGraphicsPipelineCreateInfoä¸­æŒ‡å®šçš„subpassç›¸åŒ
+		60.å¦‚æœä»»ä½•shaderé™æ€è®¿é—®ä¸€ä¸ªinput attachmentï¼Œåˆ™æœ‰æ•ˆçš„descriptorå¿…é¡»é€šè¿‡VkDescriptorSetè¢«ç»‘å®šåˆ°è¯¥pipelineä¸­
+		61.å¦‚æœä»»ä½•è¯¥pipelineæ‰§è¡Œshaderä»¥SubpassDataçš„Dimæ“ä½œç¬¦è®¿é—®ä¸€ä¸ªOpTypeImageå˜é‡ï¼Œåˆ™è¯¥å˜é‡å¿…é¡»è¢«ä¸€ä¸ªå¯¹åº”å½“å‰subpassçš„input attachmentçš„InputAttachmentIndexä¿®é¥°
+		62.åœ¨subpassä¸­è®¿é—®çš„Input attachment viewså¿…é¡»ä»¥å’Œè¯¥subpassç›¸åŒå®šä¹‰çš„VkFormatåˆ›å»ºï¼Œä¸”å¿…é¡»ä»¥ä¸€ä¸ªå’Œå½“å‰ç»‘å®šçš„VkFramebufferçš„è¯¥é™„ä»¶å¼•ç”¨çš„subpassçš„pInputAttachments[InputAttachmentIndex]é™„ä»¶å…¼å®¹çš„VkImageViewåˆ›å»ºï¼Œå‚è§Fragment Input Attachment Compatibility p1408
+        63.åœ¨åŠ¨æ€render passä¸­è®¿é—®ä»¥VkRenderingInputAttachmentIndexInfoKHRçš„InputAttachmentIndexï¼Œæˆ–è€…VkRenderingInputAttachmentIndexInfoKHR:pDepthInputAttachmentIndex æˆ–è€… VkRenderingInputAttachmentIndexInfoKHR:pStencilInputAttachmentIndexä¸ºNULLæƒ…å†µä¸‹ä¸æŒ‡å®šInputAttachmentIndexçš„å¼•ç”¨çš„Input attachment viewsï¼Œå¿…é¡»ä»¥å’ŒVkRenderingInfoä¸­å¯¹åº”color, depth, æˆ–è€… stencil attachmentå…¼å®¹çš„VkImageViewåˆ›å»º
+        64.å¦‚æœVkRenderingInputAttachmentIndexInfoKHR::pDepthInputAttachmentIndex ä»¥åŠ VkRenderingInputAttachmentIndexInfoKHR::pStencilInputAttachmentIndexä¸ä¸ºNULLï¼Œåˆ™åœ¨åŠ¨æ€render passä¸­é€šè¿‡shader objectè®¿é—®Input attachment viewså¿…é¡»æŒ‡æ˜InputAttachmentIndex
+        65.å¦‚æœåœ¨åŠ¨æ€render passä¸­é€šè¿‡shader objectè®¿é—®Input attachment viewsæŒ‡æ˜äº†InputAttachmentIndexï¼Œåˆ™InputAttachmentIndexå¿…é¡»åŒ¹é…VkRenderingInputAttachmentIndexInfoKHRä¸­çš„index
+        66.å½“å‰render passæ‰€ç”¨çš„é™„ä»¶å¯¹åº”çš„image subresourceåº•å±‚å†…å­˜çš„å†™å…¥åªèƒ½ä½œä¸ºè¯¥å‘½ä»¤çš„ä¸€ä¸ªé™„ä»¶å†™å…¥
+        67.å¦‚æœä¸€ä¸ªcolor attachmentåœ¨ä¹‹å‰çš„è¯¥subpassçš„å‘½ä»¤ä¸­ä»¥load, store, æˆ–è€… resolve operationsè¿›è¡Œäº†å†™å…¥ï¼Œåˆ™å…¶layoutä¸ä¸ºVK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXTï¼Œä¸”æœ‰å½“å‰ç»‘å®šçš„pipelineè®¾æœ‰VK_PIPELINE_CREATE_COLOR_ATTACHMENT_FEEDBACK_LOOP_BIT_EXTï¼Œæˆ–è€…
+                                        æœ€åçš„vkCmdSetAttachmentFeedbackLoopEnableEXTè°ƒç”¨åŒ…å«VK_IMAGE_ASPECT_COLOR_BITä»¥åŠ æ²¡æœ‰ç»‘å®šçš„pipeline æˆ–è€…ç»‘å®šçš„pipelineä»¥VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXTåˆ›å»ºï¼Œåˆ™è¯¥é™„ä»¶åªèƒ½ä»¥é™„ä»¶è¿›è¡Œè®¿é—®çš„ï¼Œè¿™ä¸¤ç§æƒ…å†µä¸­ä¹‹ä¸€
+        68.å¦‚æœä¸€ä¸ªdepth attachmentåœ¨ä¹‹å‰çš„è¯¥subpassçš„å‘½ä»¤ä¸­ä»¥load, store, æˆ–è€… resolve operationsè¿›è¡Œäº†å†™å…¥ï¼Œåˆ™å…¶layoutä¸ä¸ºVK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXTï¼Œä¸”æœ‰å½“å‰ç»‘å®šçš„pipelineè®¾æœ‰VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXTï¼Œæˆ–è€…
+                                        æœ€åçš„vkCmdSetAttachmentFeedbackLoopEnableEXTè°ƒç”¨åŒ…å«VK_IMAGE_ASPECT_DEPTH_BITä»¥åŠ æ²¡æœ‰ç»‘å®šçš„pipeline æˆ–è€…ç»‘å®šçš„pipelineä»¥VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXTåˆ›å»ºï¼Œåˆ™è¯¥é™„ä»¶åªèƒ½ä»¥é™„ä»¶è¿›è¡Œè®¿é—®çš„ï¼Œè¿™ä¸¤ç§æƒ…å†µä¸­ä¹‹ä¸€
+        69.å¦‚æœä¸€ä¸ªstencil attachmentåœ¨ä¹‹å‰çš„è¯¥subpassçš„å‘½ä»¤ä¸­ä»¥load, store, æˆ–è€… resolve operationsè¿›è¡Œäº†å†™å…¥ï¼Œåˆ™å…¶layoutä¸ä¸ºVK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXTï¼Œä¸”æœ‰å½“å‰ç»‘å®šçš„pipelineè®¾æœ‰VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXTï¼Œæˆ–è€…
+                                        æœ€åçš„vkCmdSetAttachmentFeedbackLoopEnableEXTè°ƒç”¨åŒ…å«VK_IMAGE_ASPECT_STENCIL_BITä»¥åŠ æ²¡æœ‰ç»‘å®šçš„pipeline æˆ–è€…ç»‘å®šçš„pipelineä»¥VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXTåˆ›å»ºï¼Œåˆ™è¯¥é™„ä»¶åªèƒ½ä»¥é™„ä»¶è¿›è¡Œè®¿é—®çš„ï¼Œè¿™ä¸¤ç§æƒ…å†µä¸­ä¹‹ä¸€
+        70.å¦‚æœä¸€ä¸ªattachmentåœ¨ä¹‹å‰çš„è¯¥subpassçš„å‘½ä»¤ä¸­ä»¥load, store, æˆ–è€… resolve operationsè¿›è¡Œäº†å†™å…¥,åˆ™è¯¥é™„ä»¶å°±ä¸èƒ½å†ä»¥é™¤ä½œä¸ºä¸€ä¸ªé™„ä»¶ï¼Œstorage imageæˆ–è€…sampled imageè¢«è¯¥å‘½ä»¤è®¿é—®
+        71.å¦‚æœåœ¨ä¹‹å‰çš„å‘½ä»¤çš„subpassä¸­ä»¥ç”¨ä½œé™„ä»¶å¤–çš„æ–¹å¼è®¿é—®è®¿é—®äº†ä¸€ä¸ªå½“æƒsubpassçš„é™„ä»¶æ‰€å¯¹çš„image subresourceï¼Œåˆ™è¯¥å‘½ä»¤å°±ä¸èƒ½å†å°†è¯¥image subresourceç”¨ä½œé™„ä»¶è¿›è¡Œå†™å…¥
+        72.å¦‚æœå½“å‰render passä½¿ç”¨ä¸€ä¸ªdepth/stencil attachmentï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœdepth aspectçš„layoutä¸ºread-onlyçš„layoutï¼Œåˆ™ä¸èƒ½å¯ç”¨depth writes
+                                                                  ï¼ˆ2ï¼‰å¦‚æœstencil aspectçš„layoutä¸ºread-onlyçš„layoutï¼Œfront ä»¥åŠ back writeMaskä¸ä¸º0ï¼Œä¸”stencil æµ‹è¯•å¼€å¯ï¼Œåˆ™æ‰€æœ‰stencil æ“ä½œå¿…é¡»ä¸ºVK_STENCIL_OP_KEEP
+        73.å¦‚æœç»‘å®šçš„graphics pipelineï¼Œï¼ˆ1ï¼‰ä»¥VK_DYNAMIC_STATE_VIEWPORTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetViewportå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ2ï¼‰ä»¥VK_DYNAMIC_STATE_SCISSORåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetScissorå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ3ï¼‰ä»¥VK_DYNAMIC_STATE_LINE_WIDTHåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetLineWidthå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ4ï¼‰ä»¥VK_DYNAMIC_STATE_DEPTH_BIASåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetDepthBiasæˆ–è€…vkCmdSetDepthBias2EXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ5ï¼‰ä»¥VK_DYNAMIC_STATE_BLEND_CONSTANTSåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetBlendConstants å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ6ï¼‰ä»¥VK_DYNAMIC_STATE_DEPTH_BOUNDSåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œä¸”å¦‚æœå½“å‰depthBoundsTestEnableä¸ºVK_TRUEï¼Œ åˆ™vkCmdSetDepthBounds å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ7ï¼‰ä»¥VK_DYNAMIC_STATE_STENCIL_COMPARE_MASKåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œä¸”å¦‚æœå½“å‰stencilTestEnableä¸ºVK_TRUEï¼Œ åˆ™vkCmdSetStencilCompareMask å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ8ï¼‰ä»¥VK_DYNAMIC_STATE_STENCIL_WRITE_MASKåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œä¸”å¦‚æœå½“å‰stencilTestEnableä¸ºVK_TRUEï¼Œ åˆ™vkCmdSetStencilWriteMask å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ9ï¼‰ä»¥VK_DYNAMIC_STATE_STENCIL_REFERENCEåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œä¸”å¦‚æœå½“å‰stencilTestEnableä¸ºVK_TRUEï¼Œ åˆ™vkCmdSetStencilReference å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ10ï¼‰ä»¥VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetSampleLocationsEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ11ï¼‰ä»¥VK_DYNAMIC_STATE_CULL_MODEåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetCullMode å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ12ï¼‰ä»¥VK_DYNAMIC_STATE_FRONT_FACEåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetFrontFace å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ13ï¼‰ä»¥VK_DYNAMIC_STATE_DEPTH_TEST_ENABLEåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetDepthTestEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ14ï¼‰ä»¥VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLEåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetDepthWriteEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ15ï¼‰ä»¥VK_DYNAMIC_STATE_DEPTH_COMPARE_OPåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetDepthCompareOp å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ16ï¼‰ä»¥VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLEåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetDepthBoundsTestEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ17ï¼‰ä»¥VK_DYNAMIC_STATE_STENCIL_TEST_ENABLEåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetStencilTestEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ18ï¼‰ä»¥VK_DYNAMIC_STATE_STENCIL_OPåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetStencilOp å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ19ï¼‰ä»¥VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNTä½†ä¸ä»¥VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT åŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetViewportWithCount å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ï¼Œä¸”vkCmdSetViewportWithCountè®¾ç½®çš„viewportCountå¿…é¡»åŒ¹é…pipelineçš„VkPipelineViewportStateCreateInfo::scissorCount
+                                        ï¼ˆ20ï¼‰ä»¥VK_DYNAMIC_STATE_SCISSOR_WITH_COUNTä½†ä¸ä»¥VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT åŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetScissorWithCount å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ï¼Œä¸”vkCmdSetScissorWithCountè®¾ç½®çš„scissorCountå¿…é¡»åŒ¹é…pipelineçš„VkPipelineViewportStateCreateInfo::viewportCount
+                                        ï¼ˆ21ï¼‰ä»¥VK_DYNAMIC_STATE_SCISSOR_WITH_COUNTå’ŒVK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT åŠ¨æ€stateåŒæ—¶å¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetViewportWithCountä»¥åŠvkCmdSetScissorWithCount å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ï¼Œä¸”vkCmdSetViewportWithCountè®¾ç½®çš„viewportCountå¿…é¡»åŒ¹é…vkCmdSetScissorWithCountè®¾ç½®çš„scissorCount
+                                        ï¼ˆ22ï¼‰ä»¥VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNTä½†ä¸ä»¥VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV åŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™ç»‘å®šçš„pipelineå¿…é¡»ä»¥VkPipelineViewportWScalingStateCreateInfoNV::viewportCount å¤§äºç­‰äºæœ€è¿‘vkCmdSetViewportWithCountè®¾ç½®çš„viewportCountåˆ›å»º
+                                        ï¼ˆ23ï¼‰ä»¥VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNTå’ŒVK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV åŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™æœ€è¿‘è°ƒç”¨çš„vkCmdSetViewportWScalingNVè®¾ç½®çš„viewportCount å¿…é¡»å¤§äºç­‰äºæœ€è¿‘vkCmdSetViewportWithCountè®¾ç½®çš„viewportCount
+                                        ï¼ˆ24ï¼‰ä»¥VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNTä½†ä¸ä»¥VK_DYNAMIC_STATE_VIEWPORT_SHADING_RATE_PALETTE_NV åŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™ç»‘å®šçš„pipelineå¿…é¡»ä»¥VkPipelineViewportShadingRateImageStateCreateInfoNV::viewportCount å¤§äºç­‰äºæœ€è¿‘vkCmdSetViewportWithCountè®¾ç½®çš„viewportCountåˆ›å»º
+                                        ï¼ˆ25ï¼‰ä»¥VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNTå’ŒVK_DYNAMIC_STATE_VIEWPORT_SHADING_RATE_PALETTE_NV åŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™æœ€è¿‘è°ƒç”¨çš„vkCmdSetViewportShadingRatePaletteNVè®¾ç½®çš„viewportCount å¿…é¡»å¤§äºç­‰äºæœ€è¿‘vkCmdSetViewportWithCountè®¾ç½®çš„viewportCount
+                                        ï¼ˆ26ï¼‰ä»¥VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNTåŠ¨æ€stateå¼€å¯ä¸”VkPipelineViewportStateCreateInfoçš„pNextä¸­å«æœ‰ä¸€ä¸ªVkPipelineViewportSwizzleStateCreateInfoNV åˆ›å»ºï¼Œ åˆ™ç»‘å®šçš„pipelineå¿…é¡»ä»¥VkPipelineViewportSwizzleStateCreateInfoNV::viewportCount å¤§äºç­‰äºæœ€è¿‘vkCmdSetViewportWithCountè®¾ç½®çš„viewportCountåˆ›å»º
+                                        ï¼ˆ27ï¼‰ä»¥VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNTåŠ¨æ€stateå¼€å¯ä¸”VkPipelineViewportStateCreateInfoçš„pNextä¸­å«æœ‰ä¸€ä¸ªVkPipelineViewportExclusiveScissorStateCreateInfoNV åˆ›å»ºï¼Œ åˆ™ç»‘å®šçš„pipelineå¿…é¡»ä»¥VkPipelineViewportExclusiveScissorStateCreateInfoNV::exclusiveScissorCount å¤§äºç­‰äºæœ€è¿‘vkCmdSetViewportWithCountè®¾ç½®çš„viewportCountåˆ›å»º
+                                        ï¼ˆ28ï¼‰ä»¥VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_ENABLE_NVåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetExclusiveScissorEnableNV å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ29ï¼‰ä»¥VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NVåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetExclusiveScissorNV å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ30ï¼‰ä»¥VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLEåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetRasterizerDiscardEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ31ï¼‰ä»¥VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLEåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetDepthBiasEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ32ï¼‰ä»¥VK_DYNAMIC_STATE_LOGIC_OP_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetLogicOpEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ä¸”å‚æ•°logicOpå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkLogicOpå€¼
+        74.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetRasterizerDiscardEnableè®¾ç½®rasterizerDiscardEnableä¸ºVK_FALSEï¼Œåˆ™
+                                        ï¼ˆ1ï¼‰å¦‚æœæœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetPolygonModeEXTè®¾ç½®polygonModeä¸ºVK_POLYGON_MODE_LINEæˆ–è€…æ˜¯ä»»ä½•line topologyï¼Œåˆ™vkCmdSetLineWidthå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ2ï¼‰å¦‚æœæœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetDepthBiasEnableè®¾ç½®depthBiasEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetDepthBias æˆ–è€… vkCmdSetDepthBias2EXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ3ï¼‰å¦‚æœæœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetDepthBoundsTestEnableè®¾ç½®depthBoundsTestEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetDepthBoundså¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ4ï¼‰å¦‚æœæœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetStencilTestEnableè®¾ç½®stencilTestEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetStencilCompareMaskå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ5ï¼‰å¦‚æœæœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetStencilTestEnableè®¾ç½®stencilTestEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetStencilWriteMaskå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ6ï¼‰å¦‚æœæœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetStencilTestEnableè®¾ç½®stencilTestEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetStencilReferenceå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ7ï¼‰å¦‚æœæœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetSampleLocationsEnableEXTè®¾ç½®sampleLocationsEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetSampleLocationsEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ8ï¼‰åˆ™vkCmdSetCullModeå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ9ï¼‰åˆ™vkCmdSetFrontFaceå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ10ï¼‰åˆ™vkCmdSetDepthTestEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ11ï¼‰åˆ™vkCmdSetDepthWriteEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ12ï¼‰å¦‚æœæœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetDepthTestEnableè®¾ç½®depthTestEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetDepthCompareOp å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ13ï¼‰åˆ™vkCmdSetDepthBoundsTestEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ14ï¼‰åˆ™vkCmdSetStencilTestEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ15ï¼‰å¦‚æœæœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetStencilTestEnableè®¾ç½®stencilTestEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetStencilOp å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ16ï¼‰åˆ™vkCmdSetViewportWithCount å’ŒvkCmdSetScissorWithCount å¿…é¡»åŒæ—¶åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ï¼Œä¸”vkCmdSetViewportWithCountè®¾ç½®çš„viewportCountå¿…é¡»åŒ¹é…vkCmdSetScissorWithCountè®¾ç½®çš„scissorCount
+                                        ï¼ˆ17ï¼‰å¦‚æœshadingRateImageç‰¹æ€§å¼€å¯ï¼Œåˆ™vkCmdSetCoarseSampleOrderNV å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ18ï¼‰å¦‚æœshadingRateImageç‰¹æ€§å¼€å¯ï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetShadingRateImageEnableNVè®¾ç½®shadingRateImageEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetViewportShadingRatePaletteNV å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ19ï¼‰å¦‚æœshadingRateImageç‰¹æ€§å¼€å¯ï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetShadingRateImageEnableNVè®¾ç½®shadingRateImageEnableä¸ºVK_TRUEï¼Œåˆ™æœ€è¿‘çš„vkCmdSetViewportShadingRatePaletteNVè®¾ç½®çš„viewportCount å¿…é¡»å¤§äºç­‰äºvkCmdSetViewportWithCountè®¾ç½®çš„viewportCount
+                                        ï¼ˆ20ï¼‰åˆ™vkCmdSetDepthBiasEnable å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+        75.å¦‚æœä¸€ä¸ªè¾“å‡ºline primitivesçš„shader objectç»‘å®šåˆ°VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT æˆ–è€… VK_SHADER_STAGE_GEOMETRY_BITï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetRasterizerDiscardEnableè®¾ç½®rasterizerDiscardEnableä¸ºVK_FALSEï¼Œåˆ™vkCmdSetLineWidthå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+        76.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°VK_SHADER_STAGE_FRAGMENT_BIT stageï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetRasterizerDiscardEnableè®¾ç½®rasterizerDiscardEnableä¸ºVK_FALSEï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetColorBlendEnableEXTè®¾ç½®pColorBlendEnablesä»»ä½•å…ƒç´ ä¸ºVK_TRUEï¼Œä¸”
+                            æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetColorBlendEquationEXTè®¾ç½®pColorBlendEquationsç›¸åŒå…ƒç´ çš„VkColorBlendEquationEXTçš„VkBlendFactoræˆå‘˜ä¸ºVK_BLEND_FACTOR_CONSTANT_COLOR, VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR, VK_BLEND_FACTOR_CONSTANT_ALPHA, æˆ–è€… VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHAï¼Œåˆ™vkCmdSetBlendConstantså¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+        77.å¦‚æœè¯¥å‘½ä»¤è®°å½•åœ¨å¼€å¯äº†multiviewçš„render pass instanceä¸­ï¼Œåˆ™æœ€å¤§çš„instance ç´¢å¼•å¿…é¡»å°äºç­‰äºVkPhysicalDeviceMultiviewProperties::maxMultiviewInstanceIndex
+        78.å¦‚æœç»‘å®šçš„graphics pipelineä»¥VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsEnableè®¾ç½®ä¸ºVK_TRUEåˆ›å»ºä¸”å½“å‰çš„subpasså«æœ‰ä¸€ä¸ª depth/stencil attachmentï¼Œåˆ™è¯¥attachmentå¿…é¡»ä»¥VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXTåˆ›å»º
+        79.å¦‚æœVK_NV_clip_space_w_scalingæ‹“å±•å¼€å¯ï¼Œä¸”shader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œä¸”æœ€è¿‘çš„vkCmdSetViewportWScalingEnableNVè®¾ç½®viewportWScalingEnableä¸ºVK_TRUEï¼Œåˆ™ï¼ˆ1ï¼‰vkCmdSetViewportWScalingNVå¿…é¡»åœ¨è¯¥å‘½ä»¤å‰è®¾ç½®
+                                                                                                                                                                           ï¼ˆ2ï¼‰æœ€è¿‘vkCmdSetViewportWScalingNVè®¾ç½®çš„viewportCountå¿…é¡»å¤§äºç­‰äºvkCmdSetViewportWithCountè®¾ç½®çš„viewportCount
+        80.å¦‚æœexclusiveScissor ç‰¹æ€§å¼€å¯ï¼Œä¸”shader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œï¼Œåˆ™ï¼ˆ1ï¼‰vkCmdSetExclusiveScissorEnableNVå¿…é¡»åœ¨è¯¥å‘½ä»¤å‰è®¾ç½®
+                                                                                       ï¼ˆ2ï¼‰æœ€è¿‘çš„vkCmdSetExclusiveScissorEnableNVè°ƒç”¨è®¾ç½®çš„pExclusiveScissorEnablesä¸­çš„ä»»ä½•å…ƒç´ ä¸ºVK_TRUE,åˆ™vkCmdSetExclusiveScissorNVå¿…é¡»åœ¨è¯¥å‘½ä»¤å‰è®¾ç½®
+        81.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°VK_SHADER_STAGE_FRAGMENT_BIT stageï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetRasterizerDiscardEnableè®¾ç½®rasterizerDiscardEnableä¸ºVK_FALSEï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetLogicOpEnableEXTè®¾ç½®logicOpEnableä»»ä½•å…ƒç´ ä¸ºVK_TRUEï¼Œåˆ™vkCmdSetLogicOpEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ä¸”å‚æ•°logicOpå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkLogicOpå€¼
+        82.å¦‚æœprimitiveFragmentShadingRateWithMultipleViewportsé™åˆ¶ä¸æ”¯æŒï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœç»‘å®šçš„graphics pipelineä»¥VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œä¸”ä»»ä½•è¯¥pipelineçš„shader stageä¼šå†™å…¥PrimitiveShadingRateKHR built-inä¿®é¥°çš„å˜é‡ï¼Œåˆ™vkCmdSetViewportWithCount å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ä¸”å‚æ•°viewportCountå¿…é¡»æ˜¯1
+                                                                              ï¼ˆ2ï¼‰ä»»ä½•ç»‘å®šçš„graphics pipelineçš„shader stageä¼šå†™å…¥PrimitiveShadingRateKHR built-inä¿®é¥°çš„å˜é‡ï¼Œåˆ™vkCmdSetViewportWithCount å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ä¸”å‚æ•°viewportCountå¿…é¡»æ˜¯1
+        83.å¦‚æœgraphics pipelineä¸­æœªå¼€å¯rasterizationï¼Œåˆ™å¯¹subpassä¸­çš„æ¯ä¸ªcolor attachmentï¼Œå¦‚æœå…¶å¯¹åº”çš„image view çš„format featuresä¸åŒ…å«VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BITï¼Œåˆ™pColorBlendStateä¸­å…¶å¯¹åº”pAttachmentsä¸­å…ƒç´ çš„blendEnableå¿…é¡»ä¸ºVK_FALSE
+        84.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°VK_SHADER_STAGE_FRAGMENT_BIT stageï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetRasterizerDiscardEnableè®¾ç½®rasterizerDiscardEnableä¸ºVK_FALSEï¼Œåˆ™å¯¹äºsubpassä¸­çš„æ¯ä¸ªcolor attachmentï¼Œå¦‚æœå…¶å¯¹åº”çš„image view çš„format featuresä¸åŒ…å«VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BITï¼Œ åˆ™æœ€è¿‘çš„vkCmdSetColorBlendEnableEXTè®¾ç½®çš„pColorBlendEnablesä¸­è¯¥é™„ä»¶çš„å¯¹åº”å…ƒç´ å¿…é¡»ä¸ºVK_FALSE
+        85.å¦‚æœgraphics pipelineä¸­æœªå¼€å¯rasterizationï¼Œæœ‰VK_AMD_mixed_attachment_samplesæ‹“å±•æœªå¼€å¯ï¼ŒVK_NV_framebuffer_mixed_samplesæ‹“å±•æœªå¼€å¯ï¼ŒmultisampledRenderToSingleSampledç‰¹æ€§æœªå¼€å¯ï¼Œåˆ™å½“å‰ç»‘å®šçš„pipelineçš„rasterizationSampleså¿…é¡»å’Œå½“å‰subpassçš„color ä»¥åŠ/æˆ–è€… depth/stencil attachmentsçš„ç›¸åŒ
+        86.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œä¸”æœ€è¿‘çš„vkCmdSetRasterizerDiscardEnableè®¾ç½®rasterizerDiscardEnableä¸ºVK_FALSEï¼Œä¸”æœ‰VK_AMD_mixed_attachment_samplesæ‹“å±•æœªå¼€å¯ï¼ŒVK_NV_framebuffer_mixed_samplesæ‹“å±•æœªå¼€å¯ï¼ŒmultisampledRenderToSingleSampledç‰¹æ€§æœªå¼€å¯ï¼Œåˆ™é†‰ç»vkCmdSetRasterizationSamplesEXTè®¾ç½®çš„rasterizationSampleså¿…é¡»å’Œå½“å‰subpassçš„color ä»¥åŠ/æˆ–è€… depth/stencil attachmentsçš„ç›¸åŒ
+        87.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œåˆ™å½“å‰çš„render pass instanceå¿…é¡»ä»¥vkCmdBeginRenderingå¼€å§‹
+        88.å¦‚æœå½“å‰çš„render pass instanceä»¥vkCmdBeginRenderingå¼€å§‹ï¼Œï¼ˆ1ï¼‰å¦‚æœpDepthAttachmentçš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”pDepthAttachmentçš„layoutä¸ä¸ºVK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMALï¼Œåˆ™è¯¥å‘½ä»¤ä¸èƒ½å†™å…¥ä»»ä½•å€¼åˆ°depth attachment
+                                                                    ï¼ˆ2ï¼‰å¦‚æœpStencilAttachmentçš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”pStencilAttachmentçš„layoutä¸ä¸ºVK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMALï¼Œåˆ™è¯¥å‘½ä»¤ä¸èƒ½å†™å…¥ä»»ä½•å€¼åˆ°stencil attachment
+                                                                    ï¼ˆ3ï¼‰å¦‚æœpDepthAttachmentçš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”pDepthAttachmentçš„layoutä¸ºVK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMALï¼Œåˆ™è¯¥å‘½ä»¤ä¸èƒ½å†™å…¥ä»»ä½•å€¼åˆ°depth attachment
+                                                                    ï¼ˆ4ï¼‰å¦‚æœpStencilAttachmentçš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”pStencilAttachmentçš„layoutä¸ºVK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMALï¼Œåˆ™è¯¥å‘½ä»¤ä¸èƒ½å†™å…¥ä»»ä½•å€¼åˆ°stencil attachment
+                                                                    ï¼ˆ5ï¼‰å¦‚æœpDepthAttachmentçš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”pDepthAttachmentçš„layoutä¸ºVK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMALï¼Œåˆ™è¯¥å‘½ä»¤ä¸èƒ½å†™å…¥ä»»ä½•å€¼åˆ°depth attachment
+                                                                    ï¼ˆ6ï¼‰å¦‚æœpStencilAttachmentçš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”pStencilAttachmentçš„layoutä¸ºVK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMALï¼Œåˆ™è¯¥å‘½ä»¤ä¸èƒ½å†™å…¥ä»»ä½•å€¼åˆ°stencil attachment
+                                                                    ï¼ˆ7ï¼‰åˆ™å½“å‰ç»‘å®šçš„graphics pipelineå¿…é¡»ä»¥å«VkPipelineRenderingCreateInfo::viewMaskç­‰äºVkRenderingInfo::viewMaskåˆ›å»º
+                                                                    ï¼ˆ8ï¼‰å¦‚æœå¸¦æœ‰VkRenderingInfo::colorAttachmentCountä¸º1ï¼Œåˆ™æ²¡æœ‰shader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œä¸”ä¸€ä¸ªcolor attachmentçš„ resolve modeä¸ºVK_RESOLVE_MODE_EXTERNAL_FORMAT_DOWNSAMPLE_ANDROIDï¼Œåˆ™VkRenderingInfo::pColorAttachmentsä¸­æ¯ä¸ªresolveImageViewä¸ä¸ºVK_NULL_HANDLEçš„å…ƒç´ å…¶å¯¹åº”imageå¿…é¡»ä»¥å’Œåˆ›å»ºå½“å‰ç»‘å®šçš„pipeline ç›¸åŒçš„VkExternalFormatANDROID::externalFormatåˆ›å»º
+                                                                    ï¼ˆ9ï¼‰å¦‚æœæ²¡æœ‰shader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œå¦‚æœç»‘å®šçš„graphics pipelineä»¥ä¸€ä¸ªéé›¶å€¼VkExternalFormatANDROID::externalFormatåˆ›å»ºä¸”å¯ç”¨VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXTåŠ¨æ€è®¾ç½®ï¼Œåˆ™vkCmdSetColorBlendEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤å‰è®¾ç½®blend enableä¸ºVK_FALSE
+                                                                    ï¼ˆ10ï¼‰å¦‚æœæ²¡æœ‰shader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œå¦‚æœç»‘å®šçš„graphics pipelineä»¥ä¸€ä¸ªéé›¶å€¼VkExternalFormatANDROID::externalFormatåˆ›å»ºä¸”å¯ç”¨VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXTåŠ¨æ€è®¾ç½®ï¼Œåˆ™vkCmdSetRasterizationSamplesEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤å‰è®¾ç½®rasterizationSamplesä¸ºVK_SAMPLE_COUNT_1_BIT
+                                                                    ï¼ˆ11ï¼‰å¦‚æœæ²¡æœ‰shader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œå¦‚æœç»‘å®šçš„graphics pipelineä»¥ä¸€ä¸ªéé›¶å€¼VkExternalFormatANDROID::externalFormatåˆ›å»ºä¸”å¯ç”¨VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHRåŠ¨æ€è®¾ç½®ï¼Œåˆ™vkCmdSetFragmentShadingRateKHRå¿…é¡»åœ¨è¯¥å‘½ä»¤å‰è®¾ç½®pFragmentSize->widthä¸º1ï¼ŒpFragmentSize->heightä¸º1
+        89.å¦‚æœdynamicRenderingUnusedAttachmentsç‰¹æ€§æœªå¼€å¯ï¼Œä¸”å½“å‰çš„render pass instanceä»¥vkCmdBeginRenderingå¼€å§‹ï¼Œåˆ™
+                                                                ï¼ˆ1ï¼‰å½“å‰ç»‘å®šçš„graphics pipelineå¿…é¡»ä»¥å«VkPipelineRenderingCreateInfo::colorAttachmentCountç­‰äºVkRenderingInfo::colorAttachmentCountåˆ›å»º
+                                                                ï¼ˆ2ï¼‰å¦‚æœVkRenderingInfo::colorAttachmentCountå¤§äº0ï¼Œåˆ™VkRenderingInfo::pColorAttachments ä¸­æ¯ä¸€ä¸ªå…¶imageViewä¸ä¸ºVK_NULL_HANDLEçš„å…ƒç´ çš„VkImageViewå¿…é¡»ä»¥VkFormatå¯¹åº”ç»‘å®šçš„graphics pipelineçš„VkPipelineRenderingCreateInfo::pColorAttachmentFormatsæŒ‡æ˜çš„formatåˆ›å»º
+                                                                ï¼ˆ3ï¼‰å¦‚æœVkRenderingInfo::colorAttachmentCountå¤§äº0ï¼Œåˆ™VkRenderingInfo::pColorAttachments ä¸­æ¯ä¸€ä¸ªå…¶imageViewä¸ºVK_NULL_HANDLEçš„å…ƒç´ å¯¹åº”ç»‘å®šçš„graphics pipelineçš„VkPipelineRenderingCreateInfo::pColorAttachmentFormatsæŒ‡æ˜çš„formatå¿…é¡»ä¸ºVK_FORMAT_UNDEFINED
+                                                                ï¼ˆ4ï¼‰å¦‚æœVkRenderingInfo::pDepthAttachment->imageViewä¸ºVK_NULL_HANDLEï¼Œåˆ™åˆ›å»ºå½“å‰ç»‘å®šçš„graphics pipelineçš„VkPipelineRenderingCreateInfo::depthAttachmentFormatå¿…é¡»ä¸ºVK_FORMAT_UNDEFINED
+                                                                ï¼ˆ5ï¼‰å¦‚æœVkRenderingInfo::pDepthAttachment->imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œåˆ™åˆ›å»ºå½“å‰ç»‘å®šçš„graphics pipelineçš„VkPipelineRenderingCreateInfo::depthAttachmentFormatå¿…é¡»å’Œåˆ›å»ºVkRenderingInfo::pDepthAttachment->imageViewçš„VkFormatç›¸åŒ
+                                                                ï¼ˆ6ï¼‰å¦‚æœVkRenderingInfo::pStencilAttachment->imageViewä¸ºVK_NULL_HANDLEï¼Œåˆ™åˆ›å»ºå½“å‰ç»‘å®šçš„graphics pipelineçš„VkPipelineRenderingCreateInfo::stencilAttachmentFormatå¿…é¡»ä¸ºVK_FORMAT_UNDEFINED
+                                                                ï¼ˆ7ï¼‰å¦‚æœVkRenderingInfo::pStencilAttachment->imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œåˆ™åˆ›å»ºå½“å‰ç»‘å®šçš„graphics pipelineçš„VkPipelineRenderingCreateInfo::stencilAttachmentFormatå¿…é¡»å’Œåˆ›å»ºVkRenderingInfo::pStencilAttachment->imageViewçš„VkFormatç›¸åŒ
+        90.å¦‚æœdynamicRenderingUnusedAttachmentsç‰¹æ€§å¼€å¯ï¼Œä¸”å½“å‰çš„render pass instanceä»¥vkCmdBeginRenderingå¼€å§‹ï¼Œåˆ™
+                                                                ï¼ˆ1ï¼‰å¦‚æœVkRenderingInfo::colorAttachmentCountå¤§äº0ï¼Œåˆ™VkRenderingInfo::pColorAttachments ä¸­æ¯ä¸€ä¸ªå…¶imageViewä¸ä¸ºVK_NULL_HANDLEçš„å…ƒç´ çš„VkImageViewå¿…é¡»ä»¥VkFormatå¯¹åº”ç»‘å®šçš„graphics pipelineçš„VkPipelineRenderingCreateInfo::pColorAttachmentFormatsæŒ‡æ˜çš„formatåˆ›å»ºï¼Œæˆ–è€…æ˜¯å¯¹åº”å…ƒç´ ä¸ºVK_FORMAT_UNDEFINEDåˆ›å»º
+                                                                ï¼ˆ2ï¼‰å¦‚æœVkRenderingInfo::pDepthAttachment->imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”åˆ›å»ºå½“å‰ç»‘å®šçš„graphics pipelineçš„VkPipelineRenderingCreateInfo::depthAttachmentFormatå’Œåˆ›å»ºVkRenderingInfo::pDepthAttachment->imageViewçš„VkFormatä¸åŒï¼Œåˆ™è¯¥formatå¿…é¡»ä¸ºVK_FORMAT_UNDEFINED
+                                                                ï¼ˆ3ï¼‰å¦‚æœVkRenderingInfo::pStencilAttachment->imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”åˆ›å»ºå½“å‰ç»‘å®šçš„graphics pipelineçš„VkPipelineRenderingCreateInfo::stencilAttachmentFormatå’Œåˆ›å»ºVkRenderingInfo::pStencilAttachment->imageViewçš„VkFormatä¸åŒï¼Œåˆ™è¯¥formatå¿…é¡»ä¸ºVK_FORMAT_UNDEFINED
+        91.å¦‚æœæ²¡æœ‰shader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œä¸”å½“å‰çš„render pass instanceä»¥vkCmdBeginRenderingå¼€å§‹ä¸”VkRenderingInfo::colorAttachmentCountä¸º1ï¼Œä¸”ä¸€ä¸ªcolor attachmentçš„ resolve modeä¸ºVK_RESOLVE_MODE_EXTERNAL_FORMAT_DOWNSAMPLE_ANDROIDï¼Œåˆ™VkRenderingInfo::pColorAttachmentsä¸­æ¯ä¸ªresolveImageViewä¸ä¸ºVK_NULL_HANDLEçš„å…ƒç´ å…¶å¯¹åº”imageå¿…é¡»ä»¥å’Œåˆ›å»ºå½“å‰ç»‘å®šçš„pipeline ç›¸åŒçš„VkExternalFormatANDROID::externalFormatåˆ›å»º
+        92.å¦‚æœæœ‰ä¸€ä¸ªshader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œä¸”å½“å‰çš„render pass åŒ…å«ä¸€ä¸ªä½¿ç”¨VK_RESOLVE_MODE_EXTERNAL_FORMAT_DOWNSAMPLE_ANDROID resolve modeçš„color attachmentï¼Œåˆ™ï¼ˆ1ï¼‰vkCmdSetColorBlendEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤å‰è®¾ç½®blend enableä¸ºVK_FALSE
+                                                                                                                                                                                 ï¼ˆ2ï¼‰åˆ™vkCmdSetRasterizationSamplesEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤å‰è®¾ç½®rasterizationSamplesä¸ºVK_SAMPLE_COUNT_1_BIT
+                                                                                                                                                                                 ï¼ˆ3ï¼‰åˆ™vkCmdSetFragmentShadingRateKHRå¿…é¡»åœ¨è¯¥å‘½ä»¤å‰è®¾ç½®pFragmentSize->widthä¸º1ï¼ŒpFragmentSize->heightä¸º1
+        93.å¦‚æœç»‘å®šçš„graphics pipelineï¼Œï¼ˆ1ï¼‰ä»¥VK_DYNAMIC_STATE_COLOR_WRITE_ENABLE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetColorWriteEnableEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ï¼Œä¸”è®¾ç½®çš„attachmentCountå¿…é¡»å¤§äºç­‰äºåˆ›å»ºå½“å‰ç»‘å®šçš„pipelineçš„VkPipelineColorBlendStateCreateInfo::attachmentCount                                                                                                                                                                    
+                                        ï¼ˆ2ï¼‰ä»¥VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetDiscardRectangleEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰ä¸ºæ¯ä¸ªVkPipelineDiscardRectangleStateCreateInfoEXT::discardRectangleCountæŒ‡æ˜çš„discard rectangle è®¾ç½®
+                                        ï¼ˆ3ï¼‰ä»¥VK_DYNAMIC_STATE_DISCARD_RECTANGLE_ENABLE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetDiscardRectangleEnableEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ4ï¼‰ä»¥VK_DYNAMIC_STATE_DISCARD_RECTANGLE_MODE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œ åˆ™vkCmdSetDiscardRectangleModeEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+        94.å¦‚æœæœ‰ä¸€ä¸ªshader objectç»‘å®šåˆ°VK_SHADER_STAGE_FRAGMENT_BIT stageï¼Œä¸”æœ€é è¿‘å½“å‰å‘½ä»¤çš„vkCmdSetRasterizerDiscardEnableè®¾ç½®rasterizerDiscardEnableä¸ºVK_FALSEï¼Œåˆ™
+                                        ï¼ˆ1ï¼‰å¦‚æœcolorWriteEnableç‰¹æ€§åœ¨deviceä¸Šå¼€å¯ï¼Œåˆ™vkCmdSetColorWriteEnableEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®ï¼Œä¸”è®¾ç½®çš„attachmentCountå¿…é¡»å¤§äºç­‰äºå½“å‰render pass instanceçš„color attachmentçš„æ•°é‡
+                                        ï¼ˆ2ï¼‰å¦‚æœVK_EXT_discard_rectanglesæ‹“å±•å¼€å¯ï¼Œä¸”æœ€è¿‘çš„vkCmdSetDiscardRectangleEnableEXTè®¾ç½®discardRectangleEnableä¸ºVK_TRUEï¼Œ åˆ™vkCmdSetDiscardRectangleEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ3ï¼‰å¦‚æœVK_EXT_discard_rectanglesæ‹“å±•å¼€å¯ï¼Œ åˆ™vkCmdSetDiscardRectangleEnableEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ4ï¼‰å¦‚æœVK_EXT_discard_rectanglesæ‹“å±•å¼€å¯ï¼Œ åˆ™æœ€è¿‘çš„vkCmdSetDiscardRectangleEnableEXTè®¾ç½®discardRectangleEnableä¸ºVK_TRUEï¼Œåˆ™vkCmdSetDiscardRectangleModeEXT å¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+        95.å¦‚æœå½“å‰çš„render pass instanceä»¥vkCmdBeginRenderingå¼€å§‹ï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœVkRenderingFragmentShadingRateAttachmentInfoKHR::imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œåˆ™å½“å‰ç»‘å®šçš„graphics pipelineå¿…é¡»ä»¥VK_PIPELINE_CREATE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHRåˆ›å»º
+                                                                      ï¼ˆ2ï¼‰å¦‚æœVkRenderingFragmentDensityMapAttachmentInfoEXT::imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œåˆ™å½“å‰ç»‘å®šçš„graphics pipelineå¿…é¡»ä»¥VK_PIPELINE_CREATE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXTåˆ›å»º
+                                                                      ï¼ˆ3ï¼‰ä¸”å«VkRenderingInfo::colorAttachmentCountå¤§äº0ï¼Œå¦‚æœå½“å‰çš„ç»‘å®šçš„pipelineä»¥å«æœ‰ä¸€ä¸ªVkAttachmentSampleCountInfoAMDæˆ–è€…VkAttachmentSampleCountInfoNVåˆ›å»ºï¼Œåˆ™VkRenderingInfo::pColorAttachmentsä¸­æ¯ä¸ªimageViewä¸ä¸ºVK_NULL_HANDLEçš„å…ƒç´ çš„imageViewï¼Œå¿…é¡»ä»¥å½“å‰pipelineçš„VkAttachmentSampleCountInfoAMD æˆ–è€… VkAttachmentSampleCountInfoNVä¸­çš„pColorAttachmentSamplesä¸­å¯¹åº”å…ƒç´ çš„sample countè¿›è¡Œåˆ›å»º
+                                                                      ï¼ˆ4ï¼‰å¦‚æœå½“å‰çš„ç»‘å®šçš„pipelineä»¥å«æœ‰ä¸€ä¸ªVkAttachmentSampleCountInfoAMDæˆ–è€…VkAttachmentSampleCountInfoNVåˆ›å»ºï¼Œä¸”VkRenderingInfo::pDepthAttachmentä¸­çš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œåˆ™å½“å‰pipelineçš„VkAttachmentSampleCountInfoAMD æˆ–è€… VkAttachmentSampleCountInfoNVä¸­çš„depthStencilAttachmentSampleså¿…é¡»ç­‰äºåˆ›å»ºVkRenderingInfo::pDepthAttachment->imageViewçš„sample count
+                                                                      ï¼ˆ5ï¼‰å¦‚æœå½“å‰çš„ç»‘å®šçš„pipelineä»¥å«æœ‰ä¸€ä¸ªVkAttachmentSampleCountInfoAMDæˆ–è€…VkAttachmentSampleCountInfoNVåˆ›å»ºï¼Œä¸”VkRenderingInfo::pStencilAttachmentä¸­çš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œåˆ™å½“å‰pipelineçš„VkAttachmentSampleCountInfoAMD æˆ–è€… VkAttachmentSampleCountInfoNVä¸­çš„depthStencilAttachmentSampleså¿…é¡»ç­‰äºåˆ›å»ºVkRenderingInfo::pStencilAttachment->imageViewçš„sample count
+                                                                      ï¼ˆ6ï¼‰ä¸”å«VkRenderingInfo::colorAttachmentCountå¤§äº0ï¼Œå¦‚æœå½“å‰çš„ç»‘å®šçš„pipelineä»¥å«æœ‰ä¸€ä¸ªVkAttachmentSampleCountInfoAMDæˆ–è€…VkAttachmentSampleCountInfoNVåˆ›å»ºï¼Œä¸”multisampledRenderToSingleSampledç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™VkRenderingInfo::pColorAttachmentsä¸­æ¯ä¸ªimageViewä¸ä¸ºVK_NULL_HANDLEçš„å…ƒç´ çš„imageViewï¼Œå…¶åˆ›å»ºçš„sample countå¿…é¡»ç­‰äºå½“å‰ç»‘å®šçš„graphics pipelineçš„rasterizationSamples
+                                                                      ï¼ˆ7ï¼‰å¦‚æœå½“å‰çš„ç»‘å®šçš„pipelineä»¥å«æœ‰ä¸€ä¸ªVkAttachmentSampleCountInfoAMDæˆ–è€…VkAttachmentSampleCountInfoNVåˆ›å»ºï¼Œä¸”VkRenderingInfo::pDepthAttachmentä¸­çš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”multisampledRenderToSingleSampledç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™å½“å‰pipelineçš„rasterizationSamples å¿…é¡»ç­‰äºåˆ›å»ºVkRenderingInfo::pDepthAttachment->imageViewçš„sample count
+                                                                      ï¼ˆ8ï¼‰å¦‚æœå½“å‰çš„ç»‘å®šçš„pipelineä»¥å«æœ‰ä¸€ä¸ªVkAttachmentSampleCountInfoAMDæˆ–è€…VkAttachmentSampleCountInfoNVåˆ›å»ºï¼Œä¸”VkRenderingInfo::pStencilAttachmentä¸­çš„imageViewä¸ä¸ºVK_NULL_HANDLEï¼Œä¸”multisampledRenderToSingleSampledç‰¹æ€§æ²¡æœ‰å¼€å¯ï¼Œåˆ™å½“å‰pipelineçš„rasterizationSamples å¿…é¡»ç­‰äºåˆ›å»ºVkRenderingInfo::pStencilAttachment->imageViewçš„sample count
+                                                                      ï¼ˆ9ï¼‰å½“å‰ç»‘å®šçš„pipelineå¿…é¡»VkGraphicsPipelineCreateInfo::renderPassä¸ºVK_NULL_HANDLEåˆ›å»º
+                                                                      ï¼ˆ10ï¼‰å¦‚æœç»‘å®šçš„pipelineçš„fragment shaderé™æ€å†™å…¥ä¸€ä¸ªcolor attachmentï¼Œä¸”color write maskä¸ä¸º0ï¼Œå¯ç”¨äº†color writesï¼Œä¸”è¯¥é™„ä»¶å¯¹åº”çš„VkRenderingInfo::pColorAttachments->imageView ä¸ä¸ºVK_NULL_HANDLEï¼Œåˆ™å¯¹åº”çš„åˆ›å»ºpipelineçš„VkPipelineRenderingCreateInfo::pColorAttachmentFormatsä¸­çš„å…ƒç´ ä¸èƒ½ä¸ºVK_FORMAT_UNDEFINED
+                                                                      ï¼ˆ11ï¼‰å¦‚æœç»‘å®šçš„pipelineå¯ç”¨äº†depth testï¼Œå¯ç”¨äº†depth writesï¼Œä¸”VkRenderingInfo::pDepthAttachment->imageView ä¸ä¸ºVK_NULL_HANDLEï¼Œåˆ™åˆ›å»ºpipelineçš„VkPipelineRenderingCreateInfo::depthAttachmentFormatä¸èƒ½ä¸ºVK_FORMAT_UNDEFINED
+                                                                      ï¼ˆ12ï¼‰å¦‚æœç»‘å®šçš„pipelineå¯ç”¨äº†stencil testï¼Œä¸”VkRenderingInfo::pStencilAttachment->imageView ä¸ä¸ºVK_NULL_HANDLEï¼Œåˆ™åˆ›å»ºpipelineçš„VkPipelineRenderingCreateInfo::stencilAttachmentFormatä¸èƒ½ä¸ºVK_FORMAT_UNDEFINED
+        96.å¦‚æœè¯¥å‘½ä»¤åœ¨ä»¥vkCmdBeginRenderingå¼€å§‹çš„render pass instanceä¸­è°ƒç”¨ï¼Œä¸”VkRenderingInfoçš„pNextä¸­åŒ…å«ä¸€ä¸ªmultisampledRenderToSingleSampledEnableè®¾ä¸ºVK_TRUEçš„VkMultisampledRenderToSingleSampledInfoEXTï¼Œåˆ™å½“å‰ç»‘å®šçš„graphics pipelineçš„rasterizationSampleså¿…é¡»ç­‰äºVkMultisampledRenderToSingleSampledInfoEXT::rasterizationSamples
+        97.å¦‚æœprimitivesGeneratedQueryWithRasterizerDiscardç‰¹æ€§æœªå¼€å¯ï¼Œä¸”VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT queryæ¿€æ´»ï¼Œåˆ™ä¸èƒ½å¯ç”¨rasterization discardï¼Œç»‘å®šçš„graphics pipelineä¸èƒ½ä»¥VkPipelineRasterizationStateStreamCreateInfoEXT::rasterizationStreamä¸ºéé›¶å€¼åˆ›å»º
+        98.å¦‚æœç»‘å®šçš„graphics pipelineï¼Œï¼ˆ1ï¼‰ä»¥VK_DYNAMIC_STATE_TESSELLATION_DOMAIN_ORIGIN_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetTessellationDomainOriginEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®   
+                                        ï¼ˆ2ï¼‰ä»¥VK_DYNAMIC_STATE_DEPTH_CLAMP_ENABLE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetDepthClampEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®   
+                                        ï¼ˆ3ï¼‰ä»¥VK_DYNAMIC_STATE_POLYGON_MODE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetPolygonModeEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®  
+                                        ï¼ˆ4ï¼‰ä»¥VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetRasterizationSamplesEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®  
+                                        ï¼ˆ5ï¼‰ä»¥VK_DYNAMIC_STATE_SAMPLE_MASK_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetSampleMaskEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®  
+                                        ï¼ˆ6ï¼‰ä»¥VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetAlphaToCoverageEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ7ï¼‰ä»¥VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™æœ€è¿‘çš„vkCmdSetAlphaToCoverageEnableEXTè®¾ç½®alphaToCoverageEnableä¸ºVK_TRUEï¼Œåˆ™Fragment Output Interfaceä¸­ Index 0çš„Location 0å¿…é¡»æœ‰ä¸€ä¸ªå«alpha Componentçš„å˜é‡
+                                        ï¼ˆ8ï¼‰ä»¥VK_DYNAMIC_STATE_ALPHA_TO_ONE_ENABLE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetAlphaToOneEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½® 
+                                        ï¼ˆ9ï¼‰ä»¥VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetLogicOpEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ10ï¼‰ä»¥VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetColorBlendEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ11ï¼‰ä»¥VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetColorBlendEquationEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                        ï¼ˆ12ï¼‰ä»¥VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXTåŠ¨æ€stateå¼€å¯åˆ›å»ºï¼Œåˆ™vkCmdSetColorWriteMaskEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+        99.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT stageï¼Œåˆ™vkCmdSetTessellationDomainOriginEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®   
+        100.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œä¸”æœ€è¿‘çš„vkCmdSetRasterizerDiscardEnableè®¾ç½®rasterizerDiscardEnableä¸ºVK_FALSEï¼Œåˆ™
+                                                        ï¼ˆ1ï¼‰å¦‚æœdepthClampç‰¹æ€§å¯ç”¨ï¼Œåˆ™vkCmdSetDepthClampEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®   
+                                                        ï¼ˆ2ï¼‰åˆ™vkCmdSetPolygonModeEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®   
+                                                        ï¼ˆ3ï¼‰åˆ™vkCmdSetRasterizationSamplesEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½® 
+                                                        ï¼ˆ4ï¼‰åˆ™vkCmdSetSampleMaskEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½® 
+                                                        ï¼ˆ5ï¼‰åˆ™vkCmdSetAlphaToCoverageEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½® 
+                                                        ï¼ˆ6ï¼‰å¦‚æœalphaToOneç‰¹æ€§å¯ç”¨ï¼Œåˆ™vkCmdSetAlphaToOneEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®   
+
+        101.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°ä»»ä½•graphics stageï¼Œä¸”æœ€è¿‘çš„vkCmdSetAlphaToCoverageEnableEXTè®¾ç½®alphaToCoverageEnableä¸ºVK_TRUEï¼Œåˆ™Fragment Output Interfaceä¸­ Index 0çš„Location 0å¿…é¡»æœ‰ä¸€ä¸ªå«alpha Componentçš„å˜é‡
+        102.å¦‚æœä¸€ä¸ªshader objectç»‘å®šåˆ°VK_SHADER_STAGE_FRAGMENT_BIT stageï¼Œä¸”æœ€è¿‘çš„vkCmdSetRasterizerDiscardEnableè®¾ç½®rasterizerDiscardEnableä¸ºVK_FALSEï¼Œåˆ™
+                                            ï¼ˆ1ï¼‰vkCmdSetLogicOpEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®   
+                                            ï¼ˆ2ï¼‰å¦‚æœç»‘å®šäº†color attachmentsï¼Œåˆ™vkCmdSetColorBlendEnableEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                            ï¼ˆ3ï¼‰å¦‚æœæœ€è¿‘çš„vkCmdSetColorBlendEnableEXTè®¾ç½®ä»»ä½•é™„ä»¶åœ¨pColorBlendEnablesä¸­çš„å€¼ä¸ºVK_TRUE ï¼Œåˆ™vkCmdSetColorBlendEquationEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
+                                            ï¼ˆ4ï¼‰å¦‚æœç»‘å®šäº†color attachmentsï¼Œåˆ™vkCmdSetColorWriteMaskEXTå¿…é¡»åœ¨è¯¥å‘½ä»¤ä¹‹å‰è®¾ç½®
 
         */
 

@@ -14,6 +14,7 @@ public:
 
 private:
 	void PrimitiveTest();
+	void ConditinalRenderingTest();
 
 };
 TEST_REGISTER(DrawingCommandsTest)

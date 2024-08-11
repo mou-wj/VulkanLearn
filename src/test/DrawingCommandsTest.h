@@ -13,8 +13,11 @@ public:
 	~DrawingCommandsTest();
 
 private:
-	void PrimitiveTest();
+	void PrimitiveShadingTest();
 	void ConditinalRenderingTest();
+	void MeshShadingTest();
+	void ClusterCullingShadingTest();
+
 
 };
 TEST_REGISTER(DrawingCommandsTest)

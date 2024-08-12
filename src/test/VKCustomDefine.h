@@ -200,10 +200,22 @@ typedef struct VkBlitImageCubicWeightsInfoQCOM {
 
 
 
+// Provided by VK_KHR_vertex_attribute_divisor
+typedef struct VkVertexInputBindingDivisorDescriptionKHR {
+	uint32_t    binding;
+	uint32_t    divisor;
+} VkVertexInputBindingDivisorDescriptionKHR;
+// Provided by VK_EXT_vertex_attribute_divisor
+typedef VkVertexInputBindingDivisorDescriptionKHR VkVertexInputBindingDivisorDescriptionEXT;
 
 
-
-
+// Provided by VK_KHR_vertex_attribute_divisor
+typedef struct VkPipelineVertexInputDivisorStateCreateInfoKHR {
+	VkStructureType                                     sType;
+	const void* pNext;
+	uint32_t                                            vertexBindingDivisorCount;
+	const VkVertexInputBindingDivisorDescriptionKHR* pVertexBindingDivisors;
+} VkPipelineVertexInputDivisorStateCreateInfoKHR;
 
 
 

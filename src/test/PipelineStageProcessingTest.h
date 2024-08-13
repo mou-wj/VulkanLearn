@@ -19,6 +19,8 @@ private:
 	void TessellationTest();
 	//chater 24
 	void GeometryShadingTest();
+	//chapter 25
+	void MeshShaingTest();
 private:
 
 

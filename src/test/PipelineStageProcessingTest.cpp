@@ -418,8 +418,63 @@ void PipelineStageProcessingTest::GeometryShadingTest()
 		{
 			//以PassthroughNV修饰的输入变量将直接将对应顶点数据拷贝到输出图元中，如果不以PassthroughNV修饰的输入变量或者块则会被geometry shader消耗且不会传递到下一个管线阶段
 		}
+
+		// Passthrough Interface Matching  参见p2620
 	}
 
+}
+
+void PipelineStageProcessingTest::MeshShaingTest()
+{
+	/*
+	Task 以及 mesh shaders工作在workgroups中用于产生后续管线阶段可以处理的图元，如果开启task shader则每个task shader会创建一组新的mesh shader的workgroup来完成任务，每个mesh shader的workgroup根据该workgroup中的顶点数据产生零个或者多个图元以及顶点数据
+	
+	*/
+
+
+	//Task Shader Input  参见p2622   输入只有builtin workgroup identifiers
+
+
+	//Task Shader Output  参见p2622   
+	{
+		/*
+		Task Shader输出零个或多个mesh workgroups，
+		
+		如果使用TaskNV Execution Model模型，则通过内置变量 TaskCountNV 来指定输出的mesh workgroup数量，且不能超过 VkPhysicalDeviceMeshShaderPropertiesNV::maxTaskOutputCount，mesh shader中可以访问以PerTaskNV 声明的task shader写出的变量
+		
+		如果使用TaskEXT Execution Model，则通过传递给 OpEmitMeshTasksEXT指令的 groupCountX, groupCountY以及groupCountZ 三者的乘积来指定输出的mesh workgroup数量，每个分量不能超过 VkPhysicalDeviceMeshShaderPropertiesEXT::maxMeshWorkGroupCount，乘积不能超过 VkPhysicalDeviceMeshShaderPropertiesEXT::maxMeshWorkGroupTotalCount.，mesh shader中可以访问传递给  OpEmitMeshTasksEXT指令的以 TaskPayloadWorkgroupEXT 声明的task shader写出的变量
+		
+
+		*/
+	}
+
+	// Mesh Generation  参见p2622  
+
+
+	// Mesh Shader Input  参见p2622 
+
+	// Mesh Shader Output  参见p2622 
+	{
+		/*
+		mesh shader产生的图元类型为points, lines,或者 triangles
+
+		如果使用MeshNV Execution Model模型，则图元类型通过带OutputPoints, OutputLinesNV, 或者 OutputTrianglesNV 的OpExecutionMode指令 ,最大顶点数通过带OutputVertices 的OpExecutionMode指令指定，且不能超过 VkPhysicalDeviceMeshShaderPropertiesNV::maxMeshOutputVertices，
+						最大图元数通过带 OutputPrimitivesNV 的OpExecutionMode指令指定写入到PrimitiveCountNV中，且不能超过 VkPhysicalDeviceMeshShaderPropertiesNV::maxMeshOutputPrimitives
+		
+		如果使用MeshEXT Execution Model模型，则通过带OutputPoints, OutputLinesEXT, 或者 OutputTrianglesEXT 的OpExecutionMode指令  ,最大顶点数通过带OutputVertices 的OpExecutionMode指令指定，且不能超过 VkPhysicalDeviceMeshShaderPropertiesEXT::maxMeshOutputVertices，
+						最大图元数通过带 OutputPrimitivesEXT 的OpExecutionMode指令指定调用 OpSetMeshOutputsEXT进行设置，且不能超过 VkPhysicalDeviceMeshShaderPropertiesEXT::maxMeshOutputPrimitives.
+		*/
+	}
+
+	// Mesh Shader Per-View Outputs  参见p2624
+	{
+		/*
+		mesh shader中以PositionPerViewNV, ClipDistancePerViewNV, CullDistancePerViewNV, LayerPerViewNV, 以及 ViewportMaskPerViewNV修饰的变量是 Position, ClipDistance, CullDistance, Layer, 以及 ViewportMaskNV的per-view的版本,这些变量可以看着是对应每个view的数组
+		
+		*/
+	}
+
+	//Mesh Shader Primitive Ordering  参见p2624
 }
 
 

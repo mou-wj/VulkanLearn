@@ -269,5 +269,158 @@ void PipelineStageProcessingTest::VertexProcessingFixedFunctionTest()
 
 }
 
+void PipelineStageProcessingTest::TessellationTest()
+{
+	/*
+	Tessellation包含3个阶段: 
+	1.tessellation control shader用patch中的点来产生per-patch数据
+	2.fixed-function tessellator根据patch中参数空间（见p2602）中的(u,v) 或者 (u,v,w)坐标产生许多图元
+	3.tessellation evaluation shader转换生成的图元中的点，例如计算相关的三维空间的点坐标以及属性数据等 
+
+	tessallator需要pipeline同时包含tessellation control shader和tessellation evaluation shader情况下才启用
+	*/
+
+
+	//Tessellator 参见p2604
+	{
+		/*
+		tessellator消耗一批输入，然后产生一组新的图元，产生的方式是通过tessellation control shader写出的 outer 以及 inner tessellation levels参数控制几何图元的图元细分操作完成的，如果没有tessallation shader，则该tessellator则不启用，即不对图元做任何操作
+		
+		细分的类型由 OpExecutionMode指令控制，指定一个 Triangles（将三角形图元细分成更小的三角图元）, Quads（将四边形图元细分成更小的三角图元）, 或者 IsoLines（将四边形图元细分成TessCoord在u维度上相同的线段的集合） execution modes等，如果使用shader objects，则必须在tessellation evaluation shader中指定该指令，如果使用pipeline，则可以在tessellation control shader或者tessellation evaluation shader之一中指定该指令,如果两个shader中都设置有该指令则必须相等
+
+		Tessellation execution modes分类:
+		Triangles, Quads, 以及 IsoLines:控制细分类型以及输出的图元拓扑，如果VK_KHR_portability_subset拓展未开启，且VkPhysicalDevicePortabilitySubsetFeaturesKHR::tessellationIsolines为VK_FALSE，则不能使用IsoLines
+
+		VertexOrderCw 以及 VertexOrderCcw:控制tessallator产生的三角形的顶点顺序
+
+		PointMode: 控制点图元的生成，如果VK_KHR_portability_subset拓展未开启，且VkPhysicalDevicePortabilitySubsetFeaturesKHR::tessellationPointMode为VK_FALSE，则不能使用 PointMode
+
+		SpacingEqual, SpacingFractionalEven, 以及 SpacingFractionalOdd: 控制细分的图元的边上线段的间距
+
+		OutputVertices: 控制tessellation control shader产生的 output patch的大小
+		*/
+
+
+	}
+
+
+	//Tessellator Patch Discard 参见p2607
+
+
+	//Tessellator Spacing 参见p2607
+	{
+		/*
+		指定细分图元边上的段间距通过 SpacingEqual, SpacingFractionalEven, 或者 SpacingFractionalOdd指定
+		SpacingEqual: 如果浮点tessellation level限制到[1,VkPhysicalDeviceLimits::maxTessellationGenerationLevel]中最近的整数为n，则该边在（u，v）参数空间中等分为n份
+		SpacingFractionalEven以及 SpacingFractionalOdd，前者浮点tessellation level限制到[2,VkPhysicalDeviceLimits::maxTessellationGenerationLevel]中最近的整数为n，后者限制到[1,VkPhysicalDeviceLimits::maxTessellationGenerationLevel-1]中最近的整数n，将细分的边划分为n-2个等长的段和2个等长的段，其中2个等长的段（在细分边两端）和n-2个等长的段的长度存在关系，随着n-f单调减小，f为浮点tessellation level限定到范围内值
+		*/
+	}
+
+	//Tessellation Primitive Ordering 参见p2608
+
+	//Tessellator Vertex Winding Order 参见p2608
+	{
+		/*
+		细分产生的三角图元的顶点顺序由VertexOrderCw 或者 VertexOrderCcw指定:
+		VertexOrderCw: 指定在 (u,v) 或者 (u,v,w) 空间中顶点顺序为顺时针
+		VertexOrderCcw: 指定在 (u,v) 或者 (u,v,w) 空间中顶点顺序为逆时针
+		*/
+	}
+
+
+	//Triangle Tessellation    >>  三角形图元的三角形细分规则见p2609    简单讲就是每个边上的细分段数由三个outer tessellation levels（左边，底边，右边）指定，三角形顶点最近的两个边上的最近细分点基于边的垂线的延长线交点得到内三角形的顶点，其他细分点基于边的垂线交内三角的边得到内三角的细分点，然后选取三角的相邻的两个细分点作为三角形两个点和另外一个三角的对应顶点组装成三角形，不断重复该操作，直到内三角的细分段个数为1或2
+
+
+	//Quad Tessellation    >>   四边形图元的三角形细分规则见p2611    简单讲就是根据第一个以及第二个inner tessellation level的限制值将四边形图元先划分为对应m * n个小矩形，然后将内部不和外部矩形相接的小矩形细分成三角对，内部的小矩形的全集看作是一个含有细分点的内矩形，然后在按照四个 outer tessellation levels的限定值将矩阵四条边（l,b,r,t）细分，然后选取一条边的相邻的两个细分点作为三角形两个点和另外一个矩形的对应顶点组装成三角形
+
+
+	//Isoline Tessellation  >>   四边形图元的线细分规则p2613    简单讲就是画平行四边形图元底边的线段，画多少条由第一个outer tessellation level决定（等间隔画），每条上面多少的细分点由第一个outer tessellation level
+
+	
+
+	//Tessellation Point Mode  参见p2613
+
+
+	//Tessellation Pipeline State  参见p2614
+	{
+		//VkGraphicsPipelineCreateInfo.pTessellationState指向的VkPipelineTessellationStateCreateInfo控制tessellation
+
+		VkPipelineTessellationStateCreateInfo pipelineTessellationStateCreateInfo{};
+		pipelineTessellationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+		VkPipelineTessellationDomainOriginStateCreateInfo pipelineTessellationDomainOriginStateCreateInfo{};//等价于VkPipelineTessellationDomainOriginStateCreateInfoKHR，如果没有使用该结构体，则默认的原点为 VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT,主要影响如何解释VertexOrderCw 以及 VertexOrderCcw的顶点顺序
+		{
+			pipelineTessellationDomainOriginStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO;
+			pipelineTessellationDomainOriginStateCreateInfo.pNext = nullptr;
+			pipelineTessellationDomainOriginStateCreateInfo.domainOrigin = VK_TESSELLATION_DOMAIN_ORIGIN_LOWER_LEFT;/*一个VkTessellationDomainOrigin值指明tessellation domain space的原点位置
+			VkTessellationDomainOrigin:
+			VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT:  指明tessellation domain space的原点位置在左上角
+			VK_TESSELLATION_DOMAIN_ORIGIN_LOWER_LEFT:  指明tessellation domain space的原点位置在左下角
+			*/
+		}
+		pipelineTessellationStateCreateInfo.pNext = &pipelineTessellationDomainOriginStateCreateInfo;//可以包含一个VkPipelineTessellationDomainOriginStateCreateInfo
+		pipelineTessellationStateCreateInfo.flags = 0;//保留未来使用
+		pipelineTessellationStateCreateInfo.patchControlPoints = 1;//是每个patch的控制点个数，必须大于0小于等于VkPhysicalDeviceLimits::maxTessellationPatchSize
+	
+	
+		//动态设置tessellation domain space的原点位置     该命令只有在pipeline开启了VK_DYNAMIC_STATE_TESSELLATION_DOMAIN_ORIGIN_EXT才有效，否则使用VkPipelineTessellationDomainOriginStateCreateInfo::domainOrigin
+		vkCmdSetTessellationDomainOriginEXT(VkCommandBuffer{/*假设这是一个有效的VkCommandBuffer*/ }, VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT/*domainOrigin ,指明tessellation domain space的原点位置*/);
+	
+	}
+
+}
+
+void PipelineStageProcessingTest::GeometryShadingTest()
+{
+	/*
+	geomrtry shader操作一个图元上的顶点以及属性数据，然后发送零个或多个图元以及其顶点数据，只在pipeline中包含geometry shader才有效
+	
+	*/
+
+
+	//Geometry Shader Input Primitives 参见p2618
+	{
+		/*
+		geometry shader访问图元的顶点数据，该顶点数据以数组的方式组织
+
+		输入图元的类型通过geometry shader中的OpExecutionMode指定,且图元必须和pipeline的图元拓扑（如何tessellation未启用）或者tessellation shader输出的图元拓扑匹配（如果tessellation启用）:
+
+		如果输入类型为 InputPoints，则图元拓扑必须是VK_PRIMITIVE_TOPOLOGY_POINT_LIST
+		
+		如果输入类型为 InputLines，则图元拓扑必须是VK_PRIMITIVE_TOPOLOGY_LINE_LIST 或者 VK_PRIMITIVE_TOPOLOGY_LINE_STRIP
+		
+		如果输入类型为 InputLinesAdjacency，则图元拓扑必须是VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY 或者 VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY.
+		
+		如果输入类型为 Triangles，则图元拓扑必须是VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, 或者 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN
+
+		如果输入类型为 InputTrianglesAdjacency，则图元拓扑必须是VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY 或者 VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY
+		*/
+	}
+
+
+	// Geometry Shader Output Primitives  参见p2619
+	{
+		//geometry shader输出的图元类型为points, line strips, 或者 triangle strips，通过 OpExecutionMode指令来指明OutputPoints, OutputLineStrip 或者 OutputTriangleStrip,最大的顶点输出数量由OpExecutionMode设置 OutputVertices来指定
+	}
+
+
+	// Multiple Invocations of Geometry Shaders  参见p2619     对一个输入图元可以调用多次geometry shader
+
+
+	// Geometry Shader Primitive Ordering  参见p2619
+
+
+	// Geometry Shader Passthrough   参见p2619
+	{
+		//geometry shader的输入变量如果有以 PassthroughNV修饰的，则该geometry shader为一个直通的geometry shader，即输入的图元的拓扑类型不会改变且不会产生新的顶点
+	
+	
+		//PassthroughNV Decoration  参见p2620
+		{
+			//以PassthroughNV修饰的输入变量将直接将对应顶点数据拷贝到输出图元中，如果不以PassthroughNV修饰的输入变量或者块则会被geometry shader消耗且不会传递到下一个管线阶段
+		}
+	}
+
+}
+
 
 NS_TEST_END

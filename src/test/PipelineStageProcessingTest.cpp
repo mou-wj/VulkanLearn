@@ -12,7 +12,7 @@ PipelineStageProcessingTest::~PipelineStageProcessingTest()
 {
 }
 
-void PipelineStageProcessingTest::VertexProcessingFixedFunctionTest()
+void PipelineStageProcessingTest::FixedFunctionVertexProcessingTest()
 {
 	// Vertex Attributes 参见p2582 
 	{
@@ -177,7 +177,7 @@ void PipelineStageProcessingTest::VertexProcessingFixedFunctionTest()
 
 				//设置vertex input attribute 以及 vertex input binding descriptions，只在开启了VK_DYNAMIC_STATE_VERTEX_INPUT_EXT的情况下有效，如果绘制使用 shader objects，且绑定的pipeline state object以VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE创建，则vkCmdBindVertexBuffers2 可以用来动态设置stride
 				vkCmdSetVertexInputEXT(commandBuffer, 1/*vertexBindingDescriptionCount ，为pVertexBindingDescriptions中元素个数.*/, &vertexInputBindingDescription2EXT/*pVertexBindingDescriptions，一组VkVertexInputBindingDescription2EXT 数组指针，指明绑定信息.*/,
-					1/*vertexAttributeDescriptionCount，为pVertexAttributeDescriptions元素个数.*/, &vertexInputAttributeDescription2EXT/*• pVertexAttributeDescriptions，一组 VkVertexInputAttributeDescription2EXT 数组指针，指明属性信息.*/);
+					1/*vertexAttributeDescriptionCount，为pVertexAttributeDescriptions元素个数.*/, &vertexInputAttributeDescription2EXT/*    > pVertexAttributeDescriptions，一组 VkVertexInputAttributeDescription2EXT 数组指针，指明属性信息.*/);
 				/*
 				vkCmdSetVertexInputEXT有效用法:
 				1.vertexInputDynamicState 或者 shaderObject 特性至少有一个必须开启
@@ -475,6 +475,214 @@ void PipelineStageProcessingTest::MeshShaingTest()
 	}
 
 	//Mesh Shader Primitive Ordering  参见p2624
+}
+
+void PipelineStageProcessingTest::ClusterCullingShadingTest()
+{
+	/*
+	cluster culling shader的运行环境类似于compute shader，其workgroup中的一组shader调用用于进行原始的等级几何剔除以及LOD的选取，该shader通过内置函数发送内置的输出变量
+	*/
+
+	//Cluster Culling Shader Input  参见p2625    唯一的输入是那些能够指定workgroup 以及 invocation的变量
+
+	//Cluster Culling Shader Output  参见p2625 
+	{
+		/*
+		如果一个cluster在cluster culling shader的处理下任然保留，则该shader会发送一个绘制命令绘制该cluster，而使用内置输出参数的类似与VkDrawIndexedIndirectCommand 与 VkDrawIndirectCommand的绘制命令用来进行绘制
+
+		cluster culling shader的内置输出参数类型:
+        IndexCountHUAWEI: 为绘制的顶点数
+        VertexCountHUAWEI: 为绘制的顶点数
+        InstanceCountHUAWEI: 为绘制的实例数
+        FirstIndexHUAWEI: 为index buffer中的起始索引
+        FirstVertexHUAWEI: 为第一个要绘制的顶点的索引
+        VertexOffsetHUAWEI:  为一个在索引到顶点缓冲区之前加到顶点索引的值
+        FirstInstanceHUAWEI:  为要绘制的第一个instance的ID 
+        ClusterIDHUAWEI:  为该绘制命令绘制的cluster的索引，当cluster culling shader开启，该值将替换传递给顶点着色器的gl_DrawID 
+        ClusterShadingRate:  为该绘制命令绘制的cluster的shading rate
+		*/
+
+	}
+
+	// Cluster Culling Shader Cluster Ordering    输出的cluster通过调用DispatchClusterHUAWEI()发送个下一管线阶段，发送顺序参见p2625 
+
+	// Cluster Culling Shader Primitive Ordering  参见p2626
+}
+
+void PipelineStageProcessingTest::FixedFunctionVertexPostProcessingTest()
+{
+	/*
+	当所有pre-rasterization shader stages结束后会依次进行以下操作处理最终图元上的顶点:
+    > Transform feedback 
+    > Viewport swizzle 
+    > Flat shading 
+    > Primitive clipping, including client-defined half-spaces
+    > Shader output attribute clipping
+    > Clip space W scaling 
+    > Perspective division on clip coordinates
+    > Viewport mapping, including depth range scaling 
+    > Front face determination for polygon primitives
+	
+	*/
+
+	VkCommandBuffer commandBuffer{/*假设这是一个有效的VkCommandBuffer*/ };
+
+	// Transform feedback  参见p2627
+	{
+		/*
+		如果要捕获pre-rasterization shader stage中最后一个shader stage输出的顶点，则必须在该shader stage中声明Xfb execution mode，则以XfbBuffer声明的输出变量则会写入数据到对应的绑定的transform feedback buffers中,XfbStride会记录对应的顶点字节步长
+
+		绑定transform feedback buffers通过vkCmdBindTransformFeedbackBuffersEXT 进行
+
+		激活捕获通过vkCmdBeginTransformFeedbackEXT命令，关闭捕获通过vkCmdEndTransformFeedbackEXT.
+
+		捕获数据后便可调用vkCmdDrawIndirectByteCountEXT来绘制顶点，其中vertexCount由之前捕获到的字节数来确定
+
+		捕获的顶点数据的图元类型根据实际情况确定，参见p2628
+
+		*/
+
+
+		VkBuffer transformFeedbackBuffer{/*假设这是一个有效的VkBuffer*/ };
+		VkDeviceSize transformFeedbackBufferSize;
+		VkDeviceSize transformFeedbackBufferOffset;
+		//绑定transform feedback buffers， 更新[firstBinding,firstBinding + bindingCount)绑定点上的buffer，以及对应offset和size
+		vkCmdBindTransformFeedbackBuffersEXT(commandBuffer, 0/*firstBinding,为该命令更新的第一个transform feedback binding的索引*/, 1/*bindingCount,为该命令更新的transform feedback bindings 的数量*/,
+			&transformFeedbackBuffer/*pBuffers，一组buffer句柄数组指针.*/,
+			&transformFeedbackBufferOffset/*pOffsets,一组buffer起始字节偏移值的数组指针*/, &transformFeedbackBufferSize/*pSizes,为NULL或者一组buffer大小的数组指针，指明该transform feedback buffer可以捕获的最大的字节数量，如果为NULL，或这其中值为VK_WHOLE_SIZE,则指明最大值为对应buffer的大小减去pOffsets中对应的偏移值*/);
+		/*
+		vkCmdBindTransformFeedbackBuffersEXT有效用法:
+		1.VkPhysicalDeviceTransformFeedbackFeaturesEXT::transformFeedback 必须开启
+		2.firstBinding必须小于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackBuffers
+		3.firstBinding + bindingCount必须小于等于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackBuffers
+		4.pOffsets中的所有元素必须小于pBuffers对应buffer的大小，且必须为4的倍数
+		5.pBuffers中的所有元素必须以VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT创建
+		6.如果指定了可选的pSize，则pSize中的每个元素必须为VK_WHOLE_SIZE或者一个小于等于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackBufferSize的值，且小于等于pBuffer中对应buffer的大小
+		7.对pOffsets以及pSizes所有对应元素相加的和，如果pSizes中某元素不为VK_WHOLE_SIZE，则该和必须小于等于对应pBuffers中buffer的大小
+		8.如果pBuffers中每个元素是non-sparse的，则其必须绑定到完整的连续的单独的VkDeviceMemory上
+		9.该命令记录时不能激活Transform feedback
+		*/
+
+
+		VkBuffer counterBuffer{/*假设这是一个有效的VkBuffer*/ };
+		VkDeviceSize counterBufferOffset;
+		//激活某个transform feedback buffer的transform feedback    该命令将激活某个transform feedback buffer对应到XfbBuffer的顶点数据捕获以及字节计数
+		vkCmdBeginTransformFeedbackEXT(commandBuffer, 0/*firstCounterBuffer, 是对应到pCounterBuffers[0]以及pCounterBufferOffsets[0]的第一个transform feedback buffer的索引*/, 1/*counterBufferCount，为pCounterBuffers 以及 pCounterBufferOffsets 中的元素个数.*/,
+			&counterBuffer/*pCounterBuffers，为NULL或者一组VkBuffer数组指针，每个buffer包含4字节整数指明从transform feedback buffer捕获的顶点数据结尾基于起始字节的字节偏移量，如果该值为NULL，则相当于所有transform feedback buffers捕获的顶点数据的数据字节偏移为0，如果不为VK_NULL_HANDLE的元素则指明其对应transform feedback buffer将从从字节0开始捕获到该transform feedback buffer中*/,
+			&counterBufferOffset/*pCounterBufferOffsets,为NULL或者一组VkDeviceSize数组指针指明pCounterBuffers对应counter buffer的起始字节偏移，counter buffer中从该字节偏移开始的内存必须大于4个字节，从该字节开始的4个字节表示之前捕获到该transform feedback buffer的字节数，如果该值为NULL，则相当于每个counter buffer的offset都为0.*/);
+		/*
+		vkCmdBeginTransformFeedbackEXT有效用法:
+		1.VkPhysicalDeviceTransformFeedbackFeaturesEXT::transformFeedback 必须开启
+		2.Transform feedback不能激活
+		3.firstCounterBuffer必须小于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackBuffers
+		4.firstCounterBuffer + 	counterBufferCount必须小于等于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackBuffers
+		5.如果counterBufferCount不为0，且pCounterBuffers不为NULL，则pCounterBuffers必须是一个有效的含counterBufferCount个为VK_NULL_HANDLE或者有效句柄的VkBuffer的数组指针
+		6.对于pCounterBuffers中每个buffer，如果不为VK_NULL_HANDLE，则必须引用到一个足够容纳从pCounterBufferOffsets对应字节偏移开始4个字节的VkBuffer
+		7.如果pCounterBuffer为NULL，则pCounterBufferOffsets必须为NULL
+		8.pCounterBuffers中每个不为VK_NULL_HANDLE的buffer必须以VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT创建
+		9.firstCounterBuffer + counterBufferCount必须小于等于当前vkCmdBindTransformFeedbackBuffersEXT绑定的transform feedback buffers的数量
+		10.如果shaderObject 特性没有开启，一个有效的graphics pipeline必须绑定到VK_PIPELINE_BIND_POINT_GRAPHICS
+		11.绑定的graphics pipeline的最后一个pre-rasterization shader stage必须声明为Xfb execution mode
+		12.Transform feedback不能在开启multiview的render pass instance中激活
+		*/
+	
+	
+		//关闭某个激活的transform feedback buffer的transform feedback 
+		vkCmdEndTransformFeedbackEXT(commandBuffer, 0/*firstCounterBuffer, 是对应到pCounterBuffers[0]以及pCounterBufferOffsets[0]的第一个transform feedback buffer的索引*/, 1/*counterBufferCount，为pCounterBuffers 以及 pCounterBufferOffsets 中的元素个数.*/,
+			&counterBuffer/*pCounterBuffers，为NULL或者一组VkBuffer数组指针，counter buffer中将记录当前transform feedback buffer中的字节位置，该位置用于下一个顶点的捕获，这个值可以被下一个vkCmdBeginTransformFeedbackEXT使用用于下一个顶点的捕获，或者被vkCmdDrawIndirectByteCountEXT使用来确定绘制的顶点数量*/,
+			&counterBufferOffset/*pCounterBufferOffsets,为NULL或者一组VkDeviceSize数组指针指明pCounterBuffers对应counter buffer的起始字节偏移，counter buffer中从该字节偏移开始的内存必须大于4个字节，从该字节开始的4个字节表示之前捕获到该transform feedback buffer的字节数，如果该值为NULL，则相当于每个counter buffer的offset都为0.*/);
+		/*
+		vkCmdEndTransformFeedbackEXT
+		1.VkPhysicalDeviceTransformFeedbackFeaturesEXT::transformFeedback 必须开启
+		2.Transform feedback必须激活
+		3.firstCounterBuffer必须小于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackBuffers
+		4.firstCounterBuffer + 	counterBufferCount必须小于等于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackBuffers
+		5.如果counterBufferCount不为0，且pCounterBuffers不为NULL，则pCounterBuffers必须是一个有效的含counterBufferCount个为VK_NULL_HANDLE或者有效句柄的VkBuffer的数组指针
+		6.对于pCounterBuffers中每个buffer，如果不为VK_NULL_HANDLE，则必须引用到一个足够容纳从pCounterBufferOffsets对应字节偏移开始4个字节的VkBuffer
+		7.如果pCounterBuffer为NULL，则pCounterBufferOffsets必须为NULL
+		8.pCounterBuffers中每个不为VK_NULL_HANDLE的buffer必须以VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT创建
+		*/
+	
+	
+	}
+
+
+	//Viewport Swizzle  参见p2636
+	{
+		/*
+		每个发送的给定viewport的图元含有一个swizzle（坐标映射关系，在发送到viewport的图元的顶点会重新映射x,y,z,w分量）和一个可选的应用到裁剪坐标的negation
+		*/
+
+		//swizzle取决于viewport的索引，由VkPipelineViewportSwizzleStateCreateInfoNV控制
+		VkPipelineViewportSwizzleStateCreateInfoNV pipelineViewportSwizzleStateCreateInfoNV{};
+		pipelineViewportSwizzleStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SWIZZLE_STATE_CREATE_INFO_NV;
+		pipelineViewportSwizzleStateCreateInfoNV.pNext = nullptr;
+		pipelineViewportSwizzleStateCreateInfoNV.flags = 0;//保留未来使用
+		pipelineViewportSwizzleStateCreateInfoNV.viewportCount = 1;//是pipeline使用的viewport swizzles 的数量.必须大于等于VkPipelineViewportStateCreateInfo中设置的viewportCount
+		VkViewportSwizzleNV viewportSwizzleNV{};
+		{
+			viewportSwizzleNV.w = VK_VIEWPORT_COORDINATE_SWIZZLE_POSITIVE_W_NV;//指明应用到w分量的swizzle操作
+			viewportSwizzleNV.x = VK_VIEWPORT_COORDINATE_SWIZZLE_POSITIVE_X_NV;//指明应用到x分量的swizzle操作
+			viewportSwizzleNV.y = VK_VIEWPORT_COORDINATE_SWIZZLE_POSITIVE_Y_NV;//指明应用到y分量的swizzle操作
+			viewportSwizzleNV.z = VK_VIEWPORT_COORDINATE_SWIZZLE_POSITIVE_Z_NV;//指明应用到z分量的swizzle操作
+			/*
+			VkViewportCoordinateSwizzleNV：
+			VK_VIEWPORT_COORDINATE_SWIZZLE_POSITIVE_X_NV = 将该分量映射到正x
+ 			VK_VIEWPORT_COORDINATE_SWIZZLE_NEGATIVE_X_NV = 将该分量映射到负x
+ 			VK_VIEWPORT_COORDINATE_SWIZZLE_POSITIVE_Y_NV = 将该分量映射到正y
+ 			VK_VIEWPORT_COORDINATE_SWIZZLE_NEGATIVE_Y_NV = 将该分量映射到负y
+ 			VK_VIEWPORT_COORDINATE_SWIZZLE_POSITIVE_Z_NV = 将该分量映射到正z
+ 			VK_VIEWPORT_COORDINATE_SWIZZLE_NEGATIVE_Z_NV = 将该分量映射到负z
+ 			VK_VIEWPORT_COORDINATE_SWIZZLE_POSITIVE_W_NV = 将该分量映射到正w
+ 			VK_VIEWPORT_COORDINATE_SWIZZLE_NEGATIVE_W_NV = 将该分量映射到负w
+			
+			*/
+		}
+		pipelineViewportSwizzleStateCreateInfoNV.pViewportSwizzles = &viewportSwizzleNV;//一组VkViewportSwizzleNV数组指针，指明viewport swizzle
+
+
+		//动态设置viewport swizzle state    当后续绘制使用shader object或者一个开启了VK_DYNAMIC_STATE_VIEWPORT_SWIZZLE_NV的graphics pipeline的时候，改名令用来设置viewport swizzle，否则将使用VkPipelineViewportSwizzleStateCreateInfoNV中的viewportCount以及pViewportSwizzles
+		vkCmdSetViewportSwizzleNV(commandBuffer, 0/*firstViewport,为该命令更新参数的第一个viewport的索引*/, 1/* viewportCount，为该命令更新参数的viewport的数量.*/, &viewportSwizzleNV/* pViewportSwizzles ,一组VkViewportSwizzleNV数组指针，指明viewport swizzle*/);//extendedDynamicState3ViewportSwizzle 或者shaderObject 特性至少有一个要开启
+	}
+
+
+	//Flat Shading  参见p2640
+	{
+		/*
+		Flat Shading会将一个图元的所有顶点的输出顶点属性全部设置成相同的值，该值来源于provoking vertex的输出属性值，Flat Shading会应用到和 fragment input attributes中以Flat声明的变量相匹配的输出顶点属性上
+
+		provoking vertex顶点的选取由具体情况决定:
+		1. 如果mesh, geometry 或者 tessellation shading都不开启，则由VkPipelineInputAssemblyStateCreateInfo:topology定义的图元拓扑决定
+		2. 如果使用MeshNV Execution Model，则由 OutputPoints, OutputLinesNV, 或者 OutputTrianglesNV execution mode指定的拓扑类型决定
+		3. 如果使用MeshEXT Execution Model，则由 OutputPoints, OutputLinesEXT, 或者 OutputTrianglesEXT execution mode指定的拓扑类型决定
+		4. 如果激活了geometry shading，则由 OutputPoints,  OutputLineStrip, 或者 OutputTriangleStrip execution mode指定的拓扑类型决定
+		5. 如果激活tessellation shading 但不激活geometry shading，则provoking vertex顶点可能为图元中任何一个顶点
+		*/
+
+
+		//可以包含在VkPipelineRasterizationStateCreateInfo::pNext中的VkPipelineRasterizationProvokingVertexStateCreateInfoEXT用来指定 provoking vertex mode，如果不含则默认为VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT，如果 provokingVertexModePerPipeline限制为VK_FALSE，则所有pipeline的provoking vertex mode都相同
+		VkPipelineRasterizationProvokingVertexStateCreateInfoEXT pipelineRasterizationProvokingVertexStateCreateInfoEXT{};
+		pipelineRasterizationProvokingVertexStateCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_PROVOKING_VERTEX_STATE_CREATE_INFO_EXT;
+		pipelineRasterizationProvokingVertexStateCreateInfoEXT.pNext = nullptr;
+		pipelineRasterizationProvokingVertexStateCreateInfoEXT.provokingVertexMode = VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT;/*一个 VkProvokingVertexModeEXT 值指定provoking vertex mode，如果为VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT,则provokingVertexLast 特性必须开启
+        VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT:  指定provoking vertex 为图元的顶点列表中第一个non-adjacency vertex
+        VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT:  指定provoking vertex 为图元的顶点列表中最后一个non-adjacency vertex
+		*/
+
+
+		//动态设置provoking vertex mode    该命令只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_PROVOKING_VERTEX_MODE_EXT创建才能使用，否则会只用VkPipelineRasterizationProvokingVertexStateCreateInfoEXT::provokingVertexMode中设置的
+		vkCmdSetProvokingVertexModeEXT(commandBuffer, VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT/*provokingVertexMode, 一个VkProvokingVertexModeEXT 值指定provoking vertex mode.*/);
+		/*
+		vkCmdSetProvokingVertexModeEXT有效用法:
+		1.extendedDynamicState3ProvokingVertexMode 或者shaderObject 特性至少有一个必须开启
+		2.如果provokingVertexMode为VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT，则provokingVertexLast 特性必须开启
+		*/
+	}
+
+	//Primitive Clipping  参见p2643
+	{
+
+	}
 }
 
 

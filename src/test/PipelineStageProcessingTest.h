@@ -14,13 +14,17 @@ public:
 
 private:
 	//chapter 22
-	void VertexProcessingFixedFunctionTest();
+	void FixedFunctionVertexProcessingTest();
 	//chapter 23
 	void TessellationTest();
 	//chater 24
 	void GeometryShadingTest();
 	//chapter 25
 	void MeshShaingTest();
+	//chapter 26
+	void ClusterCullingShadingTest();
+	//chapter 27
+	void FixedFunctionVertexPostProcessingTest();
 private:
 
 

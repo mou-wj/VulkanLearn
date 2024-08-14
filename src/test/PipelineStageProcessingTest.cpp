@@ -681,7 +681,63 @@ void PipelineStageProcessingTest::FixedFunctionVertexPostProcessingTest()
 
 	//Primitive Clipping  参见p2643
 	{
+		/*
+		在剔除体外的图元会被剔除，图元在剔除后只保留在剔除体内的部分，剔除体空间定义为-Wc <= Xc <= Wc,-Wc <= Yc <= Wc,-Zm <= Zc <= Wc,如果 VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne为VK_TRUE，则 Zm = -Wc,否则Zm = 0
 
+		剔除体也叫视体，视体的范围可以进一步被 VkPhysicalDeviceLimits::maxClipDistances进行限制，详细信息参见p2644
+		
+		*/
+
+
+		//如果graphics pipeline的state中含有 VkPipelineRasterizationDepthClipStateCreateInfoEXT，但其depthClipEnable为VK_FALSE,则depth clipping是禁用的，如果graphics pipeline中不含该结构体，则当 VkPipelineRasterizationStateCreateInfo::depthClampEnable为VK_TRUE时，depth clipping是关闭的
+	
+		//动态设置depth clamping     该命令只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DEPTH_CLAMP_ENABLE_EXT创建才能使用，否则会只用VkPipelineRasterizationStateCreateInfo::depthClampEnable中设置的
+		vkCmdSetDepthClampEnableEXT(commandBuffer, VK_TRUE/*depthClampEnable,指定是否开启depth clamping*/);
+		/*
+		vkCmdSetDepthClampEnableEXT有效用法:
+		1.extendedDynamicState3DepthClampEnable 或者shaderObject 特性至少有一个必须开启
+		2.如果depthClamp 特性未开启，则 depthClampEnable 必须为VK_TRUE
+		*/
+
+
+		//动态设置depth clipping    该命令只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DEPTH_CLIP_ENABLE_EXT创建才能使用，否则会只用VkPipelineRasterizationDepthClipStateCreateInfoEXT::depthClipEnable中设置的，或者是使用VkPipelineRasterizationStateCreateInfo::depthClampEnable的相反值如果VkPipelineRasterizationDepthClipStateCreateInfoEXT该结构体没有设置
+		vkCmdSetDepthClipEnableEXT(commandBuffer, VK_TRUE/*depthClipEnable,指定是否开启depth clipping*/);
+		/*
+		vkCmdSetDepthClipEnableEXT有效用法:
+		1.extendedDynamicState3DepthClipEnable 或者shaderObject 特性至少有一个必须开启
+		2.depthClipEnable 特性必须开启
+		*/
+
+
+		/*
+		当depth cliping开始，depth值会满足Zm ≤ Zc ≤ Wc
+		
+		VkPhysicalDevicePointClippingProperties::pointClippingBehavior的值为VkPointClippingBehavior（等同于VkPointClippingBehaviorKHR）类型，指明可能的clip行为
+		VkPointClippingBehavior:
+        VK_POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES:  指明图元在顶点处于任何clip plane外或者上的时候会被丢弃，
+		VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY:  指明图元在顶点处于任何user clip plane外的时候会被丢弃
+
+
+		对于线，clip会剔除视体外的点，计算一个新的点
+		对于多边形，会在视体边界上计算新边，剔除视体外的部分，如果多边形和视体的边重合，则会剔除后保留的部分会包含该边上的一个点
+		*/
+
+
+		VkPipelineViewportDepthClipControlCreateInfoEXT pipelineViewportDepthClipControlCreateInfoEXT{};
+		pipelineViewportDepthClipControlCreateInfoEXT.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+		pipelineViewportDepthClipControlCreateInfoEXT.pNext = nullptr;
+		pipelineViewportDepthClipControlCreateInfoEXT.negativeOneToOne = VK_TRUE;// 设置视体中的Zm 为 -Wc    ,如果depthClipControl 没有开启，则该值必须为VK_FALSE
+	
+	
+		//动态设置视体中的Zm 为 -Wc    该命令只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DEPTH_CLIP_NEGATIVE_ONE_TO_ONE_EXT创建才能使用，否则会只用VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne中设置的
+		vkCmdSetDepthClipNegativeOneToOneEXT(commandBuffer, VK_TRUE/*negativeOneToOne,指定视体中的Zm 为 -Wc*/);
+		/*
+		vkCmdSetDepthClipNegativeOneToOneEXT有效用法:
+		1.extendedDynamicState3DepthClipNegativeOneToOne 或者shaderObject 特性至少有一个必须开启
+		2.depthClipControl 特性必须开启
+		
+		*/
+	
 	}
 }
 

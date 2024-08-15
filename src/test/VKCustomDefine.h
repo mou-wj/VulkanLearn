@@ -217,6 +217,41 @@ typedef struct VkPipelineVertexInputDivisorStateCreateInfoKHR {
 	const VkVertexInputBindingDivisorDescriptionKHR* pVertexBindingDivisors;
 } VkPipelineVertexInputDivisorStateCreateInfoKHR;
 
+// Provided by VK_EXT_depth_bias_control
+typedef enum VkDepthBiasRepresentationEXT {
+	VK_DEPTH_BIAS_REPRESENTATION_LEAST_REPRESENTABLE_VALUE_FORMAT_EXT = 0,
+	VK_DEPTH_BIAS_REPRESENTATION_LEAST_REPRESENTABLE_VALUE_FORCE_UNORM_EXT = 1,
+	VK_DEPTH_BIAS_REPRESENTATION_FLOAT_EXT = 2,
+} VkDepthBiasRepresentationEXT;
 
+// Provided by VK_EXT_depth_bias_control
+typedef struct VkDepthBiasRepresentationInfoEXT {
+	VkStructureType                 sType;
+	const void* pNext;
+	VkDepthBiasRepresentationEXT    depthBiasRepresentation;
+	VkBool32                        depthBiasExact;
+} VkDepthBiasRepresentationInfoEXT;
+
+// Provided by VK_KHR_line_rasterization
+typedef enum VkLineRasterizationModeKHR {
+	VK_LINE_RASTERIZATION_MODE_DEFAULT_KHR = 0,
+	VK_LINE_RASTERIZATION_MODE_RECTANGULAR_KHR = 1,
+	VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR = 2,
+	VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR = 3,
+	VK_LINE_RASTERIZATION_MODE_DEFAULT_EXT = VK_LINE_RASTERIZATION_MODE_DEFAULT_KHR,
+	VK_LINE_RASTERIZATION_MODE_RECTANGULAR_EXT = VK_LINE_RASTERIZATION_MODE_RECTANGULAR_KHR,
+	VK_LINE_RASTERIZATION_MODE_BRESENHAM_EXT = VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR,
+	VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_EXT = VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR,
+} VkLineRasterizationModeKHR;
+
+// Provided by VK_KHR_line_rasterization
+typedef struct VkPipelineRasterizationLineStateCreateInfoKHR {
+	VkStructureType               sType;
+	const void* pNext;
+	VkLineRasterizationModeKHR    lineRasterizationMode;
+	VkBool32                      stippledLineEnable;
+	uint32_t                      lineStippleFactor;
+	uint16_t                      lineStipplePattern;
+} VkPipelineRasterizationLineStateCreateInfoKHR;
 
 NS_TEST_END

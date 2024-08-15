@@ -926,5 +926,77 @@ void PipelineStageProcessingTest::FixedFunctionVertexPostProcessingTest()
 	}
 }
 
+void PipelineStageProcessingTest::RasterizationTest()
+{
+	/*
+	Rasterization将图元转换为二维图像，图像中每个离散位置包含相关的数据如深度值，颜色等属性，Rasterization首先会计算图元在interger 坐标系中包含的面积，interger 坐标可以划分为方格网，每个方格称为fragment，有其framebuffer 坐标（x，y，z）以及相关的深度或者颜色值等属性
+	
+	Rasterization也会引用fragment的 sample locations，这些locations 一般会偏移fragment的左上角取值
+	*/
+
+	// VkPipelineRasterizationStateCreateInfo以及VkPipelineMultisampleStateCreateInfo. 中的参数可以控制Rasterization
+	
+	struct PipelineRasterizationStateCreateInfoEXT
+	{
+		VkDepthBiasRepresentationInfoEXT depthBiasRepresentationInfoEXT{};
+		VkPipelineRasterizationConservativeStateCreateInfoEXT pipelineRasterizationConservativeStateCreateInfoEXT{};
+		VkPipelineRasterizationDepthClipStateCreateInfoEXT pipelineRasterizationDepthClipStateCreateInfoEXT{};
+		VkPipelineRasterizationLineStateCreateInfoKHR pipelineRasterizationLineStateCreateInfoKHR{};
+		VkPipelineRasterizationProvokingVertexStateCreateInfoEXT pipelineRasterizationProvokingVertexStateCreateInfoEXT{};
+		VkPipelineRasterizationStateRasterizationOrderAMD pipelineRasterizationStateRasterizationOrderAMD{};
+		VkPipelineRasterizationStateStreamCreateInfoEXT pipelineRasterizationStateStreamCreateInfoEXT{};
+		PipelineRasterizationStateCreateInfoEXT() {
+			Init();
+		}
+		void Init() {
+			depthBiasRepresentationInfoEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//未定义，所以这里定义为非法值
+			depthBiasRepresentationInfoEXT.pNext = nullptr;
+			pipelineRasterizationConservativeStateCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_CONSERVATIVE_STATE_CREATE_INFO_EXT;
+			pipelineRasterizationConservativeStateCreateInfoEXT.pNext = nullptr;
+			pipelineRasterizationDepthClipStateCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_DEPTH_CLIP_STATE_CREATE_INFO_EXT;
+			pipelineRasterizationDepthClipStateCreateInfoEXT.pNext = nullptr;
+			pipelineRasterizationLineStateCreateInfoKHR.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_LINE_STATE_CREATE_INFO_EXT;
+			pipelineRasterizationLineStateCreateInfoKHR.pNext = nullptr;
+			pipelineRasterizationProvokingVertexStateCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_PROVOKING_VERTEX_STATE_CREATE_INFO_EXT;
+			pipelineRasterizationProvokingVertexStateCreateInfoEXT.pNext = nullptr;
+			pipelineRasterizationStateRasterizationOrderAMD.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD;
+			pipelineRasterizationStateRasterizationOrderAMD.pNext = nullptr;
+			pipelineRasterizationStateStreamCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT;
+			pipelineRasterizationStateStreamCreateInfoEXT.pNext = nullptr;
+		}
+	};
+
+	//VkPipelineMultisampleStateCreateInfo
+	VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo{};
+	pipelineRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	PipelineRasterizationStateCreateInfoEXT pipelineRasterizationStateCreateInfoEXT{};
+	pipelineRasterizationStateCreateInfo.pNext = &pipelineRasterizationStateCreateInfoEXT.depthBiasRepresentationInfoEXT;
+	pipelineRasterizationStateCreateInfo.flags = 0;//保留未来使用
+	pipelineRasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;//是用于图元culling的三角形面的方向，见 VkCullModeFlagBits
+	pipelineRasterizationStateCreateInfo.depthBiasClamp = VK_FALSE;//是fragment的深度值偏移量的最大或者最小值
+	pipelineRasterizationStateCreateInfo.depthBiasConstantFactor = 0;//是一个标量因子用于控制添加到每个fragment深度值的常量值
+	pipelineRasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;//控制是否要偏移fragment的深度值
+	pipelineRasterizationStateCreateInfo.depthBiasSlopeFactor = 0;//是一个标量因子用于fragment的深度值偏移计算的slope参数
+	pipelineRasterizationStateCreateInfo.depthClampEnable = VK_FALSE;//控制是否进行 fragment深度值的clamp操作，如果pipeline不以含有 VkPipelineRasterizationDepthClipStateCreateInfoEXT创建，则启用depth clamp将关闭将深度值clip到视体z平面，否则depth cliping将由 VkPipelineRasterizationDepthClipStateCreateInfoEXT控制
+	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;//一个 VkFrontFace 值指明用于culling的三角形的前面的面的方向
+	pipelineRasterizationStateCreateInfo.lineWidth = 1;//为Rasterization后的线的宽度，像素级
+	pipelineRasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;//为三角形的渲染模式，为一个VkPolygonMode.值
+	pipelineRasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;//控制是否在rasterization stage前丢弃图元
+	/*
+	VkPipelineRasterizationStateCreateInfo有效用法:
+	1.如果depthClamp 特性未开启，则depthClampEnable 必须为VK_FALSE
+	2.如果fillModeNonSolid 特性未开启，则polygonMode 必须为VK_POLYGON_MODE_FILL或者 VK_POLYGON_MODE_FILL_RECTANGLE_NV
+	3.如果VK_NV_fill_rectangle 拓展未开启，则polygonMode 必须为 VK_POLYGON_MODE_FILL_RECTANGLE_NV
+	4.如果VK_KHR_portability_subset 拓展开启，且VkPhysicalDevicePortabilitySubsetFeaturesKHR::pointPolygons 为VK_FALSE，且rasterizerDiscardEnable为VK_FALSE，则polygonMode 不能为 VK_POLYGON_MODE_POINT
+	*/
+
+
+	//VkPipelineRasterizationStateCreateInfo.pNext中包含VkPipelineRasterizationDepthClipStateCreateInfoEXT用于控制是否开启depth clipping
+	VkPipelineRasterizationDepthClipStateCreateInfoEXT& pipelineRasterizationDepthClipStateCreateInfoEXT = pipelineRasterizationStateCreateInfoEXT.pipelineRasterizationDepthClipStateCreateInfoEXT;
+	pipelineRasterizationDepthClipStateCreateInfoEXT.flags = 0;//保留未来使用
+	pipelineRasterizationDepthClipStateCreateInfoEXT.depthClipEnable = VK_FALSE;//控制是否开启 depth clipping
+
+}
+
 
 NS_TEST_END

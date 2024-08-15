@@ -25,6 +25,8 @@ private:
 	void ClusterCullingShadingTest();
 	//chapter 27
 	void FixedFunctionVertexPostProcessingTest();
+	//chapter 28
+	void RasterizationTest();
 private:
 
 

@@ -739,6 +739,191 @@ void PipelineStageProcessingTest::FixedFunctionVertexPostProcessingTest()
 		*/
 	
 	}
+
+	//Clipping Shader Outputs   参见p2650
+
+
+	//Controlling Viewport W Scaling  参见p2651
+	{
+		/*
+		如果开启了viewport的 W scaling ，则裁剪坐标的 W 分量将会被更改，根据公式 Wc' = Xcoeff * Xc + Ycoeff * Yc + Wc
+		
+		*/
+
+
+		//可以在VkPipelineViewportStateCreateInfo的pNext中加入VkPipelineViewportWScalingStateCreateInfoNV来指定W scaling参数
+		VkPipelineViewportWScalingStateCreateInfoNV pipelineViewportWScalingStateCreateInfoNV{};
+		pipelineViewportWScalingStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV;
+		pipelineViewportWScalingStateCreateInfoNV.pNext = nullptr;
+		pipelineViewportWScalingStateCreateInfoNV.viewportCount = 1;//使用 W scaling的viewport的数量，必须匹配pipeline的viewport的数量
+		pipelineViewportWScalingStateCreateInfoNV.viewportWScalingEnable = VK_TRUE;//控制是否开启viewport W scaling
+		VkViewportWScalingNV viewportWScalingNV{};
+		{
+			viewportWScalingNV.xcoeff = 0;//是viewport的对应X的 W scaling 因子
+			viewportWScalingNV.ycoeff = 0;//是viewport的对应Y的 W scaling 因子
+		}
+		pipelineViewportWScalingStateCreateInfoNV.pViewportWScalings = &viewportWScalingNV;//一组 VkViewportWScalingNV数组指针，指明对应viewport的W scaling的参数，如果W scaling是动态状态，则值会被忽略
+
+
+		//动态设置是否启用W scaling     该命令只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_ENABLE_NV创建才能使用，否则会只用VkPipelineViewportWScalingStateCreateInfoNV::viewportWScalingEnable中设置的
+		vkCmdSetViewportWScalingEnableNV(commandBuffer, VK_TRUE/*viewportWScalingEnable,指明是否启用 W scaling*/);
+		/*
+		vkCmdSetViewportWScalingEnableNV有效用法:
+		1. extendedDynamicState3ViewportWScalingEnable 或者shaderObject 特性至少有一个必须开启
+		*/
+
+		//动态设置W scaling参数     该命令更新索引为[firstViewport,firstViewport + viewportCount)的viewport的参数， 只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV创建才能使用，否则会只用VkPipelineViewportWScalingStateCreateInfoNV::pViewportWScalings中设置的
+		vkCmdSetViewportWScalingNV(commandBuffer, 0/*firstViewport,为该命令更新参数的第一个viewport的索引.*/,1/*viewportCount,为该命令更新参数的viewport的数量*/,&viewportWScalingNV/*pViewportWScalings,一组 VkViewportWScalingNV数组指针，指明对应viewport的W scaling的参数*/);
+		/*
+		vkCmdSetViewportWScalingEnableNV有效用法:
+		1. firstViewport + viewportCount 必须在[1,VkPhysicalDeviceLimits::maxViewports]中
+		*/
+	}
+
+
+	// Coordinate Transformations  参见p2655    裁剪坐标除以w得到归一化的设备坐标，设备坐标的分量范围为[-1,1]
+
+	//Render Pass Transform    render pass instance可以开启render pass transform，如果开启就表示其裁剪坐标会沿着XY平面基于原点旋转一定度数，取决于 VK_SURFACE_TRANSFORM_***,其他信息见2655  
+
+	//Controlling the Viewport   参见p2656
+	{
+		/*
+		viewport transformation （视图变换）将取决于viewport的在pixel上的长宽（pX,pY）以及pixel上的原点位置（oX,oY），以及缩放深度值因子pZ以及深度值偏移oZ，如framebuffer坐标的变换（由设备坐标转换而来）
+		Xf = (pX / 2) × Xd + oX
+		Yf = (pY / 2) × Yd + oY
+		Zf = pZ × Zd + oZ
+
+		oX,oY,oZ,pX,pY,pZ由VkViewport定义的参数决定:
+
+		oX = x + width / 2
+		oY = y + height / 2
+		oZ = minDepth (或者 (maxDepth + minDepth) / 2 如果 VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne 为 VK_TRUE)
+		pX = width
+		pY = height
+		pZ = maxDepth - minDepth (或者 (maxDepth - minDepth) / 2 如果 VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne 为 VK_TRUE)
+
+
+		即设备坐标根据VkViewport的参数转换到framebuffer的坐标，Xd的范围[-1,1],Yd的范围[-1,1]，如果VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne开启，则Zd的范围[-1,1],否则为[0,1]
+		Xf = width / 2 × (Xd + 1 )  + x 
+		Yf = height / 2 × (Yd + 1 )  + y
+		Zf = (maxDepth - minDepth) × Zd + minDepth   （或者 (maxDepth - minDepth) / 2 × Zd  +  (maxDepth + minDepth) / 2  如果 VkPipelineViewportDepthClipControlCreateInfoEXT::negativeOneToOne 为 VK_TRUE ）
+
+		*/
+		struct PipelineViewportStateCreateInfoEXT
+		{
+			VkPipelineViewportCoarseSampleOrderStateCreateInfoNV pipelineViewportCoarseSampleOrderStateCreateInfoNV{};
+			VkPipelineViewportDepthClipControlCreateInfoEXT pipelineViewportDepthClipControlCreateInfoEXT{};
+			VkPipelineViewportExclusiveScissorStateCreateInfoNV pipelineViewportExclusiveScissorStateCreateInfoNV{};
+			VkPipelineViewportShadingRateImageStateCreateInfoNV pipelineViewportShadingRateImageStateCreateInfoNV{};
+			VkPipelineViewportSwizzleStateCreateInfoNV pipelineViewportSwizzleStateCreateInfoNV{  };
+			VkPipelineViewportWScalingStateCreateInfoNV pipelineViewportWScalingStateCreateInfoNV{};
+			PipelineViewportStateCreateInfoEXT() {
+				Init();
+			}
+			void Init() {
+				pipelineViewportCoarseSampleOrderStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV;
+				pipelineViewportCoarseSampleOrderStateCreateInfoNV.pNext = nullptr;
+				pipelineViewportDepthClipControlCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_DEPTH_CLIP_CONTROL_CREATE_INFO_EXT;
+				pipelineViewportDepthClipControlCreateInfoEXT.pNext = nullptr;
+				pipelineViewportExclusiveScissorStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV;
+				pipelineViewportExclusiveScissorStateCreateInfoNV.pNext = nullptr;
+				pipelineViewportShadingRateImageStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV;
+				pipelineViewportShadingRateImageStateCreateInfoNV.pNext = nullptr;
+				pipelineViewportSwizzleStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SWIZZLE_STATE_CREATE_INFO_NV;
+				pipelineViewportSwizzleStateCreateInfoNV.pNext = nullptr;
+				pipelineViewportWScalingStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV;
+				pipelineViewportWScalingStateCreateInfoNV.pNext = nullptr;
+
+			}
+		};
+
+
+		VkPipelineViewportStateCreateInfo  pipelineViewportStateCreateInfo{};
+		pipelineViewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		PipelineViewportStateCreateInfoEXT pipelineViewportStateCreateInfoEXT{};
+		pipelineViewportStateCreateInfo.pNext = &pipelineViewportStateCreateInfoEXT.pipelineViewportCoarseSampleOrderStateCreateInfoNV;
+		pipelineViewportStateCreateInfo.flags = 0;//保留未来使用
+		pipelineViewportStateCreateInfo.viewportCount = 1;//pipeline使用的viewport数量
+		VkViewport viewport{};
+		{
+			viewport.x = 0;//为viewport的左上角的x坐标
+			viewport.y = 0;//为viewport的左上角的y坐标
+			viewport.width = 1;//为viewport的宽度
+			viewport.height = 1;//为viewport的长度
+			viewport.minDepth = 0;//为viewport深度值范围的最小值
+			viewport.maxDepth = 1;//为viewport深度值范围的最大值
+			/*
+			VkViewport有效用法:
+			1.width必须大于0小于等于VkPhysicalDeviceLimits::maxViewportDimensions[0]
+			2.如果VK_KHR_maintenance1 拓展没有开启，VK_AMD_negative_viewport_height拓展没有开启，且VkPhysicalDeviceProperties::apiVersion小于Vulkan 1.1，则height必须大于0
+			3.height的绝对值必须小于等于VkPhysicalDeviceLimits::maxViewportDimensions[1]
+			4.x必须大于等于VkPhysicalDeviceLimits::viewportBoundsRange[0]
+			5.(x + width)必须小于等于VkPhysicalDeviceLimits::viewportBoundsRange[1]
+			6.y必须大于等于VkPhysicalDeviceLimits::viewportBoundsRange[0]小于等于VkPhysicalDeviceLimits::viewportBoundsRange[1]
+			7.(y + height)必须大于等于VkPhysicalDeviceLimits::viewportBoundsRange[0]小于等于VkPhysicalDeviceLimits::viewportBoundsRange[1]
+			8.如果VK_EXT_depth_range_unrestricted 拓展没有开启，则minDepth以及maxDepth 必须在[0,1]范围内，
+			*/
+		}
+		pipelineViewportStateCreateInfo.pViewports = &viewport;//一组VkViewport数组指针，指明 viewport transforms.如果viewport state是动态的，则该值忽略
+		pipelineViewportStateCreateInfo.scissorCount = 1;//pipeline使用的 scissors数量，必须匹配viewport的数量
+		VkRect2D scissor{};
+		{
+			scissor.extent = VkExtent2D{ .width = 1,.height = 1 };
+			scissor.offset = VkOffset2D{ .x = 0,.y = 0 };
+		}
+		pipelineViewportStateCreateInfo.pScissors = &scissor;//一组 VkRect2D数组指针，指明对应viewport的scissor的矩形边界，如果scissor state是动态的，则该值忽略
+		/*
+		VkPipelineViewportStateCreateInfo有效用法:
+		1.如果multiViewport 特性未开启，则viewportCount以及scissorCount 不能大于1
+		2.viewportCount以及scissorCount 必须小于等于VkPhysicalDeviceLimits::maxViewports
+		3.pScissors中任何元素的offset的x以及y必须大于等于0
+		4.pScissors中任何元素的 (offset.x + extent.width)以及(offset.y + extent.height)计算不能导致符号整数的溢出
+		5.如果scissorCount以及viewportCount 都不是动态的，则scissorCount以及viewportCount必须相同
+		6.如果graphics pipeline以VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT创建，则viewportCount必须为0，否则viewportCount必须大于0
+		7.如果graphics pipeline以VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT创建，则scissorCount必须为0，否则scissorCount必须大于0
+		8.如果pNext中包含一个viewportWScalingEnable为VK_TRUE的VkPipelineViewportWScalingStateCreateInfoNV，则VkPipelineViewportWScalingStateCreateInfoNV的viewportCount必须大于等于VkPipelineViewportStateCreateInfo::viewportCount
+		*/
+
+
+		//动态设置viewport   等价于vkCmdSetViewportWithCountEXT   只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT创建才能使用，否则会只用VkPipelineViewportStateCreateInfo::viewportCount 以及 pViewports中设置的
+		vkCmdSetViewportWithCount(commandBuffer, 1/*viewportCount, 指明viewport的数量.*/, &viewport/*pViewports,一组VkViewport数组指针，指定绘制使用的viewports.*/);
+		/*
+		vkCmdSetViewportWithCount有效用法:
+		1.extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+		2.viewportCount 必须在[1, VkPhysicalDeviceLimits::maxViewports]之间
+		3.如果multiViewport 特性未开启，则viewportCount必须为1
+		4.commandBuffer不能有VkCommandBufferInheritanceViewportScissorInfoNV::viewportScissor2D开启
+
+		*/
+
+		//动态设置scissors   等价于vkCmdSetScissorWithCountEXT   只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT创建才能使用，否则会只用VkPipelineViewportStateCreateInfo::scissorCount 以及 pScissors中设置的
+		vkCmdSetScissorWithCount(commandBuffer, 1/*scissorCount, 指明scissors的数量.*/, &scissor/*pScissors,一组VkRect2D数组指针，指定绘制使用的scissors.*/);
+		/*
+		vkCmdSetScissorWithCount有效用法:
+		1.extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+		2.scissorCount 必须在[1, VkPhysicalDeviceLimits::maxViewports]之间
+		3.如果multiViewport 特性未开启，则scissorCount必须为1
+		4.pScissors中任何元素的offset的x以及y必须大于等于0
+		5.pScissors中任何元素的 (offset.x + extent.width)以及(offset.y + extent.height)计算不能导致符号整数的溢出
+		6.commandBuffer不能有VkCommandBufferInheritanceViewportScissorInfoNV::viewportScissor2D开启
+
+		*/
+
+
+		//图元中的顶点可以由激活的最后一个pre-rasterization shader stage发送到由 ViewportIndex或者ViewportMaskNV选择的一个或多个viewport并进行viewport tranform
+
+		//动态viewport参数   更新索引为[firstViewport,firstViewport + viewportCount)的viewport参数     只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_VIEWPORT创建才能使用，否则会只用 VkPipelineViewportStateCreateInfo::pViewports中设置的
+		vkCmdSetViewport(commandBuffer, 0/*firstViewport,为该命令要更新参数的第一个viewport的索引.*/, 1/*viewportCount, 为该命令要更新参数的viewport的数量.*/, &viewport/*pViewports,一组VkViewport数组指针，指定绘制使用的viewports..*/);
+		/*
+		vkCmdSetViewport有效用法:
+		1.firstViewport + viewportCount必须在[1, VkPhysicalDeviceLimits::maxViewports]之间
+		2.如果multiViewport 特性未开启，则firstViewport必须为0，viewportCount必须为1
+		3.commandBuffer不能有VkCommandBufferInheritanceViewportScissorInfoNV::viewportScissor2D开启
+		
+		*/
+
+
+	}
 }
 
 

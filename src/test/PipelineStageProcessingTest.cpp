@@ -934,6 +934,9 @@ void PipelineStageProcessingTest::RasterizationTest()
 	Rasterization也会引用fragment的 sample locations，这些locations 一般会偏移fragment的左上角取值
 	*/
 
+	VkCommandBuffer commandBuffer{/*假设这是一个有效的VkCommandBuffer*/ };
+
+
 	// VkPipelineRasterizationStateCreateInfo以及VkPipelineMultisampleStateCreateInfo. 中的参数可以控制Rasterization
 	
 	struct PipelineRasterizationStateCreateInfoEXT
@@ -966,7 +969,7 @@ void PipelineStageProcessingTest::RasterizationTest()
 		}
 	};
 
-	//VkPipelineMultisampleStateCreateInfo
+	//VkPipelineRasterizationStateCreateInfo
 	VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo{};
 	pipelineRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	PipelineRasterizationStateCreateInfoEXT pipelineRasterizationStateCreateInfoEXT{};
@@ -996,6 +999,130 @@ void PipelineStageProcessingTest::RasterizationTest()
 	pipelineRasterizationDepthClipStateCreateInfoEXT.flags = 0;//保留未来使用
 	pipelineRasterizationDepthClipStateCreateInfoEXT.depthClipEnable = VK_FALSE;//控制是否开启 depth clipping
 
+
+
+
+	struct PipelineMultisampleStateCreateInfoEXT {
+		VkPipelineCoverageModulationStateCreateInfoNV pipelineCoverageModulationStateCreateInfoNV{};
+		VkPipelineCoverageReductionStateCreateInfoNV pipelineCoverageReductionStateCreateInfoNV{};
+		VkPipelineCoverageToColorStateCreateInfoNV pipelineCoverageToColorStateCreateInfoNV{};
+		VkPipelineSampleLocationsStateCreateInfoEXT pipelineSampleLocationsStateCreateInfoEXT{};
+		PipelineMultisampleStateCreateInfoEXT() {
+			Init();
+		}
+		void Init() {
+			pipelineCoverageModulationStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_MODULATION_STATE_CREATE_INFO_NV;
+			pipelineCoverageModulationStateCreateInfoNV.pNext = nullptr;
+			pipelineCoverageReductionStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_REDUCTION_STATE_CREATE_INFO_NV;
+			pipelineCoverageReductionStateCreateInfoNV.pNext = nullptr;
+			pipelineCoverageToColorStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_TO_COLOR_STATE_CREATE_INFO_NV;
+			pipelineCoverageToColorStateCreateInfoNV.pNext = nullptr;
+			pipelineSampleLocationsStateCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_SAMPLE_LOCATIONS_STATE_CREATE_INFO_EXT;
+			pipelineSampleLocationsStateCreateInfoEXT.pNext = nullptr;
+
+
+		}
+	};
+
+
+
+
+	//VkPipelineMultisampleStateCreateInfo
+	VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo{};
+	pipelineMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	pipelineMultisampleStateCreateInfo.pNext = nullptr;
+	pipelineMultisampleStateCreateInfo.flags = 0;//保留未来使用
+	pipelineMultisampleStateCreateInfo.alphaToCoverageEnable = VK_FALSE;//控制是否由基于fragment的第一个颜色输出的alpha分量生成一个暂时的coverage 值，参见Multisample Coverage p2779
+	pipelineMultisampleStateCreateInfo.alphaToOneEnable = VK_FALSE;//控制是否替换fragment的第一个颜色输出的alpha分量为1，参见Multisample Coverage p2779
+	pipelineMultisampleStateCreateInfo.minSampleShading = 0;//如果sampleShadingEnable为VK_TRUE，则该值指明Sample Shading最小的比例
+	pipelineMultisampleStateCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;// 是一个VkSampleCountFlagBits值指明rasterization中的采样点数量，如果pipeline以VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT但不以VK_DYNAMIC_STATE_SAMPLE_MASK_EXT动态设置开启创建，则该参数忽略，该参数同时用来定义pSampleMask中的元素个数
+	pipelineMultisampleStateCreateInfo.sampleShadingEnable = VK_FALSE;//用来指定是否开启Sample Shading.见p2718
+	VkSampleMask sampleMask{};//sampleMask中每个bit都会对应一个采样点
+	pipelineMultisampleStateCreateInfo.pSampleMask = &sampleMask;//是一个VkSampleMask数组指针，指明在 sample mask test中的sample mask，长度为 ⌈ rasterizationSamples / 32 ⌉，如果为NULL，则相当于所有sample mask对应比特位为1
+	/*
+	VkPipelineMultisampleStateCreateInfo有效用法:
+	1.如果sampleRateShading特性未开启，则sampleShadingEnable必须为VK_FALSE
+	2.如果alphaToOne 特性未开启，则alphaToOneEnable 必须为VK_FALSE
+	3.minSampleShading必须在[0,1]中
+	4.如果VK_NV_framebuffer_mixed_samples 拓展开启，且如果subpass有任何color attachments的color samples小于rasterizationSamples，则sampleShadingEnable必须为VK_FALSE
+	*/
+
+
+
+
+
+
+
+	//Discarding Primitives Before Rasterization  参见p2702
+	{
+		/*
+		如果VkPipelineRasterizationStateCreateInfo::rasterizerDiscardEnable为VK_TRUE，则图元会在 rasterization前 被最后一个激活的shader stage处理后被丢弃
+		
+		*/
+
+		//动态设置是否启用图元丢弃    等价于vkCmdSetRasterizerDiscardEnableEXT    只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE创建才能使用，否则会只用 VkPipelineRasterizationStateCreateInfo::rasterizerDiscardEnable中设置的
+		vkCmdSetRasterizerDiscardEnable(commandBuffer, VK_FALSE/* rasterizerDiscardEnable，控制是否在rasterization stage前丢弃图元.*/);
+		/*
+		vkCmdSetRasterizerDiscardEnable有效用法:
+		1.extendedDynamicState2特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+		*/
+
+	}
+
+
+	// Controlling the Vertex Stream Used for Rasterization 参见p2674
+	{
+		/*
+		默认情况下，最后的 pre-rasterization shader stage将把顶点数据定向到0号vertex stream
+
+		Geometry shaders可以发送顶点数据到多个vertex stream，vertex stream收到数据后会根据geometry shader指定的图元类型进行图元组装，通过OpEndPrimitive 以及OpEndStreamPrimitive可以用来结束图元以及vertex stream中的图元组装
+
+		实现可支持最大到VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackStreams个流，至少为1，从索引0开始，每个vertex stream是独立的，受限于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackStreamDataSize 以及VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackBufferDataSize
+
+		vertex stream组装图元完成后便会通过transform feedback stage根据最后 pre-rasterization shader stage 定义的以XfbBuffer, XfbStride, 以及 Offsets修饰的输出变量行为来捕获顶点数据，
+		
+		默认情况下，0号vertex stream组装的数据会进行Rasterization 操作，如果支持VkPhysicalDeviceTransformFeedbackPropertiesEXT::transformFeedbackRasterizationStreamSelect，则可以选择别的vertex stream进行Rasterization
+
+		默认情况下，如果Geometry shaders发送顶点到多个vertex stream话，只支持OutputPoints图元类型，如果支持VkPhysicalDeviceTransformFeedbackPropertiesEXT::transformFeedbackStreamsLinesTriangles，则也可以发送 OutputLineStrip 或者 OutputTriangleStrip类型的图元顶点
+		*/
+
+		//VkPipelineRasterizationStateCreateInfo.pNext中含VkPipelineRasterizationStateStreamCreateInfoEXT可以控制用于rasterization的vertex stream
+		VkPipelineRasterizationStateStreamCreateInfoEXT& pipelineRasterizationStateStreamCreateInfoEXT = pipelineRasterizationStateCreateInfoEXT.pipelineRasterizationStateStreamCreateInfoEXT;
+		pipelineRasterizationStateStreamCreateInfoEXT.flags = 0;//保留未来使用
+		pipelineRasterizationStateStreamCreateInfoEXT.rasterizationStream = 0;//为选取的用于rasterization的vertex stream的索引
+		/*
+		VkPhysicalDeviceTransformFeedbackFeaturesEXT有效用法:
+		1.VkPhysicalDeviceTransformFeedbackFeaturesEXT::geometryStreams 必须开启
+		2.rasterizationStream必须小于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackStreams
+		3.如果VkPhysicalDeviceTransformFeedbackPropertiesEXT::transformFeedbackRasterizationStreamSelect为VK_FALSE，rasterizationStream必须为0
+
+		*/
+
+		//动态设置选取用于rasterization的vertex stream的索引    只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_RASTERIZATION_STREAM_EXT创建才能使用，否则会只用 VkPipelineRasterizationStateStreamCreateInfoEXT::rasterizationStream中设置的
+		vkCmdSetRasterizationStreamEXT(commandBuffer, 0);
+		/*
+		vkCmdSetRasterizationStreamEXT有效用法:
+		vkCmdSetRasterizationStreamEXT有效用法:
+		1.extendedDynamicState3RasterizationStream 或者shaderObject 特性至少有一个要开启
+		2.transformFeedback 特性必须开启
+		3.rasterizationStream必须小于VkPhysicalDeviceTransformFeedbackPropertiesEXT::maxTransformFeedbackStreams
+		4.如果VkPhysicalDeviceTransformFeedbackPropertiesEXT::transformFeedbackRasterizationStreamSelect为VK_FALSE，rasterizationStream必须为0
+		*/
+
+	}
+
+	//Rasterization Order  参见p2677
+	{
+
+		//VkPipelineRasterizationStateCreateInfo.pNext中可以包含VkPipelineRasterizationStateRasterizationOrderAMD来指明Rasterization的顺序    ，如果 VK_AMD_rasterization_order拓展未开启或者Rasterization没有指定该结构体则默认使用 VK_RASTERIZATION_ORDER_STRICT_AMD
+		VkPipelineRasterizationStateRasterizationOrderAMD& pipelineRasterizationStateRasterizationOrderAMD = pipelineRasterizationStateCreateInfoEXT.pipelineRasterizationStateRasterizationOrderAMD;
+		pipelineRasterizationStateRasterizationOrderAMD.rasterizationOrder = VK_RASTERIZATION_ORDER_RELAXED_AMD;/*为一个 VkRasterizationOrderAMD值指明Rasterization使用的顺序
+		VkRasterizationOrderAMD:
+		VK_RASTERIZATION_ORDER_STRICT_AMD :  指明subpass中每个图元的Rasterization的顺序根据其原本图元顺序进行
+		VK_RASTERIZATION_ORDER_RELAXED_AMD :  指明subpass中每个图元的Rasterization的顺序不根据其原本图元顺序进行 
+		*/
+
+	}
 }
 
 

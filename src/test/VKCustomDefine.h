@@ -254,4 +254,21 @@ typedef struct VkPipelineRasterizationLineStateCreateInfoKHR {
 	uint16_t                      lineStipplePattern;
 } VkPipelineRasterizationLineStateCreateInfoKHR;
 
+
+
+// Provided by VK_EXT_depth_bias_control
+typedef struct VkDepthBiasInfoEXT {
+	VkStructureType    sType;
+	const void* pNext;
+	float              depthBiasConstantFactor;
+	float              depthBiasClamp;
+	float              depthBiasSlopeFactor;
+} VkDepthBiasInfoEXT;
+
+// Provided by VK_EXT_depth_bias_control
+void vkCmdSetDepthBias2EXT(
+	VkCommandBuffer commandBuffer,
+	const VkDepthBiasInfoEXT* pDepthBiasInfo) {
+
+}
 NS_TEST_END

@@ -1214,10 +1214,10 @@ void SyncronizationAndCacheControlTest::PipelineBarrierTest()
 		vkCmdPipelineBarrier2(cmdBuf, &dependencyInfo);
 		/*
 		  framebuffer-space管线状态包括：
-		  • VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-		  • VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
-		  • VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT
-		  • VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+		  >VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+		  >VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+		  >VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT
+		  >VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
 		 
 		有效用法：
 		1.如果该命令没有在render pass实例内调用，且该实例至少有一个subpass依赖，那么该命令的dependenceFlags就不能包括

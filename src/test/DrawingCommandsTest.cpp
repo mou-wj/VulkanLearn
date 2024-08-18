@@ -2179,7 +2179,7 @@ void DrawingCommandsTest::PrimitiveShadingTest()
 
         //记录非索引的从buffer中指定绘制次数的绘制  等效于vkCmdDrawIndirectCountKHR或者vkCmdDrawIndirectCountAMD   ，该命令类似于 vkCmdDrawIndirect,其中绘制次数会从countBuffer中获取，绘制参数以VkDrawIndirectCommand组织
         vkCmdDrawIndirectCount(commandBuffer, VkBuffer{/*假设只是一个有效的VkBuffer*/ }/*buffer ,包含绘制参数的buffer.*/, 0/*offset,为buffer中绘制参数开始的起始字节偏移量.*/,
-                VkBuffer{/*假设只是一个有效的VkBuffer*/ }/*countBuffer，是包含绘制计数的buffer.*/, 0/*• countBufferOffset，为countBuffer中绘制计数参数开始的起始字节偏移量.*/,
+                VkBuffer{/*假设只是一个有效的VkBuffer*/ }/*countBuffer，是包含绘制计数的buffer.*/, 0/*>countBufferOffset，为countBuffer中绘制计数参数开始的起始字节偏移量.*/,
                 1/*maxDrawCount，是要执行的最大的绘制的次数.实际上绘制的次数为maxDrawCount以及countBuffer中记录的绘制次数的最小值.*/, 3/*stride，是buffer中连续绘制设置组之间的字节步长.*/);
         /*
         
@@ -2989,7 +2989,7 @@ void DrawingCommandsTest::PrimitiveShadingTest()
 
         //记录索引的从buffer中指定绘制次数的绘制  等效于vkCmdDrawIndexedIndirectCountKHR或者vkCmdDrawIndexedIndirectCountAMD   ，该命令类似于  vkCmdDrawIndexedIndirect,其中绘制次数会从countBuffer中获取，绘制参数以VkDrawIndirectCommand组织
         vkCmdDrawIndexedIndirectCount(commandBuffer, VkBuffer{/*假设只是一个有效的VkBuffer*/ }/*buffer ,包含绘制参数的buffer.*/, 0/*offset,为buffer中绘制参数开始的起始字节偏移量.*/,
-            VkBuffer{/*假设只是一个有效的VkBuffer*/ }/*countBuffer，是包含绘制计数的buffer.*/, 0/*• countBufferOffset，为countBuffer中绘制计数参数开始的起始字节偏移量.*/,
+            VkBuffer{/*假设只是一个有效的VkBuffer*/ }/*countBuffer，是包含绘制计数的buffer.*/, 0/*>countBufferOffset，为countBuffer中绘制计数参数开始的起始字节偏移量.*/,
             1/*maxDrawCount，是要执行的最大的绘制的次数.实际上绘制的次数为maxDrawCount以及countBuffer中记录的绘制次数的最小值.*/, 3/*stride，是buffer中连续绘制设置组之间的字节步长.*/);
         /*
 
@@ -3397,7 +3397,7 @@ void DrawingCommandsTest::PrimitiveShadingTest()
         //const uint32_t * counterBufferPtr = (const uint8_t *)counterBuffer.address + counterBufferOffset;
         // vertexCount = floor(max(0, (*counterBufferPtr - counterOffset)) / vertexStride);
         vkCmdDrawIndirectByteCountEXT(commandBuffer, 1/*instanceCount,要绘制的instances的个数*/, 0/*firstInstance,要绘制的第一个instance的ID.*/, 
-                     VkBuffer{/*假设只是一个有效的VkBuffer*/ }/*countBuffer，是包含绘制顶点计数的buffer.*/, 0/*• countBufferOffset，为countBuffer中绘制计数参数开始的起始字节偏移量.*/, 
+                     VkBuffer{/*假设只是一个有效的VkBuffer*/ }/*countBuffer，是包含绘制顶点计数的buffer.*/, 0/*>countBufferOffset，为countBuffer中绘制计数参数开始的起始字节偏移量.*/, 
                      0/* counterOffset，为counterBuffer读取的字节计数减去counterBufferOffset */, 3/*vertexStride，为vertex data中元素之间的字节步长，可以用来从字节计数来计算顶点的个数，这个值就等于graphics pipeline state中进行transform feedback捕获使用的XfbStride.*/);
         /*
 

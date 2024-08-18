@@ -27,6 +27,8 @@ private:
 	void FixedFunctionVertexPostProcessingTest();
 	//chapter 28
 	void RasterizationTest();
+	//charpter 29
+	void FragmentOperationsTest();
 private:
 
 

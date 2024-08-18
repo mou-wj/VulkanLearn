@@ -1030,7 +1030,8 @@ void PipelineStageProcessingTest::RasterizationTest()
 	//VkPipelineMultisampleStateCreateInfo
 	VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo{};
 	pipelineMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-	pipelineMultisampleStateCreateInfo.pNext = nullptr;
+	PipelineMultisampleStateCreateInfoEXT pipelineMultisampleStateCreateInfoEXT{};
+	pipelineMultisampleStateCreateInfo.pNext = &pipelineMultisampleStateCreateInfoEXT.pipelineCoverageModulationStateCreateInfoNV;
 	pipelineMultisampleStateCreateInfo.flags = 0;//保留未来使用
 	pipelineMultisampleStateCreateInfo.alphaToCoverageEnable = VK_FALSE;//控制是否由基于fragment的第一个颜色输出的alpha分量生成一个暂时的coverage 值，参见Multisample Coverage p2779
 	pipelineMultisampleStateCreateInfo.alphaToOneEnable = VK_FALSE;//控制是否替换fragment的第一个颜色输出的alpha分量为1，参见Multisample Coverage p2779
@@ -1123,6 +1124,1005 @@ void PipelineStageProcessingTest::RasterizationTest()
 		*/
 
 	}
+
+
+	//Multisampling  参见p2678
+	{
+		/*
+		Multisampling是一种反走样技术，即对每个像素进行多次采样，并对这些采样结果进行一些操作以获得更该像素高质量的像素数据，如颜色，深度值等。
+		
+		vulkan中定义一个rasterization的single-sample modes等价于将multisample mode的结果给fragment中心的单个像素
+
+		每个 fragment含有一个 coverage mask，其中每个bit对应一个sample，值取决于该fragment的该sample是否在图元中，如果没有则该bit为0，否则为1
+
+		每个像素含有其相关的rasterizationSamples 个采样位置，这些采样点在该像素的为中心的单位面积内
+
+		如果render pass含有一个fragment density map attachment，则不管该fragment中有多少像素，每个fragment中含rasterizationSamples 个采样位置，即用于存储每个像素的multiple samples结果的附件将定位到这些个采样位置
+		
+		在fragment shader的input interface中以 Sample 以及 Input修饰的变量可以从对应采样点中获取数据，如位置，深度值，颜色等
+
+		定义为 fragment density map的Single pixel fragments 以及 multi-pixel fragments会含有一组采样点，由shading rate image定义或者设置了 fragment shading rate 的multi-pixel fragments的每个像素都有一组采样点，采样点数量由VkPipelineMultisampleStateCreateInfo::rasterizationSamples决定，采样点索引从0开始
+		*/
+
+		//动态设置rasterizationSamples    只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT创建才能使用，否则会只用 VkPipelineMultisampleStateCreateInfo::rasterizationSamples中设置的
+		vkCmdSetRasterizationSamplesEXT(commandBuffer, VK_SAMPLE_COUNT_1_BIT/*rasterizationSamples ,指明 rasterizationSamples*/);
+		/*
+		vkCmdSetRasterizationSamplesEXT有效用法:
+		1. extendedDynamicState3RasterizationSamples 特性开启或者shaderObject 特性至少一个特性开启
+		
+		*/
+
+
+		/*
+		每个采样点含有一个 coverage index 假设为 j（即该fragment的采样点位置包含在图元中的在整个frambuffer的位置索引），j范围[0, n * rasterizationSamples]，其中n为该fragment有多少组采样点
+		如果n为1，则coverage index就为采样点索引
+		如果使用shading rate image，则每个fragment包含多个像素，则coverage index就由VkPipelineViewportCoarseSampleOrderStateCreateInfoNV 或者 vkCmdSetCoarseSampleOrderNV定义决定
+		如果设置fragment shading rate ，则coverage index计算:j = i + r × ((fw × fh) - 1 - p)  ,其中r为每个fragment的采样点数量，i为该采样点的的索引，fw为framebuffer的宽度，fh为framebuffer的高度，p为该像素所在frambuffer坐标在frambuffer中的索引，计算: p = px + (py × fw)，px  = x % f，py  = y % fh，x，y为该像素的frambuffer坐标
+		
+		 multi-pixel fragments中每个pixel的索引见p2681的表  Pixel indices 
+		
+		每个coverage mask包含B个采样点，且打包到W字中，则有B = n × rasterizationSamples，W = ⌈B/32⌉
+
+		如果 VkPhysicalDeviceLimits::standardSampleLocations  为VK_TRUE，则 采样点VK_SAMPLE_COUNT_1_BIT, VK_SAMPLE_COUNT_2_BIT, VK_SAMPLE_COUNT_4_BIT, VK_SAMPLE_COUNT_8_BIT, VK_SAMPLE_COUNT_16_BIT的对应采样点位置参见p2683的表 Standard sample locations ，VK_SAMPLE_COUNT_32_BIT 以及 VK_SAMPLE_COUNT_64_BIT没有固定的位置
+		
+		以multiple samples per pixel创建的color image使用一种压缩技术，包含两个数组，第一个数组对应每个采样点，其中元素为第二数组的元素索引，第二个数组包含颜色值
+		*/
+	}
+
+
+	//Custom Sample Locations  参见p2684
+	{
+		//可以 VkPipelineMultisampleStateCreateInfo.pNext中包含一个 VkPipelineSampleLocationsStateCreateInfoEXT控制rasterization的采样点位置
+		VkPipelineSampleLocationsStateCreateInfoEXT& pipelineSampleLocationsStateCreateInfoEXT = pipelineMultisampleStateCreateInfoEXT.pipelineSampleLocationsStateCreateInfoEXT;
+		pipelineSampleLocationsStateCreateInfoEXT.sampleLocationsEnable = VK_TRUE;//控制是否使用自定义的采样位置，如果为VK_FALSE，则使用默认的采样位置，在sampleLocationsInfo指定的位置信息会被忽略
+		VkSampleLocationsInfoEXT sampleLocationsInfoEXT{};
+		{
+			/*
+			VkSampleLocationsInfoEXT该结构体可以渲染的sample locations或者是指明用于以VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT. 创建的depth/stencil的subresource的layout transitions的最后渲染的采样位置信息
+			
+			pSampleLocations中指明在 sampleLocationGridSize 网格大小中每个像素的sampleLocationsPerPixel个采样位置，采样点i的位置为pSampleLocations[(x + y × sampleLocationGridSize.width) × sampleLocationsPerPixel + i]，其中(x,y)为采样点的像素所在的frambuffer坐标
+			*/
+			sampleLocationsInfoEXT.sType = VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT;
+			sampleLocationsInfoEXT.pNext = nullptr;
+			sampleLocationsInfoEXT.sampleLocationGridSize = VkExtent2D{ .width = 1,.height = 1 };//选择自定义样本位置的采样位置网格大小
+			sampleLocationsInfoEXT.sampleLocationsCount = 1;//pSampleLocations中元素个数，必须等于 sampleLocationsPerPixel × sampleLocationGridSize.width × sampleLocationGridSize.height
+			VkSampleLocationEXT sampleLocationEXT{ .x = 0,.y = 0 };//指明采样位置的x，y坐标，这些坐标会被clamp到[sampleLocationCoordinateRange[0] , sampleLocationCoordinateRange[1]]，参见VkPhysicalDeviceSampleLocationsPropertiesEXT.
+			sampleLocationsInfoEXT.pSampleLocations = &sampleLocationEXT;//是一个VkSampleLocationEXT数组指针，表示采样点的位置
+			sampleLocationsInfoEXT.sampleLocationsPerPixel = VK_SAMPLE_COUNT_1_BIT;//一个VkSampleCountFlagBits 值，指明每个像素有多少个采样点，必须是一个有效的设置在VkPhysicalDeviceSampleLocationsPropertiesEXT::sampleLocationSampleCounts中的值
+		}
+		pipelineSampleLocationsStateCreateInfoEXT.sampleLocationsInfo = sampleLocationsInfoEXT;//是 rasterization 使用的采样位置信息，在sampleLocationsEnable为VK_TRUE且graphics pipeline不以 VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT创建下有效
+
+
+		//动态设置 sampleLocationsEnable  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT创建才能使用，否则会只用VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsEnable中设置的
+		vkCmdSetSampleLocationsEnableEXT(commandBuffer, VK_TRUE/*sampleLocationsEnable,指明 sampleLocationsEnable state.*/);
+		/*
+		vkCmdSetSampleLocationsEnableEXT有效用法:
+		1. extendedDynamicState3SampleLocationsEnable 或者shaderObject 特性至少有一个特性开启
+		
+		*/
+
+
+		//动态设置 sampleLocationsInfo  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT创建且VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsEnable 为VK_TRUE才能使用，否则会只用VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsInfo中设置的
+		vkCmdSetSampleLocationsEXT(commandBuffer, &sampleLocationsInfoEXT/*pSampleLocationsInfo,指明 采样位置信息.*/);
+		/*
+		vkCmdSetSampleLocationsEXT有效用法:
+		1.如果VkPhysicalDeviceSampleLocationsPropertiesEXT::variableSampleLocations 为VK_FALSE，则当前的render pass必须以指定pPostSubpassSampleLocations中含有subpassIndex匹配当前subpass以及sampleLocationsInfo匹配pSampleLocationsInfo元素的VkRenderPassSampleLocationsBeginInfoEXT开始
+		*/
+	}
+
+
+
+	//Fragment Shading Rates  参见p2689
+	{
+		/*
+		VkPhysicalDeviceFragmentShadingRateFeaturesKHR建议的特性允许控制 fragment shader invocation的 shading rate
+
+		shading rate和 Multisampling 强相关，则实现的可用rates集可能受到sample rate的限制
+		
+		*/
+
+		//查询可用的 shading rates,
+		uint32_t fragmentShadingRateCount;
+		std::vector<VkPhysicalDeviceFragmentShadingRateKHR> physicalDeviceFragmentShadingRateKHRs;
+		vkGetPhysicalDeviceFragmentShadingRatesKHR(physicalDevice, &fragmentShadingRateCount, nullptr);
+		physicalDeviceFragmentShadingRateKHRs.resize(fragmentShadingRateCount);
+		vkGetPhysicalDeviceFragmentShadingRatesKHR(physicalDevice, &fragmentShadingRateCount, physicalDeviceFragmentShadingRateKHRs.data());
+		//假设返回了至少一个有效的shading rate
+		/*
+		返回的physicalDeviceFragmentShadingRateKHRs列表按主序fragmentSize.width由大到小排列，如果两个shading rate的fragmentSize.width相同，则按fragmentSize.height由大到小排列，且不能有两元素含相同 fragmentSize
+
+		其中元素满足:
+		1.fragmentSize.width为2的幂，fragmentSize.height为2的幂，且分别对应范围[1, maxFragmentSize.width],[1, maxFragmentSize.height]
+		2.sampleCounts 小于等于maxFragmentShadingRateRasterizationSamples
+		3.fragmentSize.width * fragmentSize.height * sampleCounts（最大的）必须小于等于 maxFragmentShadingRateCoverageSamples
+
+		sampleCounts 以及 fragmentSize的支持详情见p2690,fragment size的支持可能还影响render pass transform
+
+		*/
+		physicalDeviceFragmentShadingRateKHRs[0].sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_KHR;
+		physicalDeviceFragmentShadingRateKHRs[0].pNext = nullptr;
+		physicalDeviceFragmentShadingRateKHRs[0].sampleCounts = VK_SAMPLE_COUNT_1_BIT;//为fragmentSize描述的 shading rate 支持的采样数
+		physicalDeviceFragmentShadingRateKHRs[0].fragmentSize = { .width = 1,.height = 1 };//是一个 VkExtent2D 值，描述了支持的shading rate的宽高
+
+
+
+		//Pipeline Fragment Shading Rate  参见p2692
+		{
+			//fragment shading rate 可以在pipeline的创建中或者vkCmdSetFragmentShadingRateKHR.中设置
+
+			//在pipeline的创建中设置，VkGraphicsPipelineCreateInfo.pNext中包含 VkPipelineFragmentShadingRateStateCreateInfoKHR，如果没有包含，则默认fragmentSize为(1,1),combinerOps都设置为 VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+			VkPipelineFragmentShadingRateStateCreateInfoKHR  pipelineFragmentShadingRateStateCreateInfoKHR{};
+			pipelineFragmentShadingRateStateCreateInfoKHR.sType = VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_STATE_CREATE_INFO_KHR;
+			pipelineFragmentShadingRateStateCreateInfoKHR.pNext = nullptr;
+			pipelineFragmentShadingRateStateCreateInfoKHR.combinerOps[0] = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR;//指定一个VkFragmentShadingRateCombinerOpKHR 值指定pipeline, primitive, 以及 attachment shading rates如何绑定的，用于绘制命令如何使用该pipeline来产生fragments
+			pipelineFragmentShadingRateStateCreateInfoKHR.combinerOps[1] = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR;//指定一个VkFragmentShadingRateCombinerOpKHR 值指定pipeline, primitive, 以及 attachment shading rates如何绑定的，用于绘制命令如何使用该pipeline来产生fragments
+			pipelineFragmentShadingRateStateCreateInfoKHR.fragmentSize = { .width = 1,.height = 1 };//为一个 VkExtent2D 结构体，定义pipeline fragment shading rate的fragment size，用于使用该pipeline的绘制命令
+		
+
+
+			//动态设置fragment shading rate以及 combiner operation      只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR创建才能使用，否则会只用 VkPipelineFragmentShadingRateStateCreateInfoKHR::fragmentSize,combinerOps中设置的
+			vkCmdSetFragmentShadingRateKHR(commandBuffer, &pipelineFragmentShadingRateStateCreateInfoKHR.fragmentSize/*pFragmentSize, 定义pipeline fragment shading rate的fragment size，用于使用该pipeline的后续绘制命令*/, pipelineFragmentShadingRateStateCreateInfoKHR.combinerOps/*指定一个VkFragmentShadingRateCombinerOpKHR 值指定pipeline, primitive, 以及 attachment shading rates如何绑定的，用于后续绘制命令如何使用该pipeline来产生fragments*/);
+			/*
+			vkCmdSetFragmentShadingRateKHR有效用法:
+			1.如果pipelineFragmentShadingRate 没有开启，则pFragmentSize->width，pFragmentSize->height必须为1
+			2.pipelineFragmentShadingRate，primitiveFragmentShadingRate或者attachmentFragmentShadingRate 至少有一个要开启
+			3.如果primitiveFragmentShadingRate没有开启，则combinerOps[0]必须为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+			4.如果attachmentFragmentShadingRate没有开启，则combinerOps[1]必须为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+			5.如果fragmentSizeNonTrivialCombinerOps 限制不支持，则combinerOps中的元素必须为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR或者VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR
+			6.pFragmentSize->width，pFragmentSize->height必须大于等于1小于等于4，pFragmentSize->width，pFragmentSize->height必须为2的幂
+
+			*/
+		
+		}
+
+
+		// Primitive Fragment Shading Rate      primitive fragment shading rate可以在最后的 pre-rasterization shader stage中通过 PrimitiveShadingRateKHR进行访问   参见p2695
+
+
+		//Attachment Fragment Shading Rate  参见p2695
+		{
+			/*
+			 可以在subpass中包含一个 VkFragmentShadingRateAttachmentInfoKHR来定义 fragment shading rate attachment，即每个frambuffer中的像素对应fragment shading rate attachment中的texel的attachment fragment shading rate
+
+			计算:
+			x' = floor(x / regionx)  y' = floor(y / regiony)  其中(x,y)为fragment的像素坐标，regionx，regiony为像素对应texel对应的区域的宽高，x'，y'为该像素对应texel的attachment fragment shading rate的坐标
+
+			VkFragmentShadingRateAttachmentInfoKHR:: shadingRateAttachmentTexelSize指定regionx，regiony，该值会被编码到texel的第一个分量中，编码规则见p2696
+			*/
+
+
+		}
+
+
+		//Combining the Fragment Shading Rates  参见p2696
+		{
+			/*
+			最终的fragment shading rate (Cxy')必须是vkGetPhysicalDeviceFragmentShadingRatesKHR中返回的一个值
+
+			在满足一定情况下， (Cxy')必须为（1，1），具体参见p2696,  否则每个指定的shading rate将绑定用来生成 Cxy'，有三种指定shading rates的方式，pipeline 以及 primitive shading rates之间，结果以及 attachment shading rate 有两种combiner operations
+
+			combiner operations以VkFragmentShadingRateCombinerOpKHR定义:
+				> VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR:  指定一个 combine(Axy,Bxy) = Axy的 combiner operation
+				> VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR:  指定一个 combine(Axy,Bxy) = Bxy的 combiner operation
+				> VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MIN_KHR:  指定一个 combine(Axy,Bxy) = min(Axy,Bxy)的 combiner operation
+				> VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MAX_KHR:  指定一个 combine(Axy,Bxy) = max(Axy,Bxy)的 combiner operation
+				> VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_KHR:  指定一个 combine(Axy,Bxy) = Axy * Bxy的 combiner operation
+
+			用于产生combined fragment area :  Cxy = combine(Axy,Bxy)   ，其中Axy 以及 Bxy 为fragment shading rates绑定的fragment areas， Cxy为combined fragment area result
+
+			绑定两次:第一次的Axy 以及 Bxy分别为 pipeline fragment shading rate以及 primitive fragment shading rate，combine()由VkPipelineFragmentShadingRateStateCreateInfoKHR::combinerOps[0]定义，
+					 第二次的Axy 以及 Bxy分别为第一次操作的结果 以及 attachment fragment shading rate，combine()由VkPipelineFragmentShadingRateStateCreateInfoKHR::combinerOps[1]定义， 第二次操作的结果为最终的fragment shading rate，由 ShadingRateKHR 表明
+
+
+			实现应该限制 Axy 以及 Bxy,如果VkPhysicalDeviceMaintenance6PropertiesKHR::fragmentShadingRateClampCombinerInputs为VK_TRUE，则必须对Axy 以及 Bxy进行clamp操作，clamp范围为[0,1]，clamp操作由VkPhysicalDeviceFragmentShadingRatePropertiesKHR::minFragmentShadingRate和VkPhysicalDeviceFragmentShadingRatePropertiesKHR::maxFragmentShadingRate定义
+
+			如果 Axy, Bxy 或者 Cxy 不在 vkGetPhysicalDeviceFragmentShadingRatesKHR返回的列表内，则应该遵循一些规则从其中选择一个，筛选规则 见p2697
+			*/
+
+
+		}
+
+
+		//Extended Fragment Shading Rates 参见p2697
+		{
+			/*
+			VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV建议的特性提供了额外的fragment shading rate支持
+
+			如果 fragmentShadingRateEnums 特性开启，则fragment shading rates可以 VkFragmentShadingRateNV枚举来定义
+				> VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_PIXEL_NV: 指明 fragment 大小为 1x1 pixels.
+				> VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_1X2_PIXELS_NV: 指明 fragment 大小为 1x2 pixels.
+				> VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_2X1_PIXELS_NV: 指明 fragment 大小为 2x1 pixels.
+				> VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_2X2_PIXELS_NV: 指明 fragment 大小为 2x2 pixels.
+				> VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_2X4_PIXELS_NV: 指明 fragment 大小为 2x4 pixels.
+				> VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_4X2_PIXELS_NV: 指明 fragment 大小为 4x2 pixels.
+				> VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_4X4_PIXELS_NV: 指明 fragment 大小为 4x4 pixels.
+				> VK_FRAGMENT_SHADING_RATE_2_INVOCATIONS_PER_PIXEL_NV: 指明 fragment 大小为 1x1 pixels, 且每个fragment有两次 fragment shader invocations
+				> VK_FRAGMENT_SHADING_RATE_4_INVOCATIONS_PER_PIXEL_NV: 指明 fragment 大小为 1x1 pixels, 且每个fragment有四次 fragment shader invocations
+				> VK_FRAGMENT_SHADING_RATE_8_INVOCATIONS_PER_PIXEL_NV: 指明 fragment 大小为 1x1 pixels, 且每个fragment有八次 fragment shader invocations
+				> VK_FRAGMENT_SHADING_RATE_16_INVOCATIONS_PER_PIXEL_NV: 指明 fragment 大小为 1x1 pixels,  且每个fragment有十六次 fragment shader invocations
+				> VK_FRAGMENT_SHADING_RATE_NO_INVOCATIONS_NV:  指明图元任何使用shading rate的部分都应该直接丢弃且不调用任何fragment shader
+
+			当使用 fragment shading rate enums时,pipeline fragment shading rate可以在创建pipeline的时候设置或者调用vkCmdSetFragmentShadingRateEnumNV 动态设置
+			*/
+
+			//在pipeline的创建中设置pipeline fragment shading rate 以及 combiner operation，VkGraphicsPipelineCreateInfo.pNext中包含VkPipelineFragmentShadingRateEnumStateCreateInfoNV， 如果不包含该结构体，则shadingRateType 默认为VK_FRAGMENT_SHADING_RATE_TYPE_FRAGMENT_SIZE_NV，shadingRate 默认为VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_PIXEL_NV，combinerOps的默认值都为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+			VkPipelineFragmentShadingRateEnumStateCreateInfoNV  pipelineFragmentShadingRateEnumStateCreateInfoNV{};
+			pipelineFragmentShadingRateEnumStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_ENUM_STATE_CREATE_INFO_NV;
+			pipelineFragmentShadingRateEnumStateCreateInfoNV.pNext = nullptr;
+			pipelineFragmentShadingRateEnumStateCreateInfoNV.combinerOps[0] = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR;//指定一个VkFragmentShadingRateCombinerOpKHR 值指定pipeline, primitive, 以及 attachment shading rates如何绑定的，用于绘制命令如何使用该pipeline来产生fragments
+			pipelineFragmentShadingRateEnumStateCreateInfoNV.combinerOps[1] = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR;//指定一个VkFragmentShadingRateCombinerOpKHR 值指定pipeline, primitive, 以及 attachment shading rates如何绑定的，用于绘制命令如何使用该pipeline来产生fragments
+			pipelineFragmentShadingRateEnumStateCreateInfoNV.shadingRate = VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_PIXEL_NV;//指定一个VkFragmentShadingRateNV 值指定pipeline fragment shading rate
+			pipelineFragmentShadingRateEnumStateCreateInfoNV.shadingRateType = VK_FRAGMENT_SHADING_RATE_TYPE_ENUMS_NV;/* 指定一个VkFragmentShadingRateTypeNV 值指定fragment shading rate是否由fragment sizes 或者VkFragmentShadingRateNV 枚举定义
+			VkFragmentShadingRateTypeNV:
+			VK_FRAGMENT_SHADING_RATE_TYPE_FRAGMENT_SIZE_NV:  指明pipeline fragment shading rate以及combiner state 从VkPipelineFragmentShadingRateStateCreateInfoKHR中指定，VkPipelineFragmentShadingRateEnumStateCreateInfoNV指定的会被忽略
+			VK_FRAGMENT_SHADING_RATE_TYPE_ENUMS_NV:   指定pipeline fragment shading rate以及combiner state 从VkPipelineFragmentShadingRateEnumStateCreateInfoNV中指定，VkPipelineFragmentShadingRateStateCreateInfoKHR指定的会被忽略
+			*/
+
+
+
+			//动态设置pipeline fragment shading rate 以及 combiner operation     只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR创建才能使用，否则会只用VkPipelineFragmentShadingRateEnumStateCreateInfoNV 中设置的
+			vkCmdSetFragmentShadingRateEnumNV(commandBuffer, VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_1X2_PIXELS_NV/*shadingRate,指定一个VkFragmentShadingRateNV枚举指明后续绘制命令使用的 pipeline fragment shading rate.*/, pipelineFragmentShadingRateEnumStateCreateInfoNV.combinerOps/*combinerOps， 指定VkFragmentShadingRateCombinerOpKHR 值指定pipeline, primitive, 以及 attachment shading rates如何绑定的，用于绘制命令如何使用该pipeline来产生fragments*/);
+			/*
+			vkCmdSetFragmentShadingRateEnumNV有效用法:
+			1.如果pipelineFragmentShadingRate 未开启，则shadingRate必须为VK_FRAGMENT_SHADING_RATE_1_INVOCATION_PER_PIXEL_NV
+			2.如果supersampleFragmentShadingRates 未开启，则shadingRate不能为VK_FRAGMENT_SHADING_RATE_2_INVOCATIONS_PER_PIXEL_NV,
+																			 VK_FRAGMENT_SHADING_RATE_4_INVOCATIONS_PER_PIXEL_NV,
+																			 VK_FRAGMENT_SHADING_RATE_8_INVOCATIONS_PER_PIXEL_NV,或者
+																			 VK_FRAGMENT_SHADING_RATE_16_INVOCATIONS_PER_PIXEL_NV
+			3.如果noInvocationFragmentShadingRates 未开启，则shadingRate不能为VK_FRAGMENT_SHADING_RATE_NO_INVOCATIONS_NV
+			4.fragmentShadingRateEnums 特性必须开启
+			5.pipelineFragmentShadingRate，primitiveFragmentShadingRate或者attachmentFragmentShadingRate 至少有一个要开启
+			6.如果primitiveFragmentShadingRate没有开启，则combinerOps[0]必须为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+			7.如果attachmentFragmentShadingRate没有开启，则combinerOps[1]必须为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+			8.如果fragmentSizeNonTrivialCombinerOps 限制不支持，则combinerOps中的元素必须为VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR或者VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR
+			*/
+
+		}
+	}
+
+
+
+	//Shading Rate Image  参见2703
+	{
+		/*
+		 shadingRateImage特性允许使用 shading rate image来控制fragment area以及每个fragment最小的fragment shader invocations的数量。如果开启，则 rasterizer 会从shading rate image中读取一个图元覆盖的区域的一个值通过 per-viewport shading rate palette转换为基本的 shading rate，最终转换为final shading rate
+		
+		*/
+
+
+		//在VkPipelineViewportStateCreateInfo.pNext中包含 VkPipelineViewportShadingRateImageStateCreateInfoNV用于控制shading rate
+		VkPipelineViewportShadingRateImageStateCreateInfoNV  pipelineViewportShadingRateImageStateCreateInfoNV{};
+		pipelineViewportShadingRateImageStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV;
+		pipelineViewportShadingRateImageStateCreateInfoNV.pNext = nullptr;
+		pipelineViewportShadingRateImageStateCreateInfoNV.shadingRateImageEnable = VK_TRUE;//指明是否在rasterization中使用shading rate image 以及 palettes
+		pipelineViewportShadingRateImageStateCreateInfoNV.viewportCount = 1;//指定用于转换存储在shading rate image中值的per-viewport palettes的数量  ,pShadingRatePalettes中元素个数
+		VkShadingRatePaletteNV shadingRatePaletteNV{};//该结构体定义单个shading rate image palette
+		{
+			shadingRatePaletteNV.shadingRatePaletteEntryCount = 1;//指明shading rate image palette.中的实体数量，必须在[1,VkPhysicalDeviceShadingRateImagePropertiesNV::shadingRatePaletteSize]之间
+			VkShadingRatePaletteEntryNV shadingRatePaletteEntryNV = VK_SHADING_RATE_PALETTE_ENTRY_16_INVOCATIONS_PER_PIXEL_NV;
+			{
+				/*
+				VkShadingRatePaletteEntryNV 值如何映射到基本的 shading rate，包括每个fragment的pixel的宽高以及fragment shader invocations的数量:
+
+				Shading Rate                                                        |   Width       |       Height      |     Invocations
+				VK_SHADING_RATE_PALETTE_ENTRY_NO_INVOCATIONS_NV						|	 0          |         0         |          0
+				VK_SHADING_RATE_PALETTE_ENTRY_16_INVOCATIONS_PER_PIXEL_NV			|	 1          |         1         |          16
+				VK_SHADING_RATE_PALETTE_ENTRY_8_INVOCATIONS_PER_PIXEL_NV			|	 1			|		  1			|		   8
+				VK_SHADING_RATE_PALETTE_ENTRY_4_INVOCATIONS_PER_PIXEL_NV			|	 1			|		  1			|		   4
+				VK_SHADING_RATE_PALETTE_ENTRY_2_INVOCATIONS_PER_PIXEL_NV			|	 1			|		  1			|		   2
+				VK_SHADING_RATE_PALETTE_ENTRY_1_INVOCATION_PER_PIXEL_NV				|	 1			|		  1			|		   1
+				VK_SHADING_RATE_PALETTE_ENTRY_1_INVOCATION_PER_2X1_PIXELS_NV		|	 2			|		  1			|		   1
+				VK_SHADING_RATE_PALETTE_ENTRY_1_INVOCATION_PER_1X2_PIXELS_NV		|	 1			|		  2			|		   1
+				VK_SHADING_RATE_PALETTE_ENTRY_1_INVOCATION_PER_2X2_PIXELS_NV		|	 2			|		  2			|		   1
+				VK_SHADING_RATE_PALETTE_ENTRY_1_INVOCATION_PER_4X2_PIXELS_NV		|	 4			|		  2			|		   1
+				VK_SHADING_RATE_PALETTE_ENTRY_1_INVOCATION_PER_2X4_PIXELS_NV		|	 2			|		  4			|		   1
+				VK_SHADING_RATE_PALETTE_ENTRY_1_INVOCATION_PER_4X4_PIXELS_NV		|	 4			|		  4			|		   1
+				
+				
+				*/
+
+
+
+			}
+			shadingRatePaletteNV.pShadingRatePaletteEntries = &shadingRatePaletteEntryNV;//一个VkShadingRatePaletteEntryNV 数组指针，指明shading rate image palette中的实体， shading rate index i会映射这里面的第i 元素以获取一个基本的 shading rate，如果i大于shadingRatePaletteEntryCount，则该基本的shading rate是未定义的，如果pipeline不使用shading rate image，则默认使用VK_SHADING_RATE_PALETTE_ENTRY_1_INVOCATION_PER_PIXEL_NV
+		}
+		pipelineViewportShadingRateImageStateCreateInfoNV.pShadingRatePalettes = &shadingRatePaletteNV;//一组VkShadingRatePaletteNV 数组指针，指明每个viewport的palette，如果 shading rate palette state是动态的，则该参数忽略
+		/*
+		VkPipelineViewportShadingRateImageStateCreateInfoNV有效用法:
+		1.如果multiViewport 特性未开启，则viewportCount必须为0或者1
+		2.viewportCount 必须小于或等于 VkPhysicalDeviceLimits::maxViewports
+		3.如果shadingRateImageEnable 为 VK_TRUE，则viewportCount 必须大于或等于 VkPipelineViewportStateCreateInfo.viewportCount
+
+		*/
+
+
+		//当绑定的pipeline使用了 shading rate image，则可以通过命令指定
+		vkCmdBindShadingRateImageNV(commandBuffer, VkImageView{/*假设这是一个有效的VkImageView*/ }/*imageView,为VkImageView指明 shading rate image. 可以设置为VK_NULL_HANDLE，等同于指定一个值全为0的image.*/, VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV/* imageLayout，指定 shading rate image被访问的subresource的layout布局*/);
+		/*
+		vkCmdBindShadingRateImageNV有效用法:
+		1.shadingRateImage 特性必须开启
+		2.如果imageView不为VK_NULL_HANDLE，则（1）必须是有效的VkImageView，且类型必须为VK_IMAGE_VIEW_TYPE_2D 或者 VK_IMAGE_VIEW_TYPE_2D_ARRAY
+											 （2）格式必须为VK_FORMAT_R8_UINT
+											 （3）必须以VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV创建
+											 （4）imageLayout 必须比配实际上访问的subresource的layout布局，必须是VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV 或者 VK_IMAGE_LAYOUT_GENERAL
+		*/
+
+		//如果绑定的pipeline启用了 shading rate image，则可以获取其（u,v）坐标返回的值的unsigned integer component值来获取一个 shading rate index 并通过一个shading rate image palette映射到一个基本的 shading rate，每个viewport都有独立的shading rate image palette。（具体如何取(u，v)值参见p2706）
+
+		//动态设置shadingRateImageEnable      只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_SHADING_RATE_IMAGE_ENABLE_NV创建才能使用，否则会只用VkPipelineViewportShadingRateImageStateCreateInfoNV::shadingRateImageEnable中设置的
+		vkCmdSetShadingRateImageEnableNV(commandBuffer, VK_TRUE/*shadingRateImageEnable，指明 shadingRateImageEnable state.*/);
+		/*
+		vkCmdSetShadingRateImageEnableNV有效用法:
+		1.extendedDynamicState3ShadingRateImageEnable 或者shaderObject 特性至少有一个特性开启
+		
+		*/
+
+
+		//动态设置per-viewport的shading rate image palettes   只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_VIEWPORT_SHADING_RATE_PALETTE_NV创建才能使用，否则会只用VkPipelineViewportShadingRateImageStateCreateInfoNV::pShadingRatePalettes中设置的
+		vkCmdSetViewportShadingRatePaletteNV(commandBuffer, 0/*firstViewport， 为该命令要更新shading rate image palette的第一个viewport的索引*/, 1/*viewportCount， 为该命令要更新shading rate image palette的viewport的数量*/,
+					&shadingRatePaletteNV/* pShadingRatePalettes，一组VkShadingRatePaletteNV 数组指针，指明每个viewport的palette*/);
+		/*
+		vkCmdSetViewportShadingRatePaletteNV有效用法:
+		1.shadingRateImage 特性必须开启
+		2.firstViewport + viewportCount 必须在[1, VkPhysicalDeviceLimits::maxViewports]之间
+		3.如果multiViewport特性未开启，则firstViewport必须为0，viewportCount必须为1
+
+		*/
+
+
+		//选择一个基本的 shading rate 后如何将其映射到最终的 shading rate  参见2711
+
+		/*
+		VkPipelineViewportStateCreateInfo.pNext中包含 VkPipelineViewportCoarseSampleOrderStateCreateInfoNV用于控制包含多个pixel的fragment的采样点的顺序，如果不含该结构体，则默认使用sampleOrderType为VK_COARSE_SAMPLE_ORDER_TYPE_DEFAULT_NV，
+		如果 sampleOrderType为VK_COARSE_SAMPLE_ORDER_TYPE_CUSTOM_NV，则每个绑定的fragment的区域以及采样点数量的采样点排序规则没有在pCustomSampleOrders中指定，则将默认使用 VK_COARSE_SAMPLE_ORDER_TYPE_DEFAULT_NV.
+		如果pipeline以 VK_DYNAMIC_STATE_VIEWPORT_COARSE_SAMPLE_ORDER_NV创建，则该结构体中的参数会被忽略
+		
+		*/
+		VkPipelineViewportCoarseSampleOrderStateCreateInfoNV pipelineViewportCoarseSampleOrderStateCreateInfoNV{};
+		pipelineViewportCoarseSampleOrderStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV;
+		pipelineViewportCoarseSampleOrderStateCreateInfoNV.pNext = nullptr;
+		pipelineViewportCoarseSampleOrderStateCreateInfoNV.sampleOrderType = VK_COARSE_SAMPLE_ORDER_TYPE_CUSTOM_NV;/*指定包含多个pixel的fragment的采样点的排序机制
+		VkCoarseSampleOrderTypeNV:
+		VK_COARSE_SAMPLE_ORDER_TYPE_DEFAULT_NV:  指定包含的采样点将按照实现定义的顺序排序。
+		VK_COARSE_SAMPLE_ORDER_TYPE_CUSTOM_NV:   指定包含的采样点将按照VkPipelineViewportCoarseSampleOrderStateCreateInfoNV或者vkCmdSetCoarseSampleOrderNV中设置pCustomSampleOrders中指定的顺序排序。
+		VK_COARSE_SAMPLE_ORDER_TYPE_PIXEL_MAJOR_NV:  指定包含的采样点将按照像素的行优先顺序排序，然后按照采样点的索引顺序排序。
+		VK_COARSE_SAMPLE_ORDER_TYPE_SAMPLE_MAJOR_NV:  指定包含的采样点将按照采样点的索引优先顺序排序，然后按照像素的行优先顺序排序。
+		*/
+		pipelineViewportCoarseSampleOrderStateCreateInfoNV.customSampleOrderCount = 1;//指定当排序采样点的顺序时，需要使用的自定义排序规则的数量，为pCustomSampleOrders元素个数
+		VkCoarseSampleOrderCustomNV coarseSampleOrderCustomNV{};
+		{
+			coarseSampleOrderCustomNV.shadingRate = VK_SHADING_RATE_PALETTE_ENTRY_16_INVOCATIONS_PER_PIXEL_NV;//是一个VkShadingRatePaletteEntryNV值，指定了该fragment绑定的fragment区域以及包含控制的per-pixel的采样点数量组合的fragment区域的宽高
+			coarseSampleOrderCustomNV.sampleCount = 1;//指定了该fragment绑定的fragment区域的宽高以及包含控制的per-pixel的采样点数量组合的采样点数量
+			coarseSampleOrderCustomNV.sampleLocationCount = 1;//指定自定义排序规则中的采样点的数量
+			VkCoarseSampleLocationNV coarseSampleLocationNV{};//该结构体定义一个特定的像素位置，以及包含多个pixel的fragment中的一个采样点的索引
+			{
+				coarseSampleLocationNV.sample = 0;//是由pixelX和pixelY定义的像素中的包含的一个采样点的索引
+				coarseSampleLocationNV.pixelX = 0;//添加到每个fragment左上角pixel的x坐标上用来定义包含采样点的pixel
+				coarseSampleLocationNV.pixelY = 0;//添加到每个fragment左上角pixel的y坐标上用来定义包含采样点的pixel
+				/*
+				VkCoarseSampleLocationNV有效用法:
+				1.pixelX 必须小于fragment的width，pixelY 必须小于fragment的height (基于pixel)
+				2.sample 必须小于fragment的每个pixel包含的coverage samples的数量 
+				*/
+			}
+			coarseSampleOrderCustomNV.pSampleLocations = &coarseSampleLocationNV;//一组VkCoarseSampleLocationNV数组指针，指明自定义排序规则中的采样点的位置,j号元素对应指定在 multi-pixel fragment中一个特定的像素x，y位置以及 coverage index j对应的采样点的索引
+			/*
+			VkCoarseSampleOrderCustomNV有效用法:
+			1.shadingRate 必须是一个生成的fragment包含多个pixel的有效VkShadingRatePaletteEntryNV值
+			2.sampleCount必须对应到列举在image的VkSampleCountFlags中的值，其对应bit值设置在VkPhysicalDeviceLimits::framebufferNoAttachmentsSampleCounts中
+			3.sampleLocationCount 必须等于sampleCount * shadingRate.width * shadingRate.height，且必须小于或等于 VkPhysicalDeviceShadingRateImagePropertiesNV::shadingRateMaxCoarseSamples
+			4.pSampleLocations中必须对每一个有效的pixelX, pixelY, 以及 sample的组合包含有一个实体
+			*/
+		
+		}
+		pipelineViewportCoarseSampleOrderStateCreateInfoNV.pCustomSampleOrders = &coarseSampleOrderCustomNV;//一个VkCoarseSampleOrderCustomNV 数组指针，指定每个绑定的fragment的区域以及采样点数量的组合的采样点排序规则，如果sampleOrderType不是VK_COARSE_SAMPLE_ORDER_TYPE_CUSTOM_NV，则该参数忽略
+		/*
+		VkPipelineViewportCoarseSampleOrderStateCreateInfoNV有效用法:
+		1.如果sampleOrderType 不为VK_COARSE_SAMPLE_ORDER_TYPE_CUSTOM_NV，则customSamplerOrderCount 必须为0
+		2.pCustomSampleOrders中不能包含两个shadingRate以及sampleCount相同的元素
+		*/
+
+
+		//动态设置包含多个pixel的fragment的每个pixel的采样点顺序      只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_VIEWPORT_COARSE_SAMPLE_ORDER_NV创建才能使用，否则会只用VkPipelineViewportCoarseSampleOrderStateCreateInfoNV::pCustomSampleOrders中设置的， 如果 sampleOrderType为VK_COARSE_SAMPLE_ORDER_TYPE_CUSTOM_NV，则每个绑定的fragment的区域以及采样点数量的采样点排序规则没有在pCustomSampleOrders中指定，则将默认使用 VK_COARSE_SAMPLE_ORDER_TYPE_DEFAULT_NV.
+		vkCmdSetCoarseSampleOrderNV(commandBuffer, VK_COARSE_SAMPLE_ORDER_TYPE_CUSTOM_NV/*sampleOrderType,指定包含多个pixel的fragment的采样点的排序机制 */, 1/*customSampleOrderCount，指定当排序采样点的顺序时，需要使用的自定义排序规则的数量 */, &coarseSampleOrderCustomNV/*pCustomSampleOrders，一个VkCoarseSampleOrderCustomNV 数组指针，指定每个绑定的fragment的区域以及采样点数量的组合的采样点排序规则*/);
+		/*
+		vkCmdSetCoarseSampleOrderNV有效用法:
+		1.如果sampleOrderType 不为VK_COARSE_SAMPLE_ORDER_TYPE_CUSTOM_NV，则customSamplerOrderCount 必须为0
+		2.pCustomSampleOrders中不能包含两个shadingRate以及sampleCount相同的元素
+
+		*/
+
+
+		//如果对包含 (x,y) pixel的图元的final shading rate导致每个pixel会调用多次fragment shader，则每个pixel的采样点会根据实现的顺序对应到一次 fragment sahder 调用，如果导致fragment包含多个pixel，则会生成一组fragment shader调用，每个pixel对应一个调用
+	}
+
+
+	//Sample Shading 参见p2719
+	{
+		/*
+		Sample shading用来指定每个fragment的最小的不同采样点的数量，如果开启，则每个fragment至少要调用max(⌈ VkPipelineMultisampleStateCreateInfo::minSampleShading × VkPipelineMultisampleStateCreateInfo::rasterizationSamples ⌉, 1)次
+
+		VkPipelineMultisampleStateCreateInfo::sampleShadingEnable为VK_TRUE即表示开启sample shading
+		
+		如果一个 fragment shader entry point静态使用了 SampleId 或者 SamplePosition修饰的变量，则表示sample shading开启，将使用1.0而不是minSampleShading，如果是使用了以Sample 修饰的变量，则表示sample shading可能开启，将使用minSampleShading如果该值为1.0
+		*/
+	}
+
+	//Barycentric Interpolation   重心坐标插值 参见2719
+	{
+		/*
+		当 fragmentShaderBarycentric 特性开启，且fragment shader inputs 中会为以PerVertexKHR 修饰的但还没有相关属性值的输入变量进行插值操作
+		
+		其他信息见p2720
+
+		在fragment shader inputs 中以 BaryCoordKHR 或者 BaryCoordNoPerspKHR 修饰的变量将将会容纳相对于该该图元的三个顶点的屏幕空间坐标的三分量的权重值坐标，对于 BaryCoordKHR 使用透视插值，对于BaryCoordNoPerspKHR 使用线性插值
+		*/
+	}
+
+	//Points   参见p2721
+	{
+		/*
+		绘制一个点会产生一组以该点为重心的方形区域的fragments，边大小取决于 PointSize，该值在[pointSizeRange[0],pointSizeRange[1]]中，在该范围内可用的值是等间隔划分的，取决于 pointSizeGranularity，即例如范围为[1.0,2.0]，granularity为0.1，则可取值为1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0
+		
+		*/
+
+		//Basic Point Rasterization  参见p2722
+	}
+
+
+	//Line Segments  参见p2722
+	{
+		//Line segment的rasterization options 受控于VkPipelineRasterizationLineStateCreateInfoKHR
+		VkPipelineRasterizationLineStateCreateInfoKHR pipelineRasterizationLineStateCreateInfoKHR{};   //等同于VkPipelineRasterizationLineStateCreateInfoEXT
+		pipelineRasterizationLineStateCreateInfoKHR.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_LINE_STATE_CREATE_INFO_EXT;
+		pipelineRasterizationLineStateCreateInfoKHR.pNext = nullptr;
+		pipelineRasterizationLineStateCreateInfoKHR.lineRasterizationMode = VK_LINE_RASTERIZATION_MODE_BRESENHAM_EXT;/*一个VkLineRasterizationModeKHR 值，指定了线段的rasterization模式
+		VkLineRasterizationModeKHR:
+		VK_LINE_RASTERIZATION_MODE_DEFAULT_KHR:  如果VkPhysicalDeviceLimits::strictLines 为VK_TRUE则等同于VK_LINE_RASTERIZATION_MODE_RECTANGULAR_KHR，否则线段将按照non-strictLines的平行四边形进行绘制，这些模式都定义在Basic Line Segment Rasterization 见p2729
+		VK_LINE_RASTERIZATION_MODE_RECTANGULAR_KHR:  指定线段按照仿佛是从线中挤出的矩形进行绘制
+		VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR:  指定线段按照和线段相交的像素菱形进行绘制，参考 Bresenham Line Segment Rasterization p2731
+		VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR :  指定线段按照仿佛是从线中挤出的矩形进行绘制，但是线段的边缘会被模糊化，参考 Smooth Lines p2735
+		*/
+		pipelineRasterizationLineStateCreateInfoKHR.stippledLineEnable = VK_FALSE;//是否启用stippled line rasterization.参见p2733
+		pipelineRasterizationLineStateCreateInfoKHR.lineStipplePattern = 0;//为用于stippled line rasterization的比特模板，如果stippledLineEnable为VK_TRUE，则该值忽略
+		pipelineRasterizationLineStateCreateInfoKHR.lineStippleFactor = 0;//为用于stippled line rasterization的重复因子，如果stippledLineEnable为VK_TRUE，则该值忽略
+		/*
+		VkPipelineRasterizationLineStateCreateInfoKHR有效用法:
+		1.如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_RECTANGULAR_KHR，则rectangularLines 特性必须开启
+		2.如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR，则bresenhamLines 特性必须开启
+		3.如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR，则smoothLines 特性必须开启
+		4.如果stippledLineEnable 为 VK_TRUE，则（1）如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_RECTANGULAR_KHR，则stippledRectangularLines 特性必须开启
+											   （2）如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR，则stippledBresenhamLines 特性必须开启
+											   （3）如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR，则stippledSmoothLines 特性必须开启
+											   （4）如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_DEFAULT_KHR，则stippledRectangularLines 特性必须开启且VkPhysicalDeviceLimits::strictLines 必须为VK_TRUE
+
+		*/
+
+
+
+
+		//动态设置线段的rasterization options mode     只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT创建才能使用，否则会只用VkPipelineRasterizationLineStateCreateInfoKHR::lineRasterizationMode中设置的， 
+		vkCmdSetLineRasterizationModeEXT(commandBuffer, (VkLineRasterizationModeEXT)VK_LINE_RASTERIZATION_MODE_BRESENHAM_EXT/*lineRasterizationMode,指定lineRasterizationMode*/);
+		/*
+		vkCmdSetLineRasterizationModeEXT有效用法:
+		1.extendedDynamicState3LineRasterizationMode 或者 shaderObject 特性至少有一个必须开启
+		2.如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_RECTANGULAR_KHR，则rectangularLines 特性必须开启
+		3.如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR，则bresenhamLines 特性必须开启
+		4.如果lineRasterizationMode 为 VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR，则smoothLines 特性必须开启
+		*/
+
+		//动态设置 stippledLineEnable      只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT创建才能使用，否则会只用VkPipelineRasterizationLineStateCreateInfoKHR::stippledLineEnable中设置的， 
+		vkCmdSetLineStippleEnableEXT(commandBuffer,VK_TRUE/*stippledLineEnable ，指定stippledLineEnable state*/);
+		/*
+		vkCmdSetLineStippleEnableEXT有效用法:
+		1.extendedDynamicState3LineRasterizationMode 或者 shaderObject 特性至少有一个必须开启
+		*/
+
+		//动态设置 line width         只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_LINE_WIDTH创建才能使用，否则会只用VkPipelineRasterizationStateCreateInfo::lineWidth中设置的， 
+		vkCmdSetLineWidth(commandBuffer, 1/*lineWidth,为线段的rasterization操作的width.*/);
+		/*
+		vkCmdSetLineWidth有效用法:
+		1.如果 wideLines 特性未开启，则lineWidth 必须为1.0
+		*/
+
+
+
+
+		// Basic Line Segment Rasterization  参见p2729
+		{
+			//对应 VK_LINE_RASTERIZATION_MODE_RECTANGULAR_KHR 或者 VK_LINE_RASTERIZATION_MODE_DEFAULT_KHR
+		}
+
+		//Bresenham Line Segment Rasterization  参见p2731
+		{
+			//对应  VK_LINE_RASTERIZATION_MODE_BRESENHAM_KHR
+		}
+
+		// Line Stipple 点线 参见p2733
+		{
+			/*
+			如果 VkPipelineRasterizationLineStateCreateInfoKHR.stippledLineEnable 为 VK_TRUE，则会按照 VkPipelineRasterizationLineStateCreateInfoKHR.lineStipplePattern 和 VkPipelineRasterizationLineStateCreateInfoKHR.lineStippleFactor 进行点线的stipple rasterization，
+			
+			其中lineStipplePattern 是一个16bit模板确定在光栅化过程中哪个fragment保留哪个丢弃，lineStippleFactor 是一个计数值，让lineStipplePattern 中设置的有效的line striple 比特重复一定次数，
+			
+			判断是否丢弃根据   b  = |_  s / r _|  mod 16,其中b对应pattern中一个bit值，如果该比特值为1则保留，否则丢弃，s为生成的当前的fragment的计数值，r为lineStippleFactor，
+			*/
+
+
+			//动态设置line stipple state   ，等同于vkCmdSetLineStippleKHR，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_LINE_STIPPLE_EXT 创建才能使用，否则会只用VkPipelineRasterizationLineStateCreateInfoKHR中设置的lineStippleFactor以及 lineStipplePattern
+			vkCmdSetLineStippleEXT(commandBuffer, 0xAAAA/*lineStipplePattern，用于stippled line rasterization的比特模板*/, 1/*lineStippleFactor，用于stippled line rasterization的重复因子，必须在[1,256]之间*/);
+
+		}
+
+
+		// Smooth Lines  线平滑  参见p2735
+		{
+			//对应 VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR
+		}
+	}
+
+
+	//Polygons  参见p2735
+	{
+		/*
+		polygon来自于 triangle strip, triangle fan 或者一系列独立的triangles的分解，其光栅化操作受控于 VkPipelineRasterizationStateCreateInfo中的几个参数
+		
+		*/
+
+		// Basic Polygon Rasterization   参见p2735
+		{
+			/*polygon的Rasterization操作首先要确定正反面，有由 VkPipelineRasterizationStateCreateInfo::frontFace规定
+			VkFrontFace:
+			VK_FRONT_FACE_COUNTER_CLOCKWISE :  指定一个通过计算正反面的公式计算得到的计算结果为正数的三角形为正面，计算公式见p2736
+			VK_FRONT_FACE_CLOCKWISE :  指定一个通过计算正反面的公式计算得到的计算结果为负数的三角形为正面，计算公式见p2736
+			*/
+
+			//动态设置三角面的方向    ，等同于vkCmdSetFrontFaceEXT   ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_FRONT_FACE_EXT创建才能使用，否则会只用VkPipelineRasterizationStateCreateInfo中设置的frontFace
+			vkCmdSetFrontFace(commandBuffer, VK_FRONT_FACE_COUNTER_CLOCKWISE/*frontFace，一个 VkFrontFace 值指明front-facing 三角形的方向*/);
+			/*
+			vkCmdSetFrontFace有效用法:
+			1. extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+
+			*/
+		
+
+			/*
+			一旦确定了正反面，polygon的Rasterization操作根据VkPipelineRasterizationStateCreateInfo::cullMode 进行剔除
+			VkCullModeFlagBits:
+			VK_CULL_MODE_NONE :  不进行剔除
+			VK_CULL_MODE_FRONT_BIT :  剔除丢弃正面三角形				
+			VK_CULL_MODE_BACK_BIT :  剔除丢弃反面三角形
+			VK_CULL_MODE_FRONT_AND_BACKT :  剔除丢弃所有三角形 
+			*/
+
+
+			//动态设置三角面的剔除模式    ，等同于vkCmdSetCullModeEXT   ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_CULL_MODE_EXT创建才能使用，否则会只用VkPipelineRasterizationStateCreateInfo中设置的cullMode
+			vkCmdSetCullMode(commandBuffer, VK_CULL_MODE_BACK_BIT/*cullMode，一个 VkCullModeFlagBits 组合值指明三角形的剔除模式*/);
+			/*
+			vkCmdSetCullMode有效用法:
+			1. extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+			
+			*/
+
+		}
+
+		//Polygon Mode   参见p2741
+		{
+			/*
+			VkPipelineRasterizationStateCreateInfo::polygonMode指明了多边形的填充模式
+			VkPolygonMode:
+			VK_POLYGON_MODE_POINT:  指定polygon的顶点按点进行绘制
+			VK_POLYGON_MODE_LINE:  指定polygon的边按照线段进行绘制
+			VK_POLYGON_MODE_FILL:  指定polygon的内部区域按照多边形rasterization规则进行绘制
+			VK_POLYGON_MODE_FILL_RECTANGLE_NV:  指定polygon的内部区域按照多边形rasterization规则进行绘制，但当在投影后采样点位置在图元三角形所在的轴向的边界盒中时会将该采样点考虑在内并且修改其渲染结果。其他信息见p2741
+
+			如果polygon mode为VK_POLYGON_MODE_POINT，且如果 VkPhysicalDeviceMaintenance5PropertiesKHR::polygonModePointSize 为VK_TRUE，则使用 PointSize来控制点的大小，否则点的大小为1.0。
+			*/ 
+
+			//动态设置polygon mode    ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_POLYGON_MODE_EXT创建才能使用，否则会只用VkPipelineRasterizationStateCreateInfo中设置的polygonMode
+			vkCmdSetPolygonModeEXT(commandBuffer, VK_POLYGON_MODE_FILL/*polygonMode，一个 VkPolygonMode 值指明多边形的填充模式*/);
+			/*
+			vkCmdSetPolygonModeEXT有效用法:
+			1. extendedDynamicState3PolygonMode 或者 shaderObject 特性至少有一个必须开启
+			2.如果fillModeNonSolid 特性没有开启，则polygonMode必须为VK_POLYGON_MODE_FILL或VK_POLYGON_MODE_FILL_RECTANGLE_NV
+			3.如果VK_NV_fill_rectangle 扩展没有开启，则polygonMode不能为VK_POLYGON_MODE_FILL_RECTANGLE_NV
+			*/
+		
+		
+		}
+
+		//Depth Bias  参见p2743
+		{
+			/*
+			光栅化polygon得到的 fragments 深度值都可以加上以及计算得到的偏移值
+			*/
+
+			//开启depth bias可以通过调用 vkCmdSetDepthBiasEnable或者  vkCmdSetDepthBiasEnableEXT设置，又或者使用VkPipelineRasterizationStateCreateInfo::depthBiasEnable 进行设置
+
+
+			//动态开启depth bias    ，等价于vkCmdSetDepthBiasEnableEXT ,  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE_EXT创建才能使用，否则会只用VkPipelineRasterizationStateCreateInfo中设置的depthBiasEnable
+			vkCmdSetDepthBiasEnable(commandBuffer, VK_TRUE/*depthBiasEnable,控制是否要对fragments的深度值进行偏移 */);
+			/*
+			vkCmdSetDepthBiasEnable有效用法:
+			1. extendedDynamicState2特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+			*/
+
+			//Depth Bias Computation  参见p2744
+			{
+				/*
+				Depth Bias的计算依赖参数
+				depthBiasSlopeFactor:  对polygon的最大深度斜率进行缩放
+				depthBiasConstantFactor:  对 depth attachment的参数r进行缩放
+				缩放后的项的值要满足depthBiasClamp指明的范围
+
+				> > Depth bias的计算公式以及这些参数的具体情况参见p2745
+				*/
+
+				//动态设置这些参数	， 等同于调用一个VkDepthBiasInfoEXT参数不含VkDepthBiasRepresentationInfoEXT的vkCmdSetDepthBias2EXT， 只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DEPTH_BIAS_EXT创建才能使用，否则会只用VkPipelineRasterizationStateCreateInfo中设置的depthBiasSlopeFactor,depthBiasConstantFactor,depthBiasClamp
+				vkCmdSetDepthBias(commandBuffer, 1/*depthBiasConstantFactor，是一个标量因子控制一个添加到每个fragment的深度值*/, 
+												0/*depthBiasClamp ，为fragment的最大或者最小的深度偏移，如果 depthBiasClamp 特性未开启，则该值必须为0 */,
+												1/*depthBiasSlopeFactor,是一个标量因子，应用到fragment深度偏移计算的斜率上.*/);
+			
+				
+				VkDepthBiasRepresentationInfoEXT depthBiasRepresentationInfoEXT{};//该结构体在深度偏移计算中的作用见 p2745
+				depthBiasRepresentationInfoEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//该结构体时自己定义的，所以设置为非法值
+				depthBiasRepresentationInfoEXT.pNext = nullptr;
+				depthBiasRepresentationInfoEXT.depthBiasRepresentation = VK_DEPTH_BIAS_REPRESENTATION_FLOAT_EXT;/*是一个 VkDepthBiasRepresentationEXT 值，表示深度偏移值是如何表示的
+				VkDepthBiasRepresentationEXT:
+				VK_DEPTH_BIAS_REPRESENTATION_LEAST_REPRESENTABLE_VALUE_FORMAT_EXT:  指定深度偏移的表示为format的r分量的一个因子，参见Depth Bias Computation p2744
+				VK_DEPTH_BIAS_REPRESENTATION_LEAST_REPRESENTABLE_VALUE_FORCE_UNORM_EXT:  指定深度偏移的表示为format的bit大小或者尾数的一个常量因子r，参见Depth Bias Computation p2744
+				VK_DEPTH_BIAS_REPRESENTATION_FLOAT_EXT:  指定深度偏移的表示一个值为1的常量因子r.
+				*/
+				depthBiasRepresentationInfoEXT.depthBiasExact = VK_FALSE;//指定不允许实现缩放深度偏差值，以确保一个最小的可分辨距离
+				/*
+				VkDepthBiasRepresentationInfoEXT有效用法:
+				1.如果leastRepresentableValueForceUnormRepresentation 特性未开启，则depthBiasRepresentation 不能为VK_DEPTH_BIAS_REPRESENTATION_LEAST_REPRESENTABLE_VALUE_FORCE_UNORM_EXT
+				2.如果floatRepresentation 特性未开启，则depthBiasRepresentation 不能为VK_DEPTH_BIAS_REPRESENTATION_FLOAT_EXT
+				3.如果depthBiasExact 特性未开启，则depthBiasExact 必须为VK_FALSE
+				*/
+
+
+
+
+				VkDepthBiasInfoEXT  depthBiasInfoEXT{};
+				depthBiasInfoEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//自己定义的所以设置为非法值
+				depthBiasInfoEXT.pNext = &depthBiasRepresentationInfoEXT;//如果pNext中不含VkDepthBiasRepresentationInfoEXT，则相当于含一个 depthBiasExact为VK_FALSE，depthBiasRepresentation为VK_DEPTH_BIAS_REPRESENTATION_LEAST_REPRESENTABLE_VALUE_FORMAT_EXT的VkDepthBiasRepresentationInfoEXT
+				depthBiasInfoEXT.depthBiasClamp = 0.0f;//为fragment的最大或者最小的深度偏移，如果 depthBiasClamp 特性未开启，则该值必须为0 
+				depthBiasInfoEXT.depthBiasSlopeFactor = 1.0f;//是一个标量因子，应用到fragment深度偏移计算的斜率上
+				depthBiasInfoEXT.depthBiasConstantFactor = 0.0f;//是一个标量因子控制一个添加到每个fragment的深度值
+
+				//动态设置深度偏移信息    ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DEPTH_BIAS_EXT创建才能使用，否则会只用VkPipelineRasterizationStateCreateInfo中设置的depthBiasClamp,depthBiasSlopeFactor,depthBiasConstantFactor
+				vkCmdSetDepthBias2EXT(commandBuffer, &depthBiasInfoEXT);
+			
+			}
+
+
+			// Conservative Rasterization  参见p2751
+			{
+				/*
+				如果VkPipelineRasterizationStateCreateInfo.pNext中含有一个VkPipelineRasterizationConservativeStateCreateInfoEXT，则其有参数可以控制 conservative rasterization
+				如果不含该结构体，则相当于含一个 conservativeRasterizationMode为VK_CONSERVATIVE_RASTERIZATION_MODE_DISABLED_EXT的VkPipelineRasterizationConservativeStateCreateInfoEXT
+				polygon可以设置VkPipelineRasterizationConservativeStateCreateInfoEXT.conservativeRasterizationMode 为VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT 或者 VK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT 来让开启 polygon conservative rasterization
+				如果一个fragment的所有pixel都包含在图元内，则必须将 FullyCoveredEXT 设置为 VK_TRUE
+				*/
+				VkPipelineRasterizationConservativeStateCreateInfoEXT& pipelineRasterizationConservativeStateCreateInfoEXT = pipelineRasterizationStateCreateInfoEXT.pipelineRasterizationConservativeStateCreateInfoEXT;
+				pipelineRasterizationConservativeStateCreateInfoEXT.flags = 0;//保留未来使用
+				pipelineRasterizationConservativeStateCreateInfoEXT.conservativeRasterizationMode = VK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT;//指定conservative rasterization的模式
+				/*
+				VkConservativeRasterizationModeEXT
+				VK_CONSERVATIVE_RASTERIZATION_MODE_DISABLED_EXT:  指定关闭conservative rasterization，使用常规的rasterization操作。
+				VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT:  指定conservative rasterization的模式为overestimation 模式，即会产生fragment，只要该fragment的任何pixel的任何部分在图元中即可
+				VK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT:  指定conservative rasterization的模式为underestimation 模式，即会产生fragment，只要该fragment的任何pixel的所有部分都在图元中即可
+				*/
+				pipelineRasterizationConservativeStateCreateInfoEXT.extraPrimitiveOverestimationSize = 1.0f;//指定在conservative rasterization过程中，超过VkPhysicalDeviceConservativeRasterizationPropertiesEXT::primitiveOverestimationSize中指定的产生图元在屏幕空间中X和Y方向上的额外大小，以像素为单位。如果conservativeRasterizationMode不是VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT，则该值被忽略。该值的范围为[0, VkPhysicalDeviceConservativeRasterizationPropertiesEXT::maxExtraPrimitiveOverestimationSize]
+				
+
+
+				//动态设置conservative rasterization mode    ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_CONSERVATIVE_RASTERIZATION_MODE_EXT创建才能使用，否则会只用VkPipelineRasterizationConservativeStateCreateInfoEXT中设置的conservativeRasterizationMode
+				vkCmdSetConservativeRasterizationModeEXT(commandBuffer, VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT/*conservativeRasterizationMode，指定conservative rasterization的模式*/);
+				/*
+				vkCmdSetConservativeRasterizationModeEXT有效用法:
+				1. extendedDynamicState3ConservativeRasterizationMode 或者 shaderObject 特性至少有一个必须开启
+				
+				*/
+
+
+				//动态设置 extraPrimitiveOverestimationSize   ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_EXTRA_PRIMITIVE_OVERESTIMATION_SIZE_EXT创建才能使用，否则会只用VkPipelineRasterizationConservativeStateCreateInfoEXT中设置的extraPrimitiveOverestimationSize
+				vkCmdSetExtraPrimitiveOverestimationSizeEXT(commandBuffer, 1.0f/*extraPrimitiveOverestimationSize，指定 extraPrimitiveOverestimationSize*/);
+				/*
+				vkCmdSetExtraPrimitiveOverestimationSizeEXT有效用法:
+				1.  extendedDynamicState3ExtraPrimitiveOverestimationSize 或者 shaderObject 特性至少有一个必须开启
+				2. extendedDynamicState3ExtraPrimitiveOverestimationSize的范围为[0, VkPhysicalDeviceConservativeRasterizationPropertiesEXT::maxExtraPrimitiveOverestimationSize]
+				*/
+
+				
+			}
+		}
+	}
+}
+
+void PipelineStageProcessingTest::FragmentOperationsTest()
+{
+	/*
+	rasterization产生的fragments会经过一系列操作来决定fragment shader产生的值如何写到framebuffer
+	这些操作为(顺序依次):
+	1. Discard rectangles test
+	2. Scissor test
+	3. Exclusive scissor test
+	4. Sample mask test
+	5. Certain Fragment shading operations:
+				>  Sample Mask Accesses
+				>  Tile Image Reads
+				>  Depth Replacement
+				>  Stencil Reference Replacement
+				>  Interlocked Operations
+	6. Multisample coverage
+	7. Depth bounds test
+	8. Stencil test
+	9. Depth test
+	10. Representative fragment test
+	11. Sample counting
+	12. Coverage to color
+	13. Coverage reduction
+	14. Coverage modulation
+	
+
+	以上的操作在满足一定条件的情况下顺序会有所不同，具体情况参见p2759
+
+	在pipeline满足一些条件的时候可能会有一些额外的操作，具体情况参见p2759
+	
+	*/
+
+	VkCommandBuffer commandBuffer{/*假设这是一个有效的VkCommandBuffer*/ };
+
+	//Discard Rectangles Test  参见p2760
+	{
+		/*
+		discard rectangle test会比较fragment中的采样点的framebuffer坐标 (xf,yf)是否在一个discard rectangle内，并进行相关操作
+		
+		discard rectangles可以在创建pipeline的VkPipelineDiscardRectangleStateCreateInfoEXT中设置，也可以在运行时通过vkCmdSetDiscardRectangleEXT设置
+
+		如果一个fragment的采样点的framebuffer坐标 (xf,yf)在任何一个discard rectangle内即其坐标满足xf,yf对应在范围 [VkRect2D::offset.x, VkRect2D::offset.x + VkRect2D::extent.x),[VkRect2D::offset.y, VkRect2D::offset.y + VkRect2D::extent.y)内，则如果该test使用inclusive模式，则不在任何rectangle内的采样点的coverage比特位会被设为0，如果使用exclusive,则在任何rectangle内的采样点的coverage比特位会被设为0，如果不指明discard rectangle，则不会改变采样点的coverage比特位
+		*/
+
+
+		//在VkGraphicsPipelineCreateInfo.pNext中包含一个 VkPipelineDiscardRectangleStateCreateInfoEXT 结构体，来设置discard rectangle test的相关参数
+		VkPipelineDiscardRectangleStateCreateInfoEXT  pipelineDiscardRectangleStateCreateInfoEXT{};
+		pipelineDiscardRectangleStateCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT;
+		pipelineDiscardRectangleStateCreateInfoEXT.pNext = 0;
+		pipelineDiscardRectangleStateCreateInfoEXT.flags = 0;
+		pipelineDiscardRectangleStateCreateInfoEXT.discardRectangleMode = VK_DISCARD_RECTANGLE_MODE_INCLUSIVE_EXT;//一个 VkDiscardRectangleModeEXT值，指明discard rectangle test是inclusive还是 exclusive的，如果pipeline以VK_DYNAMIC_STATE_DISCARD_RECTANGLE_MODE_EXT创建，则该参数忽略
+		/*
+		VkDiscardRectangleModeEXT:
+		VK_DISCARD_RECTANGLE_MODE_INCLUSIVE_EXT:  指明 discard rectangle test 是 inclusive的.
+		VK_DISCARD_RECTANGLE_MODE_EXCLUSIVE_EXT:  指明 discard rectangle test 是 exclusive的
+		*/
+		pipelineDiscardRectangleStateCreateInfoEXT.discardRectangleCount = 1;//为使用的 discard rectangles 的数量，必须小于等于VkPhysicalDeviceDiscardRectanglePropertiesEXT::maxDiscardRectangles
+		VkRect2D discardRectangle;
+		discardRectangle.extent = VkExtent2D{ .width = 1,.height = 1 };
+		discardRectangle.offset = VkOffset2D{ .x = 0,.y = 2 };
+		pipelineDiscardRectangleStateCreateInfoEXT.pDiscardRectangles = &discardRectangle;//指向一个 VkRect2D 数组，每个数组元素对应一个 discard rectangle，如果pipeline以VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT创建，则该参数忽略
+
+
+
+		//动态设置discard rectangles    ，更新索引为[ firstDiscardRectangle, firstDiscardRectangle + discardRectangleCount)的discard rectangle，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT创建才能使用，否则会只用VkPipelineDiscardRectangleStateCreateInfoEXT中设置的pDiscardRectangles
+		vkCmdSetDiscardRectangleEXT(commandBuffer, 0/*firstDiscardRectangle，是该命令更新的第一个discard rectangle的索引*/, 1/*discardRectangleCount，是该命令更新的discard rectangle的数量*/,
+										&discardRectangle/*pDiscardRectangles，指向一个 VkRect2D 数组，每个数组元素对应一个 discard rectangle */);
+		/*
+		vkCmdSetDiscardRectangleEXT有效用法:
+		1.firstDiscardRectangle + discardRectangleCount 必须小于等于VkPhysicalDeviceDiscardRectanglePropertiesEXT::maxDiscardRectangles
+		2.pDiscardRectangles中每个元素的offset的x以及y必须大于0
+		3.pDiscardRectangles中每个元素的(offset.x + extent.width)， (offset.y + extent.height) 不能导致符号整数加法溢出
+		4.如果该命令记录在开启了VkCommandBufferInheritanceViewportScissorInfoNV::viewportScissor2D的 secondary command buffer中，则该函数不能被调用
+		*/
+
+
+
+		//动态设置是否启用discard rectangles    ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DISCARD_RECTANGLE_ENABLE_EXT创建才能使用，否则会只用VkPipelineDiscardRectangleStateCreateInfoEXT中设置的discardRectangleCount来隐式指出，即大于0的值便是启用discard rectangles
+		vkCmdSetDiscardRectangleEnableEXT(commandBuffer, VK_TRUE/*discardRectangleEnable,指明是否启用 discard rectangles*/);
+		/*
+		vkCmdSetDiscardRectangleEnableEXT有效用法:
+		1. VK_EXT_discard_rectangles拓展必须开启，且必须支持该拓展的至少 specVersion 2版本
+		
+		*/
+
+		//动态设置discard rectangle mode    ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DISCARD_RECTANGLE_MODE_EXT创建才能使用，否则会只用VkPipelineDiscardRectangleStateCreateInfoEXT中设置的discardRectangleMode
+		vkCmdSetDiscardRectangleModeEXT(commandBuffer, VK_DISCARD_RECTANGLE_MODE_INCLUSIVE_EXT/*discardRectangleMode, 指定所有discard rectangles的discard rectangle mode, 为 inclusive 或者 exclusive.*/);
+		/*
+		vkCmdSetDiscardRectangleModeEXT有效用法:
+		1. VK_EXT_discard_rectangles拓展必须开启，且必须支持该拓展的至少 specVersion 2版本
+		*/
+
+
+
+	}
+
+
+	//Scissor Test  参见p2766
+	{
+		/*
+		 scissor test会比较fragment中的采样点的framebuffer坐标 (xf,yf)是否在一个该fragment的 ViewportIndex对应的 scissor rectangle 外，并进行相关操作
+		
+		每个scissor rectangle可以在创建pipeline的VkPipelineViewportStateCreateInfo中设置，也可以在运行时通过vkCmdSetScissor设置
+		
+		如果一个fragment的采样点的framebuffer坐标 (xf,yf)在任何一个scissor rectangle外即其坐标满足xf,yf对应在范围 [VkRect2D::offset.x, VkRect2D::offset.x + VkRect2D::extent.x),[VkRect2D::offset.y, VkRect2D::offset.y + VkRect2D::extent.y)外，则任何在 ViewportIndex对应的scissor rectangle外的采样点的coverage比特位会被设为0
+		
+		如果render pass transform 开启，则会先进行viewport transform，然后再进行scissor test
+		*/
+
+		VkRect2D scissor{};
+		scissor.extent = VkExtent2D{ .width = 1,.height = 1 };
+		scissor.offset = VkOffset2D{ .x = 0,.y = 0 };
+
+
+		//动态设置scissor    ，更新索引为[ firstScissor, firstScissor + scissorCount)的scissor，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_SCISSOR_EXT创建才能使用，否则会只用VkPipelineViewportStateCreateInfo中设置的pScissors
+		vkCmdSetScissor(commandBuffer, 0/*firstScissor，是该命令更新的第一个scissor rectangle的索引*/, 1/*scissorCount，是该命令更新的scissor rectangle的数量*/,
+								&scissor/* pScissors,指向一个 VkRect2D 数组，每个数组元素对应一个 scissor rectangle*/);
+		/*
+		vkCmdSetScissor有效用法:
+		1.firstScissor + scissorCount 必须在[1,VkPhysicalDeviceLimits::maxViewports]中
+		2.如果multiViewport 特性未开启，则firstScissor必须为0，scissorCount必须为1
+		3.pScissors中每个元素的offset的x以及y必须大于等于0
+		4.pScissors中每个元素的(offset.x + extent.width)， (offset.y + extent.height) 不能导致符号整数加法溢出
+		5.如果该命令记录在开启了VkCommandBufferInheritanceViewportScissorInfoNV::viewportScissor2D的 secondary command buffer中，则该函数不能被调用
+
+		*/
+	}
+
+	//Exclusive Scissor Test   参见p2768
+	{
+		/*
+		 exclusive scissor test会比较fragment中的采样点的framebuffer坐标 (xf,yf)是否在一个该fragment的 ViewportIndex对应的exclusive scissor rectangle 外，并进行相关操作
+
+		每个exclusive scissor rectangle可以在创建pipeline的VkPipelineViewportExclusiveScissorStateCreateInfoNV中设置，也可以在运行时通过 vkCmdSetExclusiveScissorNV 设置
+
+		如果一个fragment的采样点的framebuffer坐标 (xf,yf)在任何一个exclusive scissor rectangle内即其坐标满足xf,yf对应在范围 [VkRect2D::offset.x, VkRect2D::offset.x + VkRect2D::extent.x),[VkRect2D::offset.y, VkRect2D::offset.y + VkRect2D::extent.y)内，则任何在 ViewportIndex对应的exclusive scissor rectangle内的采样点的coverage比特位会被设为0，如果不指明exclusive scissor rectangle，则不会改变采样点的coverage比特位
+
+		*/
+
+
+		//在VkGraphicsPipelineCreateInfo.pNext中包含VkPipelineViewportExclusiveScissorStateCreateInfoNV指明exclusive scissor rectagles，  如果不包含该结构体，则相当于包含一个exclusiveScissorCount为0的该结构体，  如果pipeline以VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NV创建，则该结构体中的pExclusiveScissors参数忽略
+		VkPipelineViewportExclusiveScissorStateCreateInfoNV pipelineViewportExclusiveScissorStateCreateInfoNV{};
+		pipelineViewportExclusiveScissorStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV;
+		pipelineViewportExclusiveScissorStateCreateInfoNV.pNext = nullptr;
+		pipelineViewportExclusiveScissorStateCreateInfoNV.exclusiveScissorCount = 1;//为exclusive scissor rectangles.的数量
+		VkRect2D exclusiveScissor{};
+		exclusiveScissor.extent = VkExtent2D{ .width = 1,.height = 1 };
+		exclusiveScissor.offset = VkOffset2D{ .x = 0,.y = 0 };
+		pipelineViewportExclusiveScissorStateCreateInfoNV.pExclusiveScissors = &exclusiveScissor;//指向一个 VkRect2D 数组，每个数组元素对应一个 exclusive scissor rectangle
+		/*
+		VkPipelineViewportExclusiveScissorStateCreateInfoNV有效用法:
+		1.如果multiViewport 特性未开启，则exclusiveScissorCount必须为0或1
+		2.exclusiveScissorCount 必须小于等于VkPhysicalDeviceLimits::maxViewports
+		3.exclusiveScissorCount必须为0或者大于等于VkPipelineViewportStateCreateInfo::viewportCount
+		*/
+
+
+
+		//动态设置 exclusive scissor rectangles    ，更新索引为[ firstExclusiveScissor, firstExclusiveScissor + exclusiveScissorCount)的exclusive scissor rectangle，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NV创建才能使用，否则会只用 VkPipelineViewportExclusiveScissorStateCreateInfoNV中设置的pExclusiveScissors
+		vkCmdSetExclusiveScissorNV(commandBuffer, 0/*firstExclusiveScissor，是该命令更新的第一个exclusive scissor rectangle的索引*/, 1/*exclusiveScissorCount，是该命令更新的exclusive scissor rectangle的数量*/,
+			&exclusiveScissor/* pExclusiveScissors,指向一个 VkRect2D 数组，每个数组元素对应一个exclusive scissor rectangle*/);
+		/*
+		vkCmdSetExclusiveScissorNV有效用法:
+		1.exclusiveScissor 特性必须开启
+		2.firstExclusiveScissor + exclusiveScissorCount 必须在[1,VkPhysicalDeviceLimits::maxViewports]中
+		3.如果multiViewport 特性未开启，则firstExclusiveScissor必须为0，exclusiveScissorCount必须为1
+		4.pExclusiveScissors中每个元素的offset的x以及y必须大于等于0
+		5.pExclusiveScissors中每个元素的(offset.x + extent.width)， (offset.y + extent.height) 不能导致符号整数加法溢出
+
+		*/
+
+
+		VkBool32 enableExclusiveScissorRectagle = VK_TRUE;
+		//动态设置一个exclusive scissor rectangle是否启用    ，更新索引为[ firstExclusiveScissor, firstExclusiveScissor + exclusiveScissorCount)的exclusive scissor rectangle的是否启用信息 ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_ENABLE_NV创建才能使用，否则会只用 VkPipelineViewportExclusiveScissorStateCreateInfoNV中设置的exclusiveScissorCount来隐式指出，即从0到exclusiveScissorCount-1的索引的exclusive scissor rectangle启用，剩余到 VkPhysicalDeviceLimits::maxViewports的不启用
+		vkCmdSetExclusiveScissorEnableNV(commandBuffer, 0/*firstExclusiveScissor，是该命令更新的第一个exclusive scissor rectangle的索引*/, 1/*exclusiveScissorCount，是该命令更新的exclusive scissor rectangle的数量*/,
+														&enableExclusiveScissorRectagle/*pExclusiveScissorEnables，是一组VkBool32数组指针，指明exclusive scissor 是否开启*/);
+		/*
+		vkCmdSetExclusiveScissorEnableNV有效用法:
+		1. exclusiveScissor 特性必须开启，实现必须支持 VK_NV_scissor_exclusive拓展的至少 specVersion 2版本
+		
+		*/
+
+
+	}
+
+
+	//Sample Mask Test  参见p2773
+	{
+		/*
+		 sample mask test比较fragment的 coverage mask以及VkPipelineMultisampleStateCreateInfo::pSampleMask定义的mask，如果pSampleMask中的设置为0，则对应的采样点的coverage比特位会被设为0
+
+		
+		*/
+
+		VkSampleMask sampleMask = 0x00000001;
+		//动态设置sample mask    ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_SAMPLE_MASK_EXT创建才能使用，否则会只用VkPipelineMultisampleStateCreateInfo中设置的pSampleMask
+		vkCmdSetSampleMaskEXT(commandBuffer,VK_SAMPLE_COUNT_1_BIT/*samples,指定pSampleMask中元素数量.*/ , &sampleMask/*pSampleMask，指向一个 VkSampleMask 数组，每个数组元素对应一个 sample mask,数组大小由samples参数决定*/);
+		/*
+		vkCmdSetSampleMaskEXT有效用法:
+		1. extendedDynamicState3SampleMask 或者shaderObject特性必须有一个开启
+
+
+		*/
+
+	}
+
+
+	//Fragment Shading  参见p2775
+	{
+		/*
+		Fragment shaders会对每个fragment调用处理，或者是以 helper invocations处理
+		
+		Fragment shaders会对每个fragment是否执行，执行多少次条件详情参见p2755
+		*/
+
+
+		//Sample Mask  参见p2776
+
+
+		//Fragment Shader Tile Image Reads   参见p2776
+		{
+			/*
+			如果 VK_EXT_shader_tile_image 拓展开启，则会将framebuffer划分为一个个小的tile，一个tile image为 framebuffer attachment中fragment在tile区域内的一个视图
+			
+			*/
+
+
+			//Depth Replacement  参见p2778
+
+			//Stencil Reference Replacement 参见p2778
+
+			// Interlocked Operations  参见p2778
+			{
+				/*
+				OpBeginInvocationInterlockEXT 以及 OpEndInvocationInterlockEXT 定义片段着色器的一部分，它对在其中执行的操作施加额外的排序约束，
+				具体的顺序约束取决于执行模式 execution mode，参见 ShadingRateInterlockOrderedEXT， ShadingRateInterlockUnorderedEXT，  PixelInterlockOrderedEXT，
+												PixelInterlockUnorderedEXT，SampleInterlockOrderedEXT，SampleInterlockUnorderedEXT，具体情况见p2778
+				*/
+			}
+
+
+
+		}
+
+
+
+	}
+
+
+	//Multisample Coverage  参见p2779
+	{
+		/*
+		如果一个 fragment shader激活或者其entry point interface包含以 SampleMask 但不以 OverrideCoverageNV修饰的输出变量，则coverage mask将会根据以 SampleMask修饰的输出变量输出的值通过操作 ANDed产生一个新的coverage mask，
+
+		如果以SampleMask 以及 OverrideCoverageNV修饰输出变量，则会直接替换为shader输出的coverage mask
+
+		如果不含以SampleMask修饰的输出变量则不会更改coverage mask
+
+		然后fragment的alpha值以及 coverage mask 会根据 line coverage factor（如果VkPipelineRasterizationStateCreateInfo::lineRasterizationMode为 VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_KHR ）以及且VkPipelineMultisampleStateCreateInfo的alphaToCoverageEnable以及alphaToOneEnable 参数进行修改
+		
+		*/
+
+
+		//动态设置 alphaToCoverageEnable      只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXT创建才能使用，否则会只用 VkPipelineMultisampleStateCreateInfo::alphaToCoverageEnable设置的
+		vkCmdSetAlphaToCoverageEnableEXT(commandBuffer, VK_TRUE/*alphaToCoverageEnable,指定 alphaToCoverageEnable state*/);
+		/*
+		vkCmdSetAlphaToCoverageEnableEXT有效用法:
+		1.extendedDynamicState3AlphaToCoverageEnable 或者shaderObject特性必须有一个要开启
+		*/
+
+		//动态设置  alphaToOneEnable      只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_ALPHA_TO_ONE_ENABLE_EXT创建才能使用，否则会只用 VkPipelineMultisampleStateCreateInfo::alphaToOneEnable设置的
+		vkCmdSetAlphaToOneEnableEXT(commandBuffer, VK_TRUE/*alphaToOneEnable,指定 alphaToOneEnable state*/);
+		/*
+		vkCmdSetAlphaToOneEnableEXT有效用法:
+		1.extendedDynamicState3AlphaToOneEnable 或者shaderObject特性必须有一个要开启
+		2.如果alphaToOne 特性未开启，则alphaToOneEnable 必须为 VK_FALSE
+		*/
+
+
+		//该章节引用的alpha值来源于以 Location 和 Index修饰为0的输出变量，其他对该alpha的操作详细信息见p2782
+	}
+
 }
 
 

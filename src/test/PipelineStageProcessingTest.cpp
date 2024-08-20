@@ -2123,6 +2123,379 @@ void PipelineStageProcessingTest::FragmentOperationsTest()
 		//该章节引用的alpha值来源于以 Location 和 Index修饰为0的输出变量，其他对该alpha的操作详细信息见p2782
 	}
 
+
+
+	//Depth and Stencil Operations   参见p2782
+	{
+		//pipeline的 depth bounds tests, stencil test, 以及 depth test由VkPipelineDepthStencilStateCreateInfo 控制
+		VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo{};
+		pipelineDepthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		pipelineDepthStencilStateCreateInfo.pNext = nullptr;
+		pipelineDepthStencilStateCreateInfo.flags = VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT;//是一个VkPipelineDepthStencilStateCreateFlagBits组合值位掩码，指定额外的depth/stencil state 信息
+		/*
+		VkPipelineDepthStencilStateCreateFlagBits:
+		VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT:  指明访问depth/stencil 以及 input attachments的depth aspect将有隐式的framebuffer-local memory dependencies.对该场景下memory dependencies的描述见p2785
+		VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT:  指明访问depth/stencil 以及 input attachments的stencil aspect将有隐式的framebuffer-local memory dependencies.对该场景下memory dependencies的描述见p2786
+
+		*/
+		pipelineDepthStencilStateCreateInfo.depthTestEnable = VK_TRUE;//控制 depth testing 是否开启
+		pipelineDepthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;//是一个VkCompareOp 值指明在depth testing步骤中depth comparison操作的比较操作符
+		pipelineDepthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;//控制当depthTestEnable 为 VK_TRUE的时候depth  writes是否开启，如果depthTestEnable 为 VK_FALSE，则永不会开启depth  writes
+		pipelineDepthStencilStateCreateInfo.stencilTestEnable = VK_TRUE;//控制是否开启 stencil testing
+		VkStencilOpState back{};
+		{
+			back.failOp = VK_STENCIL_OP_INVERT;
+			back.passOp = VK_STENCIL_OP_ZERO;
+			back.depthFailOp = VK_STENCIL_OP_KEEP;
+			back.compareOp = VK_COMPARE_OP_LESS;
+			back.compareMask = 0;
+			back.writeMask = 0;
+			back.reference = 0;
+		}
+		pipelineDepthStencilStateCreateInfo.back = back;//为VkStencilOpState 值控制对应的stencil test的相关参数
+		VkStencilOpState front{};
+		{
+			front.failOp = VK_STENCIL_OP_INVERT;
+			front.passOp = VK_STENCIL_OP_ZERO;
+			front.depthFailOp = VK_STENCIL_OP_KEEP;
+			front.compareOp = VK_COMPARE_OP_LESS;
+			front.compareMask = 0;
+			front.writeMask = 0;
+			front.reference = 0;
+		}
+		pipelineDepthStencilStateCreateInfo.front = front;//为VkStencilOpState 值控制对应的stencil test的相关参数
+		pipelineDepthStencilStateCreateInfo.depthBoundsTestEnable = VK_TRUE;//控制是否开启depth bounds testing
+		pipelineDepthStencilStateCreateInfo.minDepthBounds = 0;//指明depth bounds testing中的深度边界的最小值
+		pipelineDepthStencilStateCreateInfo.maxDepthBounds = 1;//指明depth bounds testing中的深度边界的最大值
+		/*
+		VkPipelineDepthStencilStateCreateInfo有效用法:
+		1.如果depthBounds 特性未开启，则depthBoundsTestEnable必须为VK_FALSE
+		2.如果VK_KHR_portability_subset 拓展开启，且VkPhysicalDevicePortabilitySubsetFeaturesKHR::separateStencilMaskRef为VK_FALSE，且VkPipelineDepthStencilStateCreateInfo::stencilTestEnable为VK_TRUE，且VkPipelineRasterizationStateCreateInfo::cullMode为VK_CULL_MODE_NONE，
+						则front和back中的reference必须相同
+		3.如果rasterizationOrderDepthAttachmentAccess 未开启，则flags不能包含VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT
+		4.如果rasterizationOrderStencilAttachmentAccess 特性未开启，则flags不能包含VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT
+
+		*/
+
+
+	}
+
+
+	// Depth Bounds Test  参见p2786
+	{
+		/*
+		 depth bounds test将比较每个采样点的深度值z是否在[minDepthBounds ,maxDepthBounds]给定的范围中，如果不在，则该采样的点coverage mask会被设为0
+	
+		如果未开启depth bounds test或者不含depth attachment,则不会修改采样点的coverage mask
+
+		该相关参数可以通过VkPipelineDepthStencilStateCreateInfo 指定或者vkCmdSetDepthBoundsTestEnable 以及 vkCmdSetDepthBounds动态指定
+
+		*/
+
+
+
+		//动态设置是否开启depth bounds test       ，等同于vkCmdSetDepthBoundsTestEnableEXT，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE创建才能使用，否则会只用  VkPipelineDepthStencilStateCreateInfo::depthBoundsTestEnable设置的
+		vkCmdSetDepthBoundsTestEnable(commandBuffer, VK_TRUE/*depthBoundsTestEnable,指明是否开启 depth bounds test .*/);
+		/*
+		vkCmdSetDepthBoundsTestEnable有效用法:
+		1.extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+			
+		*/
+
+		//动态设置是否开启depth bounds test的范围       ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE创建才能使用，否则会只用  VkPipelineDepthStencilStateCreateInfo::depthBoundsTestEnable设置的
+		vkCmdSetDepthBounds(commandBuffer, 0.0f/*minDepthBounds,指明depth bounds test的最小值 .*/,1.0f /*maxDepthBounds,指明depth bounds test的最大值  .*/);
+		/*
+		vkCmdSetDepthBounds有效用法:
+		1.如果VK_EXT_depth_range_unrestricted 拓展未开启，minDepthBounds 以及maxDepthBounds 必须在[0.0,1.0]之间
+		*/
+	}
+
+
+
+	// Stencil Test  参见p2789
+	{
+		/*
+		stencil test将比较每个采样点的在 stencil attachment 中的值Sa 和一个引用的值reference，然后会根据测试的结果更新其在stencil attachment中的值以及coverage mask
+
+		如果未开启stencil test，无论是通过VkPipelineDepthStencilStateCreateInfo::stencilTestEnable还是vkCmdSetStencilTestEnable 设置，或者不含stencil attachment，则采样点的coverage mask不会改变
+		
+		stencil test将由back 或者 front stencil state两个中的一个控制，如果当前的fragment所在的图元为  back-facing polygons的则由back决定，如果当前的fragment所在的图元为  front-facing polygons的或者其他图元的则由front决定
+
+		比较操作通过指定一个vkCmdSetStencilOp::compareOp,或者 VkStencilOpState::compareOp的 VkCompareOp值决定
+
+		back 或者 front stencil state中的compare mask Sc 以及 stencil reference 值 Sr由VkPipelineDepthStencilStateCreateInfo中的值或者 vkCmdSetStencilCompareMask以及vkCmdSetStencilReference.设置，
+		Sr 以及 Sa会分别和Sc 进行与（AND）操作得到一个新的compare mask以及 stencil reference值，这两个新的值将会根据VkCompareOp指定的值进行比较操作的到一个值Sg，如果比较失败，则该采样点的coverage mask会被设置为0
+		VkCompareOp指定的值可以由 vkCmdSetStencilOp 或者 VkPipelineDepthStencilStateCreateInfo指定，如果比较失败，将使用failOp 来处理Sg，如果比较通过，则将使用 VkPipelineDepthStencilStateCreateInfo::passOp（depth test通过）或者 VkPipelineDepthStencilStateCreateInfo::depthFailOp（depth test失败）
+		比较成功，Sg将会更新到Sa，根据back 或者 front stencil state中定义的writeMask(Sw)，根据公式Sa =  (Sa & ¬Sw) | (Sg & Sw)
+
+
+		*/
+
+		//动态设置是否开启stencil test       ，等同于vkCmdSetStencilTestEnableEXT，  只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE创建才能使用，否则会只用VkPipelineDepthStencilStateCreateInfo::stencilTestEnable 设置的
+		vkCmdSetStencilTestEnable(commandBuffer, VK_TRUE/*stencilTestEnable,指明是否开启stencil test .*/);
+		/*
+		vkCmdSetStencilTestEnable有效用法:
+		1.extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+
+		*/
+
+		VkStencilFaceFlagBits stencilFaceFlagBits = VK_STENCIL_FACE_FRONT_BIT;
+		/*
+		VkStencilFaceFlagBits:
+		VK_STENCIL_FACE_FRONT_BIT: 指定只更新front stencil state 
+		VK_STENCIL_FACE_BACK_BIT: 指定只更新back stencil state  specifies that only the back set of stencil state is updated.
+		VK_STENCIL_FACE_FRONT_AND_BACK:  指定更新front 以及 stencil state ，为VK_STENCIL_FACE_FRONT_BIT以及VK_STENCIL_FACE_BACK_BIT组合值
+		*/
+
+
+		//动态设置stencil test  的参数     ，等同于vkCmdSetStencilOpEXT，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_STENCIL_OP创建才能使用，否则会只用VkPipelineDepthStencilStateCreateInfo::failOp, passOp, depthFailOp, 以及 compareOp设置的
+		vkCmdSetStencilOp(commandBuffer, stencilFaceFlagBits/*faceMask,是VkStencilFaceFlagBits 组合值位掩码指明更新哪组stencil state.*/, VK_STENCIL_OP_INVERT/*failOp,是一个VkStencilOp值指明采样点在stencil test失败后的操作.*/,
+					VK_STENCIL_OP_KEEP/*passOp, 是一个VkStencilOp 值指明采样点在同时通过depth以及 stencil test后的操作.*/, VK_STENCIL_OP_KEEP/*depthFailOp,一个VkStencilOp  值指明采样点通过stencil test但没有通过depth test的操作.*/, 
+					VK_COMPARE_OP_LESS/*compareOp,是一个 VkCompareOp 值指明用于stencil test的比较操作符.*/);
+		/*
+		vkCmdSetStencilOp有效用法:
+		1.extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+		
+		*/
+
+
+		//假设这个结构体设置为VkPipelineDepthStencilStateCreateInfo::back
+		VkStencilOpState back{};
+		{
+			back.failOp = VK_STENCIL_OP_INVERT;//是一个VkStencilOp值指明采样点在stencil test失败后的操作
+			back.passOp = VK_STENCIL_OP_ZERO;//是一个VkStencilOp 值指明采样点在同时通过depth以及 stencil test后的操作
+			back.depthFailOp = VK_STENCIL_OP_KEEP;//一个VkStencilOp  值指明采样点通过stencil test但没有通过depth test的操作
+			back.compareOp = VK_COMPARE_OP_LESS;//compareOp,是一个 VkCompareOp 值指明用于stencil test的比较操作符.
+			back.compareMask = 0;//选择unsigned integer stencil值哪个比特参与stencil test.
+			back.writeMask = 0;// 选择stencil test更新stencil attachment中 unsigned integer stencil值的哪个比特
+			back.reference = 0;//是一个integer stencil reference值用于 unsigned stencil comparison
+		}
+
+
+		//动态设置 stencil compare mask     ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK创建才能使用，否则会只用选择的back 或者 front stencil state 的 VkStencilOpState::compareMask设置的
+		vkCmdSetStencilCompareMask(commandBuffer, stencilFaceFlagBits/*faceMask,是VkStencilFaceFlagBits 组合值位掩码指明更新哪组stencil state.*/, 0x00000001/*compareMask,是更新的stencil compare mask新值*/);
+
+
+		//动态设置 stencil write mask     ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_STENCIL_WRITE_MASK创建才能使用，否则会只用选择的back 或者 front stencil state 的 VkStencilOpState::writeMask设置的
+		vkCmdSetStencilWriteMask(commandBuffer, stencilFaceFlagBits/*faceMask,是VkStencilFaceFlagBits 组合值位掩码指明更新哪组stencil state.*/, 0x00000001/*writeMask,是更新的stencil write mask新值*/);
+
+		//动态设置 stencil reference值     ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_STENCIL_REFERENCE创建才能使用，否则会只用选择的back 或者 front stencil state 的 VkStencilOpState::reference设置的
+		vkCmdSetStencilReference(commandBuffer, stencilFaceFlagBits/*faceMask,是VkStencilFaceFlagBits 组合值位掩码指明更新哪组stencil state.*/, 1/*reference,是更新的 stencil reference新值*/);
+
+
+		//VkStencilOpState(对应 back 或者 front stencil state)的 failOp, passOp, 以及 depthFailOp 可能的值 ，对应对stencil test后对 stencil attachment中该采样点stencil值的操作
+		VkStencilOp stencilOp = VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+		/*
+		VkStencilOp:
+		VK_STENCIL_OP_KEEP:  保持当前值.
+		VK_STENCIL_OP_ZERO:  设置为0.
+		VK_STENCIL_OP_REPLACE:  设置值为reference值
+		VK_STENCIL_OP_INCREMENT_AND_CLAMP: 递增当前的值且限制到最大可表示的无符号值
+		VK_STENCIL_OP_DECREMENT_AND_CLAMP: 递减当前的值且限制到0
+		VK_STENCIL_OP_INVERT:  将当前值的每个bit为翻转.
+		VK_STENCIL_OP_INCREMENT_AND_WRAP: 递增当前的值且超出最大的值时设为0
+		VK_STENCIL_OP_DECREMENT_AND_WRAP:  递减当前的值且当低于0时设置为最大的值
+		
+		*/
+
+	}
+
+
+	//Depth Test   参见p2799
+	{
+		/*
+		depth test将比较每个采样点的在 depth attachment 中的值以及采样点的在framebuffer中的深度值，如果没有深度附件该操作会跳过
+
+		depth test操作分为三部分:
+				Depth Clamping and Range Adjustment
+				Depth Comparison
+				Depth Attachment Writes
+		*/
+		
+		//Depth Clamping and Range Adjustment  见p2800
+		{
+			/*
+			如果 VkPipelineRasterizationStateCreateInfo::depthClampEnable 开启，则采样点的深度值会被限制到[min( minDepth,maxDepth),max( minDepth,maxDepth)],其中minDepth和maxDepth为当前viewport的设置的 
+			
+			如果VkPhysicalDeviceDepthClampZeroOneFeaturesEXT::depthClampZeroOne开启，则如果depth attachment为浮点格式且 VK_EXT_depth_range_unrestricted开启，则深度值不变，否则限定到[0,1]
+			如果VkPhysicalDeviceDepthClampZeroOneFeaturesEXT::depthClampZeroOne未开启，如果深度值不在[min( minDepth,maxDepth),max( minDepth,maxDepth)]范围内则会变为未定义，如果depth attachment的格式为定点数，则不在[0，1]内的深度值会变为未定义
+			*/
+
+
+		}
+
+
+		//Depth Comparison   参见p2800
+		{
+			/*
+			如果depth test未开启，通过vkCmdSetDepthTestEnable 或者 VkPipelineDepthStencilStateCreateInfo::depthTestEnable指定，则该步骤跳过
+
+			比较将根据vkCmdSetDepthCompareOp, 或者 VkPipelineDepthStencilStateCreateInfo::depthCompareOp设置的VkCompareOp值来进行，比较当前采样点的值和其在depth attachment中的值，如果比较结果为失败，则该采样点的coverage mask会被设为0	
+			*/
+		}
+
+
+		// Depth Attachment Writes  参见p2800
+		{
+			/*
+			如果开启depth test，且depth test比较结果为true，则该采样点的深度值就会写入到depth attachment中，如果没有depth attachment，则不会写入任何值
+			
+			*/
+
+
+			//动态开启depth test   ，等同于vkCmdSetDepthTestEnableEXT，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE创建才能使用，否则会只用VkPipelineDepthStencilStateCreateInfo::depthTestEnable 设置的
+			vkCmdSetDepthTestEnable(commandBuffer, VK_TRUE/*depthTestEnable,指明是否开启 depth test */);
+			/*
+			vkCmdSetDepthTestEnable有效用法:
+			1.extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+			*/
+
+
+
+			//动态设置depth test比较运算符   ，等同于vkCmdSetDepthCompareOpEXT，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_DEPTH_COMPARE_OP创建才能使用，否则会只用 VkPipelineDepthStencilStateCreateInfo::depthCompareOp 设置的
+			vkCmdSetDepthCompareOp(commandBuffer, VK_COMPARE_OP_LESS/*depthCompareOp,是一个VkCompareOp 值指明在depth test中使用的比较运算符.*/);
+			/*
+			vkCmdSetDepthTestEnable有效用法:
+			1.extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+			*/
+
+			
+			//动态开启depth write    ，等同于vkCmdSetDepthWriteEnableEXT，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE 创建才能使用，否则会只用VkPipelineDepthStencilStateCreateInfo::depthWriteEnable 设置的
+			vkCmdSetDepthWriteEnable(commandBuffer, VK_TRUE/*depthWriteEnable,指明是否开启 depth write */);
+			/*
+			vkCmdSetDepthWriteEnable有效用法:
+			1.extendedDynamicState特性开启，shaderObject特性开启以及创建该commandBuffer所在的VkInstance的VkApplicationInfo::apiVersion大于等于Version 1.3 这三个条件中至少需要满足一个
+			*/
+
+		}
+
+	}
+
+
+
+	//Representative Fragment Test  参见p2805
+	{
+		/*
+		representative fragment test允许实现减少图元的rasterization以及fragment处理的工作量，对于所有传递到prior early fragment tests阶段的图元 实现会选中处理一些具有“代表性”的图元进行处理，或者丢弃所有图元，这是依赖具体实现的
+		
+		如果激活的fragment shader没有指定 EarlyFragmentTests execution mode,则representative fragment test 不起作用
+		*/
+
+
+		//在VkGraphicsPipelineCreateInfo.pNext中包含VkPipelineRepresentativeFragmentTestStateCreateInfoNV来控制representative fragment test
+		VkPipelineRepresentativeFragmentTestStateCreateInfoNV pipelineRepresentativeFragmentTestStateCreateInfoNV{};
+		pipelineRepresentativeFragmentTestStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV;
+		pipelineRepresentativeFragmentTestStateCreateInfoNV.pNext = nullptr;
+		pipelineRepresentativeFragmentTestStateCreateInfoNV.representativeFragmentTestEnable = VK_TRUE;//控制是否开启representative fragment test
+
+
+		
+		//动态设置 representativeFragmentTestEnable state   ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_REPRESENTATIVE_FRAGMENT_TEST_ENABLE_NV 创建才能使用，否则会只用VkPipelineRepresentativeFragmentTestStateCreateInfoNV::representativeFragmentTestEnable 设置的
+		vkCmdSetRepresentativeFragmentTestEnableNV(commandBuffer, VK_TRUE/*representativeFragmentTestEnable,指明是否开启representative fragment test */);
+		/*
+		vkCmdSetRepresentativeFragmentTestEnableNV有效用法:
+		1. extendedDynamicState3RepresentativeFragmentTestEnable或者shaderObject特性开启至少一个开启
+		*/
+
+	}
+
+
+	// Sample Counting 参见p2807    Occlusion queries可以查询所有通过了上述描述的各种per-fragment测试后coverage mask还为1的采样点的数量
+
+
+	//Fragment Coverage to Color   参见p2807
+	{
+
+		/*
+		如果VkPipelineMultisampleStateCreateInfo.pNext中包含一个VkPipelineCoverageToColorStateCreateInfoNV，则该结构体控制将fragment coverage mask替换该fragment的颜色值输出
+		
+		如果该结构体的coverageToColorEnable为VK_TRUE，则 coverage mask会替换fragment shader中Location等于coverageToColorLocation，且Index 为0的颜色输出值的第一个分量，否则会跳过该步骤
+		*/
+		VkPipelineCoverageToColorStateCreateInfoNV pipelineCoverageToColorStateCreateInfoNV{};
+		pipelineCoverageToColorStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_TO_COLOR_STATE_CREATE_INFO_NV;
+		pipelineCoverageToColorStateCreateInfoNV.pNext = nullptr;
+		pipelineCoverageToColorStateCreateInfoNV.flags = 0;
+		pipelineCoverageToColorStateCreateInfoNV.coverageToColorEnable = VK_TRUE;
+		pipelineCoverageToColorStateCreateInfoNV.coverageToColorLocation = 0;
+		/*
+		VkPipelineCoverageToColorStateCreateInfoNV有效用法:
+		1.如果coverageToColorEnable 为VK_TRUE，则VkGraphicsPipelineCreateInfo::renderPass以及VkGraphicsPipelineCreateInfo::subpass 所指的render pass subpass必须在索引为coverageToColorLocation处含有一个格式为VK_FORMAT_R8_UINT, VK_FORMAT_R8_SINT, VK_FORMAT_R16_UINT,
+						VK_FORMAT_R16_SINT, VK_FORMAT_R32_UINT, 或者 VK_FORMAT_R32_SINT的color attachment
+		*/
+
+
+		//动态设置 coverageToColorEnable state   ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_ENABLE_NV 创建才能使用，否则会只用VkPipelineCoverageToColorStateCreateInfoNV::coverageToColorEnable 设置的
+		vkCmdSetCoverageToColorEnableNV(commandBuffer, VK_TRUE/*coverageToColorEnable,指明coverageToColorEnable state*/);
+		/*
+		vkCmdSetCoverageToColorEnableNV有效用法:
+		1.  extendedDynamicState3CoverageToColorEnable或者shaderObject特性开启至少一个开启
+		*/
+
+
+		//动态设置 coverageToColorLocation state  ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_LOCATION_NV 创建才能使用，否则会只用VkPipelineCoverageToColorStateCreateInfoNV::coverageToColorLocation 设置的
+		vkCmdSetCoverageToColorLocationNV(commandBuffer, VK_TRUE/*coverageToColorLocation,指明coverageToColorLocation state*/);
+		/*
+		vkCmdSetCoverageToColorLocationNV有效用法:
+		1.  extendedDynamicState3CoverageToColorLocation或者shaderObject特性开启至少一个开启
+		*/
+
+	}
+
+
+
+	//Coverage Reduction  参见p2811
+	{
+		/*
+		coverage reduction将获取每个fragment中每个pixel包含的采样点的coverage mask信息，然后转换为一个boolean值
+		
+		*/
+
+
+		//Pixel Coverage  参见p2811
+		{
+			/*
+			每个pixel的coverage mask从总的fragment的coverage mask中提取。其包含rasterizationSamples个unique coverage sample
+			*/
+		}
+
+		//Color Sample Coverage   参见2811
+		{
+			//一旦确定了Pixel Coverage，那Color Sample Coverage也就确定了，具体的提取计算规则见p2811
+
+			/*
+			如果开启了 VK_NV_coverage_reduction_mode  拓展，则coverage reduction由VkPipelineGraphicsPipelineCreateInfo.pNext的 VkPipelineCoverageReductionStateCreateInfoNV中的参数控制
+			
+			如果不包含该结构体或者VK_NV_coverage_reduction_mode 拓展没开启，则默认情况根据:
+				如果 VK_NV_framebuffer_mixed_samples开启，则像是coverageReductionMode默认为VK_COVERAGE_REDUCTION_MODE_MERGE_NV.
+				如果 VK_AMD_mixed_attachment_samples开启，则像是coverageReductionMode默认为VK_COVERAGE_REDUCTION_MODE_TRUNCATE_NV.
+				如果 VK_NV_framebuffer_mixed_samples 以及VK_AMD_mixed_attachment_samples都开启，则默认coverageReductionMode依赖实现 
+			*/
+			
+			VkPipelineCoverageReductionStateCreateInfoNV pipelineCoverageReductionStateCreateInfoNV{};
+			pipelineCoverageReductionStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_REDUCTION_STATE_CREATE_INFO_NV;
+			pipelineCoverageReductionStateCreateInfoNV.pNext = nullptr;
+			pipelineCoverageReductionStateCreateInfoNV.flags = 0;//保留未来使用
+			pipelineCoverageReductionStateCreateInfoNV.coverageReductionMode = VK_COVERAGE_REDUCTION_MODE_MERGE_NV;/*一个 VkCoverageReductionModeNV 值指明color sample coverage如何从pixel coverage中产生
+			VkCoverageReductionModeNV:
+			VK_COVERAGE_REDUCTION_MODE_MERGE_NV:  指明每个color sample将根据实现关联到pixel coverage的samples的一个sample子集中，如果该子集中任何的sample被包含，则该color sample就被包含
+			VK_COVERAGE_REDUCTION_MODE_TRUNCATE_NV:  指明对于在color attachment中呈现的color samples，如果pixel coverage 中相同sample index的sample被包含，则该color sample就被包含，其余未被包含的就会被丢弃
+			*/
+
+
+			//动态设置  coverageReductionMode state  ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COVERAGE_REDUCTION_MODE_NV 创建才能使用，否则会只用VkPipelineCoverageReductionStateCreateInfoNV::coverageReductionMode 设置的
+			vkCmdSetCoverageReductionModeNV(commandBuffer, VK_COVERAGE_REDUCTION_MODE_MERGE_NV/*coverageReductionMode,指明 coverageReductionMode state*/);
+			/*
+			vkCmdSetCoverageReductionModeNV有效用法:
+			1.  extendedDynamicState3CoverageReductionMode 或者shaderObject特性开启至少一个开启
+			*/
+
+
+
+
+		}
+
+	}
+
 }
 
 

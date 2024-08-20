@@ -2490,7 +2490,79 @@ void PipelineStageProcessingTest::FragmentOperationsTest()
 			*/
 
 
+			//查询物理设备支持的coverage reduction mode，rasterization samples 以及 color, depth, stencil attachment sample counts的采样组合的集合
+			std::vector<VkFramebufferMixedSamplesCombinationNV> framebufferMixedSamplesCombinationNVs{};
+			uint32_t combinationCount{};
+			vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice, &combinationCount, nullptr);
+			framebufferMixedSamplesCombinationNVs.resize(combinationCount);
+			vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice, &combinationCount, framebufferMixedSamplesCombinationNVs.data());
+			//假设返回了至少一个组合，令
+			VkFramebufferMixedSamplesCombinationNV &framebufferMixedSamplesCombinationNV = framebufferMixedSamplesCombinationNVs[0];
+			framebufferMixedSamplesCombinationNV.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_MIXED_SAMPLES_COMBINATION_NV;
+			framebufferMixedSamplesCombinationNV.pNext = nullptr;
+			framebufferMixedSamplesCombinationNV.colorSamples = VK_SAMPLE_COUNT_1_BIT; //指明支持的组合中的color attachment中的 color samples数量，如果是0则指明这个组合不含color attachment
+			framebufferMixedSamplesCombinationNV.depthStencilSamples = VK_SAMPLE_COUNT_1_BIT;//指明支持的组合中的 depth stencil attachment中的 samples数量，如果是0则指明这个组合不含 depth stencil attachment
+			framebufferMixedSamplesCombinationNV.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;//为VkSampleCountFlagBits 组合值位掩码，指明支持的组合中的rasterization samples
+			framebufferMixedSamplesCombinationNV.coverageReductionMode = VK_COVERAGE_REDUCTION_MODE_MERGE_NV;//一个VkCoverageReductionModeNV 值指明coverage reduction mode
 
+
+			// Coverage Modulation  见p2816
+			{
+				/*
+				作为 coverage reduction 的一部分，fragment color values可以进行被一个值调制（相乘），这是一个和color samples相关联的包含的 rasterization samples的比例的一个函数
+				
+				pipeline控制coverage modulation 通过一个在创建pipeline的时候指定一个VkPipelineCoverageModulationStateCreateInfoNV
+
+				如果其coverageModulationTableEnable 为VK_FALSE，则调制因子的计算为（像素中color sample的coverage bit的计数值）*  VkAttachmentDescription::samples / rasterizationSamples
+				如果其coverageModulationTableEnable 为VK_TRUE，则调制因子的计算为 pCoverageModulationTable[covered samples count]，其中covered samples count为pixel中color sample的coverage bit的计数值
+
+				如果不包含该结构体，则可以认为coverageModulationMode 为VK_COVERAGE_MODULATION_MODE_NONE_NV.
+
+				如果 coverage reduction mode 为 VK_COVERAGE_REDUCTION_MODE_TRUNCATE_NV，每个color sample 关联到一个 coverage sample，则可以认为coverageModulationMode 为VK_COVERAGE_MODULATION_MODE_NONE_NV.
+				*/
+				VkPipelineCoverageModulationStateCreateInfoNV pipelineCoverageModulationStateCreateInfoNV{};
+				pipelineCoverageModulationStateCreateInfoNV.sType = VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_MODULATION_STATE_CREATE_INFO_NV;
+				pipelineCoverageModulationStateCreateInfoNV.pNext = nullptr;
+				pipelineCoverageModulationStateCreateInfoNV.flags = 0;//保留未来使用
+				pipelineCoverageModulationStateCreateInfoNV.coverageModulationMode = VK_COVERAGE_MODULATION_MODE_ALPHA_NV;/*一个  VkCoverageModulationModeNV 值指明如何调制哪个颜色分量	
+				VkCoverageModulationModeNV
+				VK_COVERAGE_MODULATION_MODE_NONE_NV:  指明没有分量会乘以调制因子
+				VK_COVERAGE_MODULATION_MODE_RGB_NV:  指明red, green, 以及 blue分量会乘以调制因子
+				VK_COVERAGE_MODULATION_MODE_ALPHA_NV:  指明alpha分量会乘以调制因子
+				VK_COVERAGE_MODULATION_MODE_RGBA_NV:  指明所有分量会乘以调制因子
+				*/
+				pipelineCoverageModulationStateCreateInfoNV.coverageModulationTableEnable = VK_TRUE;//控制调制因子是否从 pCoverageModulationTable 中获取
+				pipelineCoverageModulationStateCreateInfoNV.coverageModulationTableCount = 1;//pCoverageModulationTable 中元素个数，如果coverageModulationTableEnable为VK_TRUE，则该值必须为 rasterization samples的数量除以subpass中color samples的数量
+				float coverageModulationTable = { 1.0f };
+				pipelineCoverageModulationStateCreateInfoNV.pCoverageModulationTable = &coverageModulationTable;//一个包含了调制因子的数组，每个不同的covered samples数量对应一个值
+
+
+				//动态设置  coverageModulationMode state  ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COVERAGE_MODULATION_MODE_NV 创建才能使用，否则会只用VkPipelineCoverageModulationStateCreateInfoNV::coverageModulationMode 设置的
+				vkCmdSetCoverageModulationModeNV(commandBuffer, VK_COVERAGE_MODULATION_MODE_ALPHA_NV/*coverageModulationMode,指明 coverageModulationMode state.*/);
+				/*
+				vkCmdSetCoverageModulationModeNV有效用法:
+				1.  extendedDynamicState3CoverageModulationMode 或者shaderObject特性开启至少一个开启
+				
+				*/
+
+
+				//动态设置 coverageModulationTableEnable state  ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_ENABLE_NV 创建才能使用，否则会只用VkPipelineCoverageModulationStateCreateInfoNV::coverageModulationTableEnable 设置的
+				vkCmdSetCoverageModulationTableEnableNV(commandBuffer, VK_TRUE/*coverageModulationTableEnable,指明 coverageModulationTableEnable state.*/);
+				/*
+				vkCmdSetCoverageModulationTableEnableNV有效用法:
+				1.  extendedDynamicState3CoverageModulationTableEnable 或者shaderObject特性开启至少一个开启
+				*/
+
+
+				//动态设置 coverageModulationTable state  ，  只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_NV 创建才能使用，否则会只用VkPipelineCoverageModulationStateCreateInfoNV的coverageModulationTableCount以及pCoverageModulationTable 设置的
+				vkCmdSetCoverageModulationTableNV(commandBuffer, 1/*coverageModulationTableCount,指明pCoverageModulationTable 中元素个数.*/, &coverageModulationTable/*pCoverageModulationTable,指明一个包含了调制因子的数组，每个不同的covered samples数量对应一个值.*/);
+				/*
+				vkCmdSetCoverageModulationTableNV有效用法:
+				1.  extendedDynamicState3CoverageModulationTable 或者shaderObject特性开启至少一个开启
+
+				*/
+
+			}
 
 		}
 

@@ -2614,7 +2614,14 @@ void PipelineStageProcessingTest::TheFramebufferTest()
 			blendAttachment.blendEnable = VK_TRUE;//控制是否开启该color attachment的blend操作，如果未开启，则attachment的source fragment的color值不会改变
 			blendAttachment.colorBlendOp = VK_BLEND_OP_ADD;//指定哪个blend operation用来计算写入attachment的R,G,B值
 			blendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;//指定哪个blend operation用来计算写入attachment的A值
-			blendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT;//为VkColorComponentFlagBits组合值位掩码，指明R，G，B，A哪个分量可以写入，参见Color Write Mask.p2856
+			blendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT;/*为VkColorComponentFlagBits组合值位掩码，指明最终结果的R，G，B，A哪个分量可以写入，参见Color Write Mask.p2856
+			VkColorComponentFlagBits:
+			VK_COLOR_COMPONENT_R_BIT:  指明R分量可以写入到color attachment的合适的sample中，否则，内存中的该值不会被更新
+			VK_COLOR_COMPONENT_G_BIT:  指明G分量可以写入到color attachment的合适的sample中，否则，内存中的该值不会被更新
+			VK_COLOR_COMPONENT_B_BIT:  指明B分量可以写入到color attachment的合适的sample中，否则，内存中的该值不会被更新
+			VK_COLOR_COMPONENT_A_BIT:  指明A分量可以写入到color attachment的合适的sample中，否则，内存中的该值不会被更新	
+			*/
+			
 			blendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_CONSTANT_COLOR;//指定哪个blend factor用来定义source factors (Sr, Sg, Sb).
 			blendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_CONSTANT_ALPHA;//指定哪个blend factor用来定义source factors Sa
 			blendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_CONSTANT_COLOR;//指定哪个blend factor用来定义destination factors (Dr, Dg, Db).
@@ -2734,7 +2741,7 @@ void PipelineStageProcessingTest::TheFramebufferTest()
 		VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR					(1-Rs1,1-Gs1,1-Bs1)								1-As1
 		VK_BLEND_FACTOR_SRC1_ALPHA								(As1,As1,As1)									As1
 		VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA					(1-As1,1-As1,1-As1)								1-As1
-		
+
 		带s0的表示第一个source color的各个分量，带s1的表示第二个source color的各个分量（如果有两个source color,即Dual-Source Blending），带d0的为destination color的各个分量，带c的表示各个分量的blend constant
 		*/
 
@@ -2742,44 +2749,44 @@ void PipelineStageProcessingTest::TheFramebufferTest()
 		float blendConstants[4] = { 0,0,0,0 };
 		//动态设置blend constants,      ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以  VK_DYNAMIC_STATE_BLEND_CONSTANTS  创建才能使用，否则会只用VkPipelineColorBlendStateCreateInfo::blendConstants 设置的
 		vkCmdSetBlendConstants(commandBuffer, blendConstants/* blendConstants,包含对应blend constant color的R，G，B，A四个分量的四个值的数组指针，依赖blend factor 见p2835*/);
-
-
-
+		
+		
+		
 		//Dual-Source Blending  参见p2837
-
-
+		
+		
 		//Blend Operations  参见p2838
 		/*
 		这里只是basic blend operations能用到的blend operation，VkBlendOp中其他的blend operation将在advanced blend operation中使用
-		Basic Blend Operations  
+		Basic Blend Operations
 		
 		VkBlendOp							RGB Components				 Alpha Component
 		VK_BLEND_OP_ADD					R = Rs0 × Sr + Rd × Dr
 										G = Gs0 × Sg + Gd × Dg		 A = As0 × Sa + Ad × Da
-										B = Bs0 × Sb + Bd × Db        
-		VK_BLEND_OP_SUBTRACT			R = Rs0 × Sr - Rd × Dr         
+										B = Bs0 × Sb + Bd × Db
+		VK_BLEND_OP_SUBTRACT			R = Rs0 × Sr - Rd × Dr
 										G = Gs0 × Sg - Gd × Dg         A = As0 × Sa - Ad × Da
-										B = Bs0 × Sb - Bd × Db                                                       
+										B = Bs0 × Sb - Bd × Db
 		VK_BLEND_OP_REVERSE_SUBTRACT	R = Rd × Dr - Rs0 × Sr
 										G = Gd × Dg - Gs0 × Sg         A = Ad × Da - As0 × Sa
-										B = Bd × Db - Bs0 × Sb                                                 
+										B = Bd × Db - Bs0 × Sb
 		VK_BLEND_OP_MIN					R = min(Rs0,Rd)
 										G = min(Gs0,Gd)                  A = min(As0,Ad)
-										B = min(Bs0,Bd)                                                     
+										B = min(Bs0,Bd)
 		VK_BLEND_OP_MAX					R = max(Rs0,Rd)                  A = max(As0,Ad)
 										G = max(Gs0,Gd)
-										B = max(Bs0,Bd)                                             
+										B = max(Bs0,Bd)
 		
 		其中Rs0, Gs0, Bs0 以及 As0 表示source color的四个分量，Rd, Gd, Bd 以及 Ad表示destination color的四个分量
 		Sr, Sg, Sb 以及 Sa 表示 source blend factor，Dr, Dg, Db 以及 Da 表示destination blend factor
-		R，G，B，A表示最终混合得到的一组新的分量值，这些会写入到attachment中，如果不开启混合，则R，G，B，A就等于Rs0, Gs0, Bs0 以及 As0 
-
-
+		R，G，B，A表示最终混合得到的一组新的分量值，这些会写入到attachment中，如果不开启混合，则R，G，B，A就等于Rs0, Gs0, Bs0 以及 As0
+		
+		
 		其他信息见p2841
 		
 		*/
-
-
+		
+		
 		// Advanced Blend Operations
 		{
 			//如果在VkPipelineColorBlendStateCreateInfo.pNext中包含VkPipelineColorBlendAdvancedStateCreateInfoEXT，则其中的参数会影响 Advanced Blend Operations，如果不包含该结构体，则可认为srcPremultiplied 以及 dstPremultiplied都为VK_TRUE， blendOverlap为VK_BLEND_OVERLAP_UNCORRELATED_EXT.
@@ -2792,10 +2799,10 @@ void PipelineStageProcessingTest::TheFramebufferTest()
 			1.如果不支持non-premultiplied source color属性，srcPremultiplied必须为VK_TRUE
 			2.如果不支持non-premultiplied destination color属性，dstPremultiplied必须为VK_TRUE
 			3.如果不支持correlated overlap属性，blendOverlap必须为VK_BLEND_OVERLAP_UNCORRELATED_EXT
-
+		
 			*/
-
-
+		
+		
 			VkColorBlendAdvancedEXT colorBlendAdvancedEXT{};
 			colorBlendAdvancedEXT.advancedBlendOp = VK_BLEND_OP_ADD;//指明用来写到attachment的计算R，G，B值的blend operation
 			colorBlendAdvancedEXT.blendOverlap = VK_BLEND_OVERLAP_CONJOINT_EXT;//是一个 VkBlendOverlapEXT 值指明 source 以及 destination sample的coverage是如何关联的
@@ -2813,26 +2820,121 @@ void PipelineStageProcessingTest::TheFramebufferTest()
 			1.如果不支持non-premultiplied source color属性，srcPremultiplied必须为VK_TRUE
 			2.如果不支持non-premultiplied destination color属性，dstPremultiplied必须为VK_TRUE
 			3.如果不支持correlated overlap属性，blendOverlap必须为VK_BLEND_OVERLAP_UNCORRELATED_EXT
-
+		
 			*/
-
-			
+		
+		
 			//动态设置advanced blend state,      ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT  创建才能使用，否则会只用VkPipelineColorBlendAdvancedStateCreateInfoEXT::srcPremultiplied, VkPipelineColorBlendAdvancedStateCreateInfoEXT::dstPremultiplied, 以及 VkPipelineColorBlendAdvancedStateCreateInfoEXT::blendOverlap 设置的
 			vkCmdSetColorBlendAdvancedEXT(commandBuffer, 0/*firstAttachment,为应用 advanced blend parameters的第一个color attachment 索引.*/, 1/*attachmentCount, pColorBlendAdvanced中元素个数.*/, &colorBlendAdvancedEXT/* pColorBlendAdvanced,一组  VkColorBlendAdvancedEXT 数组指针指明对应attachment应用的advanced blend parameters.*/);
 			/*
 			vkCmdSetColorBlendAdvancedEXT有效用法:
 			1. extendedDynamicState3ColorBlendAdvanced 或者shaderObject特性开启至少一个开启
 			*/
-
+		
 			//*****  advanced blend operation具体的操作详情见p2846    简单角就是advanded blend operation中有几种模式，这些模式会提供一组函数，blendOverlap控制一组系数p0,p1,p2，然后用于计算的source color以及destination color的R，G，B值会被认为是预先乘以A后的结果，然后根据这些source 以及destination color的R，G，B值，模式提供的函数，blendOverlap提供的系数以及相关的blend operation计算出最终的R，G，B值
 		}
-
+		
 
 	}
 
 
 
 	// Logical Operations  参见p2852
+	{
+		/*
+		logical operation作用在当前的fragment的color值以及framebuffer attachment现有的值之间，在更新framebuffer attachment现有值之前，
+
+		logical operation通过VkPipelineColorBlendStateCreateInfo的logicOpEnable 以及 logicOp控制，可以VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXT 开启，则可以动态设置调用 vkCmdSetLogicOpEnableEXT 动态设置逻辑操作。如果VK_DYNAMIC_STATE_LOGIC_OP_EXT 则可以调用 vkCmdSetLogicOpEXT 动态设置逻辑操作。
+		
+		VkLogicOp 以及对应操作:
+		Mode							Operation         	  |
+		VK_LOGIC_OP_CLEAR				 0					  |
+		VK_LOGIC_OP_AND					s ∧ d				  |
+		VK_LOGIC_OP_AND_REVERSE			s ∧ ¬ d			  |
+		VK_LOGIC_OP_COPY					s				  |    其中s 表示当前的fragment的color值
+		VK_LOGIC_OP_AND_INVERTED		¬ s ∧ d			  |		   d 表示framebuffer attachment现有的值
+		VK_LOGIC_OP_NO_OP				d					  |
+		VK_LOGIC_OP_XOR					s ⊕ d				  |			∧为与，⊕为异或，¬为取反
+		VK_LOGIC_OP_OR					s ∨ d				  |
+		VK_LOGIC_OP_NOR					 ¬ (s ∨ d)			  |
+		VK_LOGIC_OP_EQUIVALENT			¬ (s ⊕ d)			  |
+		VK_LOGIC_OP_INVERT				¬ d					  |
+		VK_LOGIC_OP_OR_REVERSE			 s ∨ ¬ d			  |
+		VK_LOGIC_OP_COPY_INVERTED		¬ s					  |
+		VK_LOGIC_OP_OR_INVERTED			 ¬ s ∨ d			  |
+		VK_LOGIC_OP_NAND				¬ (s ∧ d)			  |
+		VK_LOGIC_OP_SET					all 1s				  |
+		
+		经过logic op后的值写入到color attachment会由component write mask控制，见Blend Operations.p2838
+
+
+		*/
+
+
+		//动态设置是否启用 logical operations     ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXT  创建才能使用，否则会只用VkPipelineColorBlendStateCreateInfo::logicOpEnable 设置的
+		vkCmdSetLogicOpEnableEXT(commandBuffer, VK_TRUE/*logicOpEnable,指明是否启用 logical operations */);
+		/*
+		vkCmdSetLogicOpEnableEXT有效用法:
+		1.extendedDynamicState3LogicOpEnable 或者shaderObject特性开启至少一个开启
+		2.如果 logicOp 特性未开启，则logicOpEnable必须为VK_FALSE
+		*/
+
+
+		//动态设置logical operation    ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_LOGIC_OP_EXT  创建才能使用，否则会只用VkPipelineColorBlendStateCreateInfo::logicOp 设置的
+		vkCmdSetLogicOpEXT(commandBuffer, VK_LOGIC_OP_AND/*logicOp,指明blend应用的logical operation.*/);
+		/*
+		vkCmdSetLogicOpEXT有效用法:
+		1.extendedDynamicState2LogicOp 或者shaderObject特性开启至少一个开启
+		
+		*/
+
+
+	}
+
+
+	//Color Write Mask  见p2857
+
+
+	//Color Write Enable  见p2858
+	{
+		//该结构体可以包含在VkPipelineColorBlendStateCreateInfo的pNext中，用于控制哪些color attachment可以被写入，如果不包含该结构体，则默认所有color attachment都可以被写入。如果colorWriteEnable 特性未开启，则pColorWriteEnables 中所有元素必须为VK_TRUE。
+		VkPipelineColorWriteCreateInfoEXT pipelineColorWriteCreateInfoEXT{};
+		pipelineColorWriteCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_WRITE_CREATE_INFO_EXT;
+		pipelineColorWriteCreateInfoEXT.pNext = nullptr;
+		pipelineColorWriteCreateInfoEXT.attachmentCount = 1;// pColorWriteEnables中元素个数
+		VkBool32 wirteEnable = VK_TRUE;
+		pipelineColorWriteCreateInfoEXT.pColorWriteEnables = &wirteEnable;//VkBool32数组指针，每个元素对应一个color attachment，指明是否可以被写入。如果为VK_TRUE，则可以写入，否则不能写入。
+		/*
+		VkPipelineColorWriteCreateInfoEXT有效用法:
+		1.如果colorWriteEnable 特性未开启，则pColorWriteEnables 中所有元素必须为VK_TRUE
+		2.如果pipeline以VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT,
+						VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT, VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT, 或者
+						VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT动态状态没有开启创建，则attachmentCount必须等于创建pipeline时指定的VkPipelineColorBlendStateCreateInfo结构体的attachmentCount成员
+		3.attachmentCount 必须小于等于 VkPhysicalDeviceLimits::maxColorAttachments
+
+		*/
+
+
+		//动态设置是否开启color write    ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COLOR_WRITE_ENABLE_EXT  创建才能使用，否则会只用VkPipelineColorWriteCreateInfoEXT::pColorWriteEnables 设置的
+		vkCmdSetColorWriteEnableEXT(commandBuffer, 1/*attachmentCount, pColorWriteEnables中元素个数.*/, &wirteEnable/* pColorWriteEnables,一组 VkBool32 数组指针指明对应attachment是否开启color write.*/);
+		/*
+		
+		*/
+	}
+
+
+	//Framebuffer Query Instructions  参见p2860
+	{
+		VkFramebuffer frameBuffer{/*假设这是一个有效的VkFrameBuffer*/ };
+	
+		//查询frambuffer中attachment的属性,返回的属性数量和render pass中merge后的subpass数量相同，要获取指定subpass的属性，可以通过VkRenderPassSubpassFeedbackInfoEXT::postMergeIndex索引到返回的属性数组中
+		uint32_t tilePropertiesQCOMCount = 0;
+		std::vector<VkTilePropertiesQCOM> tilePropertiesQCOMs;
+		vkGetFramebufferTilePropertiesQCOM(device, frameBuffer, &tilePropertiesQCOMCount, nullptr);
+		tilePropertiesQCOMs.resize(tilePropertiesQCOMCount);
+		vkGetFramebufferTilePropertiesQCOM(device, frameBuffer, &tilePropertiesQCOMCount, tilePropertiesQCOMs.data());
+	}
+
 }
 
 

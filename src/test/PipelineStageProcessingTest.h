@@ -29,6 +29,9 @@ private:
 	void RasterizationTest();
 	//charpter 29
 	void FragmentOperationsTest();
+	//chapter 30
+	void TheFramebufferTest();
+
 private:
 
 

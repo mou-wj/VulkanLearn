@@ -2570,5 +2570,270 @@ void PipelineStageProcessingTest::FragmentOperationsTest()
 
 }
 
+void PipelineStageProcessingTest::TheFramebufferTest()
+{
+	VkCommandBuffer commandBuffer{/*假设这是一个有效的VkCommandBuffer*/ };
+
+	//Blending  参见p2823
+	{
+		/*
+		Blending会绑定framebuffer中source fragment以及destination fragment的每个采样点的R，G，B，A值，根据blend operation，以及四个分量的blend factor以及blend constant 进行混合, 得到新的一组R，G，B，A值
+		
+		blend operation分为basic blend operation，advanced blend operation，两个在精度方面的要求有一些区别
+		*/
+		
+		struct PipelineColorBlendStateCreateInfoEXT {
+			VkPipelineColorBlendAdvancedStateCreateInfoEXT pipelineColorBlendAdvancedStateCreateInfoEXT{};
+			VkPipelineColorWriteCreateInfoEXT pipelineColorWriteCreateInfoEXT{};
+			PipelineColorBlendStateCreateInfoEXT() {
+				Init();
+			}
+			void Init() {
+				pipelineColorBlendAdvancedStateCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_ADVANCED_STATE_CREATE_INFO_EXT;
+				pipelineColorBlendAdvancedStateCreateInfoEXT.pNext = nullptr;
+				pipelineColorWriteCreateInfoEXT.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_WRITE_CREATE_INFO_EXT;
+				pipelineColorWriteCreateInfoEXT.pNext = nullptr;
+			}
+		};
+
+		//blend通过pipeline创建时候的VkPipelineColorBlendStateCreateInfo指定
+		VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo{};
+		pipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		PipelineColorBlendStateCreateInfoEXT pipelineColorBlendStateCreateInfoEXT{};
+		pipelineColorBlendStateCreateInfo.pNext = &pipelineColorBlendStateCreateInfoEXT.pipelineColorBlendAdvancedStateCreateInfoEXT;
+		pipelineColorBlendStateCreateInfo.flags = VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT;// VkPipelineColorBlendStateCreateFlagBits组合值位掩码，指明额外的blend 信息,VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT: 指明访问color 以及 input attachments有一个隐式的framebuffer-local memory dependencies（详情见p2826），允许应用在fragment shader中自定义混合操作
+		pipelineColorBlendStateCreateInfo.blendConstants[0] = 0;//用于blend的R分量的常量，见p2835
+		pipelineColorBlendStateCreateInfo.blendConstants[1] = 0;//用于blend的G分量的常量，见p2835
+		pipelineColorBlendStateCreateInfo.blendConstants[2] = 0;//用于blend的B分量的常量，见p2835
+		pipelineColorBlendStateCreateInfo.blendConstants[3] = 0;//用于blend的A分量的常量，见p2835
+		pipelineColorBlendStateCreateInfo.logicOpEnable = VK_TRUE;//控制是否使用Logical Operations. 参见2852
+		pipelineColorBlendStateCreateInfo.logicOp = VK_LOGIC_OP_AND;//指明使用哪个logical operation
+		pipelineColorBlendStateCreateInfo.attachmentCount = 1;//pAttachments中元素个数，如果pipeline以VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT, VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT, 以及VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT动态创建，且动态开启VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT或者未开启advancedBlendCoherentOperations，则该参数忽略
+		VkPipelineColorBlendAttachmentState blendAttachment{};
+		{
+			blendAttachment.blendEnable = VK_TRUE;//控制是否开启该color attachment的blend操作，如果未开启，则attachment的source fragment的color值不会改变
+			blendAttachment.colorBlendOp = VK_BLEND_OP_ADD;//指定哪个blend operation用来计算写入attachment的R,G,B值
+			blendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;//指定哪个blend operation用来计算写入attachment的A值
+			blendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT;//为VkColorComponentFlagBits组合值位掩码，指明R，G，B，A哪个分量可以写入，参见Color Write Mask.p2856
+			blendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_CONSTANT_COLOR;//指定哪个blend factor用来定义source factors (Sr, Sg, Sb).
+			blendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_CONSTANT_ALPHA;//指定哪个blend factor用来定义source factors Sa
+			blendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_CONSTANT_COLOR;//指定哪个blend factor用来定义destination factors (Dr, Dg, Db).
+			blendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_CONSTANT_ALPHA;//指定哪个blend factor用来定义destination factors Da
+			/*
+			VkPipelineColorBlendAttachmentState有效用法:
+			1.如果dualSrcBlend 特性未开启，则srcColorBlendFactor，dstColorBlendFactor，srcAlphaBlendFactor以及dstAlphaBlendFactor不能为VK_BLEND_FACTOR_SRC1_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR, VK_BLEND_FACTOR_SRC1_ALPHA, 或者 VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA
+			2.如果colorBlendOp或者alphaBlendOp 是一个advanced blend operation，则colorBlendOp 必须等于alphaBlendOp
+			3.如果VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT::advancedBlendIndependentBlend 为VK_FALSE，且（1）colorBlendOp 是一个 advanced blend operation，则所有attachment的则colorBlendOp 必须相同
+																												   （2）alphaBlendOp 是一个 advanced blend operation，则所有attachment的则alphaBlendOp 必须相同
+			4.如果VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT::advancedBlendAllOperations 为VK_FALSE，则colorBlendOp 不能为VK_BLEND_OP_ZERO_EXT, VK_BLEND_OP_SRC_EXT,
+																				VK_BLEND_OP_DST_EXT, VK_BLEND_OP_SRC_OVER_EXT, VK_BLEND_OP_DST_OVER_EXT,
+																				VK_BLEND_OP_SRC_IN_EXT, VK_BLEND_OP_DST_IN_EXT, VK_BLEND_OP_SRC_OUT_EXT,
+																				VK_BLEND_OP_DST_OUT_EXT, VK_BLEND_OP_SRC_ATOP_EXT, VK_BLEND_OP_DST_ATOP_EXT,
+																				VK_BLEND_OP_XOR_EXT, VK_BLEND_OP_INVERT_EXT, VK_BLEND_OP_INVERT_RGB_EXT,
+																				VK_BLEND_OP_LINEARDODGE_EXT, VK_BLEND_OP_LINEARBURN_EXT, VK_BLEND_OP_VIVIDLIGHT_EXT,
+																				VK_BLEND_OP_LINEARLIGHT_EXT, VK_BLEND_OP_PINLIGHT_EXT, VK_BLEND_OP_HARDMIX_EXT,
+																				VK_BLEND_OP_PLUS_EXT, VK_BLEND_OP_PLUS_CLAMPED_EXT, VK_BLEND_OP_PLUS_CLAMPED_ALPHA_EXT,
+																				VK_BLEND_OP_PLUS_DARKER_EXT, VK_BLEND_OP_MINUS_EXT, VK_BLEND_OP_MINUS_CLAMPED_EXT,
+																				VK_BLEND_OP_CONTRAST_EXT, VK_BLEND_OP_INVERT_OVG_EXT, VK_BLEND_OP_RED_EXT,
+																				VK_BLEND_OP_GREEN_EXT, 或者 VK_BLEND_OP_BLUE_EXT
+			5.如果colorBlendOp 或者alphaBlendOp 是一个advanced blend operation，则该pipeline创建所对的subpass的colorAttachmentCount必须小于等于VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT::advancedBlendMaxColorAttachments
+			6.如果VK_KHR_portability_subset 拓展开启，且VkPhysicalDevicePortabilitySubsetFeaturesKHR::constantAlphaColorBlendFactors为VK_FALSE，则srcColorBlendFactor，dstColorBlendFactor 不能为VK_BLEND_FACTOR_CONSTANT_ALPHA 或者  VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA
+
+			*/
+
+
+		}
+		pipelineColorBlendStateCreateInfo.pAttachments = &blendAttachment;//一组VkPipelineColorBlendAttachmentState数组指针，定义每个color attachment的blend state，如果pipeline以VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT, VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT, 以及VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT动态创建，且动态开启VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT或者未开启advancedBlendCoherentOperations，则该参数忽略
+		/*
+		VkPipelineColorBlendAttachmentState有效用法:
+		1.如果independentBlend 特性没有开启，则pAttachments中所有元素必须相同
+		2.如果logicOp 特性没有开启，则logicOpEnable必须为VK_FALSE
+		3.如果logicOpEnable 为VK_TRUE，则logicOp必须为一个有效的VkLogicOp 值
+		4.如果rasterizationOrderColorAttachmentAccess 特性未开启，则flags 不能包含VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT
+		5.如果attachmentCount 为0，且VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT,VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT, VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT, 以及 VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT都没有开启，则pAttachments必须是attachmentCount个有效的VkPipelineColorBlendAttachmentState数组指针
+		*/
+
+
+
+		VkBool32 enableBlend = VK_TRUE;
+		//动态设置blendEnable      ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT 创建才能使用，否则会只用 VkPipelineColorBlendAttachmentState::blendEnable 设置的
+		vkCmdSetColorBlendEnableEXT(commandBuffer, 0/*firstAttachment,为开启blend的第一个color attachment 索引.*/, 1/*attachmentCount,pColorBlendEnables中元素个数.*/, &enableBlend/*pColorBlendEnables,一组boolean值指明对应attachment是否开启color blend.*/);
+		/*
+		vkCmdSetColorBlendEnableEXT有效用法:
+		1.   extendedDynamicState3ColorBlendEnable 或者shaderObject特性开启至少一个开启
+
+		
+		*/
+
+		VkColorBlendEquationEXT colorBlendEquationEXT{};
+		colorBlendEquationEXT.colorBlendOp = VK_BLEND_OP_ADD;//指定哪个blend operation用来计算写入attachment的R,G,B值
+		colorBlendEquationEXT.alphaBlendOp = VK_BLEND_OP_ADD;//指定哪个blend operation用来计算写入attachment的A值
+		colorBlendEquationEXT.srcColorBlendFactor = VK_BLEND_FACTOR_CONSTANT_COLOR;//指定哪个blend factor用来定义source factors (Sr, Sg, Sb).
+		colorBlendEquationEXT.srcAlphaBlendFactor = VK_BLEND_FACTOR_CONSTANT_ALPHA;//指定哪个blend factor用来定义source factors Sa
+		colorBlendEquationEXT.dstColorBlendFactor = VK_BLEND_FACTOR_CONSTANT_COLOR;//指定哪个blend factor用来定义destination factors (Dr, Dg, Db).
+		colorBlendEquationEXT.dstAlphaBlendFactor = VK_BLEND_FACTOR_CONSTANT_ALPHA;//指定哪个blend factor用来定义destination factors Da
+		/*
+		VkColorBlendEquationEXT有效用法:
+		1.如果dualSrcBlend 特性未开启，则srcColorBlendFactor，dstColorBlendFactor，srcAlphaBlendFactor以及dstAlphaBlendFactor不能为VK_BLEND_FACTOR_SRC1_COLOR, VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR, VK_BLEND_FACTOR_SRC1_ALPHA, 或者 VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA
+		2.colorBlendOp和 alphaBlendOp 不能为VK_BLEND_OP_ZERO_EXT, VK_BLEND_OP_SRC_EXT,
+											VK_BLEND_OP_DST_EXT, VK_BLEND_OP_SRC_OVER_EXT, VK_BLEND_OP_DST_OVER_EXT,
+											VK_BLEND_OP_SRC_IN_EXT, VK_BLEND_OP_DST_IN_EXT, VK_BLEND_OP_SRC_OUT_EXT,
+											VK_BLEND_OP_DST_OUT_EXT, VK_BLEND_OP_SRC_ATOP_EXT, VK_BLEND_OP_DST_ATOP_EXT,
+											VK_BLEND_OP_XOR_EXT, VK_BLEND_OP_MULTIPLY_EXT, VK_BLEND_OP_SCREEN_EXT,
+											VK_BLEND_OP_OVERLAY_EXT, VK_BLEND_OP_DARKEN_EXT, VK_BLEND_OP_LIGHTEN_EXT,
+											VK_BLEND_OP_COLORDODGE_EXT, VK_BLEND_OP_COLORBURN_EXT, VK_BLEND_OP_HARDLIGHT_EXT,
+											VK_BLEND_OP_SOFTLIGHT_EXT, VK_BLEND_OP_DIFFERENCE_EXT, VK_BLEND_OP_EXCLUSION_EXT,
+											VK_BLEND_OP_INVERT_EXT, VK_BLEND_OP_INVERT_RGB_EXT, VK_BLEND_OP_LINEARDODGE_EXT,
+											VK_BLEND_OP_LINEARBURN_EXT, VK_BLEND_OP_VIVIDLIGHT_EXT, VK_BLEND_OP_LINEARLIGHT_EXT,
+											VK_BLEND_OP_PINLIGHT_EXT, VK_BLEND_OP_HARDMIX_EXT, VK_BLEND_OP_HSL_HUE_EXT,
+											VK_BLEND_OP_HSL_SATURATION_EXT, VK_BLEND_OP_HSL_COLOR_EXT,
+											VK_BLEND_OP_HSL_LUMINOSITY_EXT, VK_BLEND_OP_PLUS_EXT, VK_BLEND_OP_PLUS_CLAMPED_EXT,
+											VK_BLEND_OP_PLUS_CLAMPED_ALPHA_EXT, VK_BLEND_OP_PLUS_DARKER_EXT, VK_BLEND_OP_MINUS_EXT,
+											VK_BLEND_OP_MINUS_CLAMPED_EXT, VK_BLEND_OP_CONTRAST_EXT, VK_BLEND_OP_INVERT_OVG_EXT,
+											VK_BLEND_OP_RED_EXT, VK_BLEND_OP_GREEN_EXT, 或者 VK_BLEND_OP_BLUE_EXT
+		3.如果VK_KHR_portability_subset 拓展开启，且VkPhysicalDevicePortabilitySubsetFeaturesKHR::constantAlphaColorBlendFactors为VK_FALSE，则srcColorBlendFactor，dstColorBlendFactor 不能为VK_BLEND_FACTOR_CONSTANT_ALPHA 或者  VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA
+		*/
+
+
+		//动态设置 color blend factors 以及 operations      ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT  创建才能使用，否则会只用VkPipelineColorBlendAttachmentState::srcColorBlendFactor,
+		//VkPipelineColorBlendAttachmentState::dstColorBlendFactor, VkPipelineColorBlendAttachmentState::colorBlendOp, VkPipelineColorBlendAttachmentState::srcAlphaBlendFactor, VkPipelineColorBlendAttachmentState::dstAlphaBlendFactor, 以及VkPipelineColorBlendAttachmentState::alphaBlendOp 设置的
+		vkCmdSetColorBlendEquationEXT(commandBuffer, 0/*firstAttachment,为应用color blend factors 以及 operations的第一个color attachment 索引.*/, 1/*attachmentCount, pColorBlendEquations中元素个数.*/, &colorBlendEquationEXT/* pColorBlendEquations,一组VkColorBlendEquationEXT数组指针指明对应attachment应用的color blend factors 以及 operations .*/);
+		/*
+		vkCmdSetColorBlendEquationEXT有效用法:
+		1. extendedDynamicState3ColorBlendEquation 或者shaderObject特性开启至少一个开启
+		*/
+
+		VkColorComponentFlags writeMask = VK_COLOR_COMPONENT_R_BIT;
+		//动态设置 color write masks      ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT  创建才能使用，否则会只用VkPipelineColorBlendAttachmentState::colorWriteMask 设置的
+		vkCmdSetColorWriteMaskEXT(commandBuffer, 0/*firstAttachment,为应用color write masks的第一个color attachment 索引.*/, 1/*attachmentCount, pColorWriteMasks中元素个数.*/, &writeMask/* pColorWriteMasks,一组 VkColorComponentFlags 数组指针指明对应attachment应用的color write masks.*/);
+		/*
+		vkCmdSetColorWriteMaskEXT有效用法:
+		1. extendedDynamicState3ColorWriteMask 或者shaderObject特性开启至少一个开启
+		*/
+
+
+		//Blend Factors  参见p2835
+		/*
+		VkBlendFactor							RGB Blend Factors (Sr ,Sg,Sb) 或 (Dr,Dg,Db)            Alpha Blend Factor (Sa 或 Da)
+		VK_BLEND_FACTOR_ZERO									(0,0,0)											0
+		VK_BLEND_FACTOR_ONE										(1,1,1)											1
+		VK_BLEND_FACTOR_SRC_COLOR								(Rs0,Gs0,Bs0)									As0
+		VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR						(1-Rs0,1-Gs0,1-Bs0)								1-As0
+		VK_BLEND_FACTOR_DST_COLOR								(Rd,Gd,Bd)										Ad
+		VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR						(1-Rd,1-Gd,1-Bd)								1-Ad
+		VK_BLEND_FACTOR_SRC_ALPHA								(As0,As0,As0)									As0
+		VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA						(1-As0,1-As0,1-As0)								1-As0
+		VK_BLEND_FACTOR_DST_ALPHA								(Ad,Ad,Ad)										Ad
+		VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA						(1-Ad,1-Ad,1-Ad)								1-Ad
+		VK_BLEND_FACTOR_CONSTANT_COLOR							(Rc,Gc,Bc)										Ac
+		VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR				(1-Rc,1-Gc,1-Bc)								1-Ac
+		VK_BLEND_FACTOR_CONSTANT_ALPHA							(Ac,Ac,Ac)										Ac
+		VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA				(1-Ac,1-Ac,1-Ac)								1-Ac
+		VK_BLEND_FACTOR_SRC_ALPHA_SATURATE						(f,f,f); f = min(As0,1-Ad)						1
+		VK_BLEND_FACTOR_SRC1_COLOR								(Rs1,Gs1,Bs1)									As1
+		VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR					(1-Rs1,1-Gs1,1-Bs1)								1-As1
+		VK_BLEND_FACTOR_SRC1_ALPHA								(As1,As1,As1)									As1
+		VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA					(1-As1,1-As1,1-As1)								1-As1
+		
+		带s0的表示第一个source color的各个分量，带s1的表示第二个source color的各个分量（如果有两个source color,即Dual-Source Blending），带d0的为destination color的各个分量，带c的表示各个分量的blend constant
+		*/
+
+
+		float blendConstants[4] = { 0,0,0,0 };
+		//动态设置blend constants,      ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以  VK_DYNAMIC_STATE_BLEND_CONSTANTS  创建才能使用，否则会只用VkPipelineColorBlendStateCreateInfo::blendConstants 设置的
+		vkCmdSetBlendConstants(commandBuffer, blendConstants/* blendConstants,包含对应blend constant color的R，G，B，A四个分量的四个值的数组指针，依赖blend factor 见p2835*/);
+
+
+
+		//Dual-Source Blending  参见p2837
+
+
+		//Blend Operations  参见p2838
+		/*
+		这里只是basic blend operations能用到的blend operation，VkBlendOp中其他的blend operation将在advanced blend operation中使用
+		Basic Blend Operations  
+		
+		VkBlendOp							RGB Components				 Alpha Component
+		VK_BLEND_OP_ADD					R = Rs0 × Sr + Rd × Dr
+										G = Gs0 × Sg + Gd × Dg		 A = As0 × Sa + Ad × Da
+										B = Bs0 × Sb + Bd × Db        
+		VK_BLEND_OP_SUBTRACT			R = Rs0 × Sr - Rd × Dr         
+										G = Gs0 × Sg - Gd × Dg         A = As0 × Sa - Ad × Da
+										B = Bs0 × Sb - Bd × Db                                                       
+		VK_BLEND_OP_REVERSE_SUBTRACT	R = Rd × Dr - Rs0 × Sr
+										G = Gd × Dg - Gs0 × Sg         A = Ad × Da - As0 × Sa
+										B = Bd × Db - Bs0 × Sb                                                 
+		VK_BLEND_OP_MIN					R = min(Rs0,Rd)
+										G = min(Gs0,Gd)                  A = min(As0,Ad)
+										B = min(Bs0,Bd)                                                     
+		VK_BLEND_OP_MAX					R = max(Rs0,Rd)                  A = max(As0,Ad)
+										G = max(Gs0,Gd)
+										B = max(Bs0,Bd)                                             
+		
+		其中Rs0, Gs0, Bs0 以及 As0 表示source color的四个分量，Rd, Gd, Bd 以及 Ad表示destination color的四个分量
+		Sr, Sg, Sb 以及 Sa 表示 source blend factor，Dr, Dg, Db 以及 Da 表示destination blend factor
+		R，G，B，A表示最终混合得到的一组新的分量值，这些会写入到attachment中，如果不开启混合，则R，G，B，A就等于Rs0, Gs0, Bs0 以及 As0 
+
+
+		其他信息见p2841
+		
+		*/
+
+
+		// Advanced Blend Operations
+		{
+			//如果在VkPipelineColorBlendStateCreateInfo.pNext中包含VkPipelineColorBlendAdvancedStateCreateInfoEXT，则其中的参数会影响 Advanced Blend Operations，如果不包含该结构体，则可认为srcPremultiplied 以及 dstPremultiplied都为VK_TRUE， blendOverlap为VK_BLEND_OVERLAP_UNCORRELATED_EXT.
+			VkPipelineColorBlendAdvancedStateCreateInfoEXT pipelineColorBlendAdvancedStateCreateInfoEXT = pipelineColorBlendStateCreateInfoEXT.pipelineColorBlendAdvancedStateCreateInfoEXT;
+			pipelineColorBlendAdvancedStateCreateInfoEXT.blendOverlap = VK_BLEND_OVERLAP_CONJOINT_EXT;//是一个 VkBlendOverlapEXT 值指明 source 以及 destination sample的coverage是如何关联的
+			pipelineColorBlendAdvancedStateCreateInfoEXT.srcPremultiplied = VK_TRUE;//指明blend operation的source color是否是premultiplied的（预乘alpha通道）
+			pipelineColorBlendAdvancedStateCreateInfoEXT.dstPremultiplied = VK_TRUE;//指明blend operation的destination color是否是premultiplied的（预乘alpha通道）
+			/*
+			VkPipelineColorBlendAdvancedStateCreateInfoEXT有效用法:
+			1.如果不支持non-premultiplied source color属性，srcPremultiplied必须为VK_TRUE
+			2.如果不支持non-premultiplied destination color属性，dstPremultiplied必须为VK_TRUE
+			3.如果不支持correlated overlap属性，blendOverlap必须为VK_BLEND_OVERLAP_UNCORRELATED_EXT
+
+			*/
+
+
+			VkColorBlendAdvancedEXT colorBlendAdvancedEXT{};
+			colorBlendAdvancedEXT.advancedBlendOp = VK_BLEND_OP_ADD;//指明用来写到attachment的计算R，G，B值的blend operation
+			colorBlendAdvancedEXT.blendOverlap = VK_BLEND_OVERLAP_CONJOINT_EXT;//是一个 VkBlendOverlapEXT 值指明 source 以及 destination sample的coverage是如何关联的
+			/*
+			VkBlendOverlapEXT
+			VK_BLEND_OVERLAP_UNCORRELATED_EXT:  指明source 以及destination coverage之间没有关联
+			VK_BLEND_OVERLAP_CONJOINT_EXT:  指明source 以及destination coverage认为是最大重叠的
+			VK_BLEND_OVERLAP_DISJOINT_EXT:  指明source 以及destination coverage认为是最小重叠的
+			*/
+			colorBlendAdvancedEXT.clampResults = VK_TRUE;//指明最终写到attachment的结果是否clamp到[0,1],当attachment的格式不是定点数是很有效
+			colorBlendAdvancedEXT.srcPremultiplied = VK_TRUE;//指明blend operation的source color是否是premultiplied的（预乘alpha通道）
+			colorBlendAdvancedEXT.dstPremultiplied = VK_TRUE;//指明blend operation的destination color是否是premultiplied的（预乘alpha通道）
+			/*
+			VkColorBlendAdvancedEXT有效用法:
+			1.如果不支持non-premultiplied source color属性，srcPremultiplied必须为VK_TRUE
+			2.如果不支持non-premultiplied destination color属性，dstPremultiplied必须为VK_TRUE
+			3.如果不支持correlated overlap属性，blendOverlap必须为VK_BLEND_OVERLAP_UNCORRELATED_EXT
+
+			*/
+
+			
+			//动态设置advanced blend state,      ， 只有在后续绘制使用shader object或者绑定的graphics pipeline以 VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT  创建才能使用，否则会只用VkPipelineColorBlendAdvancedStateCreateInfoEXT::srcPremultiplied, VkPipelineColorBlendAdvancedStateCreateInfoEXT::dstPremultiplied, 以及 VkPipelineColorBlendAdvancedStateCreateInfoEXT::blendOverlap 设置的
+			vkCmdSetColorBlendAdvancedEXT(commandBuffer, 0/*firstAttachment,为应用 advanced blend parameters的第一个color attachment 索引.*/, 1/*attachmentCount, pColorBlendAdvanced中元素个数.*/, &colorBlendAdvancedEXT/* pColorBlendAdvanced,一组  VkColorBlendAdvancedEXT 数组指针指明对应attachment应用的advanced blend parameters.*/);
+			/*
+			vkCmdSetColorBlendAdvancedEXT有效用法:
+			1. extendedDynamicState3ColorBlendAdvanced 或者shaderObject特性开启至少一个开启
+			*/
+
+			//*****  advanced blend operation具体的操作详情见p2846    简单角就是advanded blend operation中有几种模式，这些模式会提供一组函数，blendOverlap控制一组系数p0,p1,p2，然后用于计算的source color以及destination color的R，G，B值会被认为是预先乘以A后的结果，然后根据这些source 以及destination color的R，G，B值，模式提供的函数，blendOverlap提供的系数以及相关的blend operation计算出最终的R，G，B值
+		}
+
+
+	}
+
+
+
+	// Logical Operations  参见p2852
+}
+
 
 NS_TEST_END

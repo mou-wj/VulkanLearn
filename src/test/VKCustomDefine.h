@@ -271,4 +271,32 @@ void vkCmdSetDepthBias2EXT(
 	const VkDepthBiasInfoEXT* pDepthBiasInfo) {
 
 }
+
+// Provided by VK_NV_cuda_kernel_launch
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCudaFunctionNV)
+
+// Provided by VK_NV_cuda_kernel_launch
+typedef struct VkCudaLaunchInfoNV {
+	VkStructureType sType;
+	const void* pNext;
+	VkCudaFunctionNV function;
+	uint32_t gridDimX;
+	uint32_t gridDimY;
+	uint32_t gridDimZ;
+	uint32_t blockDimX;
+	uint32_t blockDimY;
+	uint32_t blockDimZ;
+	uint32_t sharedMemBytes;
+	size_t paramCount;
+	const void* const* pParams;
+	size_t extraCount;
+	const void* const* pExtras;
+} VkCudaLaunchInfoNV;
+
+// Provided by VK_NV_cuda_kernel_launch
+void vkCmdCudaLaunchKernelNV(
+	VkCommandBuffer commandBuffer,
+	const VkCudaLaunchInfoNV* pLaunchInfo) {
+
+}
 NS_TEST_END

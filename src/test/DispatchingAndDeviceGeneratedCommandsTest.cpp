@@ -703,21 +703,52 @@ void DispatchingAndDeviceGeneratedCommandsTest::DeviceGeneratedCommandsTest()
         VkGeneratedCommandsInfoNV generatedCommandsInfoNV{};
         generatedCommandsInfoNV.sType = VK_STRUCTURE_TYPE_GENERATED_COMMANDS_INFO_NV;
         generatedCommandsInfoNV.pNext = nullptr;
-        generatedCommandsInfoNV.pipelineBindPoint = VK_PIPELINE_BIND_POINT_COMPUTE;
-        generatedCommandsInfoNV.pipeline = VkPipeline{/*假设这是一个有效的VkPipeline*/};
+		generatedCommandsInfoNV.pipelineBindPoint = VK_PIPELINE_BIND_POINT_COMPUTE;//为pipeline使用的VkPipelineBindPoint
+		generatedCommandsInfoNV.pipeline = VkPipeline{/*假设这是一个有效的VkPipeline*/ };//为生成和执行命令的pipeline
         VkIndirectCommandsLayoutNV indirectCommandsLayoutNV{/*假设这是一个有效的VkIndirectCommandsLayoutNV*/ };//前面已经描述过了，这里简单提一下
-        generatedCommandsInfoNV.indirectCommandsLayout = indirectCommandsLayoutNV;
-        generatedCommandsInfoNV.streamCount  = 1;
+        generatedCommandsInfoNV.indirectCommandsLayout = indirectCommandsLayoutNV;//提供生成的命令顺序的 VkIndirectCommandsLayoutNV
+        generatedCommandsInfoNV.streamCount  = 1;//为pStreams输入 input streams 的数量
         VkIndirectCommandsStreamNV indirectCommandsStreamNV{/*假设这是一个有效的VkIndirectCommandsStreamNV*/ };//前面已经描述过了，这里简单提一下
-        generatedCommandsInfoNV.pStreams = &indirectCommandsStreamNV;
-        generatedCommandsInfoNV.sequencesCount = 0;
-        generatedCommandsInfoNV.preprocessBuffer = VkBuffer{/*假设这是一个有效的VkBuffer*/};
-        generatedCommandsInfoNV.preprocessOffset = 0;
-        generatedCommandsInfoNV.preprocessSize = 1;
-        generatedCommandsInfoNV.sequencesCountBuffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };
-        generatedCommandsInfoNV.sequencesCountOffset = 0;
-        generatedCommandsInfoNV.sequencesIndexBuffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };
-        generatedCommandsInfoNV.sequencesIndexOffset = 0;
+        generatedCommandsInfoNV.pStreams = &indirectCommandsStreamNV;//一组VkIndirectCommandsStreamNV 数组指针，指明 indirectCommandsLayout.中token要使用的输入数据
+        generatedCommandsInfoNV.sequencesCount = 0;//为要保留的最大的序列数量，如果sequencesCountBuffer为VK_NULL_HANDLE，则该值为实际生成的命令序列的数量
+        generatedCommandsInfoNV.preprocessBuffer = VkBuffer{/*假设这是一个有效的VkBuffer*/};//为用于预处理input data的VkBuffer,如果当前结构体和 isPreprocessed设为VK_TRUE的 vkCmdExecuteGeneratedCommandsNV命令一起使用，该预处理步骤会跳过且该buffer中的内容不会改变，这个缓冲区的内容和布局对应用程序是不透明的，不能修改与设备生成的命令相关的外部函数或复制到另一个缓冲区以供重用
+		generatedCommandsInfoNV.preprocessOffset = 0;//为预处理buffer的存储的预处理数据的起始字节偏移量
+		generatedCommandsInfoNV.preprocessSize = 1;//是preprocesBuffer中从 preprocessOffset开始可用的字节大小
+		generatedCommandsInfoNV.sequencesCountBuffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//为一个保存一个uint32_t类型值的VkBuffer,该值指明实际生成的命令序列的数量
+		generatedCommandsInfoNV.sequencesCountOffset = 0;//为sequencesCountBuffer中保存的uint32_t类型值的起始字节偏移量
+		generatedCommandsInfoNV.sequencesIndexBuffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//一个保存序列索引为uint32_t值数组的VkBuffer
+		generatedCommandsInfoNV.sequencesIndexOffset = 0;//为sequencesIndexBuffer中保存的序列索引的起始字节偏移量
+        /*
+        VkGeneratedCommandsInfoNV有效用法:
+        1.pipeline 必须匹配执行时绑定的pipeline
+        2.如果indirectCommandsLayout使用了一个VK_INDIRECT_COMMANDS_TOKEN_TYPE_SHADER_GROUP_NV的token，则（1）pipeline 必须以多shader group创建
+                                                                                                        （2）pipeline必须以VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV 标志创建
+        
+        3.如果indirectCommandsLayout使用了一个VK_INDIRECT_COMMANDS_TOKEN_TYPE_PUSH_CONSTANT_NV的token，则pipeline的VkPipelineLayout 必须匹配VkIndirectCommandsLayoutTokenNV::pushconstantPipelineLayout     
+        4.streamCount必须匹配indirectCommandsLayout的streamCount
+        5.如果pipelineBindPoint类型为VK_PIPELINE_BIND_POINT_COMPUTE，则（1）pipeline必须以 VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV创建
+		                                                               （2）pipeline 必须以含有VkComputePipelineIndirectBufferInfoNV创建，指明一个有效的其metadata可以保存的地址
+		                                                               （3）vkCmdUpdatePipelineIndirectBufferNV 必须在pipeline上调用过一次保存其metadata到设备地址
+		                                                               （4）如果使用VK_INDIRECT_COMMANDS_TOKEN_TYPE_PIPELINE_NV token，则pipeline必须VK_NULL_HANDLE
+		6.sequencesCount 必须小于等于VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV::maxIndirectSequenceCount以及用于决定preprocessSize的VkGeneratedCommandsMemoryRequirementsInfoNV::maxSequencesCount
+		7.preprocessBuffer 必须有VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT 标志
+        8.preprocessOffset 必须对齐到VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV::minIndirectCommandsBufferOffsetAlignment
+		9.如果preprocessBuffer为non-sparse，则其必须绑定到完整的连续的单独的VkDeviceMemory对象
+        10.preprocessSize 必须至少等于调用vkGetGeneratedCommandsMemoryRequirementsNV传入和当前结构体输入匹配的参数（indirectCommandsLayout）返回的内存需求中的大小
+		11.sequencesCountBuffer 可以设置，如果实际使用的序列数量来源于提供的buffer，则sequencesCount 作为上限
+		12.如果sequencesCountBuffer 不为VK_NULL_HANDLE，则（1）其标志必须有VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT 标志
+                                                          （2）sequencesCountOffset 必须对齐到VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV::minSequencesCountBufferOffsetAlignment
+		                                                  （3）如果该buffer为non-sparse的，则其必须绑定到完整的连续的单独的VkDeviceMemory对象
+		13.如果indirectCommandsLayout 设置了VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV，则sequencesIndexBuffer 必须设置，否则sequencesIndexBuffer 必须为VK_NULL_HANDLE
+        14.如果sequencesIndexBuffer 不为VK_NULL_HANDLE，则（1）其标志必须有VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT 标志
+                                                          （2）sequencesIndexOffset 必须对齐到VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV::minSequencesIndexBufferOffsetAlignment
+		                                                  （3）如果该buffer为non-sparse的，则其必须绑定到完整的连续的单独的VkDeviceMemory对象
+		15.如果indirectCommandsLayout 使用了VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_TASKS_NV token，则pipeline 必须包含一个使用 MeshNV Execution Model的 sahder stage
+		16.如果indirectCommandsLayout 使用了VK_INDIRECT_COMMANDS_TOKEN_TYPE_DRAW_MESH_TASKS_NV token，则pipeline 必须包含一个使用 MeshEXT Execution Model的 sahder stage
+
+        */
+
+
         //设备端的命令的实际生成和执行通过一个命令即可   ,如果VkGeneratedCommandsInfoNV::indirectCommandsLayout以VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV创建，则这些命令执行是无序的，且获取不必要和VkGeneratedCommandsInfoNV::pStreams中的顺序相同
         vkCmdExecuteGeneratedCommandsNV(commandBuffer, VK_TRUE, &generatedCommandsInfoNV);
         /*
@@ -1098,7 +1129,18 @@ void DispatchingAndDeviceGeneratedCommandsTest::DeviceGeneratedCommandsTest()
         149.如果isPreprocessed 为VK_TRUE，则使用和其引用的input buffers（所有除了VkGeneratedCommandsInfoNV::preprocessBuffer）的pGeneratedCommandsInfo相同内容的vkCmdPreprocessGeneratedCommandsNV必须已经在debice上执行过了，且pGeneratedCommandsInfo的indirectCommandsLayout 必须以VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV 创建
         150.VkGeneratedCommandsInfoNV::pipeline  必须匹配当前绑定在VkGeneratedCommandsInfoNV::pipelineBindPoint上的pipeline    
         151.不能激活Transform feedback
-        152.VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV::deviceGeneratedCommands 必须开启
+        152.VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV::deviceGeneratedCommands 特性必须开启
+        */
+
+
+
+        //commands 可以在执行前进行预处理
+        vkCmdPreprocessGeneratedCommandsNV(commandBuffer, &generatedCommandsInfoNV);
+        /*
+        vkCmdPreprocessGeneratedCommandsNV有效用法:
+		1.commandBuffer 不能为一个protected command buffer
+        2.pGeneratedCommandsInfo中的indirectCommandsLayout 必须以VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV 创建
+        3.VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV::deviceGeneratedCommands 特性必须开启
         */
 
     }

@@ -299,4 +299,23 @@ void vkCmdCudaLaunchKernelNV(
 	const VkCudaLaunchInfoNV* pLaunchInfo) {
 
 }
+
+
+// Provided by VK_EXT_frame_boundary
+typedef VkFlags VkFrameBoundaryFlagsEXT;
+
+// Provided by VK_EXT_frame_boundary
+typedef struct VkFrameBoundaryEXT {
+	VkStructureType            sType;
+	const void* pNext;
+	VkFrameBoundaryFlagsEXT    flags;
+	uint64_t                   frameID;
+	uint32_t                   imageCount;
+	const VkImage* pImages;
+	uint32_t                   bufferCount;
+	const VkBuffer* pBuffers;
+	uint64_t                   tagName;
+	size_t                     tagSize;
+	const void* pTag;
+} VkFrameBoundaryEXT;
 NS_TEST_END

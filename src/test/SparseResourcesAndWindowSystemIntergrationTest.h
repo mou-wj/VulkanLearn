@@ -13,7 +13,10 @@ public:
 	virtual ~SparseResourcesAndWindowSystemIntergrationTest();
 
 private:
+	//chapter 33
 	void SparseResourcesTest();
+	//chapter 34
+	void WindowSystemIntegration_WSI_Test();
 };
 TEST_REGISTER(SparseResourcesAndWindowSystemIntergrationTest)
 

@@ -1,4 +1,41 @@
 #include "SparseResourcesAndWindowSystemIntergrationTest.h"
+#include "vulkan/vulkan_android.h"
+//wayland
+struct wl_display {};//未定义这里自己定义
+struct wl_surface {};//未定义这里自己定义
+#include "vulkan/vulkan_wayland.h"
+#include <Windows.h>
+#include "vulkan/vulkan_win32.h"
+//xcb
+typedef uint32_t xcb_connection_t;//未定义这里自己定义
+typedef uint32_t xcb_window_t;//未定义这里自己定义
+#include "vulkan/vulkan_xcb.h"
+//xlib
+typedef uint32_t Display;//未定义这里自己定义
+typedef uint32_t Window;//未定义这里自己定义
+#include "vulkan/vulkan_xlib.h"
+//direct fb
+typedef uint32_t  IDirectFB;//未定义这里自己定义
+typedef uint32_t  IDirectFBSurface;//未定义这里自己定义
+#include "vulkan/vulkan_directfb.h"
+//fuchsia
+typedef uint32_t zx_handle_t;//未定义这里自己定义
+#include "vulkan/vulkan_fuchsia.h"
+//google game platform
+typedef uint32_t GgpStreamDescriptor;//未定义这里自己定义
+#include "vulkan/vulkan_ggp.h"
+
+#include "vulkan/vulkan_ios.h"
+
+#include "vulkan/vulkan_macos.h"
+
+#include "vulkan/vulkan_vi.h"
+
+#include "vulkan/vulkan_metal.h"
+//screen qnx
+struct _screen_context {};//未定义这里自己定义
+struct _screen_window {};//未定义这里自己定义
+#include "vulkan/vulkan_screen.h"
 NS_TEST_BEGIN
 SparseResourcesAndWindowSystemIntergrationTest::SparseResourcesAndWindowSystemIntergrationTest()
 {
@@ -162,10 +199,719 @@ void SparseResourcesAndWindowSystemIntergrationTest::SparseResourcesTest()
 		*/
 
 
-		//Physical Device Sparse Properties
+		//Physical Device Sparse Properties   参见p2995
+		{
+			/*
+			实现的有些特性是无法关闭的且根据这些特性可以允许应用改变sparse资源的用法，其列举在 VkPhysicalDeviceProperties::sparseProperties中，为一个VkPhysicalDeviceSparseProperties
+			*/
+
+			VkPhysicalDeviceSparseProperties physicalDeviceSparseProperties = VkPhysicalDeviceProperties{}.sparseProperties;
+			physicalDeviceSparseProperties.residencyStandard2DBlockShape = VK_TRUE;//如果为VK_TRUE,则指明物理设备将使用standard sparse image block shapes访问所有的single-sample 2D sparse resources。如果不支持，则返回的VkSparseImageFormatProperties.imageGranularity就不必要和其 standard sparse image block dimensions匹配
+			physicalDeviceSparseProperties.residencyStandard2DMultisampleBlockShape = VK_TRUE;//如果为VK_TRUE,则指明物理设备将使用standard sparse image block shapes访问所有的multisample 2D sparse resources。如果不支持，则返回的VkSparseImageFormatProperties.imageGranularity就不必要和其 standard sparse image block dimensions匹配
+			physicalDeviceSparseProperties.residencyStandard3DBlockShape = VK_TRUE;//如果为VK_TRUE,则指明物理设备将使用standard sparse image block shapes访问所有的3D sparse resources。如果不支持，则返回的VkSparseImageFormatProperties.imageGranularity就不必要和其 standard sparse image block dimensions匹配
+			physicalDeviceSparseProperties.residencyAlignedMipSize = VK_TRUE;//如果为VK_TRUE，则含有mipmap level的image的维度不为对应 sparse image block 维度的整数倍的level或许会放到mip tail中，如果不支持，则只有维度小于VkSparseImageFormatProperties.imageGranularity的level会放到mip tail中，如果支持，则应用允许返回的VkSparseImageFormatProperties.flags中包含VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT，指明mipmap level的image的维度不为对应 sparse image block 维度的整数倍的level会放到mip tail中
+			physicalDeviceSparseProperties.residencyNonResidentStrict = VK_TRUE;//指明物理设备是否可以一直访问资源的non-resident区域，如果为VK_TRUE，则访问该区域返回的值为0，写入该区域的值会被丢弃
+
+		}
+
+
+		//Sparse Image Format Properties 参见p2996
+		{
+			//在创建sparse资源前查询 sparse image format properties
+			uint32_t sparseImageFormatPropertiesCount = 0;
+			std::vector<VkSparseImageFormatProperties> sparseImageFormatProperties{};
+			vkGetPhysicalDeviceSparseImageFormatProperties(physicalDevice, VK_FORMAT_R8G8B8_SRGB, VK_IMAGE_TYPE_2D, VK_SAMPLE_COUNT_1_BIT/*samples，必须是参入相同format, type, tiling, 以及 usage参数调用vkGetPhysicalDeviceImageFormatProperties返回的VkImageFormatProperties::sampleCounts中的有效值*/, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_TILING_LINEAR,
+				&sparseImageFormatPropertiesCount,nullptr);
+			sparseImageFormatProperties.resize(sparseImageFormatPropertiesCount);
+			vkGetPhysicalDeviceSparseImageFormatProperties(physicalDevice, VK_FORMAT_R8G8B8_SRGB, VK_IMAGE_TYPE_2D, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_TILING_LINEAR,
+				&sparseImageFormatPropertiesCount, sparseImageFormatProperties.data());//假设返回成功了至少一个property
+			VkSparseImageFormatProperties& sparseImageFormatPropertie = sparseImageFormatProperties[0];
+			sparseImageFormatPropertie.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;//为 VkImageAspectFlagBits组合值位掩码，指明该property应用的aspect
+			sparseImageFormatPropertie.flags = VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT;/*VkSparseImageFormatFlagBits组合值位掩码指明sparse resource额外的属性
+			VkSparseImageFormatFlagBits:
+			VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT: 指定image的所有array layers只有一个mip tail region，不是每个layer都有一个
+			VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT:  指定会被放到mipmap tail region维度不为对应sparse image block的维度整数倍的第一个mipmap level
+			VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT:  指定image不使用standard sparse image block dimensions，且imageGranularity不匹配对应format的standard sparse image block dimensions
+
+			
+			*/
+			sparseImageFormatPropertie.imageGranularity = VkExtent3D{ .width = 1,.height = 1,.depth = 1 };//为sparse image block基于texel或者compressed texel blocks的 width, height, 以及 depth维度值
+
+
+			//在创建sparse资源前查询 sparse image format properties 2   vkGetPhysicalDeviceSparseImageFormatProperties2等同于vkGetPhysicalDeviceSparseImageFormatProperties2KHR
+			VkPhysicalDeviceSparseImageFormatInfo2 physicalDeviceSparseImageFormatInfo2{};
+			physicalDeviceSparseImageFormatInfo2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SPARSE_IMAGE_FORMAT_INFO_2;
+			physicalDeviceSparseImageFormatInfo2.pNext = nullptr;
+			physicalDeviceSparseImageFormatInfo2.format = VK_FORMAT_R8G8B8_SRGB;//image format
+			physicalDeviceSparseImageFormatInfo2.samples = VK_SAMPLE_COUNT_1_BIT;//image samples,必须是参入相同format, type, tiling, 以及 usage参数调用vkGetPhysicalDeviceImageFormatProperties返回的VkImageFormatProperties::sampleCounts中的有效值
+			physicalDeviceSparseImageFormatInfo2.tiling = VK_IMAGE_TILING_LINEAR;//image tiling
+			physicalDeviceSparseImageFormatInfo2.type = VK_IMAGE_TYPE_2D;//image type
+			physicalDeviceSparseImageFormatInfo2.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;//image usage
+			
+			uint32_t sparseImageFormatPropertiesCount2 = 0;
+			std::vector<VkSparseImageFormatProperties2> sparseImageFormatProperties2s{};
+			vkGetPhysicalDeviceSparseImageFormatProperties2(physicalDevice, &physicalDeviceSparseImageFormatInfo2, &sparseImageFormatPropertiesCount2, nullptr);
+			sparseImageFormatProperties2s.resize(sparseImageFormatPropertiesCount2);
+			vkGetPhysicalDeviceSparseImageFormatProperties2(physicalDevice, &physicalDeviceSparseImageFormatInfo2, &sparseImageFormatPropertiesCount2, sparseImageFormatProperties2s.data());//假设返回成功了一个
+			VkSparseImageFormatProperties2& sparseImageFormatProperties2 = sparseImageFormatProperties2s[0];
+			sparseImageFormatProperties2.sType = VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2;
+			sparseImageFormatProperties2.pNext = nullptr;
+			sparseImageFormatProperties2.properties = VkSparseImageFormatProperties{/*假设这是返回的有效VkSparseImageFormatProperties*/};//前面有说明，这里不再复述
+		}
+
+
+		//Sparse Resource Creation  参见p3002
+		{
+			/*
+			Sparse resources需要在创建Device的是否开启相关sparse feature。
+			
+			以 *_SPARSE_BINDING_BIT创建的资源就可以使用sparse binding command (vkQueueBindSparse).
+			*/
+		}
+
+		// Sparse Resource Memory Requirements 参见p3002
+		{
+			/*
+			Sparse resources对绑定的内存有特定的需求
+			*/
+
+			/*
+			Buffer and Fully-Resident Images
+
+			buffer（fully 以及 partially resident）以及 fully-resident images可以绑定到满足 VkMemoryRequirements.中参数的内存上 ，VkMemoryRequirements::alignment 指明字节对齐
+			*/
+
+
+			/*
+			Partially Resident Images 
+
+			和Buffer and Fully-Resident Images有所不同，Partially Resident Images 需要满足调用vkGetImageSparseMemoryRequirements返回的VkSparseImageMemoryRequirements定义的参数
+			*/
+
+
+			//Sparse Image Memory Requirements
+			{
+				//查询Sparse Image Memory Requirements
+				uint32_t sparseImageMemoryRequirementsCount = 0;
+				std::vector<VkSparseImageMemoryRequirements> sparseImageMemoryRequirements{};
+				vkGetImageSparseMemoryRequirements(device, VkImage{/*假设这是一个有效的VkImage*/ }, & sparseImageMemoryRequirementsCount, nullptr);
+				sparseImageMemoryRequirements.resize(sparseImageMemoryRequirementsCount);
+				vkGetImageSparseMemoryRequirements(device, VkImage{/*假设这是一个有效的VkImage*/ }, & sparseImageMemoryRequirementsCount, sparseImageMemoryRequirements.data());//假设成功返回了一个元素
+				VkSparseImageMemoryRequirements& sparseImageMemoryRequirement = sparseImageMemoryRequirements[0];
+				sparseImageMemoryRequirement.formatProperties = VkSparseImageFormatProperties{/*假设这是返回的有效VkSparseImageFormatProperties*/ };//指明format的属性,前面有说明，这里不再复述
+				sparseImageMemoryRequirement.imageMipTailFirstLod = 0;//指明image subresources中第一个包含在mipmap tail中的mipmap level
+				sparseImageMemoryRequirement.imageMipTailOffset = 0;//为用于绑定 mip tail region(s).的VkSparseImageOpaqueMemoryBindInfo的opaque memory offset
+				sparseImageMemoryRequirement.imageMipTailSize = 0;//为 mip tail region的字节大小，如果 formatProperties.flags包含VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT，则为整个mip tail的大小，否则为每个array layer的mip tail的大小，该值保证是sparse block size的整数倍
+				sparseImageMemoryRequirement.imageMipTailStride = 1;//为每个array-layer的mip tail之间的内存步长，在formatProperties.flags不包含VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT情况下有效
+			
+			
+			
+				//查询Sparse Image Memory Requirements2   vkGetImageSparseMemoryRequirements2 等同于 vkGetImageSparseMemoryRequirements2KHR
+				uint32_t sparseImageMemoryRequirementsCount2 = 0;
+				std::vector<VkSparseImageMemoryRequirements2> sparseImageMemoryRequirements2s{};
+				VkImageSparseMemoryRequirementsInfo2 imageSparseMemoryRequirementsInfo2{};
+				imageSparseMemoryRequirementsInfo2.sType = VK_STRUCTURE_TYPE_IMAGE_SPARSE_MEMORY_REQUIREMENTS_INFO_2;
+				imageSparseMemoryRequirementsInfo2.pNext = nullptr;
+				imageSparseMemoryRequirementsInfo2.image = VkImage{/*假设这是一个有效的VkImage*/ };//指明查询的image
+				
+				vkGetImageSparseMemoryRequirements2(device, &imageSparseMemoryRequirementsInfo2, &sparseImageMemoryRequirementsCount2, nullptr);
+				sparseImageMemoryRequirements2s.resize(sparseImageMemoryRequirementsCount2);
+				vkGetImageSparseMemoryRequirements2(device, &imageSparseMemoryRequirementsInfo2, &sparseImageMemoryRequirementsCount2, sparseImageMemoryRequirements2s.data());//假设成功返回了一个元素
+				VkSparseImageMemoryRequirements2 sparseImageMemoryRequirements2 = sparseImageMemoryRequirements2s[0];
+				sparseImageMemoryRequirements2.sType = VK_STRUCTURE_TYPE_SPARSE_IMAGE_MEMORY_REQUIREMENTS_2;
+				sparseImageMemoryRequirements2.pNext = nullptr;
+				sparseImageMemoryRequirements2.memoryRequirements = VkSparseImageMemoryRequirements{/*假设这是一个有效的VkSparseImageMemoryRequirements*/ };//前面有提及，这里不再复述
+
+				//在不需要创建VkImage情况下查询Sparse Image Memory Requirements     vkGetDeviceImageSparseMemoryRequirements等同于vkGetDeviceImageSparseMemoryRequirementsKHR
+				VkDeviceImageMemoryRequirements deviceImageMemoryRequirements{};
+				deviceImageMemoryRequirements.sType = VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS;
+				deviceImageMemoryRequirements.pNext = nullptr;
+				deviceImageMemoryRequirements.planeAspect = VK_IMAGE_ASPECT_COLOR_BIT;
+				VkImageCreateInfo imageCreareInfo{/*假设这是一个有效的VkImageCreateInfo*/ };
+				deviceImageMemoryRequirements.pCreateInfo = &imageCreareInfo;
+				
+				vkGetDeviceImageSparseMemoryRequirements(device, &deviceImageMemoryRequirements, &sparseImageMemoryRequirementsCount2, nullptr);
+				sparseImageMemoryRequirements2s.resize(sparseImageMemoryRequirementsCount2);
+				vkGetDeviceImageSparseMemoryRequirements(device, &deviceImageMemoryRequirements, &sparseImageMemoryRequirementsCount2, sparseImageMemoryRequirements2s.data());
+
+
+			}
+
+
+			
+
+		}
+
+		//Binding Resource Memory
+		{
+			/*
+			Non-sparse 资源通过vkBindImageMemory 或者 vkBindBufferMemory在使用前绑定其内存，且不能更改。
+
+			sparse资源的绑定在包含VK_QUEUE_SPARSE_BINDING_BIT的queue中执行，绑定需要进行外部同步。
+			
+			如果绑定到 VK_IMAGE_ASPECT_METADATA_BIT，则 VkSparseMemoryBind::flags中必须包含VK_SPARSE_MEMORY_BIND_METADATA_BIT
+
+			如果绑定到 mip tail,则VkSparseMemoryBind::flags中必须包含VK_SPARSE_MEMORY_BIND_METADATA_BIT，如果绑定到任何aspect的mip tail则使用VkSparseImageOpaqueMemoryBindInfo，
+			如果formatProperties.flags包含VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT，则只用一个VkSparseMemoryBind即可，其中resourceOffset = imageMipTailOffset，size = imageMipTailSize.
+			如果formatProperties.flags不包含VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT，则每个array layer要有一个VkSparseMemoryBind，其中 resourceOffset = arrayMipTailOffset = imageMipTailOffset + arrayLayer * imageMipTailStride， size = imageMipTailSize.
+			*/
+
+			//Sparse Memory Binding Functions
+
+			/*
+			VkSparseMemoryBind结构体，绑定资源的[resourceOffset, resourceOffset + size)范围
+
+			如果flags 包含VK_SPARSE_MEMORY_BIND_METADATA_BIT，则resourceOffset =  imageMipTailOffset + imageMipTailStride × n，其中imageMipTailOffset, imageMipTailSize, 以及 imageMipTailStride为前面提及的对应该meta aspect的VkSparseImageMemoryRequirements中列举的，
+			如果VkSparseImageMemoryRequirements::formatProperties.flags包含VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT，则imageMipTailStride认为是0
+
+			如果flags 不包含VK_SPARSE_MEMORY_BIND_METADATA_BIT，则绑定资源的范围在 [0,VkMemoryRequirements::size).内
+			*/
+			VkSparseMemoryBind sparseMemoryBind{};
+			sparseMemoryBind.flags = VK_SPARSE_MEMORY_BIND_METADATA_BIT;//VkSparseMemoryBindFlagBits组合值位掩码，指明绑定操作的用法，VK_SPARSE_MEMORY_BIND_METADATA_BIT 指明只用于metadata aspect的内存绑定
+			sparseMemoryBind.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ };//为该资源范围绑定的 VkDeviceMemory对象，如果为VK_NULL_HANDLE，则表示该资源范围为未绑定的
+			sparseMemoryBind.memoryOffset = 0;//为该资源范围绑定的 VkDeviceMemory对象中的起始字节偏移量，如果memory为VK_NULL_HANDLE，则该值忽略
+			sparseMemoryBind.resourceOffset = 0;//是在该资源中的字节偏移量
+			sparseMemoryBind.size = 1;//为要绑定的内存区域大小
+			/*
+			VkSparseMemoryBind有效用法:
+			1.如果memory 不为VK_NULL_HANDLE，则memory以及memoryOffset 必须匹配该资源的内存需求，参见Resource Memory Association p1153
+			2.如果资源为VkBuffer,则resourceOffset，memoryOffset以及size必须是调用vkGetBufferMemoryRequirements传入该buffer 资源的参数返回的VkMemoryRequirements.alignment的整数倍
+			3.如果资源为VkImage,则resourceOffset，memoryOffset必须是调用vkGetImageMemoryRequirements传入该image 资源的参数返回的VkMemoryRequirements.alignment的整数倍
+			4.如果memory 不为VK_NULL_HANDLE，则memory 不能以VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT创建
+			5.size 必须大于0，小于等于资源大小减去resourceOffset，小于等于memory大小减去memoryOffset
+			6.resourceOffset 必须小于资源的大小
+			7.memoryOffset 必须小于等于memory大小
+			8.如果memory以VkExportMemoryAllocateInfo::handleTypes不为0创建，则创建资源时VkExternalMemoryBufferCreateInfo::handleTypes 或者 VkExternalMemoryImageCreateInfo::handleTypes至少包含一个handle type
+			9.如果memory通过一个memory import operation创建，则创建资源时，导入memory的外部handle type必须设置在 VkExternalMemoryBufferCreateInfo::handleTypes 或者 VkExternalMemoryImageCreateInfo::handleTypes中
+
+			*/
+
+
+			//绑定以VK_BUFFER_CREATE_SPARSE_BINDING_BIT创建的buffer的内存使用VkSparseBufferMemoryBindInfo
+			VkSparseBufferMemoryBindInfo sparseBufferMemoryBindInfo{};
+			sparseBufferMemoryBindInfo.buffer = VkBuffer{/*假设这是一个有效的VkBuffer*/ };//指明要绑定的buffer
+			sparseBufferMemoryBindInfo.bindCount = 1;// pBinds中元素个数
+			sparseBufferMemoryBindInfo.pBinds = &sparseMemoryBind;//一组 VkSparseMemoryBind数组指针，指定其要绑定的范围
+
+			//绑定以VK_IMAGE_CREATE_SPARSE_BINDING_BIT创建的image的opaque regions的内存使用VkSparseImageOpaqueMemoryBindInfo，主要用于绑定fully-resident sparse images，partially resident images的mip tail regions 或者entire binding range
+			VkSparseImageOpaqueMemoryBindInfo sparseImageOpaqueMemoryBindInfo{};
+			sparseImageOpaqueMemoryBindInfo.image = VkImage{/*假设这是一个有效的VkImage*/ };//指明要绑定的image
+			sparseImageOpaqueMemoryBindInfo.bindCount = 1;// pBinds中元素个数
+			sparseImageOpaqueMemoryBindInfo.pBinds = &sparseMemoryBind;//一组 VkSparseMemoryBind数组指针，指定其要绑定的范围,如果任何元素得flags包含VK_SPARSE_MEMORY_BIND_METADATA_BIT，则该元素定义的范围必须在该image的metadata aspect 的mip tail region中
+		
+
+			//绑定以VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT创建的image的sparse image blocks的内存使用VkSparseImageMemoryBindInfo，
+			VkSparseImageMemoryBindInfo sparseImageMemoryBindInfo{};
+			sparseImageMemoryBindInfo.image = VkImage{/*假设这是一个有效的VkImage*/ };//指明要绑定的image
+			sparseImageMemoryBindInfo.bindCount = 1;// pBinds中元素个数
+			VkSparseImageMemoryBind sparseImageMemoryBind{};
+			{
+				sparseImageMemoryBind.subresource = VkImageSubresource{ .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,.mipLevel = 0,.arrayLayer = 0 };//指定image的哪个resource
+				sparseImageMemoryBind.flags = 0;//VkSparseMemoryBindFlagBits组合值位掩码，指明绑定操作的用法，VK_SPARSE_MEMORY_BIND_METADATA_BIT 指明只用于metadata aspect的内存绑定
+				sparseImageMemoryBind.memory = VkDeviceMemory{/*假设这是一个有效的VkDeviceMemory*/ };//为该sparse image blocks资源范围绑定的 VkDeviceMemory对象，如果为VK_NULL_HANDLE，则表示该资源范围为未绑定的
+				sparseImageMemoryBind.memoryOffset = 0;//为该sparse image blocks资源范围绑定的 VkDeviceMemory对象中的起始字节偏移量，如果memory为VK_NULL_HANDLE，则该值忽略
+				sparseImageMemoryBind.offset = VkOffset3D{ .x = 0,.y = 0,.z = 0 };//为image subresource绑定的texel区域的第一个texel的坐标
+				sparseImageMemoryBind.extent = VkExtent3D{ .width = 1,.height = 1,.depth = 1 };//为image subresource绑定的texel区域的大小，必须是sparse image block dimensions的整数倍，除非绑定的sparse image blocks在 image subresource的边界上时可以允许offset + extent等于 image subresource.的维度
+				/*
+				VkSparseImageMemoryBind有效用法:
+				1.如果sparseResidencyAliased 特性没有开启，且如果任何其他的资源绑定到memory范围，则绑定memory的范围不能重叠
+				2.memory以及memoryOffset 必须匹配该image资源的内存需求，参见Resource Memory Association p1153
+				3.offset.x 必须是image的对应sparse image block width（(VkSparseImageFormatProperties::imageGranularity.width)）的倍数
+				4.extent.width  必须大于0，且必须是image的对应sparse image block width的倍数或者(extent.width + offset.x)  必须等于image subresource的width
+				5.offset.y 必须是image的对应sparse image block height（(VkSparseImageFormatProperties::imageGranularity.height)）的倍数
+				6.extent.height  必须大于0，且必须是image的对应sparse image block height的倍数或者(extent.height + offset.y)  必须等于image subresource的height
+				7.offset.z 必须是image的对应sparse image block depth（(VkSparseImageFormatProperties::imageGranularity.depth)）的倍数
+				8.extent.depth  必须大于0，且必须是image的对应sparse image block depth的倍数或者(extent.depth + offset.z)  必须等于image subresource的depth
+				9.如果memory以VkExportMemoryAllocateInfo::handleTypes不为0创建，则创建资源时VkExternalMemoryBufferCreateInfo::handleTypes 或者 VkExternalMemoryImageCreateInfo::handleTypes至少包含一个handle type
+				10.如果memory通过一个memory import operation创建，则创建资源时，导入memory的外部handle type必须设置在 VkExternalMemoryBufferCreateInfo::handleTypes 或者 VkExternalMemoryImageCreateInfo::handleTypes中
+				*/
+			
+			}
+			sparseImageMemoryBindInfo.pBinds = &sparseImageMemoryBind;//一组 VkSparseMemoryBind数组指针，指定其要绑定的范围,如果任何元素得flags包含VK_SPARSE_MEMORY_BIND_METADATA_BIT，则该元素定义的范围必须在该image的metadata aspect 的mip tail region中
+			/*
+			VkSparseImageMemoryBindInfo有效用法:
+			1.pBinds的每个元素的subresource.mipLevel必须小于创建image的VkImageCreateInfo的mipLevels
+			2.pBinds的每个元素的subresource.arrayLayer必须小于创建image的VkImageCreateInfo的arrayLayers
+			3.pBinds的每个元素的subresource.aspectMask 必须对创建image的VkImageCreateInfo的format是有效的
+			4.image 必须以VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT 创建
+			*/
+
+
+			struct BindSparseInfoEXT {
+				VkDeviceGroupBindSparseInfo deviceGroupBindSparseInfo{};
+				VkFrameBoundaryEXT frameBoundaryEXT{};
+				VkTimelineSemaphoreSubmitInfo timelineSemaphoreSubmitInfo{};
+				BindSparseInfoEXT() {
+					Init();
+
+				}
+				void Init() {
+
+					deviceGroupBindSparseInfo.sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_BIND_SPARSE_INFO;
+					deviceGroupBindSparseInfo.pNext = nullptr;
+					frameBoundaryEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//因为是自定义的所以定义为非法值
+					frameBoundaryEXT.pNext = nullptr;
+					timelineSemaphoreSubmitInfo.sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
+					timelineSemaphoreSubmitInfo.pNext = nullptr;
+
+				}
+			};
+
+
+			//提交一个绑定操作到queue
+			VkBindSparseInfo bindSparseInfo{};
+			bindSparseInfo.sType = VK_STRUCTURE_TYPE_BIND_SPARSE_INFO;
+			BindSparseInfoEXT bindSparseInfoEXT{};
+			bindSparseInfo.pNext = &bindSparseInfoEXT.deviceGroupBindSparseInfo;
+			bindSparseInfo.waitSemaphoreCount = 1;//为执行这批sparse绑定操作前要等待的semaphore的数量
+			VkSemaphore waitSemaphore{/*假设这是一个有效的VkSemaphore*/ };
+			bindSparseInfo.pWaitSemaphores = &waitSemaphore;//为一组VkSemaphore 的数组指针指明这批sparse绑定操作前要等外的semaphore，这定义了一个 semaphore wait operation.p358
+			bindSparseInfo.bufferBindCount = 1;//为这批要执行的sparse buffer bindings的数量
+			bindSparseInfo.pBufferBinds = &sparseBufferMemoryBindInfo;//一组 VkSparseBufferMemoryBindInfo的数组指针，指明sparse buffer binding信息
+			bindSparseInfo.imageOpaqueBindCount = 1;//为这批要执行的opaque sparse image bindings的数量
+			bindSparseInfo.pImageOpaqueBinds = &sparseImageOpaqueMemoryBindInfo;//一组  VkSparseImageOpaqueMemoryBindInfo的数组指针，指明opaque sparse image bindings信息
+			bindSparseInfo.imageBindCount = 1;//为这批要执行的sparse image bindings的数量
+			bindSparseInfo.pImageBinds = &sparseImageMemoryBindInfo;//一组 VkSparseImageMemoryBindInfo的数组指针，指明sparse image bindings信息
+			bindSparseInfo.signalSemaphoreCount = 1;//为这批sparse绑定操作执行完成后要触发的semaphore的数量
+			VkSemaphore signalSemaphore{/*假设这是一个有效的VkSemaphore*/ }; //为一组VkSemaphore 的数组指针指明这批sparse绑定操作完成后要触发的semaphore，这定义了一个  semaphore signal operation.p357
+			bindSparseInfo.pSignalSemaphores = &signalSemaphore; 
+			/*
+			VkBindSparseInfo有效用法:
+			1.如果 pWaitSemaphores 或者 pSignalSemaphores的任何元素以VkSemaphoreType为VK_SEMAPHORE_TYPE_TIMELINE创建，则pNext中必须包含一个VkTimelineSemaphoreSubmitInfo
+			2.如果pNext中包含一个VkTimelineSemaphoreSubmitInfo且pWaitSemaphores中任何元素以VkSemaphoreType为VK_SEMAPHORE_TYPE_TIMELINE创建，则该结构体的waitSemaphoreValueCount必须等于waitSemaphoreCount
+			3.如果pNext中包含一个VkTimelineSemaphoreSubmitInfo且pSignalSemaphores中任何元素以VkSemaphoreType为VK_SEMAPHORE_TYPE_TIMELINE创建，则该结构体的waitSemaphoreValueCount必须等于signalSemaphoreCount
+			4.对pSignalSemaphores中每个以VkSemaphoreType为VK_SEMAPHORE_TYPE_TIMELINE创建的semaphore，则其VkTimelineSemaphoreSubmitInfo::pSignalSemaphoreValues中的对应值必须大于该semaphore的semaphore signal operation执行时semaphore的当前值
+			5.对pWaitSemaphores中每个以VkSemaphoreType为VK_SEMAPHORE_TYPE_TIMELINE创建的semaphore，则其VkTimelineSemaphoreSubmitInfo::pWaitSemaphoreValues中的对应值必须和该semaphore的当前值相同或者和该semaphore的任何外部wait 或者 signal operation的值的差异不超过maxTimelineSemaphoreValueDifference
+			6.对pSignalSemaphores中每个以VkSemaphoreType为VK_SEMAPHORE_TYPE_TIMELINE创建的semaphore，则其VkTimelineSemaphoreSubmitInfo::pSignalSemaphoreValues中的对应值必须和该semaphore的当前值相同或者和该semaphore的任何外部wait 或者 signal operation的值的差异不超过maxTimelineSemaphoreValueDifference
+			*/
+
+
+			//指明绑定哪个实例的资源和内存的设备索引，这些索引会应用到这批绑定信息中的所有buffer以及image binding，semaphore的wait以及signal操作会在resourceDeviceIndex所指的设置上执行，   如果不包含该结构体，则可看成resourceDeviceIndex 以及memoryDeviceIndex 都为0
+			VkDeviceGroupBindSparseInfo& deviceGroupBindSparseInfo = bindSparseInfoEXT.deviceGroupBindSparseInfo;
+			deviceGroupBindSparseInfo.resourceDeviceIndex = 0;//指明绑定哪个实例的资源的设备索引
+			deviceGroupBindSparseInfo.memoryDeviceIndex = 0;//指明资源要绑定哪个实例的内存的设备索引
+			/*
+			VkDeviceGroupBindSparseInfo有效用法:
+			1.resourceDeviceIndex以及memoryDeviceIndex 必须同时是有效的设备索引
+			2.这批绑定中每一个memory的分配必须在memoryDeviceIndex指定的设备上分配一个实例
+			*/
+
+
+			vkQueueBindSparse(VkQueue{/*假设这是一个有效的VkQueue*/ }, 1, & bindSparseInfo, VkFence{/*假设这是一个有效的VkFence*/ }/*判断这些绑定是否完成的fence*/);
+			/*
+			vkQueueBindSparse有效用法:
+			1.如果fence不为VK_NULL_HANDLE，则fence不能已经触发，且fence不能关联到任何在其他的queue上还没有完成指明的queue命令
+			2.pBindInfo的每个元素的pSignalSemaphores的每个元素必须是未触发的
+			3.当pBindInfo的任何元素的pWaitSemaphores的任何元素定义一个引用到一个binary semaphore的执行在queue上的semaphore wait operation，则不能有其他queue等待该相同的semaphore
+			4.pBindInfo的所有元素的pWaitSemaphores的所有元素引用到一个以VkSemaphoreType为VK_SEMAPHORE_TYPE_BINARY创建的semaphore，则该semaphore的 signal operation 必须已经提交执行且该semaphore依赖的semaphore的signal operations也必须提交执行
+			*/
+		}
+	}
+}
+
+void SparseResourcesAndWindowSystemIntergrationTest::WindowSystemIntegration_WSI_Test()
+{
+	/*
+	vulkan的渲染结果如果要显示则需要通过window system integration (WSI)的各平台的相关显示拓展进行显示
+	*/
+
+
+	//WSI Platform  参见p2022
+	{
+		/*
+		平台是对窗口系统、操作系统等的抽象概念。一些例子包括MS Windows、安卓系统和Wayland系统。Vulkan API可以为每个平台以一种独特的方式进行集成。
+		
+		Vulkan API不定义任何类型的平台对象。vulkan 定义特定于平台的WSI扩展，每个扩展都包含特定于使用WSI的平台的功能。使用这些拓展根据 Window System-Specific Header Control p5304附录 中定义的预处理符号进行控制，简单将就是要在包含vulkan的相关头文件前定义一些符号来确定使用的平台
+		*/
 
 
 	}
+
+	//WSI Surface  参见p3022
+	{
+		/*
+		原生平台的surface或者window被抽象为surface 对象，即 VkSurfaceKHR 。
+
+		 VK_KHR_surface拓展会声明VkSurfaceKHR，各个平台会提供其创建和相会VkSurfaceKHR对象的函数接口。
+		
+		*/
+
+		VkSurfaceKHR surface{};
+
+		//Android Platform  参见p3023
+		{
+			//为 Android native window创建一个 VkSurfaceKHR对象
+			VkAndroidSurfaceCreateInfoKHR androidSurfaceCreateInfoKHR{};
+			androidSurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+			androidSurfaceCreateInfoKHR.pNext = nullptr;
+			androidSurfaceCreateInfoKHR.flags = 0;//保留未来使用
+			ANativeWindow* nativeWindow{};//一个ANativeWindow只能对应一个VkSurfaceKHR，对ANativeWindow创建一个VkSurfaceKHR则ANativeWindow的引用计数会加一，销毁则减一，完整的 ANativeWindow定义在 Android NDK headers.
+			androidSurfaceCreateInfoKHR.window = nativeWindow;//为该surface关联的ANativeWindow的指针，必须是一个有效的ANativeWindow的指针
+
+			//创建
+			vkCreateAndroidSurfaceKHR(instance, &androidSurfaceCreateInfoKHR, nullptr, &surface);
+
+
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+			/*
+			swapchain的image维度如果不匹配surface，则会在显示的时候进行缩放,到surface的currentExtent，surface的minImageExtent为(1,1),maxImageExtent取决于消费端
+			
+			*/
+		}
+
+
+		//Wayland Platform  参见3025
+		{
+			/*
+			Wayland是linux系统的默认窗口系统x11的现代替代品，是一种通信协议，定义X window显示服务器和应用程序之间的消息传递。
+			*/
+
+			//为Wayland surface创建一个VkSurfaceKHR
+			VkWaylandSurfaceCreateInfoKHR waylandSurfaceCreateInfoKHR{};
+			waylandSurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+			waylandSurfaceCreateInfoKHR.pNext = nullptr;
+			waylandSurfaceCreateInfoKHR.flags = 0;//保留未来使用
+			wl_display* wl_display{};
+			waylandSurfaceCreateInfoKHR.display = wl_display;//为该surface关联的wl_display的指针，必须是一个有效的wl_display的指针
+			wl_surface* wl_surf{};
+			waylandSurfaceCreateInfoKHR.surface = wl_surf;//为该surface关联的wl_surface的指针，必须是一个有效的wl_surface的指针
+
+			//创建
+			vkCreateWaylandSurfaceKHR(instance, &waylandSurfaceCreateInfoKHR, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+			
+			
+			/*
+			currentExtent是一个特殊值 (0xFFFFFFFF, 0xFFFFFFFF),指明surface的维度取决于swapchain的维度，不论应用设置swapchian的维度为多少，当第一张图元被显示了，minImageExtent将为(1,1),maxImageExtent将为支持的surface的最大维度
+			
+			该surface支持VK_PRESENT_MODE_MAILBOX_KHR
+
+			*/
+		}
+
+
+		//Win32 Platform  参见p3027
+		{
+			//为Win32 window创建一个 VkSurfaceKHR对象
+			VkWin32SurfaceCreateInfoKHR win32SurfaceCreateInfoKHR{};
+			win32SurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+			win32SurfaceCreateInfoKHR.pNext = nullptr;
+			win32SurfaceCreateInfoKHR.flags = 0;//保留未来使用
+			HWND windowHandle{};//用来表示一个window窗口
+			win32SurfaceCreateInfoKHR.hwnd = windowHandle;//为该surface关联的HWND窗口，必须是有效的HWND
+			HINSTANCE hInstance{};//用于表示一个程序的实例
+			win32SurfaceCreateInfoKHR.hinstance = hInstance;//为该surface关联的win32 HINSTANCE，必须是有效的win32 HINSTANCE
+			
+			//创建
+			vkCreateWin32SurfaceKHR(instance, &win32SurfaceCreateInfoKHR, nullptr, &surface);
+
+
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+			/*
+			 minImageExtent, maxImageExtent, 以及 currentExtent永远等于窗口大小
+			
+			当swapchain和surface的当前维度大小不同后，如果没有VkSwapchainPresentScalingCreateInfoEXT指明如何处理这种不同，那么需要为surface重新创建新的swapchain
+			*/
+		}
+
+		// XCB Platform  参见3030
+		{
+			/*
+			X11 window是linux系统的默认窗口系统
+			*/
+
+			//使用 XCB 客户端库 为 X11 window创建一个VkSurfaceKHR
+			VkXcbSurfaceCreateInfoKHR xcbSurfaceCreateInfoKHR{};
+			xcbSurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+			xcbSurfaceCreateInfoKHR.pNext = nullptr;
+			xcbSurfaceCreateInfoKHR.flags = 0;//保留未来使用
+			xcb_connection_t* connection{};
+			xcbSurfaceCreateInfoKHR.connection = connection;//为该surface关联 X 服务器的xcb_connection_t的指针，必须是一个有效的X11的xcb_connection_t的指针
+			xcb_window_t window{};
+			xcbSurfaceCreateInfoKHR.window = window;//为该surface关联 X11 window的xcb_window_t，必须是一个有效 X11 window的xcb_window_t
+
+			//创建
+			vkCreateXcbSurfaceKHR(instance, &xcbSurfaceCreateInfoKHR, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+			/*
+			 minImageExtent, maxImageExtent, 以及 currentExtent永远等于窗口大小
+			
+			当swapchain和surface的当前维度大小不同后，如果没有VkSwapchainPresentScalingCreateInfoEXT指明如何处理这种不同，那么需要为surface重新创建新的swapchain
+			*/
+		}
+
+
+		//Xlib Platform  参见3032
+		{
+			/*
+			X11 window是linux系统的默认窗口系统
+			*/
+
+			//使用Xlib客户端库 为 X11 window创建一个VkSurfaceKHR
+			VkXlibSurfaceCreateInfoKHR xlibSurfaceCreateInfoKHR{};
+			xlibSurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+			xlibSurfaceCreateInfoKHR.pNext = nullptr;
+			xlibSurfaceCreateInfoKHR.flags = 0;//保留未来使用
+			Display* display{};
+			xlibSurfaceCreateInfoKHR.dpy = display;//为该surface关联 X 服务器的Xlib Display connection的指针，必须是一个有效的Xlib Display的指针
+			Window window{};
+			xlibSurfaceCreateInfoKHR.window = window;//为该surface关联的 Xlib Window，必须是一个有效的 Xlib Window
+
+			//创建
+			vkCreateXlibSurfaceKHR(instance, &xlibSurfaceCreateInfoKHR, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+			
+			/*
+			 minImageExtent, maxImageExtent, 以及 currentExtent永远等于窗口大小
+
+			当swapchain和surface的当前维度大小不同后，如果没有VkSwapchainPresentScalingCreateInfoEXT指明如何处理这种不同，那么需要为surface重新创建新的swapchain
+			*/
+		}
+
+
+		//DirectFB Platform  参见3035
+		{
+			/*
+			DirectFB是嵌入式设备的图形显示库
+			*/
+
+			//为 DirectFB surface 创建一个VkSurfaceKHR
+			VkDirectFBSurfaceCreateInfoEXT directFBSurfaceCreateInfoEXT{};
+			directFBSurfaceCreateInfoEXT.sType = VK_STRUCTURE_TYPE_DIRECTFB_SURFACE_CREATE_INFO_EXT;
+			directFBSurfaceCreateInfoEXT.pNext = nullptr;
+			directFBSurfaceCreateInfoEXT.flags = 0;//保留未来使用
+			IDirectFB* dfb{};
+			directFBSurfaceCreateInfoEXT.dfb = dfb;//为DirectFB 的 IDirectFB main interface的指针，必须是一个有效的DirectFB IDirectFB的指针
+			IDirectFBSurface* iSurface{};
+			directFBSurfaceCreateInfoEXT.surface = iSurface;//为IDirectFBSurface surface interface的指针，必须是一个有效的 DirectFB IDirectFBSurface指针
+
+			//创建
+			vkCreateDirectFBSurfaceEXT(instance, &directFBSurfaceCreateInfoEXT, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+			/*
+			 minImageExtent, maxImageExtent, 以及 currentExtent永远等于窗口大小
+
+			*/
+		}
+
+
+		// Fuchsia Platform 参见3037
+		{
+			/*
+			Fuchsia是google的新型移动端操作系统
+			*/
+
+			//为  Fuchsia ImagePipe创建一个VkSurfaceKHR
+			VkImagePipeSurfaceCreateInfoFUCHSIA imagePipeSurfaceCreateInfoFUCHSIA{};
+			imagePipeSurfaceCreateInfoFUCHSIA.sType = VK_STRUCTURE_TYPE_IMAGEPIPE_SURFACE_CREATE_INFO_FUCHSIA;
+			imagePipeSurfaceCreateInfoFUCHSIA.pNext = nullptr;
+			imagePipeSurfaceCreateInfoFUCHSIA.flags = 0;//保留未来使用
+			zx_handle_t imagePipeHandle{};
+			imagePipeSurfaceCreateInfoFUCHSIA.imagePipeHandle = imagePipeHandle;//为surface关联的引用到ImagePipe的 zx_handle_t，必须是一个有效的 zx_handle_t
+
+			//创建
+			vkCreateImagePipeSurfaceFUCHSIA(instance, &imagePipeSurfaceCreateInfoFUCHSIA, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+			/*
+			 currentExtent特殊值 (0xFFFFFFFF, 0xFFFFFFFF)表示surface的大小取决于swapchian的大小
+
+			*/
+		}
+
+
+
+		// Google Games Platform 参见3039
+		{
+			/*
+			 Google Games Platform是google的游戏平台
+			*/
+
+			//为Google Games Platform stream descriptor创建一个VkSurfaceKHR
+			VkStreamDescriptorSurfaceCreateInfoGGP streamDescriptorSurfaceCreateInfoGGP{};
+			streamDescriptorSurfaceCreateInfoGGP.sType = VK_STRUCTURE_TYPE_STREAM_DESCRIPTOR_SURFACE_CREATE_INFO_GGP;
+			streamDescriptorSurfaceCreateInfoGGP.pNext = nullptr;
+			streamDescriptorSurfaceCreateInfoGGP.flags = 0;//保留未来使用
+			GgpStreamDescriptor streamDescriptor{};
+			streamDescriptorSurfaceCreateInfoGGP.streamDescriptor = streamDescriptor;//为surface关联的引用到 GGP stream descriptor的GgpStreamDescriptor，必须是一个有效的 GgpStreamDescriptor
+
+			//创建
+			vkCreateStreamDescriptorSurfaceGGP(instance, &streamDescriptorSurfaceCreateInfoGGP, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+			/*
+			在该平台，surface extent为动态的，minImageExtent不会大于1080p，maxImageExtent不会小于1080p,currentExtent反映当前可选择的分辨率
+
+			swapchain的大小一般使用surface的当前大小，如果两者不再匹配则用swapchain的image显示可以缩放到surface的维度且返回VK_SUBOPTIMAL_KHR，或者显示失败返回VK_ERROR_OUT_OF_DATE_KHR
+			*/
+		}
+
+		//iOS Platform 参见3039
+		{
+
+
+			//为iOS UIView 或者CAMetalLayer创建一个VkSurfaceKHR
+			VkIOSSurfaceCreateInfoMVK iOSSurfaceCreateInfoMVK{};
+			iOSSurfaceCreateInfoMVK.sType = VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK;
+			iOSSurfaceCreateInfoMVK.pNext = nullptr;
+			iOSSurfaceCreateInfoMVK.flags = 0;//保留未来使用
+			void*  view{};
+			iOSSurfaceCreateInfoMVK.pView = view;//为 CAMetalLayer 或者UIView的引用
+			/*
+			VkIOSSurfaceCreateInfoMVK有效用法:
+			1.如果pView为一个CAMetalLayer，则其必须是一个有效的CAMetalLayer
+			2.如果pView为一个UIView，则其必须是一个有效的UIView，且其底层必须为一个CAMetalLayer类型的CALayer，且vkCreateIOSSurfaceMVK必须在主线程调用
+			*/
+
+			//创建
+			vkCreateIOSSurfaceMVK(instance, &iOSSurfaceCreateInfoMVK, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+		}
+
+		// macOS Platform 参见3043
+		{
+
+
+			//为 macOS NSView 或者 CAMetalLayer创建一个VkSurfaceKHR
+			VkMacOSSurfaceCreateInfoMVK macOSSurfaceCreateInfoMVK{};
+			macOSSurfaceCreateInfoMVK.sType = VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK;
+			macOSSurfaceCreateInfoMVK.pNext = nullptr;
+			macOSSurfaceCreateInfoMVK.flags = 0;//保留未来使用
+			void* view{};
+			macOSSurfaceCreateInfoMVK.pView = view;//为 CAMetalLayer 或者 NSView的引用
+			/*
+			VkMacOSSurfaceCreateInfoMVK有效用法:
+			1.如果pView为一个CAMetalLayer，则其必须是一个有效的CAMetalLayer
+			2.如果pView为一个 NSView，则其必须是一个有效的 NSView，且其底层必须为一个CAMetalLayer类型的CALayer，且 vkCreateMacOSSurfaceMVK必须在主线程调用
+			*/
+
+			//创建
+			vkCreateMacOSSurfaceMVK(instance, &macOSSurfaceCreateInfoMVK, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+		}
+
+
+		//VI Platform 参见3045
+		{
+			/*
+			VI Platform是 视觉识别系统
+			*/
+
+			//为nn::vi::Layer 创建一个VkSurfaceKHR,调用nn::vi::GetNativeWindow查询layer的 native handle,
+			VkViSurfaceCreateInfoNN viSurfaceCreateInfoNN{};
+			viSurfaceCreateInfoNN.sType = VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN;
+			viSurfaceCreateInfoNN.pNext = nullptr;
+			viSurfaceCreateInfoNN.flags = 0;//保留未来使用
+			void* window{};//每个window对应一个surface
+			viSurfaceCreateInfoNN.window = window;//为surface关联的 nn::vi::Layer的 nn::vi::NativeWindowHandle，必须是一个有效的  nn::vi::NativeWindowHandle
+
+			//创建
+			vkCreateViSurfaceNN(instance, &viSurfaceCreateInfoNN, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+			/*
+			 如果window以一个特定的大小创建，则currentExtent表示这个大小，swapchain的大小应该为这个大小，否则currentExtent为特殊值 (0xFFFFFFFF, 0xFFFFFFFF)表示surface的大小取决于swapchian的大小
+			*/
+		}
+
+
+		//Metal Platform 参见3047
+		{
+			/*
+			Metal 是一个将图形和计算紧密集成的现代化 API，提供了强大的着色语言，专为 Apple 平台设计并进行了优化。
+			*/
+
+			//为 CAMetalLayer创建一个VkSurfaceKHR
+			VkMetalSurfaceCreateInfoEXT metalSurfaceCreateInfoEXT{};
+			metalSurfaceCreateInfoEXT.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
+			metalSurfaceCreateInfoEXT.pNext = nullptr;
+			metalSurfaceCreateInfoEXT.flags = 0;//保留未来使用
+			void* metalLayer{};
+			metalSurfaceCreateInfoEXT.pLayer = metalLayer;//为 CAMetalLayer 的引用,表示一个可渲染的界面
+	
+
+			//创建
+			vkCreateMetalSurfaceEXT(instance, &metalSurfaceCreateInfoEXT, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+		}
+
+
+		//QNX Screen Platform 参见3047
+		{
+			/*
+			QNX Screen Platform 是一个基于客户机/服务器的屏幕图形子系统。
+			*/
+
+			//为QNX Screen surface 创建一个VkSurfaceKHR
+			VkScreenSurfaceCreateInfoQNX screenSurfaceCreateInfoQNX{};
+			screenSurfaceCreateInfoQNX.sType = VK_STRUCTURE_TYPE_SCREEN_SURFACE_CREATE_INFO_QNX;
+			screenSurfaceCreateInfoQNX.pNext = nullptr;
+			screenSurfaceCreateInfoQNX.flags = 0;//保留未来使用
+			_screen_context* contex{};
+			screenSurfaceCreateInfoQNX.context = contex;//为surface关联的QNX Screen context，必须是一个有效的  QNX Screen _screen_context指针
+			_screen_window* window{};
+			screenSurfaceCreateInfoQNX.window = window;//为surface关联的QNX Screen  window，必须是一个有效的  QNX Screen _screen_window指针
+
+
+
+			//创建
+			vkCreateScreenSurfaceQNX(instance, &screenSurfaceCreateInfoQNX, nullptr, &surface);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surface, nullptr);
+
+		}
+
+		// Platform-Independent Information  参见p3051
+		{
+			/*
+			一旦创建完毕，VkSurfaceKHR对象就可以在这个扩展和其他扩展中使用，特别是VK_KHR_swapchain扩展。
+			*/
+
+			vkDestroySurfaceKHR(instance, VkSurfaceKHR{/*假设这是一个有效的VkSurfaceKHR*/}, nullptr);
+			/*
+			vkDestroySurfaceKHR有效用法:
+			1.所有VkSwapchainKHR必须在其基于平台的native surface之前销毁
+			2.如果创建该VkSurfaceKHR时提供了VkAllocationCallbacks，则这里的callbacks也需要提供一个兼容的
+			3.如果创建该VkSurfaceKHR时没有提供VkAllocationCallbacks，则这里的pAllocator必须为NULL
+
+			*/
+
+		}
+
+	}
+
+
 }
 
 

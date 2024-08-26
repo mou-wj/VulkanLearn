@@ -1131,8 +1131,15 @@ void SparseResourcesAndWindowSystemIntergrationTest::WindowSystemIntegration_WSI
 			displaySurfaceCreateInfoKHR.planeStackIndex = 0;//为该surface所对的显示plane的 z-order
 			displaySurfaceCreateInfoKHR.transform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;//为一个 VkSurfaceTransformFlagBitsKHR值，指明图像在扫描输出时应用的变换操作
 			displaySurfaceCreateInfoKHR.globalAlpha = 1;//为全局的alpha值，如果alphaMode 不为VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR，则该值忽略
-			displaySurfaceCreateInfoKHR.alphaMode = VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR;//为 VkDisplayPlaneAlphaFlagBitsKHR值，指明使用的alpha混合类型
-			displaySurfaceCreateInfoKHR.imageExtent = VkExtent2D{.width = 1,.height = 1};//指明该surface使用的image显示图像的大小
+			displaySurfaceCreateInfoKHR.alphaMode = VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR;/*为 VkDisplayPlaneAlphaFlagBitsKHR值，指明使用的alpha混合类型
+			VkDisplayPlaneAlphaFlagBitsKHR:
+
+			VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR: 指明source image将被视为不透明的。
+			VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR: 指明必须指定一个全局的alpha值，将应用到源图像的所有像素。
+			VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR:  指明每个像素的alpha值将由源图像的像素的alpha值决定。如果源格式没有alpha值，则不会应用混合。源alpha值不会预乘到源图像的其他颜色组件中。
+			VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR: 等价于VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR，但源alpha值假设已经预乘到源图像的其他颜色组件中。
+			*/
+			displaySurfaceCreateInfoKHR.imageExtent = VkExtent2D{ .width = 1,.height = 1 };//指明该surface使用的image显示图像的大小
 			/*
 			VkDisplaySurfaceCreateInfoKHR有效用法:
 			1.planeIndex 必须小于vkGetPhysicalDeviceDisplayPlanePropertiesKHR返回的设备支持的plane的数量
@@ -1148,7 +1155,102 @@ void SparseResourcesAndWindowSystemIntergrationTest::WindowSystemIntegration_WSI
 			VkSurfaceKHR surfaceKHR{};
 			vkCreateDisplayPlaneSurfaceKHR(instance, &displaySurfaceCreateInfoKHR, nullptr, &surfaceKHR);
 
+			//销毁
+			vkDestroySurfaceKHR(instance, surfaceKHR, nullptr);
 		}
+
+		//Presenting to Headless Surfaces 参见p3082
+		{
+			/*
+			Vulkan渲染可以呈现到一个无头表面，其中表示操作是一个noop，不会产生外部可见的结果。
+
+			方便测试一些vulkan的拓展或者特性等。
+			*/
+
+
+			//创建一个无头表面
+			VkHeadlessSurfaceCreateInfoEXT headlessSurfaceCreateInfoEXT{};
+			headlessSurfaceCreateInfoEXT.sType = VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT;
+			headlessSurfaceCreateInfoEXT.pNext = nullptr;
+			headlessSurfaceCreateInfoEXT.flags = 0;//保留未来使用，必须为0
+
+			VkSurfaceKHR surfaceKHR{};
+			vkCreateHeadlessSurfaceEXT(instance, &headlessSurfaceCreateInfoEXT, nullptr, &surfaceKHR);
+
+			//销毁
+			vkDestroySurfaceKHR(instance, surfaceKHR, nullptr);
+
+			/*
+			surface的 currentExtent为预留的值 (0xFFFFFFFF, 0xFFFFFFFF)，表明使用swapchain的大小。
+			*/
+		}
+
+	}
+
+
+	//Querying for WSI Support  参见p3084
+	{
+		/*
+		并非所有的物理设备都将包括WSI支持。在物理设备中，并非所有的队列族都将支持表示。
+		
+		*/
+
+		VkSurfaceKHR surfaceKHR{/*假设这是一个有效的VkSurfaceKHR*/};
+
+		//查询physical device的队列组是否支持在surface上的显示
+		VkBool32 supportsPresent;
+		vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, 0/*queueFamilyIndex,为队列索引，必须小于调用vkGetPhysicalDeviceQueueFamilyProperties返回的物理设备支持的队列组数量.*/, surfaceKHR/*surface ，为surface的VkSurfaceKHR句柄.*/, &supportsPresent/**/);
+
+
+		//Android Platform 不需要查询，所有的队列都支持显示
+
+		//Wayland Platform
+		//查询physical device的队列组是否支持在 Wayland compositor上的显示，必须在创建surface前调用
+		wl_display* wl_disp{/*假设这是一个有效的wl_display指针*/};
+		VkBool32 waylandPrensentSupport = vkGetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice, 0/*queueFamilyIndex,为队列索引，必须小于调用vkGetPhysicalDeviceQueueFamilyProperties返回的物理设备支持的队列组数量.*/, wl_disp/*display,是Wayland compositor相关的wl_display指针.*/);
+	
+
+		//Win32 Platform
+		//查询physical device的队列组是否支持在Microsoft Windows desktop上的显示，必须在创建surface前调用
+		VkBool32 winPrensentSupport = vkGetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice, 0/*queueFamilyIndex,为队列索引，必须小于调用vkGetPhysicalDeviceQueueFamilyProperties返回的物理设备支持的队列组数量.*/);
+
+
+		//XCB Platform
+		//查询physical device的队列组是否支持在X11 server上的显示，使用XCB 客户端库，必须在创建surface前调用
+		xcb_connection_t* xcb_conn{/*假设这是一个有效的xcb_connection_t指针*/ };
+		typedef uint32_t xcb_visualid_t;
+		xcb_visualid_t xcb_visualid{/*假设这是一个有效的xcb_screen_t指针*/ };
+		VkBool32 xcbPrensentSupport = vkGetPhysicalDeviceXcbPresentationSupportKHR(physicalDevice, 0/*queueFamilyIndex,为队列索引，必须小于调用vkGetPhysicalDeviceQueueFamilyProperties返回的物理设备支持的队列组数量.*/, xcb_conn/*connection,为 X11 Server连接的xcb_connection_t指针*/, xcb_visualid/*visual_id,为一个 X11 visual (xcb_visualid_t).*/);
+
+
+		//Xlib Platform
+		//查询physical device的队列组是否支持在X11 server上的显示，使用Xlib 客户端库，必须在创建surface前调用
+		Display* disp{/*假设这是一个有效的Display指针*/};
+		typedef uint32_t VisualID;
+		VisualID visualid{/*假设这是一个有效的VisualID*/ };
+		VkBool32 xlibPrensentSupport = vkGetPhysicalDeviceXlibPresentationSupportKHR(physicalDevice, 0/*queueFamilyIndex,为队列索引，必须小于调用vkGetPhysicalDeviceQueueFamilyProperties返回的物理设备支持的队列组数量.*/, disp/*dpy,为 X11 Server的Display连接指针*/, visualid/*visualId,为一个 X11 visual (VisualID).*/);
+
+
+		//DirectFB Platform
+		//查询physical device的队列组是否支持使用DirectFB library进行显示，必须在创建surface前调用
+		IDirectFB* dfb{/*假设这是一个有效的IDirectFB指针*/ };
+		VkBool32 directfbPrensentSupport = vkGetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice, 0/*queueFamilyIndex,为队列索引，必须小于调用vkGetPhysicalDeviceQueueFamilyProperties返回的物理设备支持的队列组数量.*/, dfb/*dfb,为e IDirectFB main interface的IDirectFB指针.*/);
+
+
+		//Fuchsia Platform  不需要查询，所有的队列都支持显示
+
+		//Google Games Platform  不需要查询，所有的 VK_QUEUE_GRAPHICS_BIT 或者VK_QUEUE_COMPUTE_BIT队列都支持显示
+
+		// iOS Platform  不需要查询，所有的队列都支持显示
+
+		//macOS Platform  不需要查询，所有的队列都支持显示
+		
+		// VI Platform   不需要查询，所有的队列都支持显示
+
+		//QNX Screen Platform
+		//查询physical device的队列组是否支持在QNX Screen compositor上进行显示，必须在创建surface前调用
+		_screen_window* qnxWindow{/*假设这是一个有效的_screen_window指针*/ };
+		VkBool32 qnxPrensentSupport = vkGetPhysicalDeviceScreenPresentationSupportQNX(physicalDevice, 0/*queueFamilyIndex,为队列索引，必须小于调用vkGetPhysicalDeviceQueueFamilyProperties返回的物理设备支持的队列组数量.*/, qnxWindow/*window,为QNX Screen窗口指针.*/);
 
 	}
 

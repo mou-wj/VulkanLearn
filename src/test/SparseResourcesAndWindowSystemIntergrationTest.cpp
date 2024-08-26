@@ -36,6 +36,10 @@ typedef uint32_t GgpStreamDescriptor;//未定义这里自己定义
 struct _screen_context {};//未定义这里自己定义
 struct _screen_window {};//未定义这里自己定义
 #include "vulkan/vulkan_screen.h"
+
+typedef uint32_t RROutput;
+#include "vulkan/vulkan_xlib_xrandr.h"
+
 NS_TEST_BEGIN
 SparseResourcesAndWindowSystemIntergrationTest::SparseResourcesAndWindowSystemIntergrationTest()
 {
@@ -911,6 +915,242 @@ void SparseResourcesAndWindowSystemIntergrationTest::WindowSystemIntegration_WSI
 
 	}
 
+
+
+	//Presenting Directly to Display Devices  参见p3052
+	{
+		/*
+		在有些环境中，vulkan可以直接将渲染结果显示到显示设备上而不需要中间的windowing system介入。在比如嵌入式系统中很有用
+
+		VK_KHR_display拓展就提供了相关的函数，创建显示设备相关的VkSurfaceKHR
+		*/
+
+		//Display Enumeration  参见p3052
+		{
+			//显示设备以 VkDisplayKHR表示
+			VkDisplayKHR displayKHR{};
+
+			//查询可用的显示设备display信息
+			uint32_t displayPropertiesCount = 0;
+			std::vector<VkDisplayPropertiesKHR> displayPropertiesKHRs{};
+			vkGetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, &displayPropertiesCount, nullptr);
+			displayPropertiesKHRs.resize(displayPropertiesCount);
+			vkGetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, &displayPropertiesCount, displayPropertiesKHRs.data());//假设返回成功了一个元素
+			VkDisplayPropertiesKHR& displayPropertiesKHR = displayPropertiesKHRs[0];
+			displayPropertiesKHR.display = VkDisplayKHR{/*假设这是一个有效的VkDisplayKHR*/ };//是一个句柄，用来指代这里描述的显示器。此句柄将在Vulkan实例的生命周期内有效。
+			displayPropertiesKHR.displayName = "name";//为NULL或者以空字符结尾的UTF-8字符串表明该显示设备的字符串，如果不为NULL则将在Vulkan实例的生命周期内有效。
+			displayPropertiesKHR.persistentContent = VK_FALSE;//告知显示器是否支持 自刷新/内部 缓冲。如果为VK_TRUE，应用程序可以对针对此显示创建的交换链提交持久保留当前操作。
+			displayPropertiesKHR.physicalDimensions = VkExtent2D{ .width = 1,.height = 1 };//描述显示器可见部分的物理宽度和高度，单位为毫米
+			displayPropertiesKHR.physicalResolution = VkExtent2D{ .width = 1,.height = 1 };//描述显示器的物理、原生或首选分辨率
+			displayPropertiesKHR.planeReorderPossible = VK_TRUE;//表示这个显示器上的平面是否可以改变它们的z顺序。如果这是VK_TRUE，应用程序可以以相对于彼此的任何顺序重新排列这个显示器上的平面
+			displayPropertiesKHR.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;//为VkSurfaceTransformFlagBitsKHR组合值位掩码，指明显示器支持的变换操作
+
+
+			//查询可用的显示设备display信息 2
+			uint32_t displayPropertiesCount2 = 0;
+			std::vector<VkDisplayProperties2KHR> displayProperties2KHRs{};
+			vkGetPhysicalDeviceDisplayProperties2KHR(physicalDevice, &displayPropertiesCount2, nullptr);
+			displayProperties2KHRs.resize(displayPropertiesCount);
+			vkGetPhysicalDeviceDisplayProperties2KHR(physicalDevice, &displayPropertiesCount, displayProperties2KHRs.data());//假设返回成功了一个元素
+			VkDisplayProperties2KHR& displayProperties2KHR = displayProperties2KHRs[0];
+			displayProperties2KHR.sType = VK_STRUCTURE_TYPE_DISPLAY_PROPERTIES_2_KHR;
+			displayProperties2KHR.pNext = nullptr;
+			displayProperties2KHR.displayProperties = displayPropertiesKHRs[0];//VkDisplayPropertiesKHR类型，前面已经提及，这里不再复述
+
+			
+			//在有些平台上，如果display已经被某些窗口或者应用程序使用了，则其就不能在其他地方进行使用，所以在这种情况下就需要先获取到显示设备才能进行使用
+			
+				//查询X11 server上可直接访问的显示设备的许可权
+				Display* dpy{};
+				vkAcquireXlibDisplayEXT(physicalDevice, dpy/*dpy，为当前拥有显示设备VkDisplayKHR display的到 X11 server的连接*/, VkDisplayKHR{/*假设这是一个有效的VkDisplayKHR*/ }/*display,为vulkan中想要控制的显示设备*/);
+
+				//当获取X11 server上的显示设备时，应用程序还可能希望使用本机句柄而不是VkDisplayKHR句柄来枚举和标识它们。则确定与X11 RandR输出对应的VkDisplayKHR句柄:
+				vkGetRandROutputDisplayEXT(physicalDevice, dpy/*dpy，为 查询的rrOutput的到 X11 server的连接*/, 0/*rrOutput,一个 X11 RandR output ID.*/, &displayKHR/*pDisplay,为将返回的对应的 VkDisplayKHR handle.*/);
+
+
+				//查询Windows 10上可直接访问的显示设备的许可权
+				vkAcquireWinrtDisplayNV(physicalDevice, VkDisplayKHR{/*假设这是一个有效的VkDisplayKHR*/ }/*display,为vulkan中想要控制的显示设备*/);
+
+				//当获取Windows 10上的显示设备时，应用程序还可能希望使用本机句柄而不是VkDisplayKHR句柄来枚举和标识它们。则确定与winrt::Windows::Devices::Display::Core::DisplayTarget对应的VkDisplayKHR句柄:
+				vkGetWinrtDisplayNV(physicalDevice, 0/*deviceRelativeId,  "DisplayTarget" 的 "AdapterRelativeId" 属性值，由"Id"匹配physicalDevice的VkPhysicalDeviceIDProperties的deviceLUID的"DisplayAdapter"列举.*/, &displayKHR/*pDisplay,为将返回的对应的 VkDisplayKHR handle.*/);
+
+
+				//查询Direct Rendering Manager (DRM) interface上可直接访问的显示设备的许可权
+				vkAcquireDrmDisplayEXT(physicalDevice, 0/*drmFd，DRM primary file descriptor.*/, VkDisplayKHR{/*假设这是一个有效的VkDisplayKHR*/ }/*display,为vulkan中想要控制的显示设备*/);
+
+				//在获取Direct Rendering Manager (DRM) interface上的显示设备前，可以通过一个VkDisplayKHR句柄来标识使用connectorId的显示设备
+				vkGetDrmDisplayEXT(physicalDevice, 0/*drmFd，DRM primary file descriptor.*/, 0/*connectorId，特定DRM connector的标识.*/, &displayKHR/*pDisplay,为将返回的对应的 VkDisplayKHR handle.*/);
+
+				//释放已经获取的显示设备
+				vkReleaseDisplayEXT(physicalDevice, displayKHR/*display ,要释放控制的显示设备.*/);
+			
+
+
+			//图元在显示设备的plane上进行显示，一个显示设备至少支持一个plane，plane可以被堆叠和混合，以在一个显示器上合成多个图像
+			
+				//查询plane的属性
+				uint32_t displayPlanePropertiesKHRCount = 0;
+				std::vector<VkDisplayPlanePropertiesKHR> displayPlanePropertiesKHRs{};
+				vkGetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, &displayPlanePropertiesKHRCount, nullptr);
+				displayPlanePropertiesKHRs.resize(displayPlanePropertiesKHRCount);
+				vkGetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, &displayPlanePropertiesKHRCount, displayPlanePropertiesKHRs.data());//假设成功返回了一个元素
+				VkDisplayPlanePropertiesKHR &displayPlanePropertiesKHR = displayPlanePropertiesKHRs[0];
+				displayPlanePropertiesKHR.currentDisplay = VkDisplayKHR{/*假设这是一个有效的VkDisplayKHR*/};//为该plane当前关联的display的VkDisplayKHR句柄，如果没有关联任何显示设备，则这里为VK_NULL_HANDLE
+				displayPlanePropertiesKHR.currentStackIndex = 0;//为当前plane的z-order,该值在0到调用vkGetPhysicalDeviceDisplayPlanePropertiesKHR返回的pPropertyCount中的值之间
+
+
+				//查询plane的属性 2
+				uint32_t displayPlaneProperties2KHRCount = 0;
+				std::vector<VkDisplayPlaneProperties2KHR> displayPlaneProperties2KHRs{};
+				vkGetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice, &displayPlaneProperties2KHRCount, nullptr);
+				displayPlaneProperties2KHRs.resize(displayPlaneProperties2KHRCount);
+				vkGetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice, &displayPlaneProperties2KHRCount, displayPlaneProperties2KHRs.data());//假设成功返回了一个元素
+				VkDisplayPlaneProperties2KHR& displayPlaneProperties2KHR = displayPlaneProperties2KHRs[0];
+				displayPlaneProperties2KHR.sType = VK_STRUCTURE_TYPE_DISPLAY_PLANE_PROPERTIES_2_KHR;
+				displayPlaneProperties2KHR.pNext = nullptr;
+				displayPlaneProperties2KHR.displayPlaneProperties = displayPlanePropertiesKHRs[0];//VkDisplayPlanePropertiesKHR类型，前面已经描述过，这里不再复述
+
+
+				//确定哪个plane是可用的
+				uint32_t displayCount = 0;
+				std::vector<VkDisplayKHR> surportDisplayKHRs{};
+				vkGetDisplayPlaneSupportedDisplaysKHR(physicalDevice, 0/*planeIndex,为该应用想使用的plane的索引，从0开始，到physical的plane数减一，调用vkGetPhysicalDeviceDisplayPlanePropertiesKHR返回的计数值*/, &displayCount, nullptr);
+				surportDisplayKHRs.resize(displayCount);
+				vkGetDisplayPlaneSupportedDisplaysKHR(physicalDevice, 0/*planeIndex,为该应用想使用的plane的索引，从0开始，到physical的plane数减一，调用vkGetPhysicalDeviceDisplayPlanePropertiesKHR返回的计数值*/, &displayCount, surportDisplayKHRs.data());//假设成功返回一个元素
+
+
+
+
+
+				//显示模式  参见p3066
+
+					//显示模式以VkDisplayModeKHR 表示
+				VkDisplayModeKHR displayModeKHR{};
+
+				//一个显示设备支持一个或者多个显示模式
+				// 查询显示器内置显示模式
+				uint32_t displayModePropertiesKHRCount = 0;
+				std::vector<VkDisplayModePropertiesKHR> displayModePropertiesKHRs{};
+				vkGetDisplayModePropertiesKHR(physicalDevice, displayKHR, &displayModePropertiesKHRCount, nullptr);
+				displayModePropertiesKHRs.resize(displayModePropertiesKHRCount);
+				vkGetDisplayModePropertiesKHR(physicalDevice, displayKHR, &displayModePropertiesKHRCount, displayModePropertiesKHRs.data());//假设成功返回了一个元素
+				VkDisplayModePropertiesKHR& displayModePropertiesKHR = displayModePropertiesKHRs[0];
+				displayModePropertiesKHR.displayMode = VkDisplayModeKHR{/*假设这是一个有效的VkDisplayModeKHR*/ };//为display mode的句柄，此句柄将在Vulkan实例的生命周期内有效。
+				displayModePropertiesKHR.parameters = VkDisplayModeParametersKHR{ .visibleRegion = VkExtent2D{.width = 1,.height = 1},/*为可视区域的2D范围，width和height必须大于0 */
+																				  .refreshRate = 256000 /*为显示器每秒刷新的次数乘上1000，该值必须大于0*/ };//VkDisplayModeParametersKHR结构体，描述和display mode相关的参数
+
+
+				// 查询显示器内置显示模式2
+				uint32_t displayModeProperties2KHRCount = 0;
+				std::vector<VkDisplayModeProperties2KHR> displayModeProperties2KHRs{};
+				vkGetDisplayModeProperties2KHR(physicalDevice, displayKHR, &displayModeProperties2KHRCount, nullptr);
+				displayModeProperties2KHRs.resize(displayModeProperties2KHRCount);
+				vkGetDisplayModeProperties2KHR(physicalDevice, displayKHR, &displayModeProperties2KHRCount, displayModeProperties2KHRs.data());//假设成功返回了一个元素
+				VkDisplayModeProperties2KHR& displayModeProperties2KHR = displayModeProperties2KHRs[0];
+				displayModeProperties2KHR.sType = VK_STRUCTURE_TYPE_DISPLAY_MODE_PROPERTIES_2_KHR;
+				displayModeProperties2KHR.pNext = nullptr;
+				displayModeProperties2KHR.displayModeProperties = displayModePropertiesKHRs[0];//VkDisplayModePropertiesKHR类型，前面已经描述过了，这里不再复述
+
+
+				//为显示器创建额外的显示模式
+				VkDisplayModeCreateInfoKHR displayModeCreateInfoKHR{};
+				displayModeCreateInfoKHR.sType = VK_STRUCTURE_TYPE_DISPLAY_MODE_CREATE_INFO_KHR;
+				displayModeCreateInfoKHR.pNext = nullptr;
+				displayModeCreateInfoKHR.flags = 0;//保留未来使用,必须为0
+				displayModeCreateInfoKHR.parameters = VkDisplayModeParametersKHR{ .visibleRegion = VkExtent2D{.width = 1,.height = 1},/*为可视区域的2D范围，width和height必须大于0 */
+																				  .refreshRate = 256000 /*为显示器每秒刷新的次数乘上1000，该值必须大于0*/ };//VkDisplayModeParametersKHR结构体，描述创建的新的display mode相关的参数，如果该参数和当前显示器不兼容，则创建的时候会返回VK_ERROR_INITIALIZATION_FAILED.
+				vkCreateDisplayModeKHR(physicalDevice, displayKHR, &displayModeCreateInfoKHR, nullptr, &displayModeKHR);
+
+				/*
+				应用要将结果直接显示到显示器上需要选中一个显示模式以及一个plane作为显示的目标
+				*/
+				//查询一个显示模式和显示plane的组合的显示能力
+				VkDisplayPlaneCapabilitiesKHR displayPlaneCapabilitiesKHR{};
+				displayPlaneCapabilitiesKHR.supportedAlpha = VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR;//为VkDisplayPlaneAlphaFlagBitsKHR组合值位掩码，表明支持的alpha混合模式
+				displayPlaneCapabilitiesKHR.minSrcPosition = VkOffset2D{ .x = 0,.y = 0 };//是此平面使用指定模式支持的显示图片中读取pxiel的最小矩形位置偏移量。
+				displayPlaneCapabilitiesKHR.maxSrcPosition = VkOffset2D{ .x = 1,.y = 1 };//是此平面使用指定模式支持的显示图片中读取pxiel的最大矩形位置偏移量，x，y必须大于minSrcPosition中对应的。
+				displayPlaneCapabilitiesKHR.minSrcExtent = VkExtent2D{ .width = 1,.height = 1 };//是此平面使用指定模式支持的显示图片中读取pxiel的最小矩形的大小。
+				displayPlaneCapabilitiesKHR.maxSrcExtent = VkExtent2D{ .width = 2,.height = 2 };//是此平面使用指定模式支持的显示图片中读取pxiel的最大矩形的大小。
+				displayPlaneCapabilitiesKHR.minDstPosition = VkOffset2D{ .x = 0,.y = 0 };//是此平面使用指定模式支持的显示图片的显示输出的最小矩形位置偏移量。可能含有负数。
+				displayPlaneCapabilitiesKHR.maxDstPosition = VkOffset2D{ .x = 1,.y = 1 };//是此平面使用指定模式支持的显示图片的显示输出的最大矩形偏移量。x，y必须大于minDstPosition中对应的。可能含有负数。
+				displayPlaneCapabilitiesKHR.minDstExtent = VkExtent2D{ .width = 1,.height = 1 };//是此平面使用指定模式支持的显示图片的显示输出的最小矩形的大小。
+				displayPlaneCapabilitiesKHR.maxDstExtent = VkExtent2D{ .width = 2,.height = 2 };//是此平面使用指定模式支持的显示图片的显示输出的最大矩形的大小。
+
+				vkGetDisplayPlaneCapabilitiesKHR(physicalDevice, displayModeKHR/*mode,指明显示模式的VkDisplayModeKHR句柄，隐含了显示器参数*/, 0/*planeIndex，为plane的索引*/, &displayPlaneCapabilitiesKHR);
+
+
+				//查询一个显示模式和显示plane的组合的显示能力 2
+				VkDisplayPlaneCapabilities2KHR displayPlaneCapabilities2KHR{};
+				displayPlaneCapabilities2KHR.sType = VK_STRUCTURE_TYPE_DISPLAY_PLANE_CAPABILITIES_2_KHR;
+				displayPlaneCapabilities2KHR.pNext = nullptr;
+				displayPlaneCapabilities2KHR.capabilities = displayPlaneCapabilitiesKHR;//VkDisplayPlaneCapabilitiesKHR类型，前面已经描述过了，这里不再复述
+
+				VkDisplayPlaneInfo2KHR displayPlaneInfo2KHR{};
+				displayPlaneInfo2KHR.sType = VK_STRUCTURE_TYPE_DISPLAY_PLANE_INFO_2_KHR;
+				displayPlaneInfo2KHR.pNext = nullptr;
+				displayPlaneInfo2KHR.mode = displayModeKHR;//指明显示模式的VkDisplayModeKHR句柄，隐含了显示器参数
+				displayPlaneInfo2KHR.planeIndex = 0;//为plane的索引
+
+				vkGetDisplayPlaneCapabilities2KHR(physicalDevice, &displayPlaneInfo2KHR, &displayPlaneCapabilities2KHR);
+		}
+
+
+		//Display Control   参见p3077
+		{
+			//设置显示器的电源状态
+			VkDisplayPowerInfoEXT displayPowerInfoEXT{};
+			displayPowerInfoEXT.sType = VK_STRUCTURE_TYPE_DISPLAY_POWER_INFO_EXT;
+			displayPowerInfoEXT.pNext = nullptr;
+			displayPowerInfoEXT.powerState = VK_DISPLAY_POWER_STATE_ON_EXT;/*指明显示器的新电源状态的 VkDisplayPowerStateEXT值
+			VkDisplayPowerStateEXT:
+			VK_DISPLAY_POWER_STATE_OFF_EXT:  指明关闭显示器
+			VK_DISPLAY_POWER_STATE_SUSPEND_EXT:  指明显示器处于低功耗模式，相比于VK_DISPLAY_POWER_STATE_OFF_EXT能够很快回到VK_DISPLAY_POWER_STATE_ON_EXT，该模式可能和VK_DISPLAY_POWER_STATE_OFF_EXT状态相同。
+			VK_DISPLAY_POWER_STATE_ON_EXT:  指明开启显示器
+			*/
+			vkDisplayPowerControlEXT(device, VkDisplayKHR{/*假设这是一个有效的VkDisplayKHR*/ }, & displayPowerInfoEXT);
+
+
+
+		}
+
+		//Display Surfaces  参见p3078
+		{
+			/*
+
+			一个完整的显示配置包括一个显示模式、一个或多个显示plane和描述其行为的任何参数，
+			以及描述与这些平面相关联的图像的某些方面的参数。显示表面描述了带完整显示配置中的单个平面的配置。
+			*/
+
+			//为显示plane 创建一个VkSurfaceKHR
+			VkDisplaySurfaceCreateInfoKHR displaySurfaceCreateInfoKHR{};
+			displaySurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR;
+			displaySurfaceCreateInfoKHR.pNext = nullptr;
+			displaySurfaceCreateInfoKHR.flags = 0;//保留未来使用，必须为0
+			displaySurfaceCreateInfoKHR.displayMode = VkDisplayModeKHR{/*假设这是一个有效的VkDisplayModeKHR，见前面描述*/ };//为VkDisplayModeKHR句柄，指明该显示surface使用的显示模式
+			displaySurfaceCreateInfoKHR.planeIndex = 0;//为该surface所对的显示plane索引
+			displaySurfaceCreateInfoKHR.planeStackIndex = 0;//为该surface所对的显示plane的 z-order
+			displaySurfaceCreateInfoKHR.transform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;//为一个 VkSurfaceTransformFlagBitsKHR值，指明图像在扫描输出时应用的变换操作
+			displaySurfaceCreateInfoKHR.globalAlpha = 1;//为全局的alpha值，如果alphaMode 不为VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR，则该值忽略
+			displaySurfaceCreateInfoKHR.alphaMode = VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR;//为 VkDisplayPlaneAlphaFlagBitsKHR值，指明使用的alpha混合类型
+			displaySurfaceCreateInfoKHR.imageExtent = VkExtent2D{.width = 1,.height = 1};//指明该surface使用的image显示图像的大小
+			/*
+			VkDisplaySurfaceCreateInfoKHR有效用法:
+			1.planeIndex 必须小于vkGetPhysicalDeviceDisplayPlanePropertiesKHR返回的设备支持的plane的数量
+			2.如果调用vkGetPhysicalDeviceDisplayPropertiesKHR返回的VkDisplayPropertiesKHR元素的display对应的displayMode的planeReorderPossible为VK_TRUE,则planeStackIndex 必须小于vkGetPhysicalDeviceDisplayPlanePropertiesKHR返回的当前physical device支持的plane的数量，
+							否则planeStackIndex 必须等于vkGetPhysicalDeviceDisplayPlanePropertiesKHR返回的对应到displayMode的plane的VkDisplayPlanePropertiesKHR的currentStackIndex
+			3.如果alphaMode 为VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR，则globalAlpha必须在[0,1]之间
+			4.alphaMode必须是对应到displayMode的plane的VkDisplayPlaneCapabilitiesKHR中的supportedAlpha支持的
+			5.transform必须是对应到displayMode的plane的VkDisplayPropertiesKHR中的supportedTransforms支持的
+			6.imageExtent的width以及height必须小于等于VkPhysicalDeviceLimits::maxImageDimension2D中对应的
+			*/
+
+
+			VkSurfaceKHR surfaceKHR{};
+			vkCreateDisplayPlaneSurfaceKHR(instance, &displaySurfaceCreateInfoKHR, nullptr, &surfaceKHR);
+
+		}
+
+	}
 
 }
 

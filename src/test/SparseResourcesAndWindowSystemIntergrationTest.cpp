@@ -1254,6 +1254,299 @@ void SparseResourcesAndWindowSystemIntergrationTest::WindowSystemIntegration_WSI
 
 	}
 
+
+	//Surface Queries  参见3091
+	{
+		/*
+		wapchain将渲染结果通过surface显示的能力由WSI platform, the native window 或者 display, 以及 physical device相关的信息决定。
+		*/
+		VkSurfaceKHR surfaceKHR{/*假设这是一个有效的VkSurfaceKHR*/ };
+
+		//Surface Capabilities  参见p3091
+		{
+			
+
+			//查询创建swapchain时需要的surface的基本能力
+			VkSurfaceCapabilitiesKHR surfaceCapabilitiesKHR{};
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surfaceKHR/*surface,为surface句柄，必须是有效的且被physicalDevice支持，见vkGetPhysicalDeviceSurfaceSupportKHR*/, &surfaceCapabilitiesKHR);//假设返回了正确结果
+			surfaceCapabilitiesKHR.minImageCount = 1;//为设备支持的对surface创建的swapchian的最小的image的数量，至少为1
+			surfaceCapabilitiesKHR.maxImageCount = 1;//为设备支持的对surface创建的swapchian的最大的image的数量，可以为0或者大于等于minImageCount，0意味着没有限制，只受限于内存
+			surfaceCapabilitiesKHR.currentExtent = VkExtent2D{.width = 1,.height = 1};//为surface当前的宽高，如果是特殊值(0xFFFFFFFF, 0xFFFFFFFF)则指明该surface的宽高屈居于创建的swapchain的宽高
+			surfaceCapabilitiesKHR.minImageExtent = VkExtent2D{ .width = 1,.height = 1 };//为设备支持的对surface创建的swapchian的最小宽高，小于等于currentExtent中对应的值，除非currentExtent为特殊值
+			surfaceCapabilitiesKHR.maxImageExtent = VkExtent2D{ .width = 1,.height = 1 };//为设备支持的对surface创建的swapchian的最大宽高，大于等于minImageExtent中对应的值，大于等于currentExtent中对应的值，除非currentExtent为特殊值
+			surfaceCapabilitiesKHR.maxImageArrayLayers = 1;//为设备支持的对surface创建的swapchian中的image所能含有的最大的arrayLayer数量，至少为1
+			surfaceCapabilitiesKHR.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;/*VkSurfaceTransformFlagBitsKHR 组合值位掩码，指明设备支持的对surface能够支持的presentation transforms
+			VkSurfaceTransformFlagBitsKHR:
+
+			VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR: 指明图像内容的显示不会经过变换
+			VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR:  指明图像内容的显示会顺时针旋转90度
+			VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR:  指明图像内容的显示会顺时针旋转180度
+			VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR:  指明图像内容的显示会顺时针旋转270度
+			VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR:  指明图像内容的显示会水平镜像反转
+			VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR:  指明图像内容的显示会水平镜像反转，然后顺时针旋转90度
+			VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR:  指明图像内容的显示会水平镜像反转，然后顺时针旋转180度
+			VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR:  指明图像内容的显示会水平镜像反转，然后顺时针旋转270度
+			VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR:  指明图像内容的显示的不指明变换操作，其由vulkan外的特定平台决定
+			*/
+			surfaceCapabilitiesKHR.currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;//为一个VkSurfaceTransformFlagBitsKHR值，指明surface当前的presentation transforms
+			surfaceCapabilitiesKHR.supportedCompositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;/* VkCompositeAlphaFlagBitsKHR 组合值位掩码，表示显示支持的alpha混合模式，至少将设置一个位。不透明混合可以通过使用任何没有alpha组件的图像格式，或者通过确保可呈现图像中的所有像素都有1.0的alpha值来实现。
+			VkCompositeAlphaFlagBitsKHR:
+
+			VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR: 图像中的alpha分量（如果存在）会在混合处理中会被忽略，就像是其alpha分量固定为一个常量1.0一样 
+			VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR:  图像中的alpha分量（如果存在）会在混合处理中会被考虑，图像的非alpha分量会被认为是已经和alpha分量相乘后得到的结果。
+			VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR:  图像中的alpha分量（如果存在）会在混合处理中会被考虑，图像的非alpha分量不会被认为是已经和alpha分量相乘后得到的结果，反而会在混合的时候将非alpha分量乘上alpha分量。
+			VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR: 该方式认为图像中的alpha分量在vulkan是不可知的，需要由应用使用本地系统命令去设置alpha混合模式，如果没有使用本地系统命令去设置该模式，则使用该平台的默认模式。
+
+			*/
+			surfaceCapabilitiesKHR.supportedUsageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;//VkImageUsageFlagBits组合值位掩码，指明设备支持的对surface以  VkPresentModeKHR为 VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR 或者VK_PRESENT_MODE_FIFO_RELAXED_KHR创建的swapchian中的image的用法，必须包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+
+
+			//通过内核或者拓展查询创建swapchain时需要的surface的基本能力
+			{
+				struct PhysicalDeviceSurfaceInfo2KHREXT
+				{
+					VkSurfaceFullScreenExclusiveInfoEXT surfaceFullScreenExclusiveInfoEXT{};
+					VkSurfaceFullScreenExclusiveWin32InfoEXT surfaceFullScreenExclusiveWin32InfoEXT{};
+					VkSurfacePresentModeEXT surfacePresentModeEXT{};
+					PhysicalDeviceSurfaceInfo2KHREXT() {
+						Init();
+					}
+					void Init() {
+						surfaceFullScreenExclusiveInfoEXT.sType = VK_STRUCTURE_TYPE_SURFACE_FULL_SCREEN_EXCLUSIVE_INFO_EXT;
+						surfaceFullScreenExclusiveInfoEXT.pNext = &surfaceFullScreenExclusiveWin32InfoEXT;
+						surfaceFullScreenExclusiveWin32InfoEXT.sType = VK_STRUCTURE_TYPE_SURFACE_FULL_SCREEN_EXCLUSIVE_WIN32_INFO_EXT;
+						surfaceFullScreenExclusiveWin32InfoEXT.pNext = nullptr;
+						surfacePresentModeEXT.sType = VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_EXT;
+						surfacePresentModeEXT.pNext = nullptr;
+					}
+				};
+
+				VkPhysicalDeviceSurfaceInfo2KHR physicalDeviceSurfaceInfo2KHR{};
+				physicalDeviceSurfaceInfo2KHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;
+				PhysicalDeviceSurfaceInfo2KHREXT physicalDeviceSurfaceInfo2KHREXT{};
+				//VkPhysicalDeviceSurfaceInfo2KHR.pNext
+				{
+					//VkSurfaceFullScreenExclusiveInfoEXT指明应用偏好使用全屏的行为，如果不含该结构体可以认为默认为VK_FULL_SCREEN_EXCLUSIVE_DEFAULT_EXT
+					VkSurfaceFullScreenExclusiveInfoEXT& surfaceFullScreenExclusiveInfoEXT = physicalDeviceSurfaceInfo2KHREXT.surfaceFullScreenExclusiveInfoEXT;
+					surfaceFullScreenExclusiveInfoEXT.fullScreenExclusive = VK_FULL_SCREEN_EXCLUSIVE_DEFAULT_EXT;/*为 VkFullScreenExclusiveEXT值，指明应用更偏好的全屏行为
+					VkFullScreenExclusiveEXT:
+					VK_FULL_SCREEN_EXCLUSIVE_DEFAULT_EXT:  指明实现应该确定适当的全屏方式而不管如何该方式是如何认定的
+					VK_FULL_SCREEN_EXCLUSIVE_ALLOWED_EXT:  指定实现或许会使用可用的全屏独有机制，这个机制可能会导致更好的的性能以及/或者不能的显示能力，但可能在swapchain 初始化，第一次显示以及/或者销毁的时候需要更多的 disruptive transitions。
+					VK_FULL_SCREEN_EXCLUSIVE_DISALLOWED_EXT:  指定实现应该避免使用依赖 disruptive transitions的全屏机制
+					VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT:  指明应用应该通过使用vkAcquireFullScreenExclusiveModeEXT以及vkReleaseFullScreenExclusiveModeEXT命令来管理全屏独有模式
+
+					*/
+
+					VkSurfaceFullScreenExclusiveWin32InfoEXT surfaceFullScreenExclusiveWin32InfoEXT = physicalDeviceSurfaceInfo2KHREXT.surfaceFullScreenExclusiveWin32InfoEXT;
+					HMONITOR hMonitor{/*假设这是一个有效的HMONITOR*/ };
+					surfaceFullScreenExclusiveWin32InfoEXT.hmonitor = hMonitor;//为创建surface的显示其的Win32 HMONITOR句柄，必须是有效的
+
+
+					//
+					VkSurfacePresentModeEXT& surfacePresentModeEXT = physicalDeviceSurfaceInfo2KHREXT.surfacePresentModeEXT;
+					surfacePresentModeEXT.presentMode = VK_PRESENT_MODE_FIFO_KHR;//为swapchain要使用的显示模式，必须是 vkGetPhysicalDeviceSurfacePresentModesKHR中返回的surface支持的
+
+				}
+				physicalDeviceSurfaceInfo2KHR.pNext = &physicalDeviceSurfaceInfo2KHREXT.surfaceFullScreenExclusiveInfoEXT;
+				physicalDeviceSurfaceInfo2KHR.surface = surfaceKHR;
+				/*
+				VkPhysicalDeviceSurfaceInfo2KHR有效用法:
+				1.如果pNext中包含一个fullScreenExclusive设为VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT的VkSurfaceFullScreenExclusiveInfoEXT，且surface使用vkCreateWin32SurfaceKHR创建，则pNext中必须包含一个VkSurfaceFullScreenExclusiveWin32InfoEXT
+				2.如果surface 不为VK_NULL_HANDLE，且VK_GOOGLE_surfaceless_query 拓展未开启，则surface必须是有效的VkSurfaceKHR句柄
+				*/
+
+
+				struct SurfaceCapabilities2KHREXT {
+					VkDisplayNativeHdrSurfaceCapabilitiesAMD displayNativeHdrSurfaceCapabilitiesAMD{};
+					VkLatencySurfaceCapabilitiesNV  latencySurfaceCapabilitiesNV{};
+					VkSharedPresentSurfaceCapabilitiesKHR sharedPresentSurfaceCapabilitiesKHR{};
+					VkSurfaceCapabilitiesFullScreenExclusiveEXT surfaceCapabilitiesFullScreenExclusiveEXT{};
+					VkSurfaceCapabilitiesPresentBarrierNV surfaceCapabilitiesPresentBarrierNV{};
+					VkSurfacePresentModeCompatibilityEXT surfacePresentModeCompatibilityEXT{};
+					VkSurfacePresentScalingCapabilitiesEXT surfacePresentScalingCapabilitiesEXT{};
+					VkSurfaceProtectedCapabilitiesKHR surfaceProtectedCapabilitiesKHR{};
+					SurfaceCapabilities2KHREXT() {
+						Init();
+					}
+					void Init() {
+						displayNativeHdrSurfaceCapabilitiesAMD.sType = VK_STRUCTURE_TYPE_DISPLAY_NATIVE_HDR_SURFACE_CAPABILITIES_AMD;
+						displayNativeHdrSurfaceCapabilitiesAMD.pNext = nullptr;
+						latencySurfaceCapabilitiesNV.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义这里设置为非法值
+						latencySurfaceCapabilitiesNV.pNext = nullptr;
+						sharedPresentSurfaceCapabilitiesKHR.sType = VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR;
+						sharedPresentSurfaceCapabilitiesKHR.pNext = nullptr;
+						surfaceCapabilitiesFullScreenExclusiveEXT.sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_FULL_SCREEN_EXCLUSIVE_EXT;
+						surfaceCapabilitiesFullScreenExclusiveEXT.pNext = nullptr;
+						surfaceCapabilitiesPresentBarrierNV.sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_PRESENT_BARRIER_NV;
+						surfaceCapabilitiesPresentBarrierNV.pNext = nullptr;
+						surfacePresentModeCompatibilityEXT.sType = VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_COMPATIBILITY_EXT;
+						surfacePresentModeCompatibilityEXT.pNext = nullptr;
+						surfacePresentScalingCapabilitiesEXT.sType = VK_STRUCTURE_TYPE_SURFACE_PRESENT_SCALING_CAPABILITIES_EXT;
+						surfacePresentScalingCapabilitiesEXT.pNext = nullptr;
+						surfaceProtectedCapabilitiesKHR.sType = VK_STRUCTURE_TYPE_SURFACE_PROTECTED_CAPABILITIES_KHR;
+						surfaceProtectedCapabilitiesKHR.pNext = nullptr;
+
+
+					}
+				};
+
+
+				VkSurfaceCapabilities2KHR surfaceCapabilities2KHR{};
+				surfaceCapabilities2KHR.sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_KHR;
+				SurfaceCapabilities2KHREXT surfaceCapabilities2KHREXT{};
+				//VkSurfaceCapabilities2KHR.pNext  这些值都是查询后返回的
+				{
+					//查询一个可显示的 protected VkSurfaceKHR
+					VkSurfaceProtectedCapabilitiesKHR& surfaceProtectedCapabilitiesKHR = surfaceCapabilities2KHREXT.surfaceProtectedCapabilitiesKHR;
+					surfaceProtectedCapabilitiesKHR.supportsProtected = VK_TRUE;//返回值，指定是否可以在屏幕上显示从VkPhysicalDeviceSurfaceInfo2KHR::surface为特定窗口系统创建的protected swapchain。如果为VK_TRUE，则必须支持创建带有VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR标志的swapchain。
+
+
+					//获取surface支持的缩放能力
+					VkSurfacePresentScalingCapabilitiesEXT& surfacePresentScalingCapabilitiesEXT = surfaceCapabilities2KHREXT.surfacePresentScalingCapabilitiesEXT;
+					surfacePresentScalingCapabilitiesEXT.minScaledImageExtent = VkExtent2D{ .width = 1,.height = 1 };//当使用支持的缩放方法之一时，该值包含指定设备上surface的最小有效 swapchain的缩放范围，或特殊值（0x FFFFFFFF，0x FFFFFFFF），表明surface大小将由swapchain的范围决定。该范围的width和height均应小于或等于VkSurfaceCapabilitiesKHR::minImageExtent对应的值
+					surfacePresentScalingCapabilitiesEXT.maxScaledImageExtent = VkExtent2D{ .width = 1,.height = 1 };//当使用支持的缩放方法之一时，该值包含指定设备上surface的最大有效 swapchain的缩放范围，或特殊值（0x FFFFFFFF，0x FFFFFFFF），表明surface大小将由swapchain的范围决定。该范围的width和height均应大于或等于VkSurfaceCapabilitiesKHR::maxImageExtent对应的值
+					surfacePresentScalingCapabilitiesEXT.supportedPresentGravityX = VK_PRESENT_GRAVITY_MIN_BIT_EXT;/* VkPresentGravityFlagBitsEXT组合值位掩码，指明surface支持的X轴的pixel gravity，为0表示X轴不支持pixel gravity
+					VkPresentGravityFlagBitsEXT:
+					VK_PRESENT_GRAVITY_MIN_BIT_EXT: 指明pixels将趋向于surface的顶部或左侧。
+					VK_PRESENT_GRAVITY_MAX_BIT_EXT: 指明pixels将趋向于surface的底部或右侧。
+					VK_PRESENT_GRAVITY_CENTERED_BIT_EXT: 指明pixels将处于surface的中心。
+
+					*/
+					surfacePresentScalingCapabilitiesEXT.supportedPresentGravityY = VK_PRESENT_GRAVITY_MIN_BIT_EXT;// VkPresentGravityFlagBitsEXT组合值位掩码，指明surface支持的Y轴的pixel gravity，为0表示Y轴不支持pixel gravity
+					surfacePresentScalingCapabilitiesEXT.supportedPresentScaling = VK_PRESENT_SCALING_ONE_TO_ONE_BIT_EXT;/*为VkPresentScalingFlagBitsEXT组合值位掩码，指明surface支持的缩放操作,或者为0表示不支持缩放
+					VkPresentScalingFlagBitsEXT:
+					VK_PRESENT_SCALING_ONE_TO_ONE_BIT_EXT:   指明不进行缩放操作，所有swapchain中的所有像素会一一对应到surface中的所有像素，映射根据选定的presentation gravity进行
+					VK_PRESENT_SCALING_ASPECT_RATIO_STRETCH_BIT_EXT:  指定swapchain图像将被缩小或放大，使产生的宽度或高度中至少一个等于相应的surface尺寸，并且另一个产生的尺寸小于或等于相应的surface尺寸，生成的图像与原始swapchain图像的长宽比相同
+					VK_PRESENT_SCALING_STRETCH_BIT_EXT:  指定swapchain图像将被缩小或放大到surface的大小
+					*/
+
+
+					//VkSurfacePresentModeCompatibilityEXT    查询和给定present mode显示模式兼容的一组present mode
+					VkSurfacePresentModeCompatibilityEXT& surfacePresentModeCompatibilityEXT = surfaceCapabilities2KHREXT.surfacePresentModeCompatibilityEXT;
+					surfacePresentModeCompatibilityEXT.presentModeCount = 1;//为查询到的和给定present mode兼容的显示模式的数量
+					VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
+					surfacePresentModeCompatibilityEXT.pPresentModes = &presentMode;//一组VkPresentModeKHR数组指针，指明个给定present mode兼容的一组present mode
+
+
+					//VkSharedPresentSurfaceCapabilitiesKHR
+					VkSharedPresentSurfaceCapabilitiesKHR& sharedPresentSurfaceCapabilitiesKHR = surfaceCapabilities2KHREXT.sharedPresentSurfaceCapabilitiesKHR;
+					sharedPresentSurfaceCapabilitiesKHR.sharedPresentSupportedUsageFlags = VK_IMAGE_ASPECT_COLOR_BIT;// VkImageUsageFlagBits组合值位掩码，指明在设备支持surface的以VkPresentModeKHR为 VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR 或者 VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR创建的swapchain之间的共享image的用法，至少包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+
+					//VkDisplayNativeHdrSurfaceCapabilitiesAMD
+					VkDisplayNativeHdrSurfaceCapabilitiesAMD& displayNativeHdrSurfaceCapabilitiesAMD = surfaceCapabilities2KHREXT.displayNativeHdrSurfaceCapabilitiesAMD;
+					displayNativeHdrSurfaceCapabilitiesAMD.localDimmingSupport = VK_TRUE;//指明surface是否支持local dimming，如果为VK_TRUE，则创建swapchain的时候就可以指定一个VkSwapchainDisplayNativeHdrCreateInfoAMD显示开关local dimming，或者由 vkSetLocalDimmingAMD设置
+
+
+					VkSurfaceCapabilitiesFullScreenExclusiveEXT& surfaceCapabilitiesFullScreenExclusiveEXT = surfaceCapabilities2KHREXT.surfaceCapabilitiesFullScreenExclusiveEXT;
+					surfaceCapabilitiesFullScreenExclusiveEXT.fullScreenExclusiveSupported = VK_TRUE;//描述surface时候能够使用独有全屏访问，如果不支持则不能以VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT创建swapchain
+
+					VkSurfaceCapabilitiesPresentBarrierNV& surfaceCapabilitiesPresentBarrierNV = surfaceCapabilities2KHREXT.surfaceCapabilitiesPresentBarrierNV;
+					surfaceCapabilitiesPresentBarrierNV.presentBarrierSupported = VK_TRUE;//描述surface是否可以使用present barrier 特性
+
+				}
+
+				surfaceCapabilities2KHR.pNext = &surfaceCapabilities2KHREXT.displayNativeHdrSurfaceCapabilitiesAMD;
+
+				vkGetPhysicalDeviceSurfaceCapabilities2KHR(physicalDevice, &physicalDeviceSurfaceInfo2KHR/*pSurfaceInfo*/, &surfaceCapabilities2KHR/*pSurfaceCapabilities*/);//假设返回了正确结果
+				/*
+				vkGetPhysicalDeviceSurfaceCapabilities2KHR有效用法:
+				1.如果VK_GOOGLE_surfaceless_query 拓展没有开启，则pSurfaceInfo->surface 必须是有效的VkSurfaceKHR句柄
+				2.如果pSurfaceInfo->surface不为VK_NULL_HANDLE，pSurfaceInfo->surface必须由physicalDevice支持，见vkGetPhysicalDeviceSurfaceSupportKHR
+				3.如果pSurfaceCapabilities->pNext中不包含VkSurfaceCapabilitiesFullScreenExclusiveEXT，则pSurfaceInfo->pNext中必须包含VkSurfaceFullScreenExclusiveWin32InfoEXT
+				4.如果pSurfaceCapabilities->pNext中包含VkSurfacePresentModeCompatibilityEXT，则（1）pSurfaceInfo->pNext中必须包含VkSurfacePresentModeEXT
+																							   （2）pSurfaceInfo->surface 必须是有效的VkSurfaceKHR句柄
+				5.如果pSurfaceCapabilities->pNext中包含VkSurfacePresentScalingCapabilitiesEXT，则（1）pSurfaceInfo->pNext中必须包含VkSurfacePresentModeEXT
+																								 （2）pSurfaceInfo->surface 必须是有效的VkSurfaceKHR句柄
+
+
+				*/
+
+				surfaceCapabilities2KHR.surfaceCapabilities = surfaceCapabilitiesKHR;//VkSurfaceCapabilitiesKHR类型，前面已经描述过这里不再复述
+
+
+
+
+			}
+
+
+			//查询创建swapchain时需要的surface的基本能力
+			VkSurfaceCapabilities2EXT surfaceCapabilities2EXT{};
+			surfaceCapabilities2EXT.sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT;
+			surfaceCapabilities2EXT.pNext = nullptr;
+			vkGetPhysicalDeviceSurfaceCapabilities2EXT(physicalDevice, surfaceKHR, &surfaceCapabilities2EXT);//假设成功返回了结果
+			surfaceCapabilities2EXT.minImageCount = 1;//为设备支持的对surface创建的swapchian的最小的image的数量，至少为1
+			surfaceCapabilities2EXT.maxImageCount = 1;//为设备支持的对surface创建的swapchian的最大的image的数量，可以为0或者大于等于minImageCount，0意味着没有限制，只受限于内存
+			surfaceCapabilities2EXT.currentExtent = VkExtent2D{ .width = 1,.height = 1 };//为surface当前的宽高，如果是特殊值(0xFFFFFFFF, 0xFFFFFFFF)则指明该surface的宽高屈居于创建的swapchain的宽高
+			surfaceCapabilities2EXT.minImageExtent = VkExtent2D{ .width = 1,.height = 1 };//为设备支持的对surface创建的swapchian的最小宽高，小于等于currentExtent中对应的值，除非currentExtent为特殊值
+			surfaceCapabilities2EXT.maxImageExtent = VkExtent2D{ .width = 1,.height = 1 };//为设备支持的对surface创建的swapchian的最大宽高，大于等于minImageExtent中对应的值，大于等于currentExtent中对应的值，除非currentExtent为特殊值
+			surfaceCapabilities2EXT.maxImageArrayLayers = 1;//为设备支持的对surface创建的swapchian中的image所能含有的最大的arrayLayer数量，至少为1
+			surfaceCapabilities2EXT.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;//VkSurfaceTransformFlagBitsKHR 组合值位掩码，指明设备支持的对surface能够支持的presentation transforms
+			surfaceCapabilities2EXT.currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;//为一个VkSurfaceTransformFlagBitsKHR值，指明surface当前的presentation transforms
+			surfaceCapabilities2EXT.supportedCompositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;// VkCompositeAlphaFlagBitsKHR 组合值位掩码，表示显示支持的alpha混合模式，至少将设置一个位。不透明混合可以通过使用任何没有alpha组件的图像格式，或者通过确保可呈现图像中的所有像素都有1.0的alpha值来实现。
+			surfaceCapabilities2EXT.supportedUsageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;//VkImageUsageFlagBits组合值位掩码，指明设备支持的对surface以  VkPresentModeKHR为 VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR 或者VK_PRESENT_MODE_FIFO_RELAXED_KHR创建的swapchian中的image的用法，必须包含VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+			surfaceCapabilities2EXT.supportedSurfaceCounters = 0;// VkSurfaceCounterFlagBitsEXT组合值位掩码指明支持的surface计数器类型，除非surface是一个display surface否则不能包含 VK_SURFACE_COUNTER_VBLANK_BIT_EXT,VK_SURFACE_COUNTER_VBLANK_BIT_EXT指明每次在与曲面相关联的显示器上出现垂直消隐周期时递增一次的计数器
+
+
+		}
+
+
+		// Surface Format Support  参见p3111
+		{
+			
+			//查询surface的swapchain支持的format以及color space对
+			uint32_t surfaceFormatCount = 0;
+			std::vector<VkSurfaceFormatKHR> surfaceFormatKHRs{};
+			vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surfaceKHR, &surfaceFormatCount, nullptr);
+			/*
+			vkGetPhysicalDeviceSurfaceFormatsKHR有效用法:
+			1.如果 VK_GOOGLE_surfaceless_query 拓展未开启，则surface必须是有效的VkSurfaceKHR句柄
+			2.如果surface不为VK_NULL_HANDLE，则surface必须被physicalDevice支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断
+			*/
+			surfaceFormatKHRs.resize(surfaceFormatCount);
+			vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surfaceKHR, &surfaceFormatCount, surfaceFormatKHRs.data());//假设成功返回了一个元素,
+			VkSurfaceFormatKHR& surfaceFormatKHR = surfaceFormatKHRs[0];
+			surfaceFormatKHR.format = VK_FORMAT_R8G8B8_SRGB;//为指定surface兼容的format，指明pixel的编码方式
+			surfaceFormatKHR.colorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;/*为指定surface兼容的 VkColorSpaceKHR，定义如何解释pixel的编码值
+			VkColorSpaceKHR:
+			p3116
+			
+			*/
+
+
+
+			//查询surface的swapchain支持的format元组
+			VkPhysicalDeviceSurfaceInfo2KHR physicalDeviceSurfaceInfo2KHR{};
+			physicalDeviceSurfaceInfo2KHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;
+			physicalDeviceSurfaceInfo2KHR.pNext = nullptr;
+			physicalDeviceSurfaceInfo2KHR.surface = surfaceKHR;//
+
+			uint32_t surfaceFormat2Count = 0;
+			std::vector<VkSurfaceFormat2KHR> surfaceFormat2KHRs{};
+			vkGetPhysicalDeviceSurfaceFormats2KHR(physicalDevice, &physicalDeviceSurfaceInfo2KHR, &surfaceFormat2Count, nullptr);
+			/*
+			vkGetPhysicalDeviceSurfaceFormats2KHR有效用法:
+			1.如果 VK_GOOGLE_surfaceless_query 拓展未开启，则surface必须是有效的VkSurfaceKHR句柄
+			2.如果surface不为VK_NULL_HANDLE，则surface必须被physicalDevice支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断
+			*/
+			surfaceFormat2KHRs.resize(surfaceFormat2Count);
+			vkGetPhysicalDeviceSurfaceFormats2KHR(physicalDevice, &physicalDeviceSurfaceInfo2KHR, &surfaceFormat2Count, surfaceFormat2KHRs.data());//假设成功返回了一个元素
+			VkSurfaceFormat2KHR& surfaceFormat2KHR = surfaceFormat2KHRs[0];
+			surfaceFormat2KHR.sType = VK_STRUCTURE_TYPE_SURFACE_FORMAT_2_KHR;
+			VkImageCompressionPropertiesEXT imageCompressionPropertiesEXT{};
+			{
+				imageCompressionPropertiesEXT.sType = VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_PROPERTIES_EXT;
+				imageCompressionPropertiesEXT.pNext = nullptr;
+				imageCompressionPropertiesEXT.imageCompressionFlags = 0;
+				imageCompressionPropertiesEXT.imageCompressionFixedRateFlags = 0;
+			}
+			surfaceFormat2KHR.pNext = &imageCompressionPropertiesEXT;//如果imageCompressionControlSwapchain 特性开启，可以包含一个VkImageCompressionPropertiesEXT，返回其压缩属性
+			surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHR类型，前面已经描述过这里不再复述
+
+
+		}
+
+	}
+
 }
 
 

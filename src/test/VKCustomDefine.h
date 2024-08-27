@@ -320,5 +320,11 @@ typedef struct VkFrameBoundaryEXT {
 } VkFrameBoundaryEXT;
 
 
-
+// Provided by VK_NV_low_latency2
+typedef struct VkLatencySurfaceCapabilitiesNV {
+	VkStructureType      sType;
+	const void* pNext;
+	uint32_t             presentModeCount;
+	VkPresentModeKHR* pPresentModes;
+} VkLatencySurfaceCapabilitiesNV;
 NS_TEST_END

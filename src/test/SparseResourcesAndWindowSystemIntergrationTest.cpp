@@ -1508,8 +1508,23 @@ void SparseResourcesAndWindowSystemIntergrationTest::WindowSystemIntegration_WSI
 			surfaceFormatKHR.format = VK_FORMAT_R8G8B8_SRGB;//为指定surface兼容的format，指明pixel的编码方式
 			surfaceFormatKHR.colorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;/*为指定surface兼容的 VkColorSpaceKHR，定义如何解释pixel的编码值
 			VkColorSpaceKHR:
-			p3116
-			
+
+			VK_COLOR_SPACE_SRGB_NONLINEAR_KHR:  指明支持 sRGB color space
+			VK_COLOR_SPACE_DISPLAY_P3_NONLINEAR_EXT:  指明支持 Display-P3 color space,使用sRGB-like EOTF进行显示
+			VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT:  指明支持 拓展 sRGB color space,使用linear EOTF进行显示
+			VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT:  指明支持 拓展 sRGB color space,使用sRGB EOTF进行显示
+			VK_COLOR_SPACE_DISPLAY_P3_LINEAR_EXT:  指明支持 Display-P3 color space,使用linear EOTF进行显示
+			VK_COLOR_SPACE_DCI_P3_NONLINEAR_EXT:  指明支持 DCI-P3 color space,使用DCI-P3 EOTF进行显示，该图像中的值会被解释为XYZ编码的颜色数据
+			VK_COLOR_SPACE_BT709_LINEAR_EXT:  指明支持 BT709 color space,使用linear EOTF进行显示
+			VK_COLOR_SPACE_BT709_NONLINEAR_EXT:  指明支持 BT709 color space,使用SMPTE 170M EOTF进行显示
+			VK_COLOR_SPACE_BT2020_LINEAR_EXT:  指明支持 BT2020 color space,使用linear EOTF进行显示
+			VK_COLOR_SPACE_HDR10_ST2084_EXT:  指明支持 HDR10 (BT2020 color) color space,使用SMPTE ST2084 Perceptual Quantizer (PQ) EOTF进行显示
+			VK_COLOR_SPACE_DOLBYVISION_EXT:  指明支持 Dolby Vision (BT2020 color space) color space，proprietary encoding,使用SMPTE ST2084 EOTF进行显示
+			VK_COLOR_SPACE_HDR10_HLG_EXT:  指明支持 HDR10 (BT2020 color space) color space,使用Hybrid Log Gamma (HLG) EOTF进行显示
+			VK_COLOR_SPACE_ADOBERGB_LINEAR_EXT:  指明支持 AdobeRGB color space,使用linear EOTF进行显示
+			VK_COLOR_SPACE_ADOBERGB_NONLINEAR_EXT:  指明支持 AdobeRGB color space,使用Gamma 2.2 EOTF进行显示
+			VK_COLOR_SPACE_PASS_THROUGH_EXT:  指明颜色分量就按照“原来”那样使用，这允许应用不在此处进行解释颜色值，一般用在传统线性或者非gamma颜色转换函数中会使用这个
+			VK_COLOR_SPACE_DISPLAY_NATIVE_AMD:  指明支持显示器本地的color space，这符合AMD的支持FreeSync2 standard的显示器的color space期望，
 			*/
 
 
@@ -1543,6 +1558,59 @@ void SparseResourcesAndWindowSystemIntergrationTest::WindowSystemIntegration_WSI
 			surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHR类型，前面已经描述过这里不再复述
 
 
+		}
+
+
+		//Surface Presentation Mode Support 参见p3119
+		{
+			//查询surface支持的present mode
+			uint32_t presentModeCount = 0;
+			std::vector<VkPresentModeKHR> presentModeKHRs{};
+			vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surfaceKHR, &presentModeCount, nullptr);
+			/*
+			vkGetPhysicalDeviceSurfacePresentModesKHR有效用法:
+			1.如果 VK_GOOGLE_surfaceless_query 拓展未开启，则surface必须是有效的VkSurfaceKHR句柄
+			2.如果surface不为VK_NULL_HANDLE，则surface必须被physicalDevice支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断
+			*/
+			presentModeKHRs.resize(presentModeCount);
+			vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surfaceKHR, &presentModeCount, presentModeKHRs.data());//假设成功返回了一个元素
+			VkPresentModeKHR& presentModeKHR = presentModeKHRs[0] = VK_PRESENT_MODE_FIFO_KHR;
+			/*
+			VkPresentModeKHR:
+			VK_PRESENT_MODE_IMMEDIATE_KHR:  指定显示不等待垂直空白周期（vertical blanking period）来更新当前图像，这意味着此模式可能会导致可见的撕裂。显示图像不需要请求进行内部排队，因为请求会立即应用
+			VK_PRESENT_MODE_MAILBOX_KHR:  指定显示等待下一个垂直空白周期（vertical blanking period）来更新当前图像。不会观察到撕裂。内部单条目队列用于保存挂起的图像显示请求。如果在收到新的表示请求时队列已满，则新请求将替换现有条目，并且与先前条目相关联的任何图像都可供应用程序重用。队列非空时，会在每个垂直空白周期（vertical blanking period）中删除一个请求并进行处理
+			VK_PRESENT_MODE_FIFO_KHR:  指定显示等待下一个垂直空白周期（vertical blanking period）来更新当前图像。不会观察到撕裂。内部队列用于保存正在挂起的图像显示请求。新请求被附加到队列的末尾，在队列非空时，会在每个垂直空白周期（vertical blanking period）中删除一个请求并进行处理。这是presentMode中必须需要支持的唯一个模式。
+			VK_PRESENT_MODE_FIFO_RELAXED_KHR:  指定显示通常会等待下一个垂直空白周期（vertical blanking period）以更新当前图像。如果自当前图像的上次更新以来，垂直空白周期（vertical blanking period）已经过去，那么显示不会等待另一个垂垂直空白周期（vertical blanking period），这意味着在这种情况下，这种模式可能导致可见的撕裂。这种模式对于减少 visual stutter很有用，该应用程序将在下一个垂垂直空白周期（vertical blanking period）之前呈现新图像，但偶尔可能会延迟，并在下一个垂垂直空白周期（vertical blanking period）之后呈现新图像。内部队列用于保存已挂起的图像显示请求。新请求被附加到队列的末尾，在队列非空时，会在每个垂直空白周期（vertical blanking period）中或者之后删除一个请求并进行处理
+			VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR:  指定显示和应用程序可以并发访问单个图像，这被称为共享的可显示图像。显示只需要在收到新的图像显示请求后更新当前图像。因此，每当需要更新时，应用程序必须提出图像显示请求。然而，显示可以在任何点更新当前的图像，这意味着这种模式可能导致可见的撕裂
+			VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:  指定显示和应用程序可以并发访问单个图像，这被称为共享的可显示图像。显示在循环中定期更新当前图像。应用程序只需要发出一个初始显示请求，之后显示更新而不需要任何后续的显示请求就能够定期更新图像。应用程序可以通过发出显示请求来指示图像内容已经更新，但这并不能保证何时会更新它的时间。如果没有正确定时渲染图像，这种模式可能会导致可见撕裂。
+			*/
+
+			//选择其他创建swapchain的固定参数来查询surface支持的present mode
+			VkPhysicalDeviceSurfaceInfo2KHR physicalDeviceSurfaceInfo2KHR{};//该结构体前面已经描述过了，这里不再复述
+			physicalDeviceSurfaceInfo2KHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;
+			physicalDeviceSurfaceInfo2KHR.pNext = nullptr;
+			physicalDeviceSurfaceInfo2KHR.surface = surfaceKHR;//指明surface
+			vkGetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice, &physicalDeviceSurfaceInfo2KHR, &presentModeCount, nullptr);
+			/*
+			vkGetPhysicalDeviceSurfacePresentModes2EXT有效用法:
+			1.如果 VK_GOOGLE_surfaceless_query 拓展未开启，则surface必须是有效的VkSurfaceKHR句柄
+			2.如果surface不为VK_NULL_HANDLE，则surface必须被physicalDevice支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断
+			*/
+			presentModeKHRs.resize(presentModeCount);
+			vkGetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice, &physicalDeviceSurfaceInfo2KHR, &presentModeCount, presentModeKHRs.data());//假设成功返回了一个元素
+
+
+			/*
+			显示模式和显示图像的用法对应参考表:
+			Presentation mode									Image usage flags
+			VK_PRESENT_MODE_IMMEDIATE_KHR					VkSurfaceCapabilitiesKHR::supportedUsageFlags
+			VK_PRESENT_MODE_MAILBOX_KHR						VkSurfaceCapabilitiesKHR::supportedUsageFlags
+			VK_PRESENT_MODE_FIFO_KHR						VkSurfaceCapabilitiesKHR::supportedUsageFlags
+			VK_PRESENT_MODE_FIFO_RELAXED_KHR				VkSurfaceCapabilitiesKHR::supportedUsageFlags
+			VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR		VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags
+			VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR   VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags
+			
+			*/
 		}
 
 	}

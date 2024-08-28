@@ -1530,32 +1530,32 @@ void SparseResourcesAndWindowSystemIntergrationTest::WindowSystemIntegration_WSI
 
 
 			//查询surface的swapchain支持的format元组
-			VkPhysicalDeviceSurfaceInfo2KHR physicalDeviceSurfaceInfo2KHR{};
-			physicalDeviceSurfaceInfo2KHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;
-			physicalDeviceSurfaceInfo2KHR.pNext = nullptr;
-			physicalDeviceSurfaceInfo2KHR.surface = surfaceKHR;//
+VkPhysicalDeviceSurfaceInfo2KHR physicalDeviceSurfaceInfo2KHR{};
+physicalDeviceSurfaceInfo2KHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;
+physicalDeviceSurfaceInfo2KHR.pNext = nullptr;
+physicalDeviceSurfaceInfo2KHR.surface = surfaceKHR;//
 
-			uint32_t surfaceFormat2Count = 0;
-			std::vector<VkSurfaceFormat2KHR> surfaceFormat2KHRs{};
-			vkGetPhysicalDeviceSurfaceFormats2KHR(physicalDevice, &physicalDeviceSurfaceInfo2KHR, &surfaceFormat2Count, nullptr);
-			/*
-			vkGetPhysicalDeviceSurfaceFormats2KHR有效用法:
-			1.如果 VK_GOOGLE_surfaceless_query 拓展未开启，则surface必须是有效的VkSurfaceKHR句柄
-			2.如果surface不为VK_NULL_HANDLE，则surface必须被physicalDevice支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断
-			*/
-			surfaceFormat2KHRs.resize(surfaceFormat2Count);
-			vkGetPhysicalDeviceSurfaceFormats2KHR(physicalDevice, &physicalDeviceSurfaceInfo2KHR, &surfaceFormat2Count, surfaceFormat2KHRs.data());//假设成功返回了一个元素
-			VkSurfaceFormat2KHR& surfaceFormat2KHR = surfaceFormat2KHRs[0];
-			surfaceFormat2KHR.sType = VK_STRUCTURE_TYPE_SURFACE_FORMAT_2_KHR;
-			VkImageCompressionPropertiesEXT imageCompressionPropertiesEXT{};
-			{
-				imageCompressionPropertiesEXT.sType = VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_PROPERTIES_EXT;
-				imageCompressionPropertiesEXT.pNext = nullptr;
-				imageCompressionPropertiesEXT.imageCompressionFlags = 0;
-				imageCompressionPropertiesEXT.imageCompressionFixedRateFlags = 0;
-			}
-			surfaceFormat2KHR.pNext = &imageCompressionPropertiesEXT;//如果imageCompressionControlSwapchain 特性开启，可以包含一个VkImageCompressionPropertiesEXT，返回其压缩属性
-			surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHR类型，前面已经描述过这里不再复述
+uint32_t surfaceFormat2Count = 0;
+std::vector<VkSurfaceFormat2KHR> surfaceFormat2KHRs{};
+vkGetPhysicalDeviceSurfaceFormats2KHR(physicalDevice, &physicalDeviceSurfaceInfo2KHR, &surfaceFormat2Count, nullptr);
+/*
+vkGetPhysicalDeviceSurfaceFormats2KHR有效用法:
+1.如果 VK_GOOGLE_surfaceless_query 拓展未开启，则surface必须是有效的VkSurfaceKHR句柄
+2.如果surface不为VK_NULL_HANDLE，则surface必须被physicalDevice支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断
+*/
+surfaceFormat2KHRs.resize(surfaceFormat2Count);
+vkGetPhysicalDeviceSurfaceFormats2KHR(physicalDevice, &physicalDeviceSurfaceInfo2KHR, &surfaceFormat2Count, surfaceFormat2KHRs.data());//假设成功返回了一个元素
+VkSurfaceFormat2KHR& surfaceFormat2KHR = surfaceFormat2KHRs[0];
+surfaceFormat2KHR.sType = VK_STRUCTURE_TYPE_SURFACE_FORMAT_2_KHR;
+VkImageCompressionPropertiesEXT imageCompressionPropertiesEXT{};
+{
+	imageCompressionPropertiesEXT.sType = VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_PROPERTIES_EXT;
+	imageCompressionPropertiesEXT.pNext = nullptr;
+	imageCompressionPropertiesEXT.imageCompressionFlags = 0;
+	imageCompressionPropertiesEXT.imageCompressionFixedRateFlags = 0;
+}
+surfaceFormat2KHR.pNext = &imageCompressionPropertiesEXT;//如果imageCompressionControlSwapchain 特性开启，可以包含一个VkImageCompressionPropertiesEXT，返回其压缩属性
+surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHR类型，前面已经描述过这里不再复述
 
 
 		}
@@ -1609,12 +1609,198 @@ void SparseResourcesAndWindowSystemIntergrationTest::WindowSystemIntegration_WSI
 			VK_PRESENT_MODE_FIFO_RELAXED_KHR				VkSurfaceCapabilitiesKHR::supportedUsageFlags
 			VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR		VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags
 			VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR   VkSharedPresentSurfaceCapabilitiesKHR::sharedPresentSupportedUsageFlags
-			
+
 			*/
 		}
 
 	}
 
+
+	//Full Screen Exclusive Control  参见p3123
+	{
+		/*
+		要显示以fullScreenExclusive 设置为VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT 创建的swapchain必须要获取或者释放全屏独家访问权exclusive full-screen access
+		*/
+
+		//获取exclusive full-screen access
+		vkAcquireFullScreenExclusiveModeEXT(device, VkSwapchainKHR{/*假设这是一个有效的VkSwapchainKHR*/ }/*swapchain,要获取exclusive full-screen access的swapchain*/);
+		/*
+		vkAcquireFullScreenExclusiveModeEXT有效用法:
+		1.swapchain 不能处于retired state
+		2.swapchain 必须是以含有fullScreenExclusive设置为VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT的 VkSurfaceFullScreenExclusiveInfoEXT 创建的
+		3.swapchain 当前不能拥有exclusive full-screen access
+		*/
+
+		//释放exclusive full-screen access
+		vkReleaseFullScreenExclusiveModeEXT(device, VkSwapchainKHR{/*假设这是一个有效的VkSwapchainKHR*/ }/*swapchain,要释放exclusive full-screen access的swapchain*/);
+		/*
+		vkReleaseFullScreenExclusiveModeEXT有效用法:
+		1.swapchain 不能处于retired state
+		2.swapchain 必须是以含有fullScreenExclusive设置为VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT的 VkSurfaceFullScreenExclusiveInfoEXT 创建的
+		*/
+	}
+
+
+	//Device Group Queries  参见p3126
+	{
+		/*
+		一个表示多个物理设备的逻辑设备可以将image显示到多个物理设备上，或者是从多个物理设备上绑定显示image
+		*/
+
+		//查询多物理设备显示相关能力
+		VkDeviceGroupPresentCapabilitiesKHR deviceGroupPresentCapabilitiesKHR{};
+		deviceGroupPresentCapabilitiesKHR.sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR;
+		deviceGroupPresentCapabilitiesKHR.pNext = nullptr;
+
+		vkGetDeviceGroupPresentCapabilitiesKHR(device, &deviceGroupPresentCapabilitiesKHR);//假设成功返回了属性
+
+		deviceGroupPresentCapabilitiesKHR.presentMask;///presentMask为VK_MAX_DEVICE_GROUP_SIZE 个uint32_t值数组，如果元素值非0代表这个元素对应的物理设备可以显示--有显示引擎，如果这个元素的某个bit为1代表这个元素支持该bit对应的物理设备的图像的显示，该元素至少要设备对应本元素物理设备的bit为1
+		for (uint32_t i = 0; i < VK_MAX_DEVICE_GROUP_SIZE; i++)
+		{
+			deviceGroupPresentCapabilitiesKHR.presentMask[i] = 0x00000001;
+		}
+		deviceGroupPresentCapabilitiesKHR.modes = VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR;//VkDeviceGroupPresentModeFlagBitsKHR 组合值位掩码，指明支持哪个设备组的显示模式，永远含有 VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR
+		/*
+		VkDeviceGroupPresentModeFlagBitsKHR:
+		VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR:  指明任何含有显示引擎的物理设备能够显示其自有的swapchain images
+		VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR:  指明任何含有显示引擎的物理设备能够显示来自其presentMask中指定的任何其他物理设备的swapchain images
+		VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR:  指明任何含有显示引擎的物理设备能够显示来自其presentMask中指定的任何其他物理设备的swapchain images总和
+		VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR:  指明多个物理设备含有一个显示引擎的各个物理设备能够显示其自有的swapchain images
+		*/
+
+		VkSurfaceKHR surface{/*假设这是一个有效的VkSurfaceKHR*/ };
+
+		//有些surface可能不支持所有的设备组显示模式，所以查询某个surface支持的设备组显示模式
+		VkDeviceGroupPresentModeFlagsKHR surfaceDeviceGroupPresentModeFlagsKHR{};
+		vkGetDeviceGroupSurfacePresentModesKHR(device, surface/*surface ,surface必须被device中的所有physical device支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断*/, & surfaceDeviceGroupPresentModeFlagsKHR);
+
+
+		//有些surface可能不支持所有的设备组显示模式，所以指定一些创建swapchain需要的固有参数查询某个surface支持的设备组显示模式
+		VkPhysicalDeviceSurfaceInfo2KHR physicalDeviceSurfaceInfo2KHR{};//该结构体前面已经描述过了，这里不再复述
+		physicalDeviceSurfaceInfo2KHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;
+		physicalDeviceSurfaceInfo2KHR.pNext = nullptr;
+		physicalDeviceSurfaceInfo2KHR.surface = surface;//surface必须被device中的所有physical device支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断
+
+		vkGetDeviceGroupSurfacePresentModes2EXT(device, &physicalDeviceSurfaceInfo2KHR, & surfaceDeviceGroupPresentModeFlagsKHR);
+
+
+		//当使用VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR时，一个surface上有多个物理设备来进行显示，查询每个物理设备所对应的surface上的一组显示区域rectangle
+		uint32_t physicalDeviceRenderRegionCount = 0;
+		std::vector<VkRect2D> physicalDeviceRenderRegions{};
+		vkGetPhysicalDevicePresentRectanglesKHR(physicalDevice, surface/*surface,必须是有效的句柄，必须被physical device支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断*/, &physicalDeviceRenderRegionCount, nullptr);
+		physicalDeviceRenderRegions.resize(physicalDeviceRenderRegionCount);
+		vkGetPhysicalDevicePresentRectanglesKHR(physicalDevice, surface/*surface,必须是有效的句柄，必须被physical device支持，参见vkGetPhysicalDeviceSurfaceSupportKHR或者一个对等的平台机制来判断*/, &physicalDeviceRenderRegionCount, physicalDeviceRenderRegions.data());
+
+
+
+	}
+
+	// Display Timing Queries 参见p3132
+	{
+		//和VK_GOOGLE_display_timing 拓展相关
+
+		VkSwapchainKHR swapchain{/*假设这是一个有效的VkSwapchainKHR*/ };
+
+		//查询显示引擎一个刷新循环（RC）的持续时间
+		VkRefreshCycleDurationGOOGLE refreshCycleDurationGOOGLE{};
+		vkGetRefreshCycleDurationGOOGLE(device, swapchain, & refreshCycleDurationGOOGLE);//假设正确返回了结果
+		refreshCycleDurationGOOGLE.refreshDuration = 1;//为一个刷新循环的开始到下一个刷新循环的开始之间的纳秒时间间隔
+
+
+		//异步查询显示引擎，以获取关于给定swapchain的之前最新的一次或多次显示的相关的耗时信息
+		uint32_t swapchainPresentTimingInfoCount = 0;
+		std::vector<VkPastPresentationTimingGOOGLE> pastPresentationTimingGOOGLEs{};
+		
+		vkGetPastPresentationTimingGOOGLE(device, swapchain, &swapchainPresentTimingInfoCount, nullptr);
+		pastPresentationTimingGOOGLEs.resize(swapchainPresentTimingInfoCount);
+		vkGetPastPresentationTimingGOOGLE(device, swapchain, &swapchainPresentTimingInfoCount, pastPresentationTimingGOOGLEs.data());//假设成功返回了至少一个元素
+		
+		//该结构体中的值具体要怎么解释根据显示模式 VK_PRESENT_MODE_*** 的不同有所区别，具体见3137
+		VkPastPresentationTimingGOOGLE &pastPresentationTimingGOOGLE = pastPresentationTimingGOOGLEs[0];//时间单位为纳秒
+		pastPresentationTimingGOOGLE.presentID  = 0;//为应用通过 VkPresentTimeGOOGLE::presentID为上一个 vkQueuePresentKHR命令提供的一个值，可以唯一确定一次 vkQueuePresentKHR命令
+		pastPresentationTimingGOOGLE.desiredPresentTime = 1;//为应用通过 VkPresentTimeGOOGLE::desiredPresentTime为上一个 vkQueuePresentKHR命令提供的一个值，如果该值不为0，可以指明image不能在早于该值表示的时间之前进行显示
+		pastPresentationTimingGOOGLE.actualPresentTime = 1;//为swapchain的image实际显示的时间
+		pastPresentationTimingGOOGLE.earliestPresentTime = 1;//为swapchain中image可以显示的一个最早时间点，如果应用要求不早于 VkPresentTimeGOOGLE::desiredPresentTime进行image的显示的话该值可能和actualPresentTime不同
+		pastPresentationTimingGOOGLE.presentMargin = 1;//指明了vkQueuePresentKHR要多早被处理和多快被处理的比较，在earliestPresentTime也有体现
+
+
+	}
+
+
+	// Present Wait  参见p3138   和 VK_KHR_present_wait 拓展相关，简单将就是传递 VkPresentIdKHR.presentId给vkQueuePresentKHR，让后续的vkWaitForPresentKHR进行阻塞
+	
+
+	// WSI Swapchain  参见p3138
+	{
+		/*
+		swapchain是一组可以显示到surface上的images的抽象概念，这些images由显示引擎所有,可以在vulkan中共享访问。要在vulkan中使用这些图像，需要调用vkAcquireNextImageKHR获取该image，然后进行相关操作，布局转换，绘制等等，然后调用vkQueuePresentKHR将该图像显示并且释放该image，也可以通过vkReleaseSwapchainImagesEXT来释放image，这个操作会跳过显示步骤且需要image不在device上使用。
+		
+		如果swapchain创建的 presentMode为 VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR 或者 VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR，则该swapchain中只有一个共享的image，vulkan 应用和显示引擎需要协同进行访问。具体见p3139
+
+
+		*/
+
+		VkSwapchainKHR swapchainKHR{/*假设这是一个有效的VkSwapchainKHR*/};
+		
+
+		//查询渲染时swapchain中的共享的显示image的状态   ，主要可以判断这个swapchain是否还可用，参见p3141 对接口结果的描述
+		VkResult result = vkGetSwapchainStatusKHR(device, swapchainKHR);
+
+
+		VkSwapchainCreateInfoKHR swapchainCreateInfoKHR{};
+		swapchainCreateInfoKHR.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+		swapchainCreateInfoKHR.pNext = nullptr;
+		swapchainCreateInfoKHR.flags = VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR;
+		swapchainCreateInfoKHR.surface = VkSurfaceKHR{/*假设这是一个有效的VkSurfaceKHR*/};
+		swapchainCreateInfoKHR.minImageCount = 1;
+		swapchainCreateInfoKHR.imageFormat = VK_FORMAT_R8G8B8A8_UINT;
+		swapchainCreateInfoKHR.imageColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
+		swapchainCreateInfoKHR.imageExtent = VkExtent2D{.width = 1,.height = 1};
+		swapchainCreateInfoKHR.imageArrayLayers = 1;
+		swapchainCreateInfoKHR.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		swapchainCreateInfoKHR.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		swapchainCreateInfoKHR.queueFamilyIndexCount = 1;
+		uint32_t imageQueue = 0;
+		swapchainCreateInfoKHR.pQueueFamilyIndices = &imageQueue;
+		swapchainCreateInfoKHR.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+		swapchainCreateInfoKHR.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
+		swapchainCreateInfoKHR.presentMode = VkPresentModeKHR{/*假设这是一个有效的VkPresentModeKHR*/};
+		swapchainCreateInfoKHR.clipped = VK_TRUE;
+		swapchainCreateInfoKHR.oldSwapchain = VK_NULL_HANDLE;
+
+		//创建swapchain
+		vkCreateSwapchainKHR(device, &swapchainCreateInfoKHR/*pCreateInfo，指定创建swapchain的信息*/, nullptr, &swapchainKHR);
+		/*
+		vkCreateSwapchainKHR相关说明:
+
+		创建的swapchain中的image等效于vulkan中以以下信息创建的image:
+		VkImageCreateInfo Field										Value
+					flags									如果创建swapchain包含VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR，
+																则等价于创建一个包含 VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT的image；
+															如果创建swapchain包含VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR，
+																则等价于创建一个包含 VK_IMAGE_CREATE_PROTECTED_BIT的image；
+															如果创建swapchain包含VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR，
+																则等价于创建一个包含 VK_IMAGE_CREATE_PROTECTED_BIT和 VK_IMAGE_CREATE_EXTENDED_USAGE_BIT_KHR的image；
+															不包含其他的image标志
+					imageType								 VK_IMAGE_TYPE_2D
+					format									pCreateInfo->imageFormat
+					extent									{pCreateInfo->imageExtent.width, pCreateInfo->imageExtent.height, 1}
+					mipLevels									1
+					arrayLayers								pCreateInfo->imageArrayLayers
+					samples									VK_SAMPLE_COUNT_1_BIT
+					tiling									VK_IMAGE_TILING_OPTIMAL
+					usage									pCreateInfo->imageUsage
+					sharingMode								pCreateInfo->imageSharingMode
+					queueFamilyIndexCount					pCreateInfo->queueFamilyIndexCount
+					pQueueFamilyIndices						pCreateInfo->pQueueFamilyIndices
+					initialLayout							VK_IMAGE_LAYOUT_UNDEFINED
+		
+		其他信息见p3143
+		*/
+
+
+
+	}
 }
 
 

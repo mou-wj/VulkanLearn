@@ -1956,7 +1956,32 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 		*/
 
 
-		//p3160
+		//µ±VK_KHR_display_swapchain ÍØÕ¹¿ªÆô£¬¶à¸öswapchain¿ÉÒÔ¹²Ïíimage
+		vkCreateSharedSwapchainsKHR(device, 1, &swapchainCreateInfoKHR, nullptr, &swapchainKHR);
+
+
+		//»ñÈ¡swapchainÖĞµÄÒ»×éimage
+		uint32_t imageCount = 0;
+		std::vector<VkImage> presentImages;
+		vkGetSwapchainImagesKHR(device, swapchainKHR, &imageCount, nullptr);
+		presentImages.resize(imageCount);
+		vkGetSwapchainImagesKHR(device, swapchainKHR, &imageCount, presentImages.data());
+
+
+		//»ñÈ¡swapchainÖĞÒ»¸ö¿ÉÓÃµÄimage£¬²¢·µ»ØÆäË÷Òı
+		uint32_t imageIndex = 0;
+		vkAcquireNextImageKHR(device, swapchainKHR, VK_TIMEOUT, VkSemaphore{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSemaphore*/ }/*ÎªÒ»¸ö´¥·¢µÄsemaphore*/, VkFence{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkFence*/ }/*ÎªÒ»¸ö´¥·¢µÄfence*/, & imageIndex/*·µ»ØÏÂÒ»¸ö¿ÉÓÃµÄimageµÄË÷Òı*/);
+		/*
+		1.swapchain ²»ÄÜ´¦ÓÚretired state
+		2.semaphore Èç¹û²»ÊÇVK_NULL_HANDLEÔò£¨1£©±ØĞëÊÇunsignaled×´Ì¬
+											£¨2£©²»ÄÜÓĞÈÎºÎÎ´Íê³ÉµÄĞÅºÅ»òµÈ´ı²Ù×÷
+		3.Èç¹ûfence²»ÊÇVK_NULL_HANDLE£¬ÔòÆä±ØĞëÊÇunsignaled×´Ì¬£¬ÇÒ²»ÄÜ¹ØÁªµ½ÈÎºÎÖ´ĞĞÔÚÆäËû¶ÓÁĞÉÏ»¹Î´Íê³ÉµÄÃüÁî
+		4.semaphore ºÍfence ²»ÄÜÍ¬Ê±ÎªVK_NULL_HANDLE
+		5.Èç¹û¶ÔpAcquireInfoÖĞ´´½¨swapchianµÄsurfaceµÄ²»ÄÜ±£Ö¤Ç°ÃæµÄ´¦Àí£¬ÔòpAcquireInfo->timeout ±ØĞëÎªUINT64_MAX
+		6.semaphore µÄVkSemaphoreType ±ØĞëÊÇVK_SEMAPHORE_TYPE_BINARY
+
+		*/
+
 	}
 }
 

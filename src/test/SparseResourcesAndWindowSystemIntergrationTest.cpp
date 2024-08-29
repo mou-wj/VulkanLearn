@@ -1747,26 +1747,172 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 		VkResult result = vkGetSwapchainStatusKHR(device, swapchainKHR);
 
 
+		struct SwapchainCreateInfoKHREXT {
+			VkDeviceGroupSwapchainCreateInfoKHR deviceGroupSwapchainCreateInfoKHR{};
+			VkImageCompressionControlEXT imageCompressionControlEXT{};
+			VkImageFormatListCreateInfo imageFormatListCreateInfo{};
+			VkSurfaceFullScreenExclusiveInfoEXT surfaceFullScreenExclusiveInfoEXT{};
+			VkSurfaceFullScreenExclusiveWin32InfoEXT surfaceFullScreenExclusiveWin32InfoEXT{};
+			VkSwapchainCounterCreateInfoEXT swapchainCounterCreateInfoEXT{ };
+			VkSwapchainDisplayNativeHdrCreateInfoAMD swapchainDisplayNativeHdrCreateInfoAMD{};
+			VkSwapchainLatencyCreateInfoNV swapchainLatencyCreateInfoNV{};
+			VkSwapchainPresentBarrierCreateInfoNV swapchainPresentBarrierCreateInfoNV{};
+			VkSwapchainPresentModesCreateInfoEXT swapchainPresentModesCreateInfoEXT{};
+			VkSwapchainPresentScalingCreateInfoEXT swapchainPresentScalingCreateInfoEXT{};
+			SwapchainCreateInfoKHREXT() {
+				Init();
+			}
+			void Init() {
+				deviceGroupSwapchainCreateInfoKHR.sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR;
+				deviceGroupSwapchainCreateInfoKHR.pNext = nullptr;
+				imageCompressionControlEXT.sType = VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_CONTROL_EXT;
+				imageCompressionControlEXT.pNext = nullptr;
+				imageFormatListCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO;
+				imageFormatListCreateInfo.pNext = nullptr;
+				surfaceFullScreenExclusiveInfoEXT.sType = VK_STRUCTURE_TYPE_SURFACE_FULL_SCREEN_EXCLUSIVE_INFO_EXT;
+				surfaceFullScreenExclusiveInfoEXT.pNext = &surfaceFullScreenExclusiveWin32InfoEXT;
+				surfaceFullScreenExclusiveWin32InfoEXT.sType = VK_STRUCTURE_TYPE_SURFACE_FULL_SCREEN_EXCLUSIVE_WIN32_INFO_EXT;
+				surfaceFullScreenExclusiveWin32InfoEXT.pNext = nullptr;
+				swapchainCounterCreateInfoEXT.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT;
+				swapchainCounterCreateInfoEXT.pNext = nullptr;
+				swapchainDisplayNativeHdrCreateInfoAMD.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_DISPLAY_NATIVE_HDR_CREATE_INFO_AMD;
+				swapchainDisplayNativeHdrCreateInfoAMD.pNext = nullptr;
+				swapchainLatencyCreateInfoNV.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Ã»ÓĞ¶¨ÒåËùÒÔÉèÖÃÎª·Ç·¨Öµ
+				swapchainLatencyCreateInfoNV.pNext = nullptr;
+				swapchainPresentBarrierCreateInfoNV.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_BARRIER_CREATE_INFO_NV;
+				swapchainPresentBarrierCreateInfoNV.pNext = nullptr;
+				swapchainPresentModesCreateInfoEXT.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_EXT;
+				swapchainPresentModesCreateInfoEXT.pNext = nullptr;
+				swapchainPresentScalingCreateInfoEXT.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_EXT;
+				swapchainPresentScalingCreateInfoEXT.pNext = nullptr;
+
+			}
+
+		};
+
+
 		VkSwapchainCreateInfoKHR swapchainCreateInfoKHR{};
 		swapchainCreateInfoKHR.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-		swapchainCreateInfoKHR.pNext = nullptr;
-		swapchainCreateInfoKHR.flags = VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR;
-		swapchainCreateInfoKHR.surface = VkSurfaceKHR{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSurfaceKHR*/};
-		swapchainCreateInfoKHR.minImageCount = 1;
-		swapchainCreateInfoKHR.imageFormat = VK_FORMAT_R8G8B8A8_UINT;
-		swapchainCreateInfoKHR.imageColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
-		swapchainCreateInfoKHR.imageExtent = VkExtent2D{.width = 1,.height = 1};
-		swapchainCreateInfoKHR.imageArrayLayers = 1;
-		swapchainCreateInfoKHR.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-		swapchainCreateInfoKHR.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		swapchainCreateInfoKHR.queueFamilyIndexCount = 1;
+		SwapchainCreateInfoKHREXT swapchainCreateInfoKHREXT{};
+		//VkSwapchainCreateInfoKHR.pNext
+		{
+			//VkDeviceGroupSwapchainCreateInfoKHR Ö¸Ã÷swapchain¿ÉÒÔÊ¹ÓÃµÄÒ»×é device group present modes £¬Èç¹û²»°üº¬¸Ã½á¹¹Ìå£¬ÔòÄ¬ÈÏmodeÎªVK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR
+			VkDeviceGroupSwapchainCreateInfoKHR& deviceGroupSwapchainCreateInfoKHR = swapchainCreateInfoKHREXT.deviceGroupSwapchainCreateInfoKHR;
+			deviceGroupSwapchainCreateInfoKHR.modes = VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR;//Ö¸Ã÷swapchain¿ÉÒÔÊ¹ÓÃµÄÒ»×é device group present modes£¬ÆäbitÎ»Ö¸Ã÷Ò»ÖÖdevice group present mode
+
+			//VkSwapchainDisplayNativeHdrCreateInfoAMD  Ö¸Ã÷´´½¨swapchainÊ±ÌØ¶¨ÓÚÏÔÊ¾µÄHDRÖ§³ÖµÄ¶îÍâ²ÎÊı£¬Èç¹û²»°üº¬¸Ã½á¹¹ÌåÔòÄ¬ÈÏlocalDimmingEnableÎªVK_TRUE
+			VkSwapchainDisplayNativeHdrCreateInfoAMD& swapchainDisplayNativeHdrCreateInfoAMD = swapchainCreateInfoKHREXT.swapchainDisplayNativeHdrCreateInfoAMD;
+			swapchainDisplayNativeHdrCreateInfoAMD.localDimmingEnable = VK_TRUE;//Ö¸Ã÷¶ÔswapchainÊÇ·ñ¿ªÆôlocal dimming£¬Èç¹ûÖ§³ÖVkDisplayNativeHdrSurfaceCapabilitiesAMD::localDimmingSupportÔò¸ÃÖµ±ØĞëÎªVK_TRUE
+			{
+				//ÔÚswapchainÓĞĞ§ÆÚ¼ä¿ÉÒÔÉèÖÃlocal dimming HDRÉèÖÃ
+				vkSetLocalDimmingAMD(device, swapchainKHR, VK_TRUE);//VkDisplayNativeHdrSurfaceCapabilitiesAMD::localDimmingSupport±ØĞëÒªÖ§³Ö
+			}
+
+
+			// VkSurfaceFullScreenExclusiveInfoEXT  Ö¸Ã÷Ó¦ÓÃÆ«ºÃµÄÈ«ÆÁÏÔÊ¾ĞĞÎª£¬Èç¹û²»°üº¬¸Ã½á¹¹Ìå£¬Ôò fullScreenExclusiveÈÏÎªÊÇVK_FULL_SCREEN_EXCLUSIVE_DEFAULT_EXT
+			VkSurfaceFullScreenExclusiveInfoEXT& surfaceFullScreenExclusiveInfoEXT = swapchainCreateInfoKHREXT.surfaceFullScreenExclusiveInfoEXT;
+			surfaceFullScreenExclusiveInfoEXT.fullScreenExclusive = VK_FULL_SCREEN_EXCLUSIVE_DEFAULT_EXT;
+
+
+			//VkSwapchainCounterCreateInfoEXT  Ö¸Ã÷¿ªÆô surface counters£¬
+			VkSwapchainCounterCreateInfoEXT &swapchainCounterCreateInfoEXT = swapchainCreateInfoKHREXT.swapchainCounterCreateInfoEXT;
+			swapchainCounterCreateInfoEXT.surfaceCounters = VK_SURFACE_COUNTER_VBLANK_EXT;// VkSurfaceCounterFlagBitsEXT×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷swapchainÆôÓÃµÄsurface counters£¬¸ÃÖµÖĞµÄbitÉèÖÃ±ØĞëÓÉsurfaceÖ§³Ö£¬¼ûvkGetPhysicalDeviceSurfaceCapabilities2EXT
+			{
+				//µ±ÏÔÊ¾ÒıÇæ´¦ÀíswapchainµÄµÚÒ»¸öÏÔÊ¾ÇëÇóµÄÊÇ·ñĞèÒªµÄsurface counters¾Í»á¼¤»î£¬²éÑ¯¼¤»îµÄcounterµÄÖµ
+				uint64_t counterValue = 0;
+				vkGetSwapchainCounterEXT(device, swapchainKHR, VK_SURFACE_COUNTER_VBLANK_EXT, &counterValue);//µ÷ÓÃ¸ÃÃüÁî±ØĞë±£Ö¤swapchainµÄÒ»¸ö»òÕß¶à¸öÏÔÊ¾ÃüÁîÒÑ¾­±»´¦ÀíÁË
+
+			}
+
+			//VkImageCompressionControlEXT  Ö¸¶¨swapchainÖĞµÄimageµÄÑ¹ËõÊôĞÔ
+			VkImageCompressionControlEXT& imageCompressionControlEXT = swapchainCreateInfoKHREXT.imageCompressionControlEXT;
+			imageCompressionControlEXT.flags = 0;
+			imageCompressionControlEXT.compressionControlPlaneCount = 0;
+			imageCompressionControlEXT.pFixedRateFlags = VK_NULL_HANDLE;
+
+
+			//VkSwapchainPresentModesCreateInfoEXT  Ö¸¶¨swapchainÊ¹ÓÃµÄ¶àÖÖpresent mode
+			VkSwapchainPresentModesCreateInfoEXT &swapchainPresentModesCreateInfoEXT = swapchainCreateInfoKHREXT.swapchainPresentModesCreateInfoEXT;
+			swapchainPresentModesCreateInfoEXT.presentModeCount = 1;//Ö¸Ã÷Ìá¹©µÄpresent modeµÄÊıÁ¿
+			VkPresentModeKHR presentModeKHR = VK_PRESENT_MODE_FIFO_KHR;
+			swapchainPresentModesCreateInfoEXT.pPresentModes = &presentModeKHR;//presentModeCount¸öpresent modeµÄÊı×éÖ¸Õë,ÆäÖĞÔªËØ±ØĞëÊôÓÚÓÉvkGetPhysicalDeviceSurfacePresentModesKHR´«Èësurface·µ»ØµÄ VkPresentModeKHR¼¯ºÏ£¬ÇÒÕâĞ©ÔªËØ¼¯ºÏ±ØĞëÊÇ´«ÈëVkSwapchainCreateInfoKHR::presentMode¸ø VkSurfacePresentModeEXT£¬·µ»ØµÄVkSurfacePresentModeCompatibilityEXT::pPresentModesµÄpresent modesµÄ×Ó¼¯£¬VkSwapchainCreateInfoKHR::presentMode±ØĞë°üº¬ÔÚ¸ÃÊı×éÔªËØÖĞ
+
+
+			//VkSwapchainPresentScalingCreateInfoEXT   Ö¸¶¨swapchainºÍ¶ÔÓ¦surfaceµÄÎ¬¶È²»Í¬Ê±ºòµÄËõ·ÅĞĞÎª
+			VkSwapchainPresentScalingCreateInfoEXT &swapchainPresentScalingCreateInfoEXT = swapchainCreateInfoKHREXT.swapchainPresentScalingCreateInfoEXT;
+			swapchainPresentScalingCreateInfoEXT.presentGravityX = VK_PRESENT_GRAVITY_MIN_BIT_EXT;//Îª0»òÕßµ±scalingBehaviorÎªVK_PRESENT_SCALING_ONE_TO_ONE_BIT_EXTÊ±ºÍsurfaceÏà¹ØµÄxÖáÏòµÄÏñËØµÄÇ÷Ïò
+			swapchainPresentScalingCreateInfoEXT.presentGravityY = VK_PRESENT_GRAVITY_MIN_BIT_EXT;//Îª0»òÕßµ±scalingBehaviorÎªVK_PRESENT_SCALING_ONE_TO_ONE_BIT_EXTÊ±ºÍsurfaceÏà¹ØµÄyÖáÏòµÄÏñËØµÄÇ÷Ïò
+			swapchainPresentScalingCreateInfoEXT.scalingBehavior = VK_PRESENT_SCALING_ONE_TO_ONE_BIT_EXT;//Îª0»òÕßswapchainºÍ¶ÔÓ¦surfaceµÄÎ¬¶È²»Í¬Ê±ºòµÄËõ·Å·½·¨
+			/*
+			VkSwapchainPresentScalingCreateInfoEXTÓĞĞ§ÓÃ·¨:
+			1.Èç¹ûpresentGravityXÎª0£¬ÔòpresentGravityY±ØĞëÎª0
+			2.Èç¹ûpresentGravityX²»Îª0£¬ÔòpresentGravityY±ØĞë²»Îª0
+			3.scalingBehavior£¬presentGravityXÒÔ¼°presentGravityYÖ»ÄÜÓÉÒ»¸öbitÉèÖÃ
+			4.scalingBehavior ±ØĞëÊÇÒ»¸ö¶ÔsurfaceÓĞĞ§µÄ scaling method£¬²Î¼û´«ÈëVkSwapchainCreateInfoKHR::presentMode¸øVkSurfacePresentModeEXT£¬·µ»ØµÄVkSurfacePresentScalingCapabilitiesEXT::supportedPresentScaling
+			5.Èç¹ûswapchainÒÔº¬ÓĞÒ»¸öVkSwapchainPresentModesCreateInfoEXT ´´½¨£¬ÔòscalingBehavior ±ØĞëÊÇÒ»¸ö¶ÔsurfaceÓĞĞ§µÄ scaling method£¬²Î¼û´«ÈëVkSwapchainPresentModesCreateInfoEXT::pPresentModeµÄÃ¿¸öÔªËØ¸øVkSurfacePresentModeEXT£¬·µ»ØµÄVkSurfacePresentScalingCapabilitiesEXT::supportedPresentScaling
+			6.presentGravityX ±ØĞëÊÇÒ»¸ö¶ÔsurfaceÓĞĞ§µÄx-axis present gravity£¬²Î¼û´«ÈëVkSwapchainCreateInfoKHR::presentMode¸øVkSurfacePresentModeEXT£¬·µ»ØµÄVkSurfacePresentScalingCapabilitiesEXT::supportedPresentGravityX	
+			7.Èç¹ûswapchainÒÔº¬ÓĞÒ»¸öVkSwapchainPresentModesCreateInfoEXT ´´½¨£¬ÔòpresentGravityX ±ØĞëÊÇÒ»¸ö¶ÔsurfaceÓĞĞ§µÄ x-axis present gravity£¬²Î¼û´«ÈëVkSwapchainPresentModesCreateInfoEXT::pPresentModeµÄÃ¿¸öÔªËØ¸øVkSurfacePresentModeEXT£¬·µ»ØµÄVkSurfacePresentScalingCapabilitiesEXT::supportedPresentGravityX
+			8.presentGravityY ±ØĞëÊÇÒ»¸ö¶ÔsurfaceÓĞĞ§µÄy-axis present gravity£¬²Î¼û´«ÈëVkSwapchainCreateInfoKHR::presentMode¸øVkSurfacePresentModeEXT£¬·µ»ØµÄVkSurfacePresentScalingCapabilitiesEXT::supportedPresentGravityY
+			9.Èç¹ûswapchainÒÔº¬ÓĞÒ»¸öVkSwapchainPresentModesCreateInfoEXT ´´½¨£¬ÔòpresentGravityY ±ØĞëÊÇÒ»¸ö¶ÔsurfaceÓĞĞ§µÄ y-axis present gravity£¬²Î¼û´«ÈëVkSwapchainPresentModesCreateInfoEXT::pPresentModeµÄÃ¿¸öÔªËØ¸øVkSurfacePresentModeEXT£¬·µ»ØµÄVkSurfacePresentScalingCapabilitiesEXT::supportedPresentGravityY
+
+			*/
+
+		}
+		swapchainCreateInfoKHR.pNext = &swapchainCreateInfoKHREXT.deviceGroupSwapchainCreateInfoKHR;
+		swapchainCreateInfoKHR.flags = VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR;/* VkSwapchainCreateFlagBitsKHR×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷swapchain´´½¨Ê±µÄ²ÎÊı
+		VkSwapchainCreateFlagBitsKHR:
+
+		VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR:  Ö¸Ã÷swapchainÖĞ´´½¨µÄimage£¨¾ÍºÍ´´½¨imageÊ±´øÓĞÒ»¸öswapchianÉèÖÃÎªµ±Ç°µÄ¾ä±úµÄVkImageSwapchainCreateInfoKHR £©±ØĞëÊ¹ÓÃVK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT
+		VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR:  Ö¸Ã÷swapchainÖĞ´´½¨µÄimageÊÇprotected images
+		VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR:  Ö¸Ã÷swapchainÖĞ´´½¨µÄimage¿ÉÒÔÓÃÀ´´´½¨ºÍ´´½¨swapchainÊ±Ö¸¶¨µÄformat²»Í¬formatµÄVkImageView£¬ÔÊĞíÊ¹ÓÃµÄformatÁĞ¾ÙÔÚVkSwapchainCreateInfoKHR.pNextÖĞµÄVkImageFormatListCreateInfo£¬¸Ã±êÖ¾Ò²Ö¸Ã÷¸Ãswapchain´´½¨Ê±µÄÍ¼ÏñimageUsage¿ÉÒÔ²»Ö§³ÖimageFormat£¬µ«ÖÁÉÙÒªÖ§³ÖÔÊĞíµÄimage viewµÄformatÖĞµÄÒ»¸ö
+		VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_EXT:  Ö¸Ã÷»òĞí»ò¶ÔswapchainÖĞµÄimage²ÉÈ¡ÍÆ³Ù·ÖÅäÄÚ´æµÄ²Ù×÷Ö±µ½¸ÃiamgeµÄË÷ÒıÍ¨¹ıvkAcquireNextImageKHR»òÕßvkAcquireNextImage2KHR µÚÒ»´Î·µ»Ø
+		*/
+		swapchainCreateInfoKHR.surface = VkSurfaceKHR{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSurfaceKHR*/};//Ö¸Ã÷´´½¨µÄswapchainµÄimageÒªÔÚÄÄ¸ösurfaceÉÏ½øĞĞÏÔÊ¾£¬Ò»µ©swapchain´´½¨³É¹¦£¬Ôò¸Ãswapchain¾Í¹ØÁªÉÏ¸Ãsurface
+		swapchainCreateInfoKHR.minImageCount = 1;//ÎªÓ¦ÓÃĞèÒªµÄ×îÉÙµÄ¿ÉÏÔÊ¾µÄimageµÄÊıÁ¿£¬ÊµÏÖÒªÃ´ÖÁÉÙ´´½¨ÕâÃ´¶àµÄ¿ÉÏÔÊ¾µÄimage£¬ÒªÃ´Ö±½Ó¾Í´´½¨Ê§°Ü
+		swapchainCreateInfoKHR.imageFormat = VK_FORMAT_R8G8B8A8_UINT;// VkFormatÖµÖ¸Ã÷´´½¨µÄswapchainÖĞimageµÄ¸ñÊ½
+		swapchainCreateInfoKHR.imageColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;// VkColorSpaceKHRÖµÖ¸Ã÷swapchainÈçºÎ½âÊÍimageÖĞµÄÊı¾İ
+		swapchainCreateInfoKHR.imageExtent = VkExtent2D{.width = 1,.height = 1};//ÎªswapchainÖĞimageµÄÏñËØ¼¶±ğµÄ´óĞ¡£¬Èç¹ûºÍvkGetPhysicalDeviceSurfaceCapabilitiesKHR·µ»ØµÄsurfaceµÄcurrentExtent²»Æ¥ÅäÔò¸ÃÖµµÄ´¦ÀíĞĞÎªÊÇ»ùÓÚÆ½Ì¨µÄ
+		swapchainCreateInfoKHR.imageArrayLayers = 1;//Îªmultiview/stereo surfaceÖĞµÄviewÊÓÍ¼µÄ¸öÊı£¬Èç¹ûÎªnon-stereoscopic-3D Ó¦ÓÃ£¬Ôò¸ÃÖµÎª1
+		swapchainCreateInfoKHR.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;// VkImageUsageFlagBits×éºÏÖµÎ»ÑÚÂëÃèÊöÁËÓ¦ÓÃ»ñÈ¡ÁËswapchianµÄimageºó¿ÉÄÜµÄÓÃ·¨
+		swapchainCreateInfoKHR.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;//swapchainÖĞµÄimageÔÚ¶ÓÁĞ×å¼äµÄ¹²ÏíÄ£Ê½
+		swapchainCreateInfoKHR.queueFamilyIndexCount = 1;//ÎªimageSharingMode Îª VK_SHARING_MODE_CONCURRENTÊ±£¬¿ÉÒÔ·ÃÎÊswapchainÖĞµÄimageµÄ¶ÓÁĞ×åµÄÊıÁ¿
 		uint32_t imageQueue = 0;
-		swapchainCreateInfoKHR.pQueueFamilyIndices = &imageQueue;
-		swapchainCreateInfoKHR.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-		swapchainCreateInfoKHR.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
-		swapchainCreateInfoKHR.presentMode = VkPresentModeKHR{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkPresentModeKHR*/};
-		swapchainCreateInfoKHR.clipped = VK_TRUE;
-		swapchainCreateInfoKHR.oldSwapchain = VK_NULL_HANDLE;
+		swapchainCreateInfoKHR.pQueueFamilyIndices = &imageQueue;//ÎªimageSharingMode Îª VK_SHARING_MODE_CONCURRENTÊ±£¬¿ÉÒÔ·ÃÎÊswapchainÖĞµÄimageµÄ¶ÓÁĞ×åµÄË÷ÒıÖµµÄÊı×éÖ¸Õë
+		swapchainCreateInfoKHR.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;//VkSurfaceTransformFlagBitsKHRÖµÃèÊöÁËÔÚimageÏÔÊ¾Ö®¼ä£¬½«ÆäÄÚÈİ¸ù¾İÏÔÊ¾ÒıÇæµÄ±¾µØ×ø±ê½øĞĞµÄĞı×ª±ä»»²Ù×÷£¬Èç¹û¸ÃÖµºÍvkGetPhysicalDeviceSurfaceCapabilitiesKHR·µ»ØµÄcurrentTransform ²»Æ¥Åä£¬ÔòÏÔÊ¾ÒıÇæ½«»á°ÑimageµÄÄÚÈİ±ä»»²Ù×÷×÷ÎªÊÇÍ¼ÏñÏÔÊ¾²Ù×÷µÄÒ»²¿·Ö
+		swapchainCreateInfoKHR.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;// VkCompositeAlphaFlagBitsKHRÖµÖ¸Ã÷ÔÚÖ¸¶¨ÏµÍ³ÉÏºÍÆäËûsurface»ìºÏÊ±µÄalpha »ìºÏÄ£Ê½
+		swapchainCreateInfoKHR.presentMode = VK_PRESENT_MODE_FIFO_KHR;//ÎªswapchainÊ¹ÓÃµÄÏÔÊ¾Ä£Ê½£¬swapchainµÄÏÔÊ¾Ä£Ê½¾ö¶¨ÁËÈçºÎ´¦Àí´«ÈëµÄµ±Ç°ÏÔÊ¾ÇëÇó²¢ÔÚÄÚ²¿ÅÅ¶Ó
+		swapchainCreateInfoKHR.clipped = VK_TRUE;//Ö¸Ã÷ÊÇ·ñÔÊĞívulkanÊµÏÖ¶ªÆú¹ØÁªµ½surfaceÖĞ²»¿É¼ûÇøÓòµÄäÖÈ¾²Ù×÷
+		swapchainCreateInfoKHR.oldSwapchain = VK_NULL_HANDLE;//ÎªVK_NULL_HANDLE»òÕßÒ»¸ö¹ØÁªµ½surfaceµÄÎ´´¦ÓÚretired×´Ì¬µÄswapchian£¬Ìá¹©¸Ã²ÎÊıÖ÷ÒªÓĞÖúÓÚ×ÊÔ´ÖØÓÃÒÔ¼°Ó¦ÓÃÈÎÈ»¿ÉÒÔ¼ÌĞøÏÔÊ¾ÒÑ¾­´ÓoldSwapchianÖĞ»ñÈ¡µ½µÄimage
+		/*
+		VkSwapchainCreateInfoKHRÓĞĞ§ÓÃ·¨:
+		1.surface ±ØĞëÊÇÉè±¸Ö§³ÖµÄ£¬ÓÉvkGetPhysicalDeviceSurfaceSupportKHR·µ»ØµÄ½á¹û¾ö¶¨
+		2.minImageCount ±ØĞëĞ¡ÓÚµÈÓÚµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilitiesKHR´«Èësurface·µ»ØµÄVkSurfaceCapabilitiesKHRµÄmaxImageCount£¨Èç¹û¸ÃÖµ²»Îª0£©
+		3.Èç¹ûpresentMode ¼È²»ÊÇVK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR Ò²²»ÊÇ VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR£¬ÔòminImageCount ±ØĞëĞ¡ÓÚµÈÓÚµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilitiesKHR´«Èësurface·µ»ØµÄVkSurfaceCapabilitiesKHRµÄmaxImageCount
+		4.Èç¹ûpresentMode ÎªVK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR»òÕßVK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHRÖĞµÄÒ»¸ö£¬ÔòminImageCount ±ØĞëÎª1
+		5.imageFormat ºÍimageColorSpace ±ØĞëºÍµ÷ÓÃvkGetPhysicalDeviceSurfaceFormatsKHR´«Èësurface·µ»ØµÄVkSurfaceFormatKHRÖĞµÄformatÒÔ¼°colorSpace Ò»Ò»¶ÔÓ¦Æ¥Åä
+		6.Èç¹ûpNextÖĞ²»°üº¬VkSwapchainPresentScalingCreateInfoEXT£¬»òÕß°üº¬Ò»¸öscalingBehaviorÎª0µÄVkSwapchainPresentScalingCreateInfoEXT£¬ÔòimageExtentµÄ·¶Î§±ØĞë°üº¬ÔÚ[minImageExtent,maxImageExtent]Ö®¼ä£¬ÆäÖĞminImageExtentºÍmaxImageExtentÎªµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilitiesKHR´«Èësurface·µ»ØµÄVkSurfaceCapabilitiesKHRÖĞµÄ³ÉÔ±
+		7.Èç¹ûpNextÖĞ°üº¬VkSwapchainPresentScalingCreateInfoEXTÇÒÆäscalingBehavior²»Îª0£¬ÔòimageExtentµÄ·¶Î§±ØĞë°üº¬ÔÚ[minScaledImageExtent,maxScaledImageExtent]Ö®¼ä£¬ÆäÖĞminScaledImageExtentºÍmaxScaledImageExtentÎªµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilities2KHR´«ÈësurfaceÒÔ¼°presentMode·µ»ØµÄVkSurfacePresentScalingCapabilitiesEXTÖĞµÄ³ÉÔ±
+		8.imageExtentµÄwidthÒÔ¼°height±ØĞë¶¼ÊÇ·Ç0Öµ
+		9.imageArrayLayers ±ØĞë´óÓÚ0ÇÒĞ¡ÓÚµÈÓÚµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilitiesKHR´«Èësurface·µ»ØµÄVkSurfaceCapabilitiesKHRµÄmaxImageArrayLayers
+		10.Èç¹ûpresentModeÎªVK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_FIFO_KHR »òÕß VK_PRESENT_MODE_FIFO_RELAXED_KHR£¬imageUsage±ØĞëÊÇÒ»¸öµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilitiesKHR´«Èësurface·µ»ØµÄVkSurfaceCapabilitiesKHRµÄsupportedUsageFlagsÖĞµÄ×Ó¼¯
+		11.Èç¹ûpresentModeÎªVK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR »òÕß VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR£¬imageUsage±ØĞëÊÇÒ»¸öµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilities2KHR´«Èësurface·µ»ØµÄVkSharedPresentSurfaceCapabilitiesKHRµÄsharedPresentSupportedUsageFlagsÖĞµÄ×Ó¼¯
+		12.Èç¹ûimageSharingMode ÎªVK_SHARING_MODE_CONCURRENT£¬Ôò£¨1£©pQueueFamilyIndices ±ØĞëÊÇÓĞĞ§µÄqueueFamilyIndexCount¸öuint32_tÖµµÄÊı×éÖ¸Õë
+																£¨2£©queueFamilyIndexCount ±ØĞë´óÓÚ1
+																£¨3£©pQueueFamilyIndicesÖĞµÄÃ¿¸öÔªËØ±ØĞëÊÇÎ¨Ò»µÄ£¬ÇÒ±ØĞëĞ¡ÓÚµ÷ÓÃvkGetPhysicalDeviceQueueFamilyProperties»òÕßvkGetPhysicalDeviceQueueFamilyProperties2·µ»ØµÄpQueueFamilyPropertyCount£¨¸ÃÖµÖ¸Ã÷¶ÓÁĞ×åµÄ¸öÊı£©
+		13.preTransform ±ØĞëÊÇµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilitiesKHR´«Èësurface·µ»ØµÄVkSurfaceCapabilitiesKHRÖĞµÄsupportedTransformsÖĞµÄÒ»¸öbitÉèÖÃ
+		14.compositeAlpha ±ØĞëÊÇµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilitiesKHR´«Èësurface·µ»ØµÄVkSurfaceCapabilitiesKHRÖĞµÄsupportedCompositeAlphaÖĞµÄÒ»¸öbitÉèÖÃ
+		15.presentMode ±ØĞëÊÇµ÷ÓÃvkGetPhysicalDeviceSurfacePresentModesKHR´«Èësurface·µ»ØµÄVkPresentModeKHRÖĞµÄÒ»¸ö
+		16.Èç¹ûÂß¼­Éè±¸ÒÔVkDeviceGroupDeviceCreateInfo::physicalDeviceCountÎª1´´½¨£¬Ôòflags²»ÄÜ°üº¬VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR
+		17.Èç¹ûoldSwapchain²»ÎªVK_NULL_HANDLE£¬ÔòoldSwapchain ±ØĞëÊÇÒ»¸ö¹ØÁªµ½surfaceËùÓ¦ÓÃµÄnative windowµÄ non-retired swapchain
+		18.swapchainµÄÒşº¬µÄimage´´½¨²ÎÊı±ØĞë±»Ö§³Ö£¬¼ûvkGetPhysicalDeviceImageFormatProperties·µ»ØµÄĞÅÏ¢
+		19.Èç¹ûflags°üº¬VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHRÔòpNextÖĞ±ØĞë°üº¬Ò»¸öviewFormatCount´óÓÚ0ÇÒpViewFormatsÖĞ±ØĞëÓĞÒ»¸öÔªËØµÈÓÚ imageFormatµÄVkImageFormatListCreateInfo
+		20.Èç¹ûpNextÖĞ°üº¬VkImageFormatListCreateInfo£¬ÇÒÆäviewFormatCount ²»Îª0£¬ÔòÆäpViewFormatsÖĞËùÓĞµÄformat±ØĞëºÍÁĞ¾ÙÔÚcompatibility tableÖĞÃèÊöµÄformat¼æÈİ£¨²Î¼ûp4067£© 
+		21.Èç¹ûflags²»°üº¬VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHRÔòpNextÖĞ°üº¬Ò»¸öVkImageFormatListCreateInfo£¬ÔòÆäviewFormatCount±ØĞëÎª0»òÕß1
+		22.Èç¹ûflags°üº¬VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR£¬Ôòµ÷ÓÃvkGetPhysicalDeviceSurfaceCapabilities2KHR´«Èësurface·µ»ØµÄVkSurfaceProtectedCapabilitiesKHR::supportsProtected ±ØĞëÎªVK_TRUE
+		23.Èç¹ûpNextÖĞ°üº¬fullScreenExclusiveÉèÖÃÎªVK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXTµÄVkSurfaceFullScreenExclusiveInfoEXTÇÒsurfaceÓÉvkCreateWin32SurfaceKHR´´½¨£¬ÔòpNextÖĞÒ²±ØĞë°üº¬Ò»¸öVkSurfaceFullScreenExclusiveWin32InfoEXT
+		24.Èç¹ûimageCompressionControlSwapchain ÌØĞÔÎ´¿ªÆô£¬ÔòpNextÖĞ²»ÄÜ°üº¬VkImageCompressionControlEXT
+		*/
+
 
 		//´´½¨swapchain
 		vkCreateSwapchainKHR(device, &swapchainCreateInfoKHR/*pCreateInfo£¬Ö¸¶¨´´½¨swapchainµÄĞÅÏ¢*/, nullptr, &swapchainKHR);
@@ -1799,7 +1945,18 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 		*/
 
 
+		//Ïú»Ùswapchain
+		vkDestroySwapchainKHR(device, swapchainKHR, nullptr);
+		/*
+		vkDestroySwapchainKHRÓĞĞ§ÓÃ·¨:
+		1.ËùÓĞ´ÓswapchainÖĞ»ñÈ¡µÄimage±ØĞëÒÑ¾­Íê³ÉÁËÖ´ĞĞ
+		2.Èç¹û´´½¨swapchainÊ±Ìá¹©ÁËVkAllocationCallbacks£¬ÔòÕâÀï±ØĞëÌá¹©Ò»¸ö¼æÈİµÄcallbakcs
+		3.Èç¹û´´½¨swapchainÊ±Î´Ìá¹©VkAllocationCallbacks£¬ÔòÕâÀïpAllocator±ØĞëÎªNULL
 
+		*/
+
+
+		//p3160
 	}
 }
 

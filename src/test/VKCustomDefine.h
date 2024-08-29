@@ -327,4 +327,12 @@ typedef struct VkLatencySurfaceCapabilitiesNV {
 	uint32_t             presentModeCount;
 	VkPresentModeKHR* pPresentModes;
 } VkLatencySurfaceCapabilitiesNV;
+
+// Provided by VK_NV_low_latency2
+typedef struct VkSwapchainLatencyCreateInfoNV {
+	VkStructureType    sType;
+	const void* pNext;
+	VkBool32           latencyModeEnable;
+} VkSwapchainLatencyCreateInfoNV;
+
 NS_TEST_END

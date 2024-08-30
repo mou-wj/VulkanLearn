@@ -1968,9 +1968,9 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 		vkGetSwapchainImagesKHR(device, swapchainKHR, &imageCount, presentImages.data());
 
 
-		//»ñÈ¡swapchainÖĞÒ»¸ö¿ÉÓÃµÄimage£¬²¢·µ»ØÆäË÷Òı
+		//»ñÈ¡swapchainÖĞÒ»¸ö¿ÉÓÃµÄimage£¬²¢·µ»ØÆäË÷Òı 
 		uint32_t imageIndex = 0;
-		vkAcquireNextImageKHR(device, swapchainKHR, VK_TIMEOUT, VkSemaphore{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSemaphore*/ }/*ÎªÒ»¸ö´¥·¢µÄsemaphore*/, VkFence{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkFence*/ }/*ÎªÒ»¸ö´¥·¢µÄfence*/, & imageIndex/*·µ»ØÏÂÒ»¸ö¿ÉÓÃµÄimageµÄË÷Òı*/);
+		VkResult acquireImageResult =  vkAcquireNextImageKHR(device, swapchainKHR, VK_TIMEOUT, VkSemaphore{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSemaphore*/ }/*ÎªÒ»¸ö´¥·¢µÄsemaphore*/, VkFence{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkFence*/ }/*ÎªÒ»¸ö´¥·¢µÄfence*/, & imageIndex/*·µ»ØÏÂÒ»¸ö¿ÉÓÃµÄimageµÄË÷Òı*/);
 		/*
 		1.swapchain ²»ÄÜ´¦ÓÚretired state
 		2.semaphore Èç¹û²»ÊÇVK_NULL_HANDLEÔò£¨1£©±ØĞëÊÇunsignaled×´Ì¬
@@ -1981,6 +1981,204 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 		6.semaphore µÄVkSemaphoreType ±ØĞëÊÇVK_SEMAPHORE_TYPE_BINARY
 
 		*/
+
+
+		acquireImageResult;//vkAcquireNextImageKHR·µ»ØµÄ½á¹ûËµÃ÷
+		/*
+		VK_SUCCESS:  ³É¹¦·µ»ØÒ»¸ö¿ÉÓÃµÄimage
+		VK_ERROR_SURFACE_LOST_KHR:  Ö¸Ã÷surface²»ÔÙ¿ÉÓÃ
+		VK_NOT_READY: Ö¸Ã÷timeoutÎª0ÇÒ·µ»ØÊ±Ã»ÓĞ¿ÉÓÃµÄimage
+		VK_TIMEOUT: Ö¸Ã÷ÔÚ³¬¹ıÁËtimeoutÔÚ[0,UINT64_MAX]Ö¸¶¨µÄÒ»¸öÖµÊ±£¬ÈÔÃ»ÓĞ¿ÉÓÃµÄimage
+		VK_SUBOPTIMAL_KHR:  Ö¸Ã÷Ò»¸öimage¿ÉÓÃ£¬µ«´ËÊ±swapchainÒÑ¾­²»ÔÙÆ¥Åäµ±Ç°µÄsurfaceÁË£¬µ«ÊÇÈÔÈ»¿ÉÒÔ³É¹¦½øĞĞÏÔÊ¾µ½surfaceÉÏ
+		VK_ERROR_OUT_OF_DATE_KHR: Ö¸Ã÷surfaceÒÑ¾­¸Ä±ä²»ÔÙ¼æÈİswapchain£¬ºóĞøÏÔÊ¾ÇëÇó»áÖ±½ÓÊ§°Ü£¬ÕâÖÖÇé¿öÏÂÈç¹ûĞèÒª¼ÌĞøÏÔÊ¾ÔòĞèÒªÖØĞÂ²éÑ¯surfaceµÄÊôĞÔ²¢ÖØĞÂ´´½¨swapchain	
+		*/
+
+
+		//»ñÈ¡swapchainÖĞÒ»¸ö¿ÉÓÃµÄimage£¬²¢·µ»ØÆäË÷Òı2 
+		VkAcquireNextImageInfoKHR acquireNextImageInfoKHR{};
+		acquireNextImageInfoKHR.sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR;
+		acquireNextImageInfoKHR.pNext = nullptr;
+		acquireNextImageInfoKHR.timeout = VK_TIMEOUT;//Ö¸¶¨Ã»ÓĞimage¿ÉÓÃÊ±¸Ãº¯ÊıĞèÒªµÈ´ı¶àÉÙÄÉÃë
+		acquireNextImageInfoKHR.swapchain = swapchainKHR;//Ö¸Ã÷´ÓÄÄ¸öswapchainÖĞÈ¡image
+		acquireNextImageInfoKHR.semaphore = VkSemaphore{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSemaphore*/ };//ÎªÒ»¸ö´¥·¢µÄsemaphore
+		acquireNextImageInfoKHR.fence = VkFence{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkFence*/ };//ÎªÒ»¸ö´¥·¢µÄfence
+		acquireNextImageInfoKHR.deviceMask = 0x00000001;//ÊÇÒ»¸öÉè±¸ÑÚÂëÖ¸Ã÷semaphore»òÕßfence´¥·¢ºóÄÄ¸öÉè±¸»áÊ¹ÓÃ¸Ãimage
+		/*
+		VkAcquireNextImageInfoKHRÓĞĞ§ÓÃ·¨:
+		1.swapchain ²»ÄÜ´¦ÓÚretired state
+		2.semaphore Èç¹û²»ÊÇVK_NULL_HANDLEÔò£¨1£©±ØĞëÊÇunsignaled×´Ì¬
+											£¨2£©²»ÄÜÓĞÈÎºÎÎ´Íê³ÉµÄĞÅºÅ»òµÈ´ı²Ù×÷
+		3.Èç¹ûfence²»ÊÇVK_NULL_HANDLE£¬ÔòÆä±ØĞëÊÇunsignaled×´Ì¬£¬ÇÒ²»ÄÜ¹ØÁªµ½ÈÎºÎÖ´ĞĞÔÚÆäËû¶ÓÁĞÉÏ»¹Î´Íê³ÉµÄÃüÁî
+		4.semaphore ºÍfence ²»ÄÜÍ¬Ê±ÎªVK_NULL_HANDLE
+		5.deviceMask ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÉè±¸ÑÚÂë£¬ÇÒ²»ÄÜÎª0
+		6.semaphore µÄVkSemaphoreType ±ØĞëÊÇVK_SEMAPHORE_TYPE_BINARY
+
+		*/
+
+		vkAcquireNextImage2KHR(device, &acquireNextImageInfoKHR, &imageIndex);//Èç¹û¶ÔpAcquireInfoÖĞ´´½¨swapchianµÄsurfaceµÄ²»ÄÜ±£Ö¤Ç°ÃæµÄ´¦Àí£¬ÔòpAcquireInfo->timeout ±ØĞëÎªUINT64_MAX
+
+
+		//ÔÚ½øĞĞÁËÒ»ÏµÁĞ»æÖÆºÍÍ¼Ïñlayout×ª»»ºó£¬¿ÉÒÔ½«ĞèÒªÏÔÊ¾µÄimage½øĞĞÅÅ¶ÓÏÔÊ¾µ½surfaceÉÏ,   surfaceÏÔÊ¾µÄ±¾µØ×ø±êÊÇ»ùÓÚÆ½Ì¨µÄ£¬Ò»°ãÄ¬ÈÏ×óÉÏ½ÇÎªÏñËØÔ­µã£¨0£¬0£©£¬ÆäËûĞÅÏ¢¼ûp3172
+		{
+			struct PresentInfoKHREXT {
+				VkDeviceGroupPresentInfoKHR deviceGroupPresentInfoKHR{};
+				VkDisplayPresentInfoKHR displayPresentInfoKHR{};
+				VkFrameBoundaryEXT frameBoundaryEXT{};
+				VkPresentFrameTokenGGP presentFrameTokenGGP{};
+				VkPresentIdKHR presentIdKHR{};
+				VkPresentRegionsKHR presentRegionsKHR{};
+				VkPresentTimesInfoGOOGLE presentTimesInfoGOOGLE{};
+				VkSwapchainPresentFenceInfoEXT swapchainPresentFenceInfoEXT{};
+				VkSwapchainPresentModeInfoEXT swapchainPresentModeInfoEXT{};
+				PresentInfoKHREXT() {
+					Init();
+				}
+				void Init() {
+					deviceGroupPresentInfoKHR.sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR;
+					deviceGroupPresentInfoKHR.pNext = nullptr;
+					displayPresentInfoKHR.sType = VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR;
+					displayPresentInfoKHR.pNext = nullptr;
+					frameBoundaryEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Î´¶¨ÒåËùÒÔÕâÀï¶¨ÒåÎª·Ç·¨Öµ
+					frameBoundaryEXT.pNext = nullptr;
+					presentFrameTokenGGP.sType = VK_STRUCTURE_TYPE_PRESENT_FRAME_TOKEN_GGP;
+					presentFrameTokenGGP.pNext = nullptr;
+					presentIdKHR.sType = VK_STRUCTURE_TYPE_PRESENT_ID_KHR;
+					presentIdKHR.pNext = nullptr;
+					presentRegionsKHR.sType = VK_STRUCTURE_TYPE_PRESENT_REGIONS_KHR;
+					presentRegionsKHR.pNext = nullptr;
+					presentTimesInfoGOOGLE.sType = VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE;
+					presentTimesInfoGOOGLE.pNext = nullptr;
+					swapchainPresentFenceInfoEXT.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT;
+					swapchainPresentFenceInfoEXT.pNext = nullptr;
+					swapchainPresentModeInfoEXT.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT;
+					swapchainPresentModeInfoEXT.pNext = nullptr;
+
+
+				}
+			};
+
+
+			VkPresentInfoKHR presentInfoKHR{};
+			presentInfoKHR.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+			PresentInfoKHREXT presentInfoKHREXT{};
+			//VkPresentInfoKHR.pNext
+			{
+				//µ± VK_KHR_incremental_presentÍØÕ¹¿ªÆôÊ±£¬¿ÉÒÔÍ¨¹ı°üº¬VkPresentRegionsKHRÀ´¸øÏÔÊ¾ÒıÇæÒ»¸öÌáÊ¾£¬Ö¸Ã÷ÏÔÊ¾µÄimageµÄÖ»ÓĞÄ³¸öÌØ¶¨µÄÇøÓò¸Ä±äÁË£¬Õâ¿ÉÒÔÈÃÏÔÊ¾ÒıÇæÖ»È¥¸üĞÂÕâĞ©¸Ä±äÁËµÄÇøÓò
+				VkPresentRegionsKHR& presentRegionsKHR = presentInfoKHREXT.presentRegionsKHR;
+				presentRegionsKHR.swapchainCount = 1;//Ö¸Ã÷swapchainµÄÊıÁ¿,±ØĞëµÈÓÚ VkPresentInfoKHR::swapchainCount
+				VkPresentRegionKHR changedRegion{};
+				{
+					changedRegion.rectangleCount = 1;//pRectanglesÖĞÔªËØ¸öÊı£¬»òÕßÎª0Ö¸Ã÷Õû¸öimage¶¼¸Ä±äÁËĞèÒª¸üĞÂ
+					VkRectLayerKHR rectLayer{};//¸Ã½á¹¹ÌåÖ¸¶¨µÄÏñËØÇøÓò²»»á±»Ëõ·ÅÓ°Ïì
+					{
+						rectLayer.layer = 0;//Ö¸¶¨Õâ¸öÇøÓòÎªimageµÄÄÄ¸ölayer
+						rectLayer.offset = VkOffset2D{ .x = 0,.y = 0 };//Ö¸Ã÷Õâ¸öÏñËØÇøÓòµÄÔ­µã
+						rectLayer.extent = VkExtent2D{ .width = 1,.height = 1 };//Ö¸Ã÷Õâ¸öÏñËØÇøÓòµÄ´óĞ¡
+						/*
+						VkRectLayerKHRÓĞĞ§ÓÃ·¨:
+						1.offset + extent µÄºÍÔÚ¾­¹ıVkSwapchainCreateInfoKHRµÄpreTransform±ä»»ºó£¬²»ÄÜ´óÓÚ´´½¨swapchainÊ±µÄVkSwapchainCreateInfoKHRµÄimageExtent
+						2.layer ±ØĞëĞ¡ÓÚ´´½¨swapchainÊ±µÄVkSwapchainCreateInfoKHRµÄimageArrayLayers
+						*/
+					}
+					changedRegion.pRectangles = &rectLayer;//ÎªNULL»òÕß Ò»×é VkRectLayerKHR µÄÊı×éÖ¸Õë£¬VkRectLayerKHRÖ¸¶¨¸Ä±äÁËµÄÇøÓòËù¶ÔµÄimageµÄlayerÒÔ¼°framebuffer coordinates£¬ÕâĞ©ÇøÓòÒª¹ØÁªµ½VkSurfaceCapabilitiesKHR::currentTransform,¶ø²»ÓÃ¹ÜswapchainµÄ preTransform£¬ÏÔÊ¾ÒıÇæ»áÎªÕâĞ©ÇøÓòÖ´ĞĞ preTransform ±ä»»²Ù×÷
+				}
+				presentRegionsKHR.pRegions = &changedRegion;//ÎªNULL»òÕß swapchainCount¸öVkPresentRegionKHR µÄÊı×éÖ¸Õë£¬Ö¸Ã÷swapchainÖĞ×Ô×îºóÒ»´ÎÏÔÊ¾Ö®ºó¸üĞÂµÄimageµÄÇøÓò
+
+				
+				//µ±¿ªÆô VK_KHR_display_swapchainÊ±£¬¿ÉÒÔÖ¸¶¨ÏÔÊ¾Æ÷ÏÔÊ¾µÄ¶îÍâĞÅÏ¢ ,Èç¹ûsrcRectºÍdstRectµÄextent²»Í¬Ôò»á¶ÔÓ¦²ÉÈ¡ÏñËØËõ·Å
+				VkDisplayPresentInfoKHR &displayPresentInfoKHR = presentInfoKHREXT.displayPresentInfoKHR;
+				displayPresentInfoKHR.srcRect = VkRect2D{ .offset = VkOffset2D{.x = 0,.y = 0},.extent = VkExtent2D {.width = 1,.height = 1} };//ÎªĞèÒªÏÔÊ¾µÄÏñËØ¾ØĞÎÇøÓò£¬¸ÃÇøÓò±ØĞëÔÚÏÔÊ¾igameµÄ´óĞ¡·¶Î§ÄÚ£¬Èç¹û¸Ã½á¹¹Ìå²»Ö¸¶¨Ôò¸ÃÖµÏàµ±ÓÚÄ¬ÈÏ¸ÃÖµÎªÕû¸öÏÔÊ¾image
+				displayPresentInfoKHR.dstRect = VkRect2D{ .offset = VkOffset2D{.x = 0,.y = 0},.extent = VkExtent2D {.width = 1,.height = 1} };//ÎªswapchainµÄdisplay modeÏÂµÄ¿ÉÊÓ¾ØĞÎÇøÓò£¬£¬Èç¹û¸Ã½á¹¹Ìå²»Ö¸¶¨Ôò¸ÃÖµÏàµ±ÓÚÄ¬ÈÏ¸ÃÖµÎªÕû¸öswapchainµÄ¿ÉÊÓÇøÓò£¬Èç¹ûÖ¸¶¨µÄÇøÓòÎªdisplay modeµÄ¿ÉÊÓÇøÓòµÄÒ»¸ö×Ó¼¯£¬ÔòÈç¹ûswapchainµÄplaneÏÂµÄdisplay playÔÚÖ¸¶¨ÇøÓòÍâµÄÄÚÈİÊÇ¿É¼ûµÄ£¬Èç¹ûswapchainÏÂÃ»ÓĞplane£¬Ôòdisplay playÔÚÖ¸¶¨ÇøÓòÍâµÄÄÚÈİÊÇ²»¿É¼ûµÄ£¬Èç¹ûÖ¸¶¨µÄÇøÓòÓĞÒ»²¿·ÖÔÚdisplay planeµÄ¿ÉÊÓÇøÓòÍâ£¬ÔòÓ³Éäµ½ÇøÓòÍâÕâÒ»²¿·ÖµÄÏñËØ»á±»¶ªÆú
+				displayPresentInfoKHR.persistent = VK_TRUE;//Èç¹ûÕâÊÇVK_TRUE£¬ÔòÏÔÊ¾ÒıÇæ½«ÔÚÖ§³ÖËüµÄÏÔÊ¾Æ÷ÉÏÆôÓÃ»º³åÄ£Ê½£¬ÕâÔÊĞíÏÔÊ¾ÒıÇæÍ£Ö¹ÏòÏÔÊ¾Æ÷·¢ËÍÄÚÈİ£¬Ö±µ½³ÊÏÖ³öĞÂµÄÍ¼Ïñ¡£ÏÔÊ¾Æ÷½«±£Áô×îºóÒ»¸ö³ÊÏÖµÄÍ¼ÏñµÄ¸±±¾¡£ÕâÔÊĞíÊ¹ÓÃ¸üÉÙµÄ¹¦ÂÊ£¬µ«¿ÉÄÜ»áÔö¼Ó±íÊ¾ÑÓ³Ù¡£Èç¹ûÃ»ÓĞÖ¸¶¨¸Ã½á¹¹Ìå£¬Ôò½«²»»áÊ¹ÓÃ³Ö¾ÃÄ£Ê½¡£
+				/*
+				VkDisplayPresentInfoKHRÓĞĞ§ÓÃ·¨:
+				VkDisplayPresentInfoKHRÓĞĞ§ÓÃ·¨:
+				1.srcRect ±ØĞëÖ¸¶¨ÔÚÏÔÊ¾igameµÄ´óĞ¡·¶Î§ÄÚµÄ×Ó¼¯
+				2.dstRect ±ØĞëÖ¸¶¨swapchainÊ¹ÓÃµÄdisplay modeµÄvisibleRegionÖ¸¶¨µÄ¿ÉÊÓ·¶Î§ÄÚµÄ×Ó¼¯
+				3.Èç¹ûµ÷ÓÃvkGetPhysicalDeviceDisplayPropertiesKHR·µ»ØµÄ¶ÔÓ¦¸ÃdisplayµÄVkDisplayPropertiesKHRµÄpersistentContentÎªVK_FALSE£¬Ôòpersistent ±ØĞëÎªVK_FALSE
+				*/
+
+
+				//VkDeviceGroupPresentInfoKHR Ö¸Ã÷Ò»×éÉè±¸ÑÚÂëºÍÒ»¸ödevice group present mode  Èç¹û²»°üº¬¸Ã½á¹¹Ìå»òÕßswapchainCountÎª0£¬Ôò¿ÉÈÏÎªÉè±¸ÑÚÂëÎª1£¬Èç¹û²»º¬¸Ã½á¹¹Ìå¿ÉÈÏÎªmodeÎªVK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR
+				VkDeviceGroupPresentInfoKHR& deviceGroupPresentInfoKHR = presentInfoKHREXT.deviceGroupPresentInfoKHR;
+				deviceGroupPresentInfoKHR.swapchainCount = 1;//Îª0»òÕßpDeviceMasksÖĞÔªËØ¸öÊı
+				uint32_t deviceMask = 0x00000001;
+				deviceGroupPresentInfoKHR.pDeviceMasks = &deviceMask;//Ò»×éÉè±¸ÑÚÂëuint32_tÊı×éÖ¸Õë£¬Ò»Ò»¶ÔÓ¦VkPresentInfoKHR::pSwapchains
+				deviceGroupPresentInfoKHR.mode = VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR;// VkDeviceGroupPresentModeFlagBitsKHRÖµ£¬Ö¸Ã÷ÏÔÊ¾Ê¹ÓÃµÄ device group present mode£¬¾ßÌåÇé¿ö¶ÔÓ¦¾ßÌåµÄ²Ù×÷¼ûp3181
+				/*
+				VkDeviceGroupPresentInfoKHRÓĞĞ§ÓÃ·¨:
+				1.swapchainCount±ØĞë0»òÕßVkPresentInfoKHR::swapchainCount
+				2.Èç¹ûmodeÎªVK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR£¬ÔòpDeviceMasksÖĞÃ¿¸öÔªËØÖ»ÄÜº¬ÓĞÒ»¸öbitÉèÖÃ£¬ÔòÆäVkDeviceGroupPresentCapabilitiesKHR::presentMask¶ÔÓ¦ÔªËØ²»ÄÜÎª·ÇÁãÖµ
+				3.Èç¹ûmodeÎªVK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR£¬ÔòpDeviceMasksÖĞÃ¿¸öÔªËØÖ»ÄÜº¬ÓĞÒ»¸öbitÉèÖÃ£¬ÔòÂß¼­Éè±¸ÖĞµÄÒ»Ğ©ÎïÀíÉè±¸±ØĞëÔÚÆäVkDeviceGroupPresentCapabilitiesKHR::presentMaskÖĞ°üº¬¸ÃbitÉèÖÃ
+				4.Èç¹ûmodeÎªVK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR£¬ÔòpDeviceMasksÖĞÃ¿¸öÔªËØ±ØĞëÓĞÆäËùÓĞbitÉèÖÃÉèÖÃÔÚVkDeviceGroupPresentCapabilitiesKHR::presentMask µÄÒ»¸öÔªËØÖĞ
+				5.Èç¹ûmodeÎªVK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR£¬ÔòpDeviceMasksÖĞÃ¿¸öÔªËØµÄÃ¿¸öbitÉèÖÃ£¬ÔòÆäVkDeviceGroupPresentCapabilitiesKHR::presentMask¶ÔÓ¦ÔªËØ²»ÄÜÎª·ÇÁãÖµ
+				6.pDeviceMasksÖĞµÄÃ¿¸öÔªËØµÄÖµ±ØĞëµÈÓÚswapchainÖĞ¶ÔÓ¦imageµÄË÷Òı±»×îºó»ñÈ¡Ê±µÄVkAcquireNextImageInfoKHR::deviceMaskµÄÖµ
+				7.mode ±ØĞëÖ»ÓĞÒ»¸öbitÉèÖÃ£¬ÇÒ¸ÃbitÉèÖÃ±ØĞë°üº¬ÔÚVkDeviceGroupSwapchainCreateInfoKHR::modesÖĞ
+				*/
+
+
+				//µ± VK_GOOGLE_display_timingÍØÕ¹¿ªÆô£¬VkPresentTimesInfoGOOGLE ¿ÉÒÔÓÃÀ´¸æËßÏÔÊ¾ÒıÇæÒ»¸öÍ¼Æ¬Ó¦¸Ã±»ÏÔÊ¾µÄ×îÔçÊ±¼ä£¬¿ÉÒÔÓÃÀ´±ÜÃâstutter
+				VkPresentTimesInfoGOOGLE &presentTimesInfoGOOGLE = presentInfoKHREXT.presentTimesInfoGOOGLE;
+				presentTimesInfoGOOGLE.swapchainCount = 1;//Ö¸Ã÷´¦ÀíµÄswapchianµÄÊıÁ¿£¬±ØĞëµÈÓÚVkPresentInfoKHR::swapchainCount
+				VkPresentTimeGOOGLE earliestDisplayTime{};
+				{
+					earliestDisplayTime.presentID = 0;//ÊÇÓ¦ÓÃ³ÌĞòÌá¹©µÄÓÃÓÚ±êÊ¶µÄÖµ£¬¿ÉÒÔÓëvkGetPastPresentationTimingGOOGLE·µ»ØµÄ½á¹ûÒ»ÆğÊ¹ÓÃ£¬ÒÔ±ãÎ¨Ò»µØÊ¶±ğÒ»´ÎÏÔÊ¾present²Ù×÷¡£ÎªÁË¶ÔÓ¦ÓÃ³ÌĞòÓĞÓÃ£¬ËüÔÚÒ»¶ÎÊ±¼äÄÚ¶ÔÓ¦ÓÃ³ÌĞòÓĞÓ¦¸ÃÊÇÎ¨Ò»µÄ
+					earliestDisplayTime.desiredPresentTime = 0;//Ö¸¶¨²»Ó¦¸Ã½«Í¼ÏñÔÚ¸ÃÖµÖ¸¶¨µÄÊ±¼äÖ®Ç°½øĞĞÏÔÊ¾¡£¸ÃÊ±¼äÊÇÒ»¸öÒÔÄÉÃëÎªµ¥Î»£¬Ïà¶ÔÓÚÒ»¸öµ¥µ÷µİÔöµÄÊ±ÖÓ£¨ÀıÈç£¬ÔÚ°²×¿ºÍLinuxÉÏµÄCLOCK_MONOTONIC£¨¼ûclock_gettime(2)£©£©¡£ÖµÎªÁã±íÊ¾ÏÔÊ¾ÒıÇæ¿ÉÒÔÔÚÈÎºÎÊ±ºòÏÔÊ¾Í¼Ïñ¡£µ±Ó¦ÓÃ³ÌĞòÏ£ÍûÌá¹© presentIDµ«²»ĞèÒªÖ¸¶¨ÌØ¶¨µÄÏÔÊ¾Ê±¼äµÄÇé¿öÏÂÊ¹ÓÃ¡£
+				}
+				presentTimesInfoGOOGLE.pTimes = &earliestDisplayTime;//ÎªNULL»òÕß swapchainCount¸öVkPresentTimeGOOGLEµÄÊı×éÖ¸Õë£¬Ö¸Ã÷ VkPresentInfoKHR::pImageIndicesÖĞÖ¸¶¨µÄimageµÄ×îÔçÏÔÊ¾Ê±¼ä
+
+
+				VkPresentIdKHR  &presentIdKHR = presentInfoKHREXT.presentIdKHR;
+				presentIdKHR.swapchainCount = 1;//Ö¸Ã÷´¦ÀíµÄswapchianµÄÊıÁ¿
+				uint64_t presentId = 0;
+				presentIdKHR.pPresentIds = &presentId;//ÎªNULL»òÕß swapchainCount¸öuint64_tµÄÊı×éÖ¸Õë£¬Ö¸Ã÷¸ø¶¨¸ø VkPresentInfoKHR::pImageIndicesÖĞÖ¸¶¨µÄimageµÄÏÔÊ¾²Ù×÷µÄÒ»¸ö±êÊ¶id
+				/*
+				VkPresentIdKHRÓĞĞ§ÓÃ·¨:
+				1.swapchainCount±ØĞëµÈÓÚVkPresentInfoKHR::swapchainCount
+				2.presentIdsÖĞÃ¿¸öÔªËØµÄÖµ±ØĞë´óÓÚ´«µİ¸øpSwapchainsÖĞ¶ÔÓ¦swapchainµÄÏÈÇ°ÏÔÊ¾µÄpresentId
+				*/
+				{
+					//Èç¹û¿ªÆôÁË presentWait ÌØĞÔ£¬Ôò¿ÉÒÔµÈ´ıÄ³¸öpresentId¹ØÁªµÄswapchainÖĞimageµÄÏÔÊ¾²Ù×÷Íê³É£¬ ¸ÃµÈ´ı²Ù×÷Ö÷ÒªÊÇµÈ´ı¹ØÁªµ½swapchainµÄµ±Ç°presentIdµÄÖµ´óÓÚÕâÀï¸ø¶¨µÄÖµ£¬ËùÒÔswapchainÖĞµ±Ç°µÄpresentIdÖÁÉÙÒªÎªÕâÀïµÄÖµ
+					vkWaitForPresentKHR(device, swapchainKHR/*swapchain,Ö¸¶¨ÄÄ¸öÏÔÊ¾imageµÄ non-retired swapchain*/, 0/*presentId£¬Ö¸¶¨ÒªµÈ´ıµÄÏÔÊ¾²Ù×÷¹ØÁªµÄpresentId*/, VK_TIMEOUT/*timeout, Ö¸¶¨ÒÔÄÉÃëÎªµ¥Î»µÄµÈ´ı³¬Ê±Ê±¼ä*/);
+					/*
+					vkWaitForPresentKHRÓĞĞ§ÓÃ·¨:
+					1.swapchain ²»ÄÜ´¦ÓÚretired state
+					2.presentWait ÌØĞÔ±ØĞë¿ªÆô
+					*/
+				}
+
+
+			}
+			presentInfoKHR.pNext = &presentInfoKHREXT.deviceGroupPresentInfoKHR;
+			presentInfoKHR.swapchainCount = 1;//Ö¸Ã÷Òª´¦ÀíµÄswapchainµÄÊıÁ¿
+			presentInfoKHR.pSwapchains = &swapchainKHR;//swapchainCount¸öVkSwapchainKHRµÄÊı×éÖ¸Õë£¬ Ö¸Ã÷Òª´¦ÀíµÄswapchain
+			presentInfoKHR.pImageIndices = &imageIndex;//swapchainCount¸öuint32_tµÄÊı×éÖ¸Õë£¬Ö¸Ã÷¶ÔÓ¦pSwapchainsÖĞµÄswapchainÒªÏÔÊ¾µÄimageµÄË÷Òı£¬ÔÚÏÔÊ¾Ç°ÕâĞ©imageµÄ²¼¾Ö±ØĞëÒª×ª»»ÎªVK_IMAGE_LAYOUT_PRESENT_SRC_KHR»òÕßVK_IMAGE_LAYOUT_SHARED_PRESENT_KHR
+			VkResult presentResult{};
+			presentInfoKHR.pResults = &presentResult;//swapchainCount¸öVkResultµÄÊı×éÖ¸Õë,Ö¸Ã÷¸÷¸öswapchainÖĞµÄimageµÄÏÔÊ¾½á¹û£¬Èç¹û²»ĞèÒª»ñÈ¡½á¹û£¬Ôò¿ÉÒÔÎªNULL
+			presentInfoKHR.waitSemaphoreCount = 1;//Îª·¢²¼ÏÔÊ¾ÇëÇóÖ®Ç°ĞèÒªµÈ´ıµÄsemaphoreµÄÊıÁ¿£¬¿ÉÄÜÎª0
+			VkSemaphore waitSemaphroe{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSemaphore*/ };
+			presentInfoKHR.pWaitSemaphores = &waitSemaphroe;//ÎªNULL»òÕßº¬waitSemaphoreCount¸ö VkSemaphoreµÄÊı×éÖ¸Õë£¬Ö¸¶¨·¢²¼ÏÔÊ¾ÇëÇóÖ®Ç°ĞèÒªµÈ´ıµÄsemaphore
+			/*
+			VkPresentInfoKHRÓĞĞ§ÓÃ·¨:
+			1.pSwapchainµÄÃ¿¸öÔªËØ±ØĞëÊ±Î¨Ò»µÄ
+			2.pImageIndicesÖĞµÄÃ¿¸öÔªËØ±ØĞëÊÇ´ÓpSwapchains¶ÔÓ¦swapchainÖĞ»ñÈ¡µÄimageµÄË÷ÒıÖµ£¬ÇÒ¸ÃimageµÄsubresource±ØĞëÔÚÖ´ĞĞ¸ÃÃüÁîÇ°ÒÑ¾­×ª»»µ½VK_IMAGE_LAYOUT_PRESENT_SRC_KHR »òÕß VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR layout
+			3.Èç¹ûpNextÖĞ°üº¬VkPresentIdKHR£¬ÇÒpresentIdÌØĞÔÎ´¿ªÆô£¬ÔòVkPresentIdKHRÖĞµÄpresentIdsÖĞÃ¿¸öÔªËØ±ØĞëÎªNULL
+			4.Èç¹ûpSwapchainsµÄÈÎºÎÔªËØµÄswapchainÒÔº¬ÓĞVkSwapchainPresentModesCreateInfoEXT´´½¨£¬ÔòpSwapchainsµÄËùÓĞÔªËØµÄswapchainÒ²±ØĞëÒÔº¬ÓĞVkSwapchainPresentModesCreateInfoEXT´´½¨
+			*/
+
+
+
+			vkQueuePresentKHR(VkQueue{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkQueue*/ }/*queue*/, &presentInfoKHR);
+			/*
+			vkQueuePresentKHRÓĞĞ§ÓÃ·¨:
+			1.pPresentInfoµÄpSwapchainsµÄÃ¿¸öswapchain±ØĞëÊÇÒÔÔÚqueueÉÏÖ§³ÖÏÔÊ¾µÄsurface´´½¨µÄ£¬²Î¼ûvkGetPhysicalDeviceSurfaceSupportKHR
+			2.Èç¹ûpPresentInfoµÄpSwapchainsÓĞ³¬¹ı1¸öµÄswapchain´Ódisplay surfaceÉÏ´´½¨£¬ÔòËùÓĞÒıÓÃµ½ÏàÍ¬ÏÔÊ¾Æ÷desplayµÄdisplay surface±ØĞëÊ¹ÓÃÏàÍ¬µÄdisplay mode
+			3.µ±pPresentInfoµÄpWaitSemaphoresµÄÔªËØ¶¨ÒåÁËÒıÓÃµ½Ò»¸öbinary semaphoreÖ´ĞĞÔÚqueueÉÏµÄsemaphore wait²Ù×÷Ê±£¬²»ÄÜÓĞÆäËûµÄ¶ÓÁĞÔÚµÈ´ı¸Ãsemaphore
+			4.pPresentInfoµÄpWaitSemaphoresµÄËùÓĞÔªËØ±ØĞëÒÔVkSemaphoreType ÎªVK_SEMAPHORE_TYPE_BINARY ´´½¨
+			5.pPresentInfoµÄpWaitSemaphoresµÄËùÓĞÔªËØ±ØĞëÒıÓÃµ½Ò»¸ösignal ²Ù×÷ÒÑ¾­Ìá½»Ö´ĞĞµÄÇÒÆäÒÀÀµµÄsemaphore signal ²Ù×÷Ò²Ìá½»Ö´ĞĞµÄsemaphore
+			*/
+		}
+
 
 	}
 }

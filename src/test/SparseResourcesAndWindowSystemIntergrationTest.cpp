@@ -23,6 +23,7 @@ typedef uint32_t zx_handle_t;//Î´¶¨ÒåÕâÀï×Ô¼º¶¨Òå
 #include "vulkan/vulkan_fuchsia.h"
 //google game platform
 typedef uint32_t GgpStreamDescriptor;//Î´¶¨ÒåÕâÀï×Ô¼º¶¨Òå
+typedef uint32_t GgpFrameToken;//Î´¶¨ÒåÕâÀï×Ô¼º¶¨Òå
 #include "vulkan/vulkan_ggp.h"
 
 #include "vulkan/vulkan_ios.h"
@@ -1960,7 +1961,7 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 		vkCreateSharedSwapchainsKHR(device, 1, &swapchainCreateInfoKHR, nullptr, &swapchainKHR);
 
 
-		//»ñÈ¡swapchainÖĞµÄÒ»×éimage
+		//»ñÈ¡swapchainÖĞµÄÒ»×éimage£¬  »¹¿ÉÒÔÔÚ´´½¨VkImageµÄÊ±ºòÔÚÆäVkImageCreateInfo.pNextÖĞ¼ÓÉÏÒ»¸öVkImageSwapchainCreateInfoKHRÀ´´´½¨Ò»¸öswapchainÖĞµÄimage£¬ÆäÊ¹ÓÃvkBindImageMemory2 ´«ÈëVkBindImageMemorySwapchainInfoKHR °ó¶¨µ½Ò»¸öswapchainÖĞµÄÄÚ´æ£¬µ«ÕâÖÖÇé¿öÏÂ¸ÃVkImageĞèÒªÊÖ¶¯Ïú»Ù
 		uint32_t imageCount = 0;
 		std::vector<VkImage> presentImages;
 		vkGetSwapchainImagesKHR(device, swapchainKHR, &imageCount, nullptr);
@@ -2128,7 +2129,7 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 				presentTimesInfoGOOGLE.pTimes = &earliestDisplayTime;//ÎªNULL»òÕß swapchainCount¸öVkPresentTimeGOOGLEµÄÊı×éÖ¸Õë£¬Ö¸Ã÷ VkPresentInfoKHR::pImageIndicesÖĞÖ¸¶¨µÄimageµÄ×îÔçÏÔÊ¾Ê±¼ä
 
 
-				VkPresentIdKHR  &presentIdKHR = presentInfoKHREXT.presentIdKHR;
+				VkPresentIdKHR& presentIdKHR = presentInfoKHREXT.presentIdKHR;
 				presentIdKHR.swapchainCount = 1;//Ö¸Ã÷´¦ÀíµÄswapchianµÄÊıÁ¿
 				uint64_t presentId = 0;
 				presentIdKHR.pPresentIds = &presentId;//ÎªNULL»òÕß swapchainCount¸öuint64_tµÄÊı×éÖ¸Õë£¬Ö¸Ã÷¸ø¶¨¸ø VkPresentInfoKHR::pImageIndicesÖĞÖ¸¶¨µÄimageµÄÏÔÊ¾²Ù×÷µÄÒ»¸ö±êÊ¶id
@@ -2146,6 +2147,27 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 					2.presentWait ÌØĞÔ±ØĞë¿ªÆô
 					*/
 				}
+
+
+				//µ±¿ªÆô VK_GGP_frame_token ÍØÕ¹£¬ÔòÏÔÊ¾swapchianÖĞµÄimageÊ±¿ÉÒÔÍ¨¹ı  VkPresentFrameTokenGGPÖ¸¶¨Google Games Platform frame token
+				VkPresentFrameTokenGGP& presentFrameTokenGGP = presentInfoKHREXT.presentFrameTokenGGP;
+				GgpFrameToken frameToken{};
+				presentFrameTokenGGP.frameToken = frameToken;//Ö¸¶¨ÒªÏÔÊ¾µÄimageµÄGoogle Games Platform frame token,±ØĞëÊÇÒ»¸öÓĞĞ§µÄGgpFrameToken
+
+
+				//VkSwapchainPresentModeInfoEXT Ö¸¶¨ÁËswapchainµÄÓÃÓÚµ±Ç°ÒÔ¼°ºóĞøÏÔÊ¾²Ù×÷µÄpresent mode£¬¿ÉÒÔ¸Ä±ä´´½¨swapchainÊ±Ö¸¶¨µÄpresent mode£¬Ç°ºóÁ½¸öresent modeÖ®¼äµÄÇĞ»»×ñÑ­Ò»¶¨²Ù×÷£¬Á½¸ömodeµÄÀàĞÍĞèÒªÂú×ãÒ»¶¨ÒªÇó£¬¾ßÌåÇé¿ö¼ûp3188
+				VkSwapchainPresentModeInfoEXT& swapchainPresentModeInfoEXT = presentInfoKHREXT.swapchainPresentModeInfoEXT;
+				swapchainPresentModeInfoEXT.swapchainCount = 1;//ÎªswapchainµÄÊıÁ¿£¬±ØĞëµÈÓÚVkPresentInfoKHR::swapchainCount
+				VkPresentModeKHR presenMode = VK_PRESENT_MODE_FIFO_KHR;
+				swapchainPresentModeInfoEXT.pPresentModes = &presenMode;//ÎªNULL»òÕßswapchainCount¸öVkPresentModeKHRµÄÊı×éÖ¸Õë£¬Ö¸¶¨swapchainµÄÓÃÓÚµ±Ç°ÒÔ¼°ºóĞøÏÔÊ¾²Ù×÷µÄpresent mode£¬ ÕâĞ©present mode±ØĞëÁĞ¾ÙÔÚ´´½¨Æä¶ÔÓ¦swapchainµÄVkSwapchainPresentModesCreateInfoEXT::pPresentModesÖĞ
+
+
+				VkSwapchainPresentFenceInfoEXT& swapchainPresentFenceInfoEXT = presentInfoKHREXT.swapchainPresentFenceInfoEXT;
+				swapchainPresentFenceInfoEXT.swapchainCount = 1;//ÎªswapchainµÄÊıÁ¿£¬±ØĞëµÈÓÚVkPresentInfoKHR::swapchainCount£¬±ØĞë´óÓÚ0
+				VkFence presenFinishFence{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkFence*/ };
+				swapchainPresentFenceInfoEXT.pFences = &presenFinishFence;//ÊÇswapchainCount ¸öVkFenceµÄÊı×éÖ¸Õë£¬Ö¸¶¨Ìá½»µÄÏÔÊ¾ÇëÇóÍê³ÉÊ±Òª´¥·¢µÄfence£¬ÕâĞ©fenceÈç¹û²»ÊÇVK_NULL_HANDLEÔò±ØĞëÊÇÎ´´¥·¢µÄ£¬´¥·¢µÄË³Ğò°´ÕÕÏÔÊ¾²Ù×÷µÄË³Ğò½øĞĞ
+
+
 
 
 			}
@@ -2168,7 +2190,7 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 
 
 
-			vkQueuePresentKHR(VkQueue{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkQueue*/ }/*queue*/, &presentInfoKHR);
+			vkQueuePresentKHR(VkQueue{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkQueue*/ }/*queue*/, & presentInfoKHR);
 			/*
 			vkQueuePresentKHRÓĞĞ§ÓÃ·¨:
 			1.pPresentInfoµÄpSwapchainsµÄÃ¿¸öswapchain±ØĞëÊÇÒÔÔÚqueueÉÏÖ§³ÖÏÔÊ¾µÄsurface´´½¨µÄ£¬²Î¼ûvkGetPhysicalDeviceSurfaceSupportKHR
@@ -2177,10 +2199,73 @@ surfaceFormat2KHR.surfaceFormat = surfaceFormatKHRs[0];//VkSurfaceFormatKHRÀàĞÍ£
 			4.pPresentInfoµÄpWaitSemaphoresµÄËùÓĞÔªËØ±ØĞëÒÔVkSemaphoreType ÎªVK_SEMAPHORE_TYPE_BINARY ´´½¨
 			5.pPresentInfoµÄpWaitSemaphoresµÄËùÓĞÔªËØ±ØĞëÒıÓÃµ½Ò»¸ösignal ²Ù×÷ÒÑ¾­Ìá½»Ö´ĞĞµÄÇÒÆäÒÀÀµµÄsemaphore signal ²Ù×÷Ò²Ìá½»Ö´ĞĞµÄsemaphore
 			*/
+
+
+			//ÊÍ·ÅÖ®Ç°Í¨¹ıvkAcquireNextImage2KHR »òÕßvkAcquireNextImageKHR »ñÈ¡µÄswapchainÖĞµÄimage ,Ö»ÓĞÕâĞ©image²»ÔÙ±»Éè±¸Ê¹ÓÃ²Å¿ÉÒÔÊÍ·Å£¬ÊÍ·Å²»¸Ä±äÕâĞ©imageµÄÄÚÈİµÄ²¼¾Ö
+			VkReleaseSwapchainImagesInfoEXT releaseSwapchainImagesInfoEXT{};
+			releaseSwapchainImagesInfoEXT.sType = VK_STRUCTURE_TYPE_RELEASE_SWAPCHAIN_IMAGES_INFO_EXT;
+			releaseSwapchainImagesInfoEXT.pNext = nullptr;
+			releaseSwapchainImagesInfoEXT.swapchain = swapchainKHR;//Ö¸Ã÷ÒªÊÍ·ÅµÄimageËùÔÚµÄswapchain
+			releaseSwapchainImagesInfoEXT.imageIndexCount = 1;//ÊÇÒªÊÍ·ÅµÄimageµÄ¸öÊı
+			releaseSwapchainImagesInfoEXT.pImageIndices = &imageIndex;//ÊÇimageIndexCount ¸öswapchainÖĞÒªÊÍ·ÅµÄimageµÄË÷ÒıÖµµÄÊı×éÖ¸Õë
+			/*
+			VkReleaseSwapchainImagesInfoEXTÓĞĞ§ÓÃ·¨:
+			1.pImageIndices ÖĞµÄÃ¿¸öÔªËØ±ØĞëÊÇ´ÓswapchainÖĞ»ñÈ¡µÄimageµÄË÷ÒıÖµ
+			2.¶ÔpImageIndices ÖĞµÄÃ¿¸öÔªËØÒıÓÃµÄimageµÄËùÓĞÊ¹ÓÃ²Ù×÷±ØĞëÒÑ¾­Íê³ÉÁËÖ´ĞĞ
+			*/
+
+			vkReleaseSwapchainImagesEXT(device, &releaseSwapchainImagesInfoEXT);
+
+
+
 		}
 
 
 	}
+
+
+	//Hdr Metadata  ²Î¼ûp3192
+	{
+		/*
+		¸Ã½ÚÃèÊöÁËÈçºÎ¸Ä½øÄÚÈİµÄÑÕÉ«ÔÙÏÖ£¬ÒÔ¸üºÃµØÔÙÏÖÔÚÏÔÊ¾Æ÷ÉÏ¿´µ½µÄÑÕÉ«¡£ÒÔÏÂ¶¨ÒåÀ´×ÔÓÚÏà¹ØµÄSMPTE 2086¡¢CTA 861.3ºÍCIE 15£º2004¹æ·¶
+		*/
+
+		VkSwapchainKHR swapchainKHR{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkSwapchainKHR*/};
+
+		//Ìá¹©ÊµÏÖÒ»¸ö Hdr metadata,ÕâĞ©metdata½«»áÓ¦ÓÃµ½swapchainµÄÏÂÒ»´ÎÏÔÊ¾²Ù×÷ÖĞ
+		VkHdrMetadataEXT hdrMetadataEXT{};
+		hdrMetadataEXT.sType = VK_STRUCTURE_TYPE_HDR_METADATA_EXT;
+		hdrMetadataEXT.pNext = nullptr;
+		hdrMetadataEXT.displayPrimaryRed = VkXYColorEXT{ .x = 0,.y = 0 };//Îª VkXYColorEXTÖµÖ¸Ã÷ÏÔÊ¾Æ÷µÄºì»ùÉ«µÄÉ«¶È×ø±ê chromaticity coordinates£¬Ö¸Ã÷ x ºÍ y chromaticity coordinate£¬Chromaticity coordinates²Î¼û CIE 15:2004
+		hdrMetadataEXT.displayPrimaryGreen = VkXYColorEXT{ .x = 0,.y = 0 };//Îª VkXYColorEXTÖµÖ¸Ã÷ÏÔÊ¾Æ÷µÄÂÌ»ùÉ«µÄÉ«¶È×ø±ê chromaticity coordinates£¬Ö¸Ã÷ x ºÍ y chromaticity coordinate£¬Chromaticity coordinates²Î¼û CIE 15:2004
+		hdrMetadataEXT.displayPrimaryBlue = VkXYColorEXT{ .x = 0,.y = 0 };//Îª VkXYColorEXTÖµÖ¸Ã÷ÏÔÊ¾Æ÷µÄÀ¶»ùÉ«µÄÉ«¶È×ø±ê chromaticity coordinates£¬Ö¸Ã÷ x ºÍ y chromaticity coordinate£¬Chromaticity coordinates²Î¼û CIE 15:2004
+		hdrMetadataEXT.whitePoint = VkXYColorEXT{ .x = 0.3127f,.y = 0.329f };//Îª VkXYColorEXTÖµÖ¸Ã÷ÏÔÊ¾Æ÷µÄ°×É«µÄÉ«¶È×ø±ê chromaticity coordinates£¬Ö¸Ã÷ x ºÍ y chromaticity coordinate£¬Chromaticity coordinates²Î¼û CIE 15:2004
+		hdrMetadataEXT.minLuminance = 0.0f;//ÎªÏÔÊ¾µÄ×îĞ¡µÄ·¢¹âÁÁ¶ÈÖµ£¬ÒÔnitsÎªµ¥Î»
+		hdrMetadataEXT.maxLuminance = 1.0f;//ÎªÏÔÊ¾µÄ×î´óµÄ·¢¹âÁÁ¶ÈÖµ£¬ÒÔnitsÎªµ¥Î»
+		hdrMetadataEXT.maxContentLightLevel = 1;//ÎªÏÔÊ¾µÄ×î´óµÄÄÚÈİÁÁ¶ÈÖµ£¬ÒÔnitsÎªµ¥Î»
+		hdrMetadataEXT.maxFrameAverageLightLevel = 1;//ÎªÏÔÊ¾µÄ×î´óµÄÖ¡Æ½¾ùÁÁ¶ÈÖµ£¬ÒÔnitsÎªµ¥Î»
+
+
+		vkSetHdrMetadataEXT(device,1, &swapchainKHR, &hdrMetadataEXT);
+
+	}
+
+
+	//Present Barrier  ²Î¼ûp3194
+	{
+		/*
+		 VK_NV_present_barrier ÍØÕ¹¿ÉÒÔÔÊĞíÓ¦ÓÃÊ¹ÓÃ present barrier È¥Í¬²½¶à¸öswapchainÖĞµÄÏÔÊ¾²Ù×÷£¬ÕâĞèÒªÕâĞ©swapchainÔÚ´´½¨swapchainµÄVkSwapchainCreateInfoKHRÖĞ°üº¬Ò»¸öpresentBarrierEnableÉèÎªVK_TRUEµÄ VkSwapchainPresentBarrierCreateInfoNV
+		
+		
+		*/
+
+		//Èç¹û²»°üº¬¸Ã½á¹¹ÌåÔòÄ¬ÈÏpresentBarrierEnable ÎªVK_FALSE
+		VkSwapchainPresentBarrierCreateInfoNV swapchainPresentBarrierCreateInfoNV{};
+		swapchainPresentBarrierCreateInfoNV.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_BARRIER_CREATE_INFO_NV;
+		swapchainPresentBarrierCreateInfoNV.pNext = nullptr;
+		swapchainPresentBarrierCreateInfoNV.presentBarrierEnable = VK_TRUE;//Ö¸Ã÷ÏÔÊ¾ÇëÊ¾ÊÇ·ñÊ¹ÓÃpresent barrier
+	}
+
 }
 
 

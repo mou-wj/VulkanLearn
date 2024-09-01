@@ -335,4 +335,32 @@ typedef struct VkSwapchainLatencyCreateInfoNV {
 	VkBool32           latencyModeEnable;
 } VkSwapchainLatencyCreateInfoNV;
 
+
+
+
+// Provided by VK_NV_displacement_micromap
+typedef struct VkAccelerationStructureTrianglesDisplacementMicromapNV {
+	VkStructureType                     sType;
+	void* pNext;
+	VkFormat                            displacementBiasAndScaleFormat;
+	VkFormat                            displacementVectorFormat;
+	VkDeviceOrHostAddressConstKHR       displacementBiasAndScaleBuffer;
+	VkDeviceSize                        displacementBiasAndScaleStride;
+	VkDeviceOrHostAddressConstKHR       displacementVectorBuffer;
+	VkDeviceSize                        displacementVectorStride;
+	VkDeviceOrHostAddressConstKHR       displacedMicromapPrimitiveFlags;
+	VkDeviceSize                        displacedMicromapPrimitiveFlagsStride;
+	VkIndexType                         indexType;
+	VkDeviceOrHostAddressConstKHR       indexBuffer;
+	VkDeviceSize                        indexStride;
+	uint32_t                            baseTriangle;
+	uint32_t                            usageCountsCount;
+	const VkMicromapUsageEXT* pUsageCounts;
+	const VkMicromapUsageEXT* const* ppUsageCounts;
+	VkMicromapEXT                       micromap;
+} VkAccelerationStructureTrianglesDisplacementMicromapNV;
+
+
+
+
 NS_TEST_END

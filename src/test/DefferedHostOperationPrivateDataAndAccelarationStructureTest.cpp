@@ -1,4 +1,4 @@
-#include "DefferedHostOperationPrivateDataAndAccelarationStructureTest.h"
+ï»¿#include "DefferedHostOperationPrivateDataAndAccelarationStructureTest.h"
 NS_TEST_BEGIN
 DefferedHostOperationPrivateDataAndAccelarationStructureTest::DefferedHostOperationPrivateDataAndAccelarationStructureTest()
 {
@@ -15,44 +15,44 @@ DefferedHostOperationPrivateDataAndAccelarationStructureTest::~DefferedHostOpera
 void DefferedHostOperationPrivateDataAndAccelarationStructureTest::DefferedHostOperationTest()
 {
 	/*
-	deferred operations ÔÊĞíÓ¦ÓÃºÍÇı¶¯Ê¹ÓÃÓ¦ÓÃ¹ÜÀíµÄÏß³Ì³ØÈ¥¹ÜÀíºÍÍ¬²½ºÄÊ±°º¹óµÄhost¶ËµÄÃüÁî£¬ VK_KHR_deferred_host_operationsÍØÕ¹¶¨ÒåÁËÒ»Ğ©Ö§³ÖÕâĞ©host¶ËÃüÁîµÄ»ù±¾»úÖÆ£¬Ö»ÓĞÒÀÀµÕâ¸öÍØÕ¹µÄhost¶ËÃüÁî²ÅÄÜÑÓ³ÙÖ´ĞĞ
+	deferred operations å…è®¸åº”ç”¨å’Œé©±åŠ¨ä½¿ç”¨åº”ç”¨ç®¡ç†çš„çº¿ç¨‹æ± å»ç®¡ç†å’ŒåŒæ­¥è€—æ—¶æ˜‚è´µçš„hostç«¯çš„å‘½ä»¤ï¼Œ VK_KHR_deferred_host_operationsæ‹“å±•å®šä¹‰äº†ä¸€äº›æ”¯æŒè¿™äº›hostç«¯å‘½ä»¤çš„åŸºæœ¬æœºåˆ¶ï¼Œåªæœ‰ä¾èµ–è¿™ä¸ªæ‹“å±•çš„hostç«¯å‘½ä»¤æ‰èƒ½å»¶è¿Ÿæ‰§è¡Œ
 	
 	*/
 
 
-	//Requesting Deferral   ÈçºÎÇëÇódefer²Ù×÷ÒÔ¼°ĞèÒª×ñÑ­µÄÒ»Ğ©¹æÔòµÄ¸ÅÊö ²Î¼ûp3196
+	//Requesting Deferral   å¦‚ä½•è¯·æ±‚deferæ“ä½œä»¥åŠéœ€è¦éµå¾ªçš„ä¸€äº›è§„åˆ™çš„æ¦‚è¿° å‚è§p3196
 
-	//Deferred Host Operations API  ²Î¼ûp3197
+	//Deferred Host Operations API  å‚è§p3197
 	{
 
-		VkDeferredOperationKHR/*¸Ã½á¹¹ÌåÌå¹ÜÀídefered commandµÄÖ´ĞĞ×´Ì¬*/  deferredOperationKHR{};
+		VkDeferredOperationKHR/*è¯¥ç»“æ„ä½“ä½“ç®¡ç†defered commandçš„æ‰§è¡ŒçŠ¶æ€*/  deferredOperationKHR{};
 
-		//´´½¨Ò»¸ö×·×Ùdefered commandµÄVkDeferredOperationKHR¶ÔÏó
+		//åˆ›å»ºä¸€ä¸ªè¿½è¸ªdefered commandçš„VkDeferredOperationKHRå¯¹è±¡
 		vkCreateDeferredOperationKHR(device, nullptr, &deferredOperationKHR);
 
-		//¸øÒ»¸ödefered command°²ÅÅÒ»¸öÏß³Ì£¬¸Ã½Ó¿ÚÔÚÏß³ÌÖĞµ÷ÓÃ
+		//ç»™ä¸€ä¸ªdefered commandå®‰æ’ä¸€ä¸ªçº¿ç¨‹ï¼Œè¯¥æ¥å£åœ¨çº¿ç¨‹ä¸­è°ƒç”¨
 		VkResult deferredOperationJoinResult =  vkDeferredOperationJoinKHR(device, deferredOperationKHR);
 		deferredOperationJoinResult;
 		/*
-		VK_SUCCESS:  Ö¸Ã÷defered ²Ù×÷ÒÑ¾­Íê³É£¬Ó¦ÓÃ¿ÉÒÔµ÷ÓÃvkGetDeferredOperationResultKHR»ñÈ¡Æä×´Ì¬
-		VK_THREAD_DONE_KHR:  Ö¸Ã÷defered ²Ù×÷»¹Î´Íê³Éµ«¼´½«Íê³É£¬ÒÑ¾­Ã»ÓĞ±ğµÄ¹¤×÷¿ÉÒÔ°²ÅÅ¸øÏß³ÌÁË£¬ºóĞø¼ÌĞøµ÷ÓÃvkDeferredOperationJoinKHRÊÇ²»±ØÒªµÄÇÒ»áÓ°ÏìĞÔÄÜ
-		VK_THREAD_IDLE_KHR:  Ö¸Ã÷defered ²Ù×÷»¹Î´Íê³É,µ«ÊÇÔÚµ÷ÓÃ¸Ãº¯ÊıµÄÊ±ºòÃ»ÓĞ±ğµÄ¹¤×÷¿ÉÒÔ°²ÅÅ¸øÏß³Ì£¬ÕâÖÖÇé¿öËµÃ÷defered ²Ù×÷µÄÖ´ĞĞÓöµ½ÁËÒ»¸ö²ÎÊıµÄÆ½ĞĞµ÷¶ÈµÄ¼õÉÙ£¬ºóĞø¼ÌĞøµ÷ÓÃvkDeferredOperationJoinKHRÊÇ¿ÉÒÔµÄ		
+		VK_SUCCESS:  æŒ‡æ˜defered æ“ä½œå·²ç»å®Œæˆï¼Œåº”ç”¨å¯ä»¥è°ƒç”¨vkGetDeferredOperationResultKHRè·å–å…¶çŠ¶æ€
+		VK_THREAD_DONE_KHR:  æŒ‡æ˜defered æ“ä½œè¿˜æœªå®Œæˆä½†å³å°†å®Œæˆï¼Œå·²ç»æ²¡æœ‰åˆ«çš„å·¥ä½œå¯ä»¥å®‰æ’ç»™çº¿ç¨‹äº†ï¼Œåç»­ç»§ç»­è°ƒç”¨vkDeferredOperationJoinKHRæ˜¯ä¸å¿…è¦çš„ä¸”ä¼šå½±å“æ€§èƒ½
+		VK_THREAD_IDLE_KHR:  æŒ‡æ˜defered æ“ä½œè¿˜æœªå®Œæˆ,ä½†æ˜¯åœ¨è°ƒç”¨è¯¥å‡½æ•°çš„æ—¶å€™æ²¡æœ‰åˆ«çš„å·¥ä½œå¯ä»¥å®‰æ’ç»™çº¿ç¨‹ï¼Œè¿™ç§æƒ…å†µè¯´æ˜defered æ“ä½œçš„æ‰§è¡Œé‡åˆ°äº†ä¸€ä¸ªå‚æ•°çš„å¹³è¡Œè°ƒåº¦çš„å‡å°‘ï¼Œåç»­ç»§ç»­è°ƒç”¨vkDeferredOperationJoinKHRæ˜¯å¯ä»¥çš„		
 		*/
 
-		//µ±defered commandÍê³É£¬Ïú»ÙÆäVkDeferredOperationKHR¶ÔÏó
+		//å½“defered commandå®Œæˆï¼Œé”€æ¯å…¶VkDeferredOperationKHRå¯¹è±¡
 		vkDestroyDeferredOperationKHR(device, deferredOperationKHR, nullptr);
 		/*
-		vkDestroyDeferredOperationKHRÓĞĞ§ÓÃ·¨:
-		1.Èç¹û´´½¨Ê±Ìá¹©ÁËVkAllocationCallbacks£¬ÔòÕâÀï±ØĞëÌá¹©ÓëÖ®¼æÈİµÄcallbacks
-		2.Èç¹û´´½¨Ê±Ã»ÓĞÌá¹©VkAllocationCallbacks£¬ÔòÕâÀïpAllocator±ØĞë´«ÈëNULL
-		3.operation±ØĞëÒÑ¾­Íê³É
+		vkDestroyDeferredOperationKHRæœ‰æ•ˆç”¨æ³•:
+		1.å¦‚æœåˆ›å»ºæ—¶æä¾›äº†VkAllocationCallbacksï¼Œåˆ™è¿™é‡Œå¿…é¡»æä¾›ä¸ä¹‹å…¼å®¹çš„callbacks
+		2.å¦‚æœåˆ›å»ºæ—¶æ²¡æœ‰æä¾›VkAllocationCallbacksï¼Œåˆ™è¿™é‡ŒpAllocatorå¿…é¡»ä¼ å…¥NULL
+		3.operationå¿…é¡»å·²ç»å®Œæˆ
 		*/
 
-		//²éÑ¯»¹¿ÉÒÔÓĞ¶àÉÙ¸öÏß³ÌÍ¨¹ıvkDeferredOperationJoinKHRÀ´µÈ´ıdefered commandµÄÍê³É  ,Èç¹û·µ»Øpow(2,32) -1 Ôò±íÊ¾²»ÄÜ¹À¼Æ¸ÃĞèÒª¶àÉÙ¸öÏß³Ì£¬½¨ÒéÕâ¸ö½Ó¿ÚÔÚ¿ªÊ¼µÄÊ±ºòµ÷ÓÃÒ»´Î
+		//æŸ¥è¯¢è¿˜å¯ä»¥æœ‰å¤šå°‘ä¸ªçº¿ç¨‹é€šè¿‡vkDeferredOperationJoinKHRæ¥ç­‰å¾…defered commandçš„å®Œæˆ  ,å¦‚æœè¿”å›pow(2,32) -1 åˆ™è¡¨ç¤ºä¸èƒ½ä¼°è®¡è¯¥éœ€è¦å¤šå°‘ä¸ªçº¿ç¨‹ï¼Œå»ºè®®è¿™ä¸ªæ¥å£åœ¨å¼€å§‹çš„æ—¶å€™è°ƒç”¨ä¸€æ¬¡
 		uint32_t numThreadNeeded = vkGetDeferredOperationMaxConcurrencyKHR(device, deferredOperationKHR);
 
 
-		//»ñÈ¡defered commandµÄÖ´ĞĞµÄ½á¹û»òÕßËµÖ´ĞĞ×´Ì¬
+		//è·å–defered commandçš„æ‰§è¡Œçš„ç»“æœæˆ–è€…è¯´æ‰§è¡ŒçŠ¶æ€
 		VkResult completedResult = vkGetDeferredOperationResultKHR(device, deferredOperationKHR);
 
 	}
@@ -63,39 +63,39 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::DefferedHostO
 void DefferedHostOperationPrivateDataAndAccelarationStructureTest::PrivateDataTest()
 {
 	/*
-	private data ÍØÕ¹Ìá¹©ÁËÒ»ÖÖ·½Ê½¿ÉÒÔÈÃÓÃ»§×Ô¼º¶¨ÒåµÄÊı¾İ¹ØÁªµ½vulkanµÄ¶ÔÏóÖĞ£¬ÕâÖÖ¹ØÁªÊÇÍ¨¹ıÔÚË½ÓĞÊı¾İ²ÛÖĞ´æ´¢ÓÃ»§¶¨ÒåÊı¾İµÄ64Î»ÎŞ·ûºÅÕûÊıÀ´Íê³ÉµÄ¡£Ë½ÓĞÊı¾İ²Û±íÊ¾Éè±¸µÄÃ¿¸ö×Ó¶ÔÏóµÄÒ»¸öÊı¾İÏîµÄ´æ´¢·ÖÅä
+	private data æ‹“å±•æä¾›äº†ä¸€ç§æ–¹å¼å¯ä»¥è®©ç”¨æˆ·è‡ªå·±å®šä¹‰çš„æ•°æ®å…³è”åˆ°vulkançš„å¯¹è±¡ä¸­ï¼Œè¿™ç§å…³è”æ˜¯é€šè¿‡åœ¨ç§æœ‰æ•°æ®æ§½ä¸­å­˜å‚¨ç”¨æˆ·å®šä¹‰æ•°æ®çš„64ä½æ— ç¬¦å·æ•´æ•°æ¥å®Œæˆçš„ã€‚ç§æœ‰æ•°æ®æ§½è¡¨ç¤ºè®¾å¤‡çš„æ¯ä¸ªå­å¯¹è±¡çš„ä¸€ä¸ªæ•°æ®é¡¹çš„å­˜å‚¨åˆ†é…
 	
-	device¿ÉÒÔÔÚ´´½¨Ê±±£Áô¸ÃÊı¾İ²Û£¬Í¨¹ıÔÚ VkDeviceCreateInfo.pNextÖĞÁ´½ÓËùĞèÊıÁ¿µÄ VkDevicePrivateDataCreateInfo
+	deviceå¯ä»¥åœ¨åˆ›å»ºæ—¶ä¿ç•™è¯¥æ•°æ®æ§½ï¼Œé€šè¿‡åœ¨ VkDeviceCreateInfo.pNextä¸­é“¾æ¥æ‰€éœ€æ•°é‡çš„ VkDevicePrivateDataCreateInfo
 	*/
 
-	VkPrivateDataSlot privateDataSlot{};//µÈ¼ÛÓÚVkPrivateDataSlotEXT
+	VkPrivateDataSlot privateDataSlot{};//ç­‰ä»·äºVkPrivateDataSlotEXT
 
-	//´´½¨Ò»¸öË½ÓĞÊı¾İ²Û,  µÈÍ¬ÓëvkCreatePrivateDataSlotEXT
-	VkPrivateDataSlotCreateInfo privateDataSlotCreateInfo{};//µÈ¼ÛÓÚVkPrivateDataSlotCreateInfoEXT
+	//åˆ›å»ºä¸€ä¸ªç§æœ‰æ•°æ®æ§½,  ç­‰åŒä¸vkCreatePrivateDataSlotEXT
+	VkPrivateDataSlotCreateInfo privateDataSlotCreateInfo{};//ç­‰ä»·äºVkPrivateDataSlotCreateInfoEXT
 	privateDataSlotCreateInfo.sType = VK_STRUCTURE_TYPE_PRIVATE_DATA_SLOT_CREATE_INFO;
 	privateDataSlotCreateInfo.pNext = nullptr;
-	privateDataSlotCreateInfo.flags = 0;//±£ÁôÎ´À´Ê¹ÓÃ
+	privateDataSlotCreateInfo.flags = 0;//ä¿ç•™æœªæ¥ä½¿ç”¨
 
-	vkCreatePrivateDataSlot(device, &privateDataSlotCreateInfo, nullptr, &privateDataSlot);// privateData ÌØĞÔ±ØĞë¿ªÆô
+	vkCreatePrivateDataSlot(device, &privateDataSlotCreateInfo, nullptr, &privateDataSlot);// privateData ç‰¹æ€§å¿…é¡»å¼€å¯
 
 
-	//´æ´¢ÓÃ»§¶¨ÒåµÄÊı¾İµ½Ò»¸ö¹ØÁªµ½vulkan¶ÔÏóµÄË½ÓĞÊı¾İ²ÛÖĞ,  µÈÍ¬ÓÚvkSetPrivateDataEXT
-	vkSetPrivateData(device, VK_OBJECT_TYPE_BUFFER/*objectType£¬Ö¸Ã÷¹ØÁªµÄvulkan¶ÔÏóµÄÀàĞÍ*/, (uint64_t)VkBuffer {/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer*/ }/* objectHandle£¬Îª¹ØÁªµÄ¶ÔÏóµÄ¾ä±ú,±ØĞëÎªdevice»òÕß´ÓdeviceÖĞ´´½¨¶ÔÏóµÄ¶ÔÓ¦objectTypeµÄ¾ä±ú*/,
-		privateDataSlot/* privateDataSlot£¬VkPrivateDataSlot¾ä±úÖ¸Ã÷private data´æ´¢µÄÎ»ÖÃ*/, 1234567890/*data£¬ÓÃ»§¶¨ÒåµÄ¹ØÁªµ½vulkanµÄÊı¾İ£¬ ´æ´¢µ½privateDataSlotÖĞ*/);
+	//å­˜å‚¨ç”¨æˆ·å®šä¹‰çš„æ•°æ®åˆ°ä¸€ä¸ªå…³è”åˆ°vulkanå¯¹è±¡çš„ç§æœ‰æ•°æ®æ§½ä¸­,  ç­‰åŒäºvkSetPrivateDataEXT
+	vkSetPrivateData(device, VK_OBJECT_TYPE_BUFFER/*objectTypeï¼ŒæŒ‡æ˜å…³è”çš„vulkanå¯¹è±¡çš„ç±»å‹*/, (uint64_t)VkBuffer {/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuffer*/ }/* objectHandleï¼Œä¸ºå…³è”çš„å¯¹è±¡çš„å¥æŸ„,å¿…é¡»ä¸ºdeviceæˆ–è€…ä»deviceä¸­åˆ›å»ºå¯¹è±¡çš„å¯¹åº”objectTypeçš„å¥æŸ„*/,
+		privateDataSlot/* privateDataSlotï¼ŒVkPrivateDataSlotå¥æŸ„æŒ‡æ˜private dataå­˜å‚¨çš„ä½ç½®*/, 1234567890/*dataï¼Œç”¨æˆ·å®šä¹‰çš„å…³è”åˆ°vulkançš„æ•°æ®ï¼Œ å­˜å‚¨åˆ°privateDataSlotä¸­*/);
 
-	//´ÓÒ»¸ö¹ØÁªµ½vulkan¶ÔÏóµÄË½ÓĞÊı¾İ²ÛÖĞ»ñÈ¡ÓÃ»§¶¨ÒåµÄÊı¾İ,  µÈÍ¬ÓÚvkGetPrivateDataEXT
+	//ä»ä¸€ä¸ªå…³è”åˆ°vulkanå¯¹è±¡çš„ç§æœ‰æ•°æ®æ§½ä¸­è·å–ç”¨æˆ·å®šä¹‰çš„æ•°æ®,  ç­‰åŒäºvkGetPrivateDataEXT
 	uint64_t privateData = 0;
-	vkGetPrivateData(device, VK_OBJECT_TYPE_BUFFER/*objectType£¬Ö¸Ã÷¹ØÁªµÄvulkan¶ÔÏóµÄÀàĞÍ*/, (uint64_t)VkBuffer {/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer*/ }/* objectHandle£¬Îª¹ØÁªµÄ¶ÔÏóµÄ¾ä±ú,±ØĞëÎªdevice»òÕß´ÓdeviceÖĞ´´½¨¶ÔÏóµÄ¶ÔÓ¦objectTypeµÄ¾ä±ú*/,
-		privateDataSlot/* privateDataSlot£¬VkPrivateDataSlot¾ä±úÖ¸Ã÷private data´æ´¢µÄÎ»ÖÃ*/, & privateData/*pData£¬·µ»Ø¹ØÁªµ½vulkanµÄ´æ´¢µ½privateDataSlotÖĞÓÃ»§¶¨ÒåµÄÊı¾İ£¬Èç¹ûÖ®Ç°Ã»ÓĞÉèÖÃÔò·µ»Ø0 */);
+	vkGetPrivateData(device, VK_OBJECT_TYPE_BUFFER/*objectTypeï¼ŒæŒ‡æ˜å…³è”çš„vulkanå¯¹è±¡çš„ç±»å‹*/, (uint64_t)VkBuffer {/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuffer*/ }/* objectHandleï¼Œä¸ºå…³è”çš„å¯¹è±¡çš„å¥æŸ„,å¿…é¡»ä¸ºdeviceæˆ–è€…ä»deviceä¸­åˆ›å»ºå¯¹è±¡çš„å¯¹åº”objectTypeçš„å¥æŸ„*/,
+		privateDataSlot/* privateDataSlotï¼ŒVkPrivateDataSlotå¥æŸ„æŒ‡æ˜private dataå­˜å‚¨çš„ä½ç½®*/, & privateData/*pDataï¼Œè¿”å›å…³è”åˆ°vulkançš„å­˜å‚¨åˆ°privateDataSlotä¸­ç”¨æˆ·å®šä¹‰çš„æ•°æ®ï¼Œå¦‚æœä¹‹å‰æ²¡æœ‰è®¾ç½®åˆ™è¿”å›0 */);
 
 
 
-	//Ïú»ÙË½ÓĞÊı¾İ²Û   £¬µÈÍ¬ÓÚvkDestroyPrivateDataSlotEXT
+	//é”€æ¯ç§æœ‰æ•°æ®æ§½   ï¼Œç­‰åŒäºvkDestroyPrivateDataSlotEXT
 	vkDestroyPrivateDataSlot(device, privateDataSlot, nullptr);
 	/*
-	vkDestroyPrivateDataSlotÓĞĞ§ÓÃ·¨:
-	1.Èç¹û´´½¨Ê±Ìá¹©ÁËVkAllocationCallbacks£¬ÔòÕâÀï±ØĞëÌá¹©ÓëÖ®¼æÈİµÄcallbacks
-	2.Èç¹û´´½¨Ê±Ã»ÓĞÌá¹©VkAllocationCallbacks£¬ÔòÕâÀïpAllocator±ØĞë´«ÈëNULL
+	vkDestroyPrivateDataSlotæœ‰æ•ˆç”¨æ³•:
+	1.å¦‚æœåˆ›å»ºæ—¶æä¾›äº†VkAllocationCallbacksï¼Œåˆ™è¿™é‡Œå¿…é¡»æä¾›ä¸ä¹‹å…¼å®¹çš„callbacks
+	2.å¦‚æœåˆ›å»ºæ—¶æ²¡æœ‰æä¾›VkAllocationCallbacksï¼Œåˆ™è¿™é‡ŒpAllocatorå¿…é¡»ä¼ å…¥NULL
 	
 	*/
 
@@ -106,58 +106,58 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::PrivateDataTe
 
 void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationStructureTest()
 {
-	//Acceleration Structures ²Î¼ûp3210
+	//Acceleration Structures å‚è§p3210
 	{
 		/*
-		Acceleration Structures¼ÓËÙ½á¹¹ÊÇÊµÏÖÓÃÀ´¸ßĞ§¹ÜÀíÓÃÓÚray tracing query±éÀú³¡¾°ÖĞ¼¸ºÎÌåµÄÊı¾İ¡£ÓÉÓ¦ÓÃÀ´¹ÜÀí£¬°üº¬·ÖÅä£¬Ïú»Ù£¬¹¹½¨Ö´ĞĞºÍ¸üĞÂ£¬Í¬²½ÔÚray tracing queryÖĞÊ¹ÓÃµÄ×ÊÔ´¡£
+		Acceleration StructuresåŠ é€Ÿç»“æ„æ˜¯å®ç°ç”¨æ¥é«˜æ•ˆç®¡ç†ç”¨äºray tracing queryéå†åœºæ™¯ä¸­å‡ ä½•ä½“çš„æ•°æ®ã€‚ç”±åº”ç”¨æ¥ç®¡ç†ï¼ŒåŒ…å«åˆ†é…ï¼Œé”€æ¯ï¼Œæ„å»ºæ‰§è¡Œå’Œæ›´æ–°ï¼ŒåŒæ­¥åœ¨ray tracing queryä¸­ä½¿ç”¨çš„èµ„æºã€‚
 
-		Acceleration Structures·ÖÎªÁ½ÖÖÀàĞÍ£ºtop level acceleration structures ÒÔ¼° bottom level acceleration structures
+		Acceleration Structuresåˆ†ä¸ºä¸¤ç§ç±»å‹ï¼štop level acceleration structures ä»¥åŠ bottom level acceleration structures
 		
 
 		*/
 
-		//Geometry  ËùÖ¸ÎªÈı½ÇĞÎ»òÕßÊÇÖáÏòµÄ°üÎ§ºĞ
+		//Geometry  æ‰€æŒ‡ä¸ºä¸‰è§’å½¢æˆ–è€…æ˜¯è½´å‘çš„åŒ…å›´ç›’
 
-		//Top Level Acceleration Structures   º¬ÓĞ¶Ô bottom level acceleration structureµÄÒıÓÃ£¬²Î¼Óp3211
+		//Top Level Acceleration Structures   å«æœ‰å¯¹ bottom level acceleration structureçš„å¼•ç”¨ï¼Œå‚åŠ p3211
 
-		//Bottom Level Acceleration Structures  ÎªÒ»×égeometriesµÄÊı×é
+		//Bottom Level Acceleration Structures  ä¸ºä¸€ç»„geometriesçš„æ•°ç»„
 
-		//Acceleration Structure Update Rules ²Î¼û3211
+		//Acceleration Structure Update Rules å‚è§3211
 		{
 			/*
-			Acceleration StructureµÄ²úÉúÍ¨¹ıÁ½ÖÖ·½Ê½½øĞĞ£¬Ò»ÖÖÊÇÍ¨¹ı¹¹½¨²Ù×÷£¬Ò»ÖÖÊÇÍ¨¹ı¸üĞÂ²Ù×÷
+			Acceleration Structureçš„äº§ç”Ÿé€šè¿‡ä¸¤ç§æ–¹å¼è¿›è¡Œï¼Œä¸€ç§æ˜¯é€šè¿‡æ„å»ºæ“ä½œï¼Œä¸€ç§æ˜¯é€šè¿‡æ›´æ–°æ“ä½œ
 
-			¸üĞÂ²Ù×÷ÓĞÒ»Ğ©ÏŞÖÆ£¬ÔÚ´´½¨¼ÓËÙ½á¹¹ÊÇflagsÖĞÊÇ·ñº¬ÓĞVK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT£¬VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_UPDATE_EXT»òÕßVK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV ÓĞ²»Í¬µÄÇé¿ö£¬²Î¼û p3211
+			æ›´æ–°æ“ä½œæœ‰ä¸€äº›é™åˆ¶ï¼Œåœ¨åˆ›å»ºåŠ é€Ÿç»“æ„æ˜¯flagsä¸­æ˜¯å¦å«æœ‰VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXTï¼ŒVK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_UPDATE_EXTæˆ–è€…VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV æœ‰ä¸åŒçš„æƒ…å†µï¼Œå‚è§ p3211
 			*/
 		}
 
 
-		//Inactive Primitives and Instances  ²Î¼û3212
+		//Inactive Primitives and Instances  å‚è§3212
 		{
 			/*
-			Acceleration structures ÔÊĞíÊ¹ÓÃÌØÊâµÄÊäÈëÀ´´¥·¢ inactive primitives »òÕß instances.
+			Acceleration structures å…è®¸ä½¿ç”¨ç‰¹æ®Šçš„è¾“å…¥æ¥è§¦å‘ inactive primitives æˆ–è€… instances.
 			
-			Èç¹ûÒ»¸öÍ¼ÔªprimitiveÖĞÈÎºÎÒ»¸ö¶¥µãµÄxÖµÎªNaN,ÔòËµÃ÷¸ÃÍ¼ÔªÊÇinactiveµÄ£¬ÔÚ¹¹½¨¼ÓËÙ½á¹¹Ê±£¬inactive primitives»á±»ºöÂÔ£¬ÔÚray tracing queryÖĞ²»»á±»¿¼ÂÇ¡£
+			å¦‚æœä¸€ä¸ªå›¾å…ƒprimitiveä¸­ä»»ä½•ä¸€ä¸ªé¡¶ç‚¹çš„xå€¼ä¸ºNaN,åˆ™è¯´æ˜è¯¥å›¾å…ƒæ˜¯inactiveçš„ï¼Œåœ¨æ„å»ºåŠ é€Ÿç»“æ„æ—¶ï¼Œinactive primitivesä¼šè¢«å¿½ç•¥ï¼Œåœ¨ray tracing queryä¸­ä¸ä¼šè¢«è€ƒè™‘ã€‚
 
-			Èç¹ûÒ»¸öinstanceµÄacceleration structureÒıÓÃÎª0£¬ÔòËµÃ÷¸ÃinstanceÊÇinactiveµÄ£¬ÔÚ¹¹½¨¼ÓËÙ½á¹¹Ê±£¬inactive instances»á±»ºöÂÔ£¬ÔÚray tracing queryÖĞ²»»á±»¿¼ÂÇ¡£
+			å¦‚æœä¸€ä¸ªinstanceçš„acceleration structureå¼•ç”¨ä¸º0ï¼Œåˆ™è¯´æ˜è¯¥instanceæ˜¯inactiveçš„ï¼Œåœ¨æ„å»ºåŠ é€Ÿç»“æ„æ—¶ï¼Œinactive instancesä¼šè¢«å¿½ç•¥ï¼Œåœ¨ray tracing queryä¸­ä¸ä¼šè¢«è€ƒè™‘ã€‚
 			
-			Èç¹û×îĞ¡µÄx×ø±êÖµÎªNaN£¬ÔòËµÃ÷¸ÃAABB°üÎ§ºĞÊÇinactiveµÄ£¬ÔÚ¹¹½¨¼ÓËÙ½á¹¹Ê±£¬inactive AABB°üÎ§ºĞ»á±»ºöÂÔ£¬ÔÚray tracing queryÖĞ²»»á±»¿¼ÂÇ¡£
+			å¦‚æœæœ€å°çš„xåæ ‡å€¼ä¸ºNaNï¼Œåˆ™è¯´æ˜è¯¥AABBåŒ…å›´ç›’æ˜¯inactiveçš„ï¼Œåœ¨æ„å»ºåŠ é€Ÿç»“æ„æ—¶ï¼Œinactive AABBåŒ…å›´ç›’ä¼šè¢«å¿½ç•¥ï¼Œåœ¨ray tracing queryä¸­ä¸ä¼šè¢«è€ƒè™‘ã€‚
 			
-			inactiveµÄprimitivesºÍinstances²»»á InstanceId ÒÔ¼° PrimitiveIdµÄ×Ô¶¯¼ÆËã
+			inactiveçš„primitiveså’Œinstancesä¸ä¼š InstanceId ä»¥åŠ PrimitiveIdçš„è‡ªåŠ¨è®¡ç®—
 			*/
 
 		}
 
 
-		//Building Acceleration Structures  ²Î¼û3213
+		//Building Acceleration Structures  å‚è§3213
 		{
 			VkAccelerationStructureNV srcAccelerationStructureNV{};
 			VkAccelerationStructureNV dstAccelerationStructureNV{};
 			VkAccelerationStructureKHR srcAccelerationStructureKHR{};
 			VkAccelerationStructureKHR dstAccelerationStructureKHR{};
-			VkCommandBuffer commandBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkCommandBuffer*/ };
+			VkCommandBuffer commandBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkCommandBuffer*/ };
 
-			//¹¹¼Ü¼ÓËÙ½á¹¹
+			//æ„æ¶åŠ é€Ÿç»“æ„
 			VkAccelerationStructureInfoNV accelerationStructureInfoNV{};
 			accelerationStructureInfoNV.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV;
 			accelerationStructureInfoNV.pNext = nullptr;
@@ -177,16 +177,16 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 					{
 						trianglesNV.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
 						trianglesNV.pNext = nullptr;
-						trianglesNV.vertexData = VkBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer*/ };
+						trianglesNV.vertexData = VkBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuffer*/ };
 						trianglesNV.vertexOffset = 0;
 						trianglesNV.vertexStride = 12;
 						trianglesNV.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
 						trianglesNV.vertexCount = 3;
-						trianglesNV.indexData = VkBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer*/ };
+						trianglesNV.indexData = VkBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuffer*/ };
 						trianglesNV.indexOffset = 0;
 						trianglesNV.indexType = VK_INDEX_TYPE_UINT16;
 						trianglesNV.indexCount = 3;
-						trianglesNV.transformData = VkBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer*/ };
+						trianglesNV.transformData = VkBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuffer*/ };
 						trianglesNV.transformOffset = 0;
 					}
 					geometryDataNV.triangles = trianglesNV;
@@ -194,7 +194,7 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 					{
 						aabbs.sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV;
 						aabbs.pNext = nullptr;
-						aabbs.aabbData = VkBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer*/ };
+						aabbs.aabbData = VkBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuffer*/ };
 						aabbs.numAABBs = 1;
 						aabbs.offset = 1;
 						aabbs.stride = 24;
@@ -206,49 +206,49 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 			accelerationStructureInfoNV.pGeometries = &geometryNV;
 
 			vkCmdBuildAccelerationStructureNV(commandBuffer, &accelerationStructureInfoNV,
-				VkBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer*/ }/* instanceData£¬°üº¬Ò»×é¶¨Òå¼ÓËÙ½á¹¹µÄVkAccelerationStructureInstanceKHR£¬Èç¹ûÎªbottom level acceleration structuresÔò±ØĞëÎªNULL */, 0/*instanceOffset,Îª instanceDataÖĞ²ÎÊıµÄÆğÊ¼×Ö½ÚÆ«ÒÆ*/,
-				VK_TRUE/*update,Ö¸¶¨ÊÇ·ñÊ¹ÓÃsrcÖĞµÄÊı¾İ¸üĞÂdstÖĞ acceleration structureµÄÊı¾İ.*/, dstAccelerationStructureNV/*dst, Ö¸Ã÷Òª¹¹½¨µÄacceleration structure*/, srcAccelerationStructureNV/* src£¬ÎªÒÑ¾­´æÔÚµÄÓÃÓÚ¸üĞÂdstµÄacceleration structure*/, 
-				VkBuffer{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkBuffer*/ }/*scratch£¬ÎªÓÃ×÷´´½¨acceleration structureµÄ scratch memoryµÄVkBuffer .*/, 0/*scratchOffset,Îª scratchÖĞµÄÆğÊ¼×Ö½ÚÆ«ÒÆÁ¿*/);//¶Ôsrc£¬dst ÒÔ¼°scratchµÄ±ØĞëÒÔVK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stage½øĞĞÍ¬²½£¬ÒÔVK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR »òÕß VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR½øĞĞ·ÃÎÊ
+				VkBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuffer*/ }/* instanceDataï¼ŒåŒ…å«ä¸€ç»„å®šä¹‰åŠ é€Ÿç»“æ„çš„VkAccelerationStructureInstanceKHRï¼Œå¦‚æœä¸ºbottom level acceleration structuresåˆ™å¿…é¡»ä¸ºNULL */, 0/*instanceOffset,ä¸º instanceDataä¸­å‚æ•°çš„èµ·å§‹å­—èŠ‚åç§»*/,
+				VK_TRUE/*update,æŒ‡å®šæ˜¯å¦ä½¿ç”¨srcä¸­çš„æ•°æ®æ›´æ–°dstä¸­ acceleration structureçš„æ•°æ®.*/, dstAccelerationStructureNV/*dst, æŒ‡æ˜è¦æ„å»ºçš„acceleration structure*/, srcAccelerationStructureNV/* srcï¼Œä¸ºå·²ç»å­˜åœ¨çš„ç”¨äºæ›´æ–°dstçš„acceleration structure*/, 
+				VkBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuffer*/ }/*scratchï¼Œä¸ºç”¨ä½œåˆ›å»ºacceleration structureçš„ scratch memoryçš„VkBuffer .*/, 0/*scratchOffset,ä¸º scratchä¸­çš„èµ·å§‹å­—èŠ‚åç§»é‡*/);//å¯¹srcï¼Œdst ä»¥åŠscratchçš„å¿…é¡»ä»¥VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageè¿›è¡ŒåŒæ­¥ï¼Œä»¥VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR æˆ–è€… VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHRè¿›è¡Œè®¿é—®
 			/*
-			vkCmdBuildAccelerationStructureNVÓĞĞ§ÓÃ·¨:
-			1.geometryCount ±ØĞëĞ¡ÓÚµÈÓÚVkPhysicalDeviceRayTracingPropertiesNV::maxGeometryCount
-			2.*dst ±ØĞëÒÔ¼æÈİµÄVkAccelerationStructureInfoNV´´½¨£¬¼´VkAccelerationStructureInfoNV::typeºÍVkAccelerationStructureInfoNV::flagsÏàÍ¬£¬dstµÄ VkAccelerationStructureInfoNV::instanceCountÒÔ¼°VkAccelerationStructureInfoNV::geometryCount´óÓÚµÈÓÚ¹¹½¨´óĞ¡£¬ÇÒdstµÄVkAccelerationStructureInfoNV::pGeometries µÄÃ¿¸öÔªËØµÄ¹¹½¨´óĞ¡±ØĞëÒª´óÓÚµÈÓÚvertices, indices, ÒÔ¼° AABBsµÄÊıÁ¿¡£
-			3.Èç¹ûupdate ÎªVK_TRUE,Ôòsrc ²»ÄÜÎªVK_NULL_HANDLE£¬ÇÒ±ØĞëÔÚÏÈÇ°ÒÔVkAccelerationStructureInfoNV::flagsÉèÖÃÓĞVK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_NV ´´½¨
-			4.Èç¹ûupdate ÎªVK_FALSE£¬Ôò£¨1£©µ÷ÓÃvkGetAccelerationStructureMemoryRequirementsNV´«ÈëVkAccelerationStructureMemoryRequirementsInfoNV::accelerationStructureÎªdstÒÔ¼°VkAccelerationStructureMemoryRequirementsInfoNV::typeÉèÖÃÎªVK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NVµÄ²ÎÊı·µ»ØµÄVkMemoryRequirementsÖĞµÄsize ±ØĞëĞ¡ÓÚµÈÓÚscratch VkBufferµÄ´óĞ¡¼õÈ¥scratchOffset
-									   £¨2£©µ÷ÓÃvkGetAccelerationStructureMemoryRequirementsNV´«ÈëVkAccelerationStructureMemoryRequirementsInfoNV::accelerationStructureÎªdstÒÔ¼°VkAccelerationStructureMemoryRequirementsInfoNV::typeÉèÖÃÎªVK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NVµÄ²ÎÊı·µ»ØµÄVkMemoryRequirementsÖĞµÄsize ±ØĞëĞ¡ÓÚµÈÓÚscratch VkBufferµÄ´óĞ¡¼õÈ¥scratchOffset
-			5.scratch ±ØĞëÒÔVK_BUFFER_USAGE_RAY_TRACING_BIT_NV ´´½¨
-			6.Èç¹ûinstanceData ²»ÎªVK_NULL_HANDLE£¬instanceData±ØĞëÒÔVK_BUFFER_USAGE_RAY_TRACING_BIT_NV ´´½¨
-			7.instanceDataÖĞ°üº¬µÄÃ¿¸öVkAccelerationStructureInstanceKHR::accelerationStructureReferenceµÄÖµ±ØĞë°üº¬ÁË´ÓvkGetAccelerationStructureHandleNV»ñÈ¡µÄÖµÒ»¸öÓĞĞ§µÄÉè±¸µØÖ·
-			8.Èç¹ûupdate ÎªVK_TRUE£¬Ôò£¨1£©ÏÈÇ°ÊÇactiveµÄobject ²»ÄÜ±äÎªinactiveµÄ£¬¼ûInactive Primitives and Instances p3212
-									  £¨2£©ÏÈÇ°ÊÇinactiveµÄobject ²»ÄÜ±äÎªactiveµÄ£¬¼ûInactive Primitives and Instances p3212
-			9.Èç¹ûupdate ÎªVK_FALSE£¬ÔòsrcÒÔ¼°dst¶ÔÏó±ØĞëÍ¬Ò»¸ö¶ÔÏó»òÕß²»º¬ÓĞÈÎºÎmemory aliasing
-			10.dst ±ØĞëÍ¨¹ıvkBindAccelerationStructureMemoryNVÒÑ¾­°ó¶¨µ½ÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏÁË
+			vkCmdBuildAccelerationStructureNVæœ‰æ•ˆç”¨æ³•:
+			1.geometryCount å¿…é¡»å°äºç­‰äºVkPhysicalDeviceRayTracingPropertiesNV::maxGeometryCount
+			2.*dst å¿…é¡»ä»¥å…¼å®¹çš„VkAccelerationStructureInfoNVåˆ›å»ºï¼Œå³VkAccelerationStructureInfoNV::typeå’ŒVkAccelerationStructureInfoNV::flagsç›¸åŒï¼Œdstçš„ VkAccelerationStructureInfoNV::instanceCountä»¥åŠVkAccelerationStructureInfoNV::geometryCountå¤§äºç­‰äºæ„å»ºå¤§å°ï¼Œä¸”dstçš„VkAccelerationStructureInfoNV::pGeometries çš„æ¯ä¸ªå…ƒç´ çš„æ„å»ºå¤§å°å¿…é¡»è¦å¤§äºç­‰äºvertices, indices, ä»¥åŠ AABBsçš„æ•°é‡ã€‚
+			3.å¦‚æœupdate ä¸ºVK_TRUE,åˆ™src ä¸èƒ½ä¸ºVK_NULL_HANDLEï¼Œä¸”å¿…é¡»åœ¨å…ˆå‰ä»¥VkAccelerationStructureInfoNV::flagsè®¾ç½®æœ‰VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_NV åˆ›å»º
+			4.å¦‚æœupdate ä¸ºVK_FALSEï¼Œåˆ™ï¼ˆ1ï¼‰è°ƒç”¨vkGetAccelerationStructureMemoryRequirementsNVä¼ å…¥VkAccelerationStructureMemoryRequirementsInfoNV::accelerationStructureä¸ºdstä»¥åŠVkAccelerationStructureMemoryRequirementsInfoNV::typeè®¾ç½®ä¸ºVK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NVçš„å‚æ•°è¿”å›çš„VkMemoryRequirementsä¸­çš„size å¿…é¡»å°äºç­‰äºscratch VkBufferçš„å¤§å°å‡å»scratchOffset
+									   ï¼ˆ2ï¼‰è°ƒç”¨vkGetAccelerationStructureMemoryRequirementsNVä¼ å…¥VkAccelerationStructureMemoryRequirementsInfoNV::accelerationStructureä¸ºdstä»¥åŠVkAccelerationStructureMemoryRequirementsInfoNV::typeè®¾ç½®ä¸ºVK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NVçš„å‚æ•°è¿”å›çš„VkMemoryRequirementsä¸­çš„size å¿…é¡»å°äºç­‰äºscratch VkBufferçš„å¤§å°å‡å»scratchOffset
+			5.scratch å¿…é¡»ä»¥VK_BUFFER_USAGE_RAY_TRACING_BIT_NV åˆ›å»º
+			6.å¦‚æœinstanceData ä¸ä¸ºVK_NULL_HANDLEï¼ŒinstanceDataå¿…é¡»ä»¥VK_BUFFER_USAGE_RAY_TRACING_BIT_NV åˆ›å»º
+			7.instanceDataä¸­åŒ…å«çš„æ¯ä¸ªVkAccelerationStructureInstanceKHR::accelerationStructureReferenceçš„å€¼å¿…é¡»åŒ…å«äº†ä»vkGetAccelerationStructureHandleNVè·å–çš„å€¼ä¸€ä¸ªæœ‰æ•ˆçš„è®¾å¤‡åœ°å€
+			8.å¦‚æœupdate ä¸ºVK_TRUEï¼Œåˆ™ï¼ˆ1ï¼‰å…ˆå‰æ˜¯activeçš„object ä¸èƒ½å˜ä¸ºinactiveçš„ï¼Œè§Inactive Primitives and Instances p3212
+									  ï¼ˆ2ï¼‰å…ˆå‰æ˜¯inactiveçš„object ä¸èƒ½å˜ä¸ºactiveçš„ï¼Œè§Inactive Primitives and Instances p3212
+			9.å¦‚æœupdate ä¸ºVK_FALSEï¼Œåˆ™srcä»¥åŠdstå¯¹è±¡å¿…é¡»åŒä¸€ä¸ªå¯¹è±¡æˆ–è€…ä¸å«æœ‰ä»»ä½•memory aliasing
+			10.dst å¿…é¡»é€šè¿‡vkBindAccelerationStructureMemoryNVå·²ç»ç»‘å®šåˆ°å®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Šäº†
 			
 			*/
 
 
 
-			//¹¹½¨acceleration structures KHR
-			VkAccelerationStructureBuildGeometryInfoKHR accelerationStructureBuildGeometryInfoKHR{};//ÆäËûĞÅÏ¢¼ûp3235
+			//æ„å»ºacceleration structures KHR
+			VkAccelerationStructureBuildGeometryInfoKHR accelerationStructureBuildGeometryInfoKHR{};//å…¶ä»–ä¿¡æ¯è§p3235
 			accelerationStructureBuildGeometryInfoKHR.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
 			accelerationStructureBuildGeometryInfoKHR.pNext = nullptr;
-			accelerationStructureBuildGeometryInfoKHR.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR;//VkBuildAccelerationStructureFlagBitsKHR ×éºÏÖµÎ»ÑÚÂëÖ¸Ã÷¶îÍâµÄ²ÎÊı
-			accelerationStructureBuildGeometryInfoKHR.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;//ÎªVkAccelerationStructureTypeKHR ÖµÖ¸Ã÷¼ÓËÙ½á¹¹¹¹½¨µÄÀàĞÍ
-			accelerationStructureBuildGeometryInfoKHR.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;// VkBuildAccelerationStructureModeKHR ÖµÖ¸Ã÷²Ù×÷µÄÀàĞÍ
+			accelerationStructureBuildGeometryInfoKHR.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR;//VkBuildAccelerationStructureFlagBitsKHR ç»„åˆå€¼ä½æ©ç æŒ‡æ˜é¢å¤–çš„å‚æ•°
+			accelerationStructureBuildGeometryInfoKHR.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;//ä¸ºVkAccelerationStructureTypeKHR å€¼æŒ‡æ˜åŠ é€Ÿç»“æ„æ„å»ºçš„ç±»å‹
+			accelerationStructureBuildGeometryInfoKHR.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;// VkBuildAccelerationStructureModeKHR å€¼æŒ‡æ˜æ“ä½œçš„ç±»å‹
 			/*
 			VkBuildAccelerationStructureModeKHR:
-			VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR:  Ö¸Ã÷½«Ê¹ÓÃÖ¸¶¨µÄ¼¸ºÎÌå¹¹½¨dstAccelerationStructure
-			VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR:  Ö¸Ã÷½«Ê¹ÓÃsrcAccelerationStructureÖĞµÄÊı¾İ¹¹½¨dstAccelerationStructure£¬È»ºó¸üĞÂÖ¸¶¨µÄ¼¸ºÎÌå
+			VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR:  æŒ‡æ˜å°†ä½¿ç”¨æŒ‡å®šçš„å‡ ä½•ä½“æ„å»ºdstAccelerationStructure
+			VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR:  æŒ‡æ˜å°†ä½¿ç”¨srcAccelerationStructureä¸­çš„æ•°æ®æ„å»ºdstAccelerationStructureï¼Œç„¶åæ›´æ–°æŒ‡å®šçš„å‡ ä½•ä½“
 			*/
-			accelerationStructureBuildGeometryInfoKHR.srcAccelerationStructure = srcAccelerationStructureKHR;//Îªµ±mode ÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRµÄÊ±ºòÓÃÀ´¸üĞÂdstAccelerationStructure µÄÒ»¸öÏÖ´æµÄ acceleration structure
-			accelerationStructureBuildGeometryInfoKHR.dstAccelerationStructure = dstAccelerationStructureKHR;//ÎªÒª¸üĞÂµÄacceleration structure
-			accelerationStructureBuildGeometryInfoKHR.geometryCount = 1;//Ö¸Ã÷Òª¹¹½¨µ½dstAccelerationStructure ÖĞµÄ¼¸ºÎÌåÊıÁ¿
+			accelerationStructureBuildGeometryInfoKHR.srcAccelerationStructure = srcAccelerationStructureKHR;//ä¸ºå½“mode ä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRçš„æ—¶å€™ç”¨æ¥æ›´æ–°dstAccelerationStructure çš„ä¸€ä¸ªç°å­˜çš„ acceleration structure
+			accelerationStructureBuildGeometryInfoKHR.dstAccelerationStructure = dstAccelerationStructureKHR;//ä¸ºè¦æ›´æ–°çš„acceleration structure
+			accelerationStructureBuildGeometryInfoKHR.geometryCount = 1;//æŒ‡æ˜è¦æ„å»ºåˆ°dstAccelerationStructure ä¸­çš„å‡ ä½•ä½“æ•°é‡
 			VkAccelerationStructureGeometryKHR geometryKHR{};
 			{
 				geometryKHR.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;;
 				geometryKHR.pNext = nullptr;
-				geometryKHR.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;//VkGeometryFlagBitsKHR ×éºÏÖµÎ»ÑÚÂëÖ¸Ã÷geometryÈçºÎ¹¹½¨µÄ¶îÍâĞÅÏ¢
-				geometryKHR.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;//ÃèÊöÁË¸Ã¼ÓËÙ½á¹¹ÒıÓÃµÄÀàĞÍ
+				geometryKHR.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;//VkGeometryFlagBitsKHR ç»„åˆå€¼ä½æ©ç æŒ‡æ˜geometryå¦‚ä½•æ„å»ºçš„é¢å¤–ä¿¡æ¯
+				geometryKHR.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;//æè¿°äº†è¯¥åŠ é€Ÿç»“æ„å¼•ç”¨çš„ç±»å‹
 				VkAccelerationStructureGeometryDataKHR geometryDataKHR{};
 				{
 					VkAccelerationStructureGeometryTrianglesDataKHR trianglesKHR{};
@@ -264,9 +264,9 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 							void Init() {
 								accelerationStructureGeometryMotionTrianglesDataNV.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_MOTION_TRIANGLES_DATA_NV;
 								accelerationStructureGeometryMotionTrianglesDataNV.pNext = nullptr;
-								accelerationStructureTrianglesDisplacementMicromapNV.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Ã»ÓĞ¶¨ÒåËùÒÔÕâÀï¶¨ÒåÎª·Ç·¨Öµ
+								accelerationStructureTrianglesDisplacementMicromapNV.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰æ‰€ä»¥è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
 								accelerationStructureTrianglesDisplacementMicromapNV.pNext = nullptr;
-								accelerationStructureTrianglesOpacityMicromapEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Ã»ÓĞ¶¨ÒåËùÒÔÕâÀï¶¨ÒåÎª·Ç·¨Öµ
+								accelerationStructureTrianglesOpacityMicromapEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰æ‰€ä»¥è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
 								accelerationStructureTrianglesOpacityMicromapEXT.pNext = nullptr;
 							}
 						
@@ -279,80 +279,80 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 						AccelerationStructureGeometryTrianglesDataKHREXT accelerationStructureGeometryTrianglesDataKHREXT{};
 						//VkAccelerationStructureGeometryTrianglesDataKHR.pNext
 						{
-							//VkAccelerationStructureGeometryMotionTrianglesDataNV£¬  °üº¬¸Ã½á¹¹ÌåÖ¸Ã÷ÔÙtime 1.0Ê±µÄ¼¸ºÎÌåÎ»ÖÃ£¬VkAccelerationStructureGeometryTrianglesDataKHRÖ¸Ã÷Îªtime 0.0µÄÎ»ÖÃ£¬ÖĞ¼äµÄtimeÍ¨¹ıÏßĞÔ²åÖµ½øĞĞ
+							//VkAccelerationStructureGeometryMotionTrianglesDataNVï¼Œ  åŒ…å«è¯¥ç»“æ„ä½“æŒ‡æ˜å†time 1.0æ—¶çš„å‡ ä½•ä½“ä½ç½®ï¼ŒVkAccelerationStructureGeometryTrianglesDataKHRæŒ‡æ˜ä¸ºtime 0.0çš„ä½ç½®ï¼Œä¸­é—´çš„timeé€šè¿‡çº¿æ€§æ’å€¼è¿›è¡Œ
 							VkAccelerationStructureGeometryMotionTrianglesDataNV& accelerationStructureGeometryMotionTrianglesDataNV = accelerationStructureGeometryTrianglesDataKHREXT.accelerationStructureGeometryMotionTrianglesDataNV;
-							accelerationStructureGeometryMotionTrianglesDataNV.vertexData = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬¸ÃgeometryÔÙtime 1.0Ê±µÄ¶¥µãÊı¾İµÄdevice »òÕßhost¶ËµÄµØÖ·
+							accelerationStructureGeometryMotionTrianglesDataNV.vertexData = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«è¯¥geometryå†time 1.0æ—¶çš„é¡¶ç‚¹æ•°æ®çš„device æˆ–è€…hostç«¯çš„åœ°å€
 
 
-							/*VkAccelerationStructureTrianglesOpacityMicromapEXT£¬  °üº¬¸Ã½á¹¹ÌåÖ¸Ã÷¸ÃgeometryÒıÓÃmicromap
+							/*VkAccelerationStructureTrianglesOpacityMicromapEXTï¼Œ  åŒ…å«è¯¥ç»“æ„ä½“æŒ‡æ˜è¯¥geometryå¼•ç”¨micromap
 							
-							¶Ô¼¸ºÎÌåÖĞµÄÃ¿¸öÈı½ÇĞÎ£¬½«Ê¹ÓÃindexBuffer, indexType ÒÔ¼° indexStrideÀ´¹¹½¨£¬Èç¹ûÆäÖĞÒ»¸öË÷ÒıÖµÓÉÒ»¸ö  VkOpacityMicromapSpecialIndexEXTµÄÎŞ·ûºÅ×ª»»µÃµ½£¬Ôò¸ÃÈı½ÇĞÎµÄĞĞÎª²Î¿¼Ray Opacity Micromap.p3333 ,·ñÔò½«Ê¹ÓÃmicromapÖĞÓÃË÷ÒıÖµ¼ÓÉÏ baseTriangleµÄ opacity micromap information
+							å¯¹å‡ ä½•ä½“ä¸­çš„æ¯ä¸ªä¸‰è§’å½¢ï¼Œå°†ä½¿ç”¨indexBuffer, indexType ä»¥åŠ indexStrideæ¥æ„å»ºï¼Œå¦‚æœå…¶ä¸­ä¸€ä¸ªç´¢å¼•å€¼ç”±ä¸€ä¸ª  VkOpacityMicromapSpecialIndexEXTçš„æ— ç¬¦å·è½¬æ¢å¾—åˆ°ï¼Œåˆ™è¯¥ä¸‰è§’å½¢çš„è¡Œä¸ºå‚è€ƒRay Opacity Micromap.p3333 ,å¦åˆ™å°†ä½¿ç”¨micromapä¸­ç”¨ç´¢å¼•å€¼åŠ ä¸Š baseTriangleçš„ opacity micromap information
 							
 							VkOpacityMicromapSpecialIndexEXT:
-							VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_TRANSPARENT_EXT:  Ö¸Ã÷Õû¸öÈı½ÇĞÎÍêÈ«Í¸Ã÷
-							VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_OPAQUE_EXT:  Ö¸Ã÷Õû¸öÈı½ÇĞÎÍêÈ«²»Í¸Ã÷
-							VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_TRANSPARENT_EXT:  Ö¸Ã÷Õû¸öÈı½ÇĞÎµÄÍ¸Ã÷¶ÈÎ´Öª
-							VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_OPAQUE_EXT:  Ö¸Ã÷Õû¸öÈı½ÇĞÎµÄ²»Í¸Ã÷¶ÈÎ´Öª
+							VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_TRANSPARENT_EXT:  æŒ‡æ˜æ•´ä¸ªä¸‰è§’å½¢å®Œå…¨é€æ˜
+							VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_OPAQUE_EXT:  æŒ‡æ˜æ•´ä¸ªä¸‰è§’å½¢å®Œå…¨ä¸é€æ˜
+							VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_TRANSPARENT_EXT:  æŒ‡æ˜æ•´ä¸ªä¸‰è§’å½¢çš„é€æ˜åº¦æœªçŸ¥
+							VK_OPACITY_MICROMAP_SPECIAL_INDEX_FULLY_UNKNOWN_OPAQUE_EXT:  æŒ‡æ˜æ•´ä¸ªä¸‰è§’å½¢çš„ä¸é€æ˜åº¦æœªçŸ¥
 							*/
 							VkAccelerationStructureTrianglesOpacityMicromapEXT& accelerationStructureTrianglesOpacityMicromapEXT = accelerationStructureGeometryTrianglesDataKHREXT.accelerationStructureTrianglesOpacityMicromapEXT;
-							accelerationStructureTrianglesOpacityMicromapEXT.baseTriangle = 0;//ÎªÌí¼Óµ½·Ç¸ºÈı½ÇĞÎË÷ÒıÉÏµÄÒ»¸öÖµ
-							accelerationStructureTrianglesOpacityMicromapEXT.indexBuffer = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬triangle µÄË÷ÒıÊı¾İµÄdevice »òÕßhost¶ËµÄµØÖ·
-							accelerationStructureTrianglesOpacityMicromapEXT.indexStride = 32;//ÎªË÷ÒıÊı¾İÖĞÁ½¸öË÷ÒıÖ®¼äµÄÖ±½Ó²½³¤
-							accelerationStructureTrianglesOpacityMicromapEXT.indexType = VK_INDEX_TYPE_UINT32;//ÎªË÷Òımicromap µÄÈı½ÇĞÎ¶¥µãË÷ÒıÀàĞÍ
-							accelerationStructureTrianglesOpacityMicromapEXT.micromap = VkMicromapEXT{ /*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkMicromapEXT*/ };//Îª°üº¬ÔÚ¸ÃgeometryÄÚµÄmicromap¶ÔÏóµÄ¾ä±ú
-							accelerationStructureTrianglesOpacityMicromapEXT.usageCountsCount = 1;//Ö¸Ã÷usage count½á¹¹ÌåµÄÊıÁ¿£¬ÓÃÀ´¶¨Òå micromapµÄ´óĞ¡
+							accelerationStructureTrianglesOpacityMicromapEXT.baseTriangle = 0;//ä¸ºæ·»åŠ åˆ°éè´Ÿä¸‰è§’å½¢ç´¢å¼•ä¸Šçš„ä¸€ä¸ªå€¼
+							accelerationStructureTrianglesOpacityMicromapEXT.indexBuffer = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«triangle çš„ç´¢å¼•æ•°æ®çš„device æˆ–è€…hostç«¯çš„åœ°å€
+							accelerationStructureTrianglesOpacityMicromapEXT.indexStride = 32;//ä¸ºç´¢å¼•æ•°æ®ä¸­ä¸¤ä¸ªç´¢å¼•ä¹‹é—´çš„ç›´æ¥æ­¥é•¿
+							accelerationStructureTrianglesOpacityMicromapEXT.indexType = VK_INDEX_TYPE_UINT32;//ä¸ºç´¢å¼•micromap çš„ä¸‰è§’å½¢é¡¶ç‚¹ç´¢å¼•ç±»å‹
+							accelerationStructureTrianglesOpacityMicromapEXT.micromap = VkMicromapEXT{ /*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkMicromapEXT*/ };//ä¸ºåŒ…å«åœ¨è¯¥geometryå†…çš„micromapå¯¹è±¡çš„å¥æŸ„
+							accelerationStructureTrianglesOpacityMicromapEXT.usageCountsCount = 1;//æŒ‡æ˜usage countç»“æ„ä½“çš„æ•°é‡ï¼Œç”¨æ¥å®šä¹‰ micromapçš„å¤§å°
 							VkMicromapUsageEXT usageCount{};
 							{
 								usageCount.count = 1;
 								usageCount.format = VK_FORMAT_R8_UNORM;
 								usageCount.subdivisionLevel = 0;
 							}
-							accelerationStructureTrianglesOpacityMicromapEXT.pUsageCounts = &usageCount;//Ò»×éVkMicromapUsageEXT Êı×éÖ¸Õë
-							accelerationStructureTrianglesOpacityMicromapEXT.ppUsageCounts = VK_NULL_HANDLE;//Ò»¸öÖ¸ÏòVkMicromapUsageEXT Êı×éÖ¸ÕëµÄÊı×éÖ¸Õë
+							accelerationStructureTrianglesOpacityMicromapEXT.pUsageCounts = &usageCount;//ä¸€ç»„VkMicromapUsageEXT æ•°ç»„æŒ‡é’ˆ
+							accelerationStructureTrianglesOpacityMicromapEXT.ppUsageCounts = VK_NULL_HANDLE;//ä¸€ä¸ªæŒ‡å‘VkMicromapUsageEXT æ•°ç»„æŒ‡é’ˆçš„æ•°ç»„æŒ‡é’ˆ
 							/*
-							VkAccelerationStructureTrianglesOpacityMicromapEXTÓĞĞ§ÓÃ·¨:
-							1.pUsageCounts ºÍppUsageCountsÖĞÖ»ÓĞÒ»¸öÓĞĞ§£¬ÁíÍâÒ»¸ö±ØĞëÎªVK_NULL_HANDLE
+							VkAccelerationStructureTrianglesOpacityMicromapEXTæœ‰æ•ˆç”¨æ³•:
+							1.pUsageCounts å’ŒppUsageCountsä¸­åªæœ‰ä¸€ä¸ªæœ‰æ•ˆï¼Œå¦å¤–ä¸€ä¸ªå¿…é¡»ä¸ºVK_NULL_HANDLE
 							*/
 
 
-							/*VkAccelerationStructureTrianglesDisplacementMicromapNV£¬  °üº¬¸Ã½á¹¹ÌåÖ¸Ã÷¸ÃgeometryÒıÓÃmicromap
+							/*VkAccelerationStructureTrianglesDisplacementMicromapNVï¼Œ  åŒ…å«è¯¥ç»“æ„ä½“æŒ‡æ˜è¯¥geometryå¼•ç”¨micromap
 
-							¶Ô¼¸ºÎÌåÖĞµÄÃ¿¸öÈı½ÇĞÎ£¬½«Ê¹ÓÃindexBuffer, indexType ÒÔ¼° indexStrideÀ´¹¹½¨£¬Ê¹ÓÃmicromapÖĞÓÃË÷ÒıÖµ¼ÓÉÏ baseTriangleµÄ displacement micromap information
+							å¯¹å‡ ä½•ä½“ä¸­çš„æ¯ä¸ªä¸‰è§’å½¢ï¼Œå°†ä½¿ç”¨indexBuffer, indexType ä»¥åŠ indexStrideæ¥æ„å»ºï¼Œä½¿ç”¨micromapä¸­ç”¨ç´¢å¼•å€¼åŠ ä¸Š baseTriangleçš„ displacement micromap information
 							*/
 							VkAccelerationStructureTrianglesDisplacementMicromapNV& accelerationStructureTrianglesDisplacementMicromapNV = accelerationStructureGeometryTrianglesDataKHREXT.accelerationStructureTrianglesDisplacementMicromapNV;
-							accelerationStructureTrianglesDisplacementMicromapNV.displacementBiasAndScaleFormat = VK_FORMAT_R32G32B32_SFLOAT;//Ö¸Ã÷displacement  micromapµÄ bias ºÍ scale µÄ¸ñÊ½
-							accelerationStructureTrianglesDisplacementMicromapNV.displacementVectorFormat = VK_FORMAT_R32G32B32_SFLOAT;//Ö¸Ã÷displacement  micromapµÄ displacement vector µÄ¸ñÊ½
-							accelerationStructureTrianglesDisplacementMicromapNV.displacementBiasAndScaleBuffer = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬displacement  micromapµÄ bias ºÍ scale µÄdevice »òÕßhost¶ËµÄµØÖ·
-							accelerationStructureTrianglesDisplacementMicromapNV.displacementBiasAndScaleStride = 4;//Îªbias ºÍ scale Ö®¼äµÄ×Ö½Ú²½³¤
-							accelerationStructureTrianglesDisplacementMicromapNV.displacementVectorBuffer = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬displacement  micromapµÄ displacement vector µÄdevice »òÕßhost¶ËµÄµØÖ·
-							accelerationStructureTrianglesDisplacementMicromapNV.displacementVectorStride = 4;//ÎªÁ½¸ö displacement vector ÖµÖ®¼äµÄ×Ö½Ú²½³¤
-							accelerationStructureTrianglesDisplacementMicromapNV.displacedMicromapPrimitiveFlags = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬primitive flags µÄdevice »òÕßhost¶ËµÄµØÖ·
-							accelerationStructureTrianglesDisplacementMicromapNV.displacedMicromapPrimitiveFlagsStride = 4;//ÎªÁ½¸ö primitive flags ÖµÖ®¼äµÄ×Ö½Ú²½³¤
-							accelerationStructureTrianglesDisplacementMicromapNV.indexType = VK_INDEX_TYPE_UINT32;//ÎªË÷Òımicromap µÄÈı½ÇĞÎ¶¥µãË÷ÒıÀàĞÍ
-							accelerationStructureTrianglesDisplacementMicromapNV.indexBuffer = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬triangle µÄË÷ÒıÊı¾İµÄdevice »òÕßhost¶ËµÄµØÖ·
-							accelerationStructureTrianglesDisplacementMicromapNV.indexStride = 32;//ÎªË÷ÒıÊı¾İÖĞÁ½¸öË÷ÒıÖ®¼äµÄÖ±½Ó²½³¤
-							accelerationStructureTrianglesDisplacementMicromapNV.baseTriangle = 0;//ÎªÌí¼Óµ½·Ç¸ºÈı½ÇĞÎË÷ÒıÉÏµÄÒ»¸öÖµ
-							accelerationStructureTrianglesDisplacementMicromapNV.usageCountsCount = 1;//ÖµÃ÷usage count½á¹¹ÌåµÄÊıÁ¿£¬ÓÃÀ´¶¨Òå micromapµÄ´óĞ¡
-							accelerationStructureTrianglesDisplacementMicromapNV.pUsageCounts = &usageCount;//Ò»×éVkMicromapUsageEXT Êı×éÖ¸Õë
-							accelerationStructureTrianglesDisplacementMicromapNV.ppUsageCounts = VK_NULL_HANDLE;//Ò»¸öÖ¸ÏòVkMicromapUsageEXT Êı×éÖ¸ÕëµÄÊı×éÖ¸Õë
-							accelerationStructureTrianglesDisplacementMicromapNV.micromap = VkMicromapEXT{ /*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkMicromapEXT*/ };//Îª°üº¬ÔÚ¸ÃgeometryÄÚµÄmicromap¶ÔÏóµÄ¾ä±ú
+							accelerationStructureTrianglesDisplacementMicromapNV.displacementBiasAndScaleFormat = VK_FORMAT_R32G32B32_SFLOAT;//æŒ‡æ˜displacement  micromapçš„ bias å’Œ scale çš„æ ¼å¼
+							accelerationStructureTrianglesDisplacementMicromapNV.displacementVectorFormat = VK_FORMAT_R32G32B32_SFLOAT;//æŒ‡æ˜displacement  micromapçš„ displacement vector çš„æ ¼å¼
+							accelerationStructureTrianglesDisplacementMicromapNV.displacementBiasAndScaleBuffer = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«displacement  micromapçš„ bias å’Œ scale çš„device æˆ–è€…hostç«¯çš„åœ°å€
+							accelerationStructureTrianglesDisplacementMicromapNV.displacementBiasAndScaleStride = 4;//ä¸ºbias å’Œ scale ä¹‹é—´çš„å­—èŠ‚æ­¥é•¿
+							accelerationStructureTrianglesDisplacementMicromapNV.displacementVectorBuffer = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«displacement  micromapçš„ displacement vector çš„device æˆ–è€…hostç«¯çš„åœ°å€
+							accelerationStructureTrianglesDisplacementMicromapNV.displacementVectorStride = 4;//ä¸ºä¸¤ä¸ª displacement vector å€¼ä¹‹é—´çš„å­—èŠ‚æ­¥é•¿
+							accelerationStructureTrianglesDisplacementMicromapNV.displacedMicromapPrimitiveFlags = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«primitive flags çš„device æˆ–è€…hostç«¯çš„åœ°å€
+							accelerationStructureTrianglesDisplacementMicromapNV.displacedMicromapPrimitiveFlagsStride = 4;//ä¸ºä¸¤ä¸ª primitive flags å€¼ä¹‹é—´çš„å­—èŠ‚æ­¥é•¿
+							accelerationStructureTrianglesDisplacementMicromapNV.indexType = VK_INDEX_TYPE_UINT32;//ä¸ºç´¢å¼•micromap çš„ä¸‰è§’å½¢é¡¶ç‚¹ç´¢å¼•ç±»å‹
+							accelerationStructureTrianglesDisplacementMicromapNV.indexBuffer = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«triangle çš„ç´¢å¼•æ•°æ®çš„device æˆ–è€…hostç«¯çš„åœ°å€
+							accelerationStructureTrianglesDisplacementMicromapNV.indexStride = 32;//ä¸ºç´¢å¼•æ•°æ®ä¸­ä¸¤ä¸ªç´¢å¼•ä¹‹é—´çš„ç›´æ¥æ­¥é•¿
+							accelerationStructureTrianglesDisplacementMicromapNV.baseTriangle = 0;//ä¸ºæ·»åŠ åˆ°éè´Ÿä¸‰è§’å½¢ç´¢å¼•ä¸Šçš„ä¸€ä¸ªå€¼
+							accelerationStructureTrianglesDisplacementMicromapNV.usageCountsCount = 1;//å€¼æ˜usage countç»“æ„ä½“çš„æ•°é‡ï¼Œç”¨æ¥å®šä¹‰ micromapçš„å¤§å°
+							accelerationStructureTrianglesDisplacementMicromapNV.pUsageCounts = &usageCount;//ä¸€ç»„VkMicromapUsageEXT æ•°ç»„æŒ‡é’ˆ
+							accelerationStructureTrianglesDisplacementMicromapNV.ppUsageCounts = VK_NULL_HANDLE;//ä¸€ä¸ªæŒ‡å‘VkMicromapUsageEXT æ•°ç»„æŒ‡é’ˆçš„æ•°ç»„æŒ‡é’ˆ
+							accelerationStructureTrianglesDisplacementMicromapNV.micromap = VkMicromapEXT{ /*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkMicromapEXT*/ };//ä¸ºåŒ…å«åœ¨è¯¥geometryå†…çš„micromapå¯¹è±¡çš„å¥æŸ„
 							/*
-							VkAccelerationStructureTrianglesDisplacementMicromapNVÓĞĞ§ÓÃ·¨:
-							1.displacementBiasAndScaleFormat ÒÔ¼° displacementVectorFormat²»ÄÜÎªVK_FORMAT_UNDEFINED
-							2.pUsageCounts ºÍppUsageCountsÖĞÖ»ÓĞÒ»¸öÓĞĞ§£¬ÁíÍâÒ»¸ö±ØĞëÎªVK_NULL_HANDLE
+							VkAccelerationStructureTrianglesDisplacementMicromapNVæœ‰æ•ˆç”¨æ³•:
+							1.displacementBiasAndScaleFormat ä»¥åŠ displacementVectorFormatä¸èƒ½ä¸ºVK_FORMAT_UNDEFINED
+							2.pUsageCounts å’ŒppUsageCountsä¸­åªæœ‰ä¸€ä¸ªæœ‰æ•ˆï¼Œå¦å¤–ä¸€ä¸ªå¿…é¡»ä¸ºVK_NULL_HANDLE
 							*/
 						}
 						trianglesKHR.pNext = &accelerationStructureGeometryTrianglesDataKHREXT.accelerationStructureGeometryMotionTrianglesDataNV;
-						trianglesKHR.vertexData = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host ¶ËconstµØÖ·*/  /*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬¶¥µãÊı¾İµÄdevice »òÕßhost¶ËµÄµØÖ·
-						trianglesKHR.vertexStride = 12;//ÎªÃ¿¸ö¶¥µã¼äµÄ×Ö½Ú²½³¤´óĞ¡
-						trianglesKHR.maxVertex = 3;//ÎªvertexData ÖĞµÄ¶¥µãÊıÁ¿¼õÈ¥1
-						trianglesKHR.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;//Îª¶¥µãÔªËØµÄÊı¾İVkFormat¸ñÊ½
-						trianglesKHR.indexData = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬Ë÷ÒıÊı¾İµÄdevice »òÕßhost¶ËµÄµØÖ·
-						trianglesKHR.indexType = VK_INDEX_TYPE_UINT16;//ÎªË÷ÒıÔªËØµÄÊı¾İÀàĞÍ VkIndexType
-						//VkTransformMatrixKHR   µÈ¼ÛÓÚVkTransformMatrixNV
+						trianglesKHR.vertexData = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress host ç«¯conståœ°å€*/  /*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«é¡¶ç‚¹æ•°æ®çš„device æˆ–è€…hostç«¯çš„åœ°å€
+						trianglesKHR.vertexStride = 12;//ä¸ºæ¯ä¸ªé¡¶ç‚¹é—´çš„å­—èŠ‚æ­¥é•¿å¤§å°
+						trianglesKHR.maxVertex = 3;//ä¸ºvertexData ä¸­çš„é¡¶ç‚¹æ•°é‡å‡å»1
+						trianglesKHR.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;//ä¸ºé¡¶ç‚¹å…ƒç´ çš„æ•°æ®VkFormatæ ¼å¼
+						trianglesKHR.indexData = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«ç´¢å¼•æ•°æ®çš„device æˆ–è€…hostç«¯çš„åœ°å€
+						trianglesKHR.indexType = VK_INDEX_TYPE_UINT16;//ä¸ºç´¢å¼•å…ƒç´ çš„æ•°æ®ç±»å‹ VkIndexType
+						//VkTransformMatrixKHR   ç­‰ä»·äºVkTransformMatrixNV
 						{
 							VkTransformMatrixKHR  transformMatrixKHR{};
-							transformMatrixKHR.matrix;//Îª3 ¡Á 4 ĞĞÓÅÏÈµÄ·ÂÉä¾ØÕó£¬Ç°3ÁĞ±ØĞë¶¨ÒåÒ»¸ö¿ÉÄæµÄ¾ØÕó
+							transformMatrixKHR.matrix;//ä¸º3 Ã— 4 è¡Œä¼˜å…ˆçš„ä»¿å°„çŸ©é˜µï¼Œå‰3åˆ—å¿…é¡»å®šä¹‰ä¸€ä¸ªå¯é€†çš„çŸ©é˜µ
 							for (uint32_t i = 0; i < 3; i++)
 							{
 								for (uint32_t j = 0; j < 4; j++)
@@ -362,340 +362,676 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 							}
 							
 						}
-						trianglesKHR.transformData = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬¿ÉÑ¡µÄVkTransformMatrixKHR Êı¾İµÄdevice »òÕßhost¶ËµÄµØÖ·£¬ÃèÊö´ÓgeometryµÄ¶¥µãËùÔÚµÄ¿Õ¼äµ½¼ÓËÙ½á¹¹¶¨ÒåËùÔÚµÄ¿Õ¼äµÄ±ä»»
+						trianglesKHR.transformData = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«å¯é€‰çš„VkTransformMatrixKHR æ•°æ®çš„device æˆ–è€…hostç«¯çš„åœ°å€ï¼Œæè¿°ä»geometryçš„é¡¶ç‚¹æ‰€åœ¨çš„ç©ºé—´åˆ°åŠ é€Ÿç»“æ„å®šä¹‰æ‰€åœ¨çš„ç©ºé—´çš„å˜æ¢
 						/*
-						VkAccelerationStructureGeometryTrianglesDataKHRÓĞĞ§ÓÃ·¨:
-						1.vertexStride ±ØĞëÊÇvertexFormat µÄ×îĞ¡·ÖÁ¿µÄ×Ö½Ú²½³¤µÄÕûÊı±¶
-						2.vertexStride ±ØĞëĞ¡ÓÚµÈÓÚpow(2,32) -1
-						3.vertexFormatµÄformat features ±ØĞë°üº¬VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR
-						4.indexType ±ØĞëÊÇ VK_INDEX_TYPE_UINT16, VK_INDEX_TYPE_UINT32 »òÕß VK_INDEX_TYPE_NONE_KHR
+						VkAccelerationStructureGeometryTrianglesDataKHRæœ‰æ•ˆç”¨æ³•:
+						1.vertexStride å¿…é¡»æ˜¯vertexFormat çš„æœ€å°åˆ†é‡çš„å­—èŠ‚æ­¥é•¿çš„æ•´æ•°å€
+						2.vertexStride å¿…é¡»å°äºç­‰äºpow(2,32) -1
+						3.vertexFormatçš„format features å¿…é¡»åŒ…å«VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR
+						4.indexType å¿…é¡»æ˜¯ VK_INDEX_TYPE_UINT16, VK_INDEX_TYPE_UINT32 æˆ–è€… VK_INDEX_TYPE_NONE_KHR
 						*/
 					}
-					geometryDataKHR.triangles = trianglesKHR;// VkAccelerationStructureGeometryTrianglesDataKHR Öµ 
+					geometryDataKHR.triangles = trianglesKHR;// VkAccelerationStructureGeometryTrianglesDataKHR å€¼ 
 					VkAccelerationStructureGeometryAabbsDataKHR aabbsKHR{};
 					{
 						aabbsKHR.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR;
 						aabbsKHR.pNext = nullptr;
-						// VkAabbPositionsKHR  µÈÍ¬ÓÚVkAabbPositionsNV
+						// VkAabbPositionsKHR  ç­‰åŒäºVkAabbPositionsNV
 						{
 							VkAabbPositionsKHR aabbPositionsKHR{};
-							aabbPositionsKHR.minX = 0;//Îª°üÎ§ºĞÒ»¸ö¶Ô½ÇµÄx×ø±ê
-							aabbPositionsKHR.minY = 0;//Îª°üÎ§ºĞÒ»¸ö¶Ô½ÇµÄy×ø±ê
-							aabbPositionsKHR.minZ = 0;//Îª°üÎ§ºĞÒ»¸ö¶Ô½ÇµÄz×ø±ê
-							aabbPositionsKHR.maxX = 1;//Îª°üÎ§ºĞÁíÒ»¸ö¶Ô½ÇµÄx×ø±ê,±ØĞë´óÓÚminX
-							aabbPositionsKHR.maxY = 1;//Îª°üÎ§ºĞÁíÒ»¸ö¶Ô½ÇµÄy×ø±ê,±ØĞë´óÓÚminY
-							aabbPositionsKHR.maxZ = 1;//Îª°üÎ§ºĞÁíÒ»¸ö¶Ô½ÇµÄz×ø±ê,±ØĞë´óÓÚminZ
+							aabbPositionsKHR.minX = 0;//ä¸ºåŒ…å›´ç›’ä¸€ä¸ªå¯¹è§’çš„xåæ ‡
+							aabbPositionsKHR.minY = 0;//ä¸ºåŒ…å›´ç›’ä¸€ä¸ªå¯¹è§’çš„yåæ ‡
+							aabbPositionsKHR.minZ = 0;//ä¸ºåŒ…å›´ç›’ä¸€ä¸ªå¯¹è§’çš„zåæ ‡
+							aabbPositionsKHR.maxX = 1;//ä¸ºåŒ…å›´ç›’å¦ä¸€ä¸ªå¯¹è§’çš„xåæ ‡,å¿…é¡»å¤§äºminX
+							aabbPositionsKHR.maxY = 1;//ä¸ºåŒ…å›´ç›’å¦ä¸€ä¸ªå¯¹è§’çš„yåæ ‡,å¿…é¡»å¤§äºminY
+							aabbPositionsKHR.maxZ = 1;//ä¸ºåŒ…å›´ç›’å¦ä¸€ä¸ªå¯¹è§’çš„zåæ ‡,å¿…é¡»å¤§äºminZ
 
 
 						}
-						aabbsKHR.data = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Îª°üº¬geometryÖĞÃ¿¸öÖáÏò±ß½çºĞÎ»ÖÃÊı¾İ VkAabbPositionsKHR µÄdevice »òÕßhost¶ËµÄµØÖ·
-						aabbsKHR.stride = 64;//ÎªdataÖĞÁ½¸öÔªËØÖ®¼äµÄ×Ö½Ú²½³¤£¬±ØĞëÎª8µÄ±¶Êı£¬ÇÒ±ØĞëĞ¡ÓÚµÈÓÚpow(2,32)-1
+						aabbsKHR.data = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºåŒ…å«geometryä¸­æ¯ä¸ªè½´å‘è¾¹ç•Œç›’ä½ç½®æ•°æ® VkAabbPositionsKHR çš„device æˆ–è€…hostç«¯çš„åœ°å€
+						aabbsKHR.stride = 64;//ä¸ºdataä¸­ä¸¤ä¸ªå…ƒç´ ä¹‹é—´çš„å­—èŠ‚æ­¥é•¿ï¼Œå¿…é¡»ä¸º8çš„å€æ•°ï¼Œä¸”å¿…é¡»å°äºç­‰äºpow(2,32)-1
 					}
-					geometryDataKHR.aabbs = aabbsKHR;// VkAccelerationStructureGeometryAabbsDataKHR Öµ 
+					geometryDataKHR.aabbs = aabbsKHR;// VkAccelerationStructureGeometryAabbsDataKHR å€¼ 
 					VkAccelerationStructureGeometryInstancesDataKHR instanceDataKHR{};
 					{
 						instanceDataKHR.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
 						instanceDataKHR.pNext = nullptr;
 						{
 							/*
-							Acceleration structure instances¿ÉÒÔ¹¹½¨ÎªÒ»¸ötop-level acceleration structures.Ã¿¸öinstanceÊÇtop-level acceleration structuresÖĞ·ÖÀëµÄ×é·Ö£¬°üº¬Ò»¸ö bottom-level acceleration structureµÄÔÚ±ä»»Î»ÖÃ´¦µÄËùÓĞgeometry£¬¶à¸öinstance¿ÉÒÔÖ¸ÏòÍ¬Ò»¸öbottom-level acceleration structure
+							Acceleration structure instanceså¯ä»¥æ„å»ºä¸ºä¸€ä¸ªtop-level acceleration structures.æ¯ä¸ªinstanceæ˜¯top-level acceleration structuresä¸­åˆ†ç¦»çš„ç»„åˆ†ï¼ŒåŒ…å«ä¸€ä¸ª bottom-level acceleration structureçš„åœ¨å˜æ¢ä½ç½®å¤„çš„æ‰€æœ‰geometryï¼Œå¤šä¸ªinstanceå¯ä»¥æŒ‡å‘åŒä¸€ä¸ªbottom-level acceleration structure
 							*/
 
-							VkAccelerationStructureInstanceKHR accelerationStructureInstanceKHR{}; //µÈÍ¬ÓëVkAccelerationStructureInstanceNV
-							accelerationStructureInstanceKHR.accelerationStructureReference = 0;//ÎªvkGetAccelerationStructureDeviceAddressKHR »òÕß vkGetAccelerationStructureHandleNV·µ»ØµÄÉè±¸µØÖ· »òÕßÒ»¸ö VkAccelerationStructureKHR¾ä±ú
-							accelerationStructureInstanceKHR.instanceCustomIndex = 0;//ÎªÓÃ»§×Ô¶¨ÒåµÄ24bitµÄË÷Òı£¨µÍ24bit£©£¬¿ÉÔÚray shaderÖĞÍ¨¹ıInstanceCustomIndexKHR·ÃÎÊ
-							accelerationStructureInstanceKHR.mask = 0xFF;//Îª¸ÃgeometryµÄ8bitµÄ¿ÉÊÓÑÚÂë£¨¸ß8bit£©£¬Ö»ÓĞÔÚCull Mask & instance.mask != 0Çé¿öÏÂ¸Ãinstance²Å»á±»»÷ÖĞ
-							accelerationStructureInstanceKHR.instanceShaderBindingTableRecordOffset = 0;//Îª24bit£¨µÍ24bit£©µÄÓÃÓÚ¼ÆËãhit shader°ó¶¨±íµÄË÷ÒıµÄÆ«ÒÆÖµ
-							accelerationStructureInstanceKHR.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;//ÎªÓ¦ÓÃµ½¸ÃinstanceµÄ8bit£¨¸ß8bit£©µÄ VkGeometryInstanceFlagBitsKHR×éºÏÖµÑÚÂë
+							VkAccelerationStructureInstanceKHR accelerationStructureInstanceKHR{}; //ç­‰åŒä¸VkAccelerationStructureInstanceNV
+							accelerationStructureInstanceKHR.accelerationStructureReference = 0;//ä¸ºvkGetAccelerationStructureDeviceAddressKHR æˆ–è€… vkGetAccelerationStructureHandleNVè¿”å›çš„è®¾å¤‡åœ°å€ æˆ–è€…ä¸€ä¸ª VkAccelerationStructureKHRå¥æŸ„
+							accelerationStructureInstanceKHR.instanceCustomIndex = 0;//ä¸ºç”¨æˆ·è‡ªå®šä¹‰çš„24bitçš„ç´¢å¼•ï¼ˆä½24bitï¼‰ï¼Œå¯åœ¨ray shaderä¸­é€šè¿‡InstanceCustomIndexKHRè®¿é—®
+							accelerationStructureInstanceKHR.mask = 0xFF;//ä¸ºè¯¥geometryçš„8bitçš„å¯è§†æ©ç ï¼ˆé«˜8bitï¼‰ï¼Œåªæœ‰åœ¨Cull Mask & instance.mask != 0æƒ…å†µä¸‹è¯¥instanceæ‰ä¼šè¢«å‡»ä¸­
+							accelerationStructureInstanceKHR.instanceShaderBindingTableRecordOffset = 0;//ä¸º24bitï¼ˆä½24bitï¼‰çš„ç”¨äºè®¡ç®—hit shaderç»‘å®šè¡¨çš„ç´¢å¼•çš„åç§»å€¼
+							accelerationStructureInstanceKHR.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;//ä¸ºåº”ç”¨åˆ°è¯¥instanceçš„8bitï¼ˆé«˜8bitï¼‰çš„ VkGeometryInstanceFlagBitsKHRç»„åˆå€¼æ©ç 
 							/*
-							VkGeometryInstanceFlagBitsKHR£¨µÈ¼ÛÓëVkGeometryInstanceFlagBitsNV£©:
-							VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR: ¶Ô¸Ãinstance¹Ø±Õface culling
-							VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR: Ö¸Ã÷·´×ª¸ÃinstanceÖĞgeometryÖĞµÄÃæµÄ¾ö¶¨Ìí¼Ó£¬ÒòÎªfacingÔÚÎïÌå¿Õ¼äÖĞ¶¨Òå£¬instance transform²»»á¸Ä±äÆäÃæµÄ·½Ïò£¬µ«geometry transform»á¡£
-							VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR:  ¶Ô¸ÃinstanceÇ¿ÖÆÊ¹ËùÓĞgeometryµÄopaque flag ÖÃÎ»¾ÍÏñÊÇÉèÖÃÁËVK_GEOMETRY_OPAQUE_BIT_KHRÒ»Ñù£¬ÕâÖÖĞĞÎª¿ÉÒÔÍ¨¹ıSPIR-V NoOpaqueKHR ray flag¸´Ğ´¡£
-							VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR:  ¶Ô¸ÃinstanceÇ¿ÖÆÊ¹ËùÓĞgeometryµÄopaque flag ²»ÖÃÎ»¾ÍÏñÊÇÃ»ÓĞÉèÖÃVK_GEOMETRY_OPAQUE_BIT_KHRÒ»Ñù£¬ÕâÖÖĞĞÎª¿ÉÒÔÍ¨¹ıSPIR-V OpaqueKHR ray flag¸´Ğ´¡£
+							VkGeometryInstanceFlagBitsKHRï¼ˆç­‰ä»·ä¸VkGeometryInstanceFlagBitsNVï¼‰:
+							VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR: å¯¹è¯¥instanceå…³é—­face culling
+							VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR: æŒ‡æ˜åè½¬è¯¥instanceä¸­geometryä¸­çš„é¢çš„å†³å®šæ·»åŠ ï¼Œå› ä¸ºfacingåœ¨ç‰©ä½“ç©ºé—´ä¸­å®šä¹‰ï¼Œinstance transformä¸ä¼šæ”¹å˜å…¶é¢çš„æ–¹å‘ï¼Œä½†geometry transformä¼šã€‚
+							VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR:  å¯¹è¯¥instanceå¼ºåˆ¶ä½¿æ‰€æœ‰geometryçš„opaque flag ç½®ä½å°±åƒæ˜¯è®¾ç½®äº†VK_GEOMETRY_OPAQUE_BIT_KHRä¸€æ ·ï¼Œè¿™ç§è¡Œä¸ºå¯ä»¥é€šè¿‡SPIR-V NoOpaqueKHR ray flagå¤å†™ã€‚
+							VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR:  å¯¹è¯¥instanceå¼ºåˆ¶ä½¿æ‰€æœ‰geometryçš„opaque flag ä¸ç½®ä½å°±åƒæ˜¯æ²¡æœ‰è®¾ç½®VK_GEOMETRY_OPAQUE_BIT_KHRä¸€æ ·ï¼Œè¿™ç§è¡Œä¸ºå¯ä»¥é€šè¿‡SPIR-V OpaqueKHR ray flagå¤å†™ã€‚
 							*/
-							accelerationStructureInstanceKHR.transform = VkTransformMatrixKHR{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkTransformMatrixKHR*/ };//ÎªÓ¦ÓÃµ½¼ÓËÙ½á¹¹µÄ±ä»»¾ØÕó
+							accelerationStructureInstanceKHR.transform = VkTransformMatrixKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkTransformMatrixKHR*/ };//ä¸ºåº”ç”¨åˆ°åŠ é€Ÿç»“æ„çš„å˜æ¢çŸ©é˜µ
 
 							/*
-							Acceleration structure  motion instances¿ÉÒÔ¹¹½¨ÎªÒ»¸ötop-level acceleration structures.Ã¿¸öinstanceÊÇtop-level acceleration structuresÖĞ·ÖÀëµÄ×é·Ö£¬°üº¬Ò»¸ö bottom-level acceleration structureµÄÔÚ°üº¬ ÔË¶¯ÀàĞÍÒÔ¼°¾ö¶¨ instanceÔÚÊ±¼äÉÏµÄÔË¶¯µÄ²ÎÊıµÄ±ä»»Î»ÖÃ´¦µÄËùÓĞgeometry
+							Acceleration structure  motion instanceså¯ä»¥æ„å»ºä¸ºä¸€ä¸ªtop-level acceleration structures.æ¯ä¸ªinstanceæ˜¯top-level acceleration structuresä¸­åˆ†ç¦»çš„ç»„åˆ†ï¼ŒåŒ…å«ä¸€ä¸ª bottom-level acceleration structureçš„åœ¨åŒ…å« è¿åŠ¨ç±»å‹ä»¥åŠå†³å®š instanceåœ¨æ—¶é—´ä¸Šçš„è¿åŠ¨çš„å‚æ•°çš„å˜æ¢ä½ç½®å¤„çš„æ‰€æœ‰geometry
 							*/
 
 							VkAccelerationStructureMotionInstanceNV accelerationStructureMotionInstanceNV{};
-							accelerationStructureMotionInstanceNV.type = VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV;//Îª VkAccelerationStructureMotionInstanceTypeNVÖµ¶¨Òå¸Ãmotion instanceµÄÀàĞÍ£¬Ö¸Ã÷unionÖĞÄÄ¸öÊı¾İÓĞĞ§
+							accelerationStructureMotionInstanceNV.type = VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV;//ä¸º VkAccelerationStructureMotionInstanceTypeNVå€¼å®šä¹‰è¯¥motion instanceçš„ç±»å‹ï¼ŒæŒ‡æ˜unionä¸­å“ªä¸ªæ•°æ®æœ‰æ•ˆ
 							/*
 							VkAccelerationStructureMotionInstanceTypeNV:
-							VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_STATIC_NV: Ö¸Ã÷Õâ¸öinstanceÊÇ¾²Ì¬µÄÃ»ÓĞÈÎºÎinstanceÒÆ¶¯
-							VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_MATRIX_MOTION_NV: Ö¸Ã÷Õâ¸öinstanceÊÇÒ»¸ömotion instance£¬ÆäÒÆ¶¯Í¨¹ıÁ½¸ö¾ØÕó¼äµÄ²åÖµÖ¸¶¨
-							VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV:  Ö¸Ã÷Õâ¸öinstanceÊÇÒ»¸ömotion instance£¬ÆäÒÆ¶¯Í¨¹ıSRT decompositionµÄ²åÖµÖ¸¶¨
+							VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_STATIC_NV: æŒ‡æ˜è¿™ä¸ªinstanceæ˜¯é™æ€çš„æ²¡æœ‰ä»»ä½•instanceç§»åŠ¨
+							VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_MATRIX_MOTION_NV: æŒ‡æ˜è¿™ä¸ªinstanceæ˜¯ä¸€ä¸ªmotion instanceï¼Œå…¶ç§»åŠ¨é€šè¿‡ä¸¤ä¸ªçŸ©é˜µé—´çš„æ’å€¼æŒ‡å®š
+							VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV:  æŒ‡æ˜è¿™ä¸ªinstanceæ˜¯ä¸€ä¸ªmotion instanceï¼Œå…¶ç§»åŠ¨é€šè¿‡SRT decompositionçš„æ’å€¼æŒ‡å®š
 							*/
-							accelerationStructureMotionInstanceNV.flags = 0;//µ±Ç°Î´Ê¹ÓÃ£¬µ«ÊÇĞèÒªÀ´±£Ö¤dataÖĞµÄ×ÔÈ»ÄÚ´æÅÅ²¼¶ÔÆë
-							VkAccelerationStructureMotionInstanceDataNV accelerationStructureMotionInstanceDataNV{};//ÕâÊÇÒ»¸öunion
+							accelerationStructureMotionInstanceNV.flags = 0;//å½“å‰æœªä½¿ç”¨ï¼Œä½†æ˜¯éœ€è¦æ¥ä¿è¯dataä¸­çš„è‡ªç„¶å†…å­˜æ’å¸ƒå¯¹é½
+							VkAccelerationStructureMotionInstanceDataNV accelerationStructureMotionInstanceDataNV{};//è¿™æ˜¯ä¸€ä¸ªunion
 							{
-								accelerationStructureMotionInstanceDataNV.staticInstance = accelerationStructureInstanceKHR;//°üº¬static instanceÊı¾İµÄVkAccelerationStructureInstanceKHR
+								accelerationStructureMotionInstanceDataNV.staticInstance = accelerationStructureInstanceKHR;//åŒ…å«static instanceæ•°æ®çš„VkAccelerationStructureInstanceKHR
 								VkAccelerationStructureMatrixMotionInstanceNV accelerationStructureMatrixMotionInstanceNV{};
 								{
 									/*
-									time 0µ½time 1Ö®¼äµÄ±ä»»Îª: transformT0 ¡Á (1 - time) + transformT1 ¡Á time
+									time 0åˆ°time 1ä¹‹é—´çš„å˜æ¢ä¸º: transformT0 Ã— (1 - time) + transformT1 Ã— time
 									*/
-									accelerationStructureMatrixMotionInstanceNV.accelerationStructureReference = 0;//ÎªvkGetAccelerationStructureDeviceAddressKHR »òÕß vkGetAccelerationStructureHandleNV·µ»ØµÄÉè±¸µØÖ· »òÕßÒ»¸ö VkAccelerationStructureKHR¾ä±ú
-									accelerationStructureMatrixMotionInstanceNV.flags = VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR;//ÎªÓ¦ÓÃµ½¸ÃinstanceµÄ8bit£¨¸ß8bit£©µÄ VkGeometryInstanceFlagBitsKHR×éºÏÖµÑÚÂë
-									accelerationStructureMatrixMotionInstanceNV.instanceCustomIndex = 0;//ÎªÓÃ»§×Ô¶¨ÒåµÄ24bitµÄË÷Òı£¨µÍ24bit£©£¬¿ÉÔÚray shaderÖĞÍ¨¹ıInstanceCustomIndexKHR·ÃÎÊ
-									accelerationStructureMatrixMotionInstanceNV.mask = 0xFF;// Îª¸ÃgeometryµÄ8bitµÄ¿ÉÊÓÑÚÂë£¨¸ß8bit£©£¬Ö»ÓĞÔÚCull Mask & instance.mask != 0Çé¿öÏÂ¸Ãinstance²Å»á±»»÷ÖĞ
-									accelerationStructureMatrixMotionInstanceNV.instanceShaderBindingTableRecordOffset = 0;//Îª24bit£¨µÍ24bit£©µÄÓÃÓÚ¼ÆËãhit shader°ó¶¨±íµÄË÷ÒıµÄÆ«ÒÆÖµ
-									accelerationStructureMatrixMotionInstanceNV.transformT0 = VkTransformMatrixKHR{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkTransformMatrixKHR*/ };//ÎªÒ»¸öÃèÊöÓ¦ÓÃµ½¼ÓËÙ½á¹¹ÔÚtime 0.0µÄ±ä»»µÄ VkTransformMatrixKHR
-									accelerationStructureMatrixMotionInstanceNV.transformT1 = VkTransformMatrixKHR{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkTransformMatrixKHR*/ };//ÎªÒ»¸öÃèÊöÓ¦ÓÃµ½¼ÓËÙ½á¹¹ÔÚtime 1.0µÄ±ä»»µÄ VkTransformMatrixKHR
+									accelerationStructureMatrixMotionInstanceNV.accelerationStructureReference = 0;//ä¸ºvkGetAccelerationStructureDeviceAddressKHR æˆ–è€… vkGetAccelerationStructureHandleNVè¿”å›çš„è®¾å¤‡åœ°å€ æˆ–è€…ä¸€ä¸ª VkAccelerationStructureKHRå¥æŸ„
+									accelerationStructureMatrixMotionInstanceNV.flags = VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR;//ä¸ºåº”ç”¨åˆ°è¯¥instanceçš„8bitï¼ˆé«˜8bitï¼‰çš„ VkGeometryInstanceFlagBitsKHRç»„åˆå€¼æ©ç 
+									accelerationStructureMatrixMotionInstanceNV.instanceCustomIndex = 0;//ä¸ºç”¨æˆ·è‡ªå®šä¹‰çš„24bitçš„ç´¢å¼•ï¼ˆä½24bitï¼‰ï¼Œå¯åœ¨ray shaderä¸­é€šè¿‡InstanceCustomIndexKHRè®¿é—®
+									accelerationStructureMatrixMotionInstanceNV.mask = 0xFF;// ä¸ºè¯¥geometryçš„8bitçš„å¯è§†æ©ç ï¼ˆé«˜8bitï¼‰ï¼Œåªæœ‰åœ¨Cull Mask & instance.mask != 0æƒ…å†µä¸‹è¯¥instanceæ‰ä¼šè¢«å‡»ä¸­
+									accelerationStructureMatrixMotionInstanceNV.instanceShaderBindingTableRecordOffset = 0;//ä¸º24bitï¼ˆä½24bitï¼‰çš„ç”¨äºè®¡ç®—hit shaderç»‘å®šè¡¨çš„ç´¢å¼•çš„åç§»å€¼
+									accelerationStructureMatrixMotionInstanceNV.transformT0 = VkTransformMatrixKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkTransformMatrixKHR*/ };//ä¸ºä¸€ä¸ªæè¿°åº”ç”¨åˆ°åŠ é€Ÿç»“æ„åœ¨time 0.0çš„å˜æ¢çš„ VkTransformMatrixKHR
+									accelerationStructureMatrixMotionInstanceNV.transformT1 = VkTransformMatrixKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkTransformMatrixKHR*/ };//ä¸ºä¸€ä¸ªæè¿°åº”ç”¨åˆ°åŠ é€Ÿç»“æ„åœ¨time 1.0çš„å˜æ¢çš„ VkTransformMatrixKHR
 								}
-								accelerationStructureMotionInstanceDataNV.matrixMotionInstance = accelerationStructureMatrixMotionInstanceNV;//°üº¬matrix motion instanceÊı¾İµÄVkAccelerationStructureMatrixMotionInstanceNV
+								accelerationStructureMotionInstanceDataNV.matrixMotionInstance = accelerationStructureMatrixMotionInstanceNV;//åŒ…å«matrix motion instanceæ•°æ®çš„VkAccelerationStructureMatrixMotionInstanceNV
 								VkAccelerationStructureSRTMotionInstanceNV accelerationStructureSRTMotionInstanceNV{};
 								{
 									/*
-									time 0µ½time 1Ö®¼äµÄ±ä»»Îª: transformT0 ¡Á (1 - time) + transformT1 ¡Á time
+									time 0åˆ°time 1ä¹‹é—´çš„å˜æ¢ä¸º: transformT0 Ã— (1 - time) + transformT1 Ã— time
 									*/
-									accelerationStructureSRTMotionInstanceNV.accelerationStructureReference = 0;//ÎªvkGetAccelerationStructureDeviceAddressKHR »òÕß vkGetAccelerationStructureHandleNV·µ»ØµÄÉè±¸µØÖ· »òÕßÒ»¸ö VkAccelerationStructureKHR¾ä±ú
-									accelerationStructureSRTMotionInstanceNV.flags = VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR;//ÎªÓ¦ÓÃµ½¸ÃinstanceµÄ8bit£¨¸ß8bit£©µÄ VkGeometryInstanceFlagBitsKHR×éºÏÖµÑÚÂë
-									accelerationStructureSRTMotionInstanceNV.instanceCustomIndex = 0;//ÎªÓÃ»§×Ô¶¨ÒåµÄ24bitµÄË÷Òı£¨µÍ24bit£©£¬¿ÉÔÚray shaderÖĞÍ¨¹ıInstanceCustomIndexKHR·ÃÎÊ
-									accelerationStructureSRTMotionInstanceNV.mask = 0xFF;//Îª¸ÃgeometryµÄ8bitµÄ¿ÉÊÓÑÚÂë£¨¸ß8bit£©£¬Ö»ÓĞÔÚCull Mask & instance.mask != 0Çé¿öÏÂ¸Ãinstance²Å»á±»»÷ÖĞ
-									accelerationStructureSRTMotionInstanceNV.instanceShaderBindingTableRecordOffset = 0;//Îª24bit£¨µÍ24bit£©µÄÓÃÓÚ¼ÆËãhit shader°ó¶¨±íµÄË÷ÒıµÄÆ«ÒÆÖµ
+									accelerationStructureSRTMotionInstanceNV.accelerationStructureReference = 0;//ä¸ºvkGetAccelerationStructureDeviceAddressKHR æˆ–è€… vkGetAccelerationStructureHandleNVè¿”å›çš„è®¾å¤‡åœ°å€ æˆ–è€…ä¸€ä¸ª VkAccelerationStructureKHRå¥æŸ„
+									accelerationStructureSRTMotionInstanceNV.flags = VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR;//ä¸ºåº”ç”¨åˆ°è¯¥instanceçš„8bitï¼ˆé«˜8bitï¼‰çš„ VkGeometryInstanceFlagBitsKHRç»„åˆå€¼æ©ç 
+									accelerationStructureSRTMotionInstanceNV.instanceCustomIndex = 0;//ä¸ºç”¨æˆ·è‡ªå®šä¹‰çš„24bitçš„ç´¢å¼•ï¼ˆä½24bitï¼‰ï¼Œå¯åœ¨ray shaderä¸­é€šè¿‡InstanceCustomIndexKHRè®¿é—®
+									accelerationStructureSRTMotionInstanceNV.mask = 0xFF;//ä¸ºè¯¥geometryçš„8bitçš„å¯è§†æ©ç ï¼ˆé«˜8bitï¼‰ï¼Œåªæœ‰åœ¨Cull Mask & instance.mask != 0æƒ…å†µä¸‹è¯¥instanceæ‰ä¼šè¢«å‡»ä¸­
+									accelerationStructureSRTMotionInstanceNV.instanceShaderBindingTableRecordOffset = 0;//ä¸º24bitï¼ˆä½24bitï¼‰çš„ç”¨äºè®¡ç®—hit shaderç»‘å®šè¡¨çš„ç´¢å¼•çš„åç§»å€¼
 									VkSRTDataNV  SRTDataNV{};
 									{
 										/*
-										VkSRTDataNV ¶¨ÒåµÚÒ»¸ö¾ØÕóÔªËØ:
+										VkSRTDataNV å®šä¹‰ç¬¬ä¸€ä¸ªçŸ©é˜µå…ƒç´ :
 										S =    sx   a   b   pvx
 											   0    sy  c   pvy
 											   0    0   sz  pvz
 										
-										VkSRTDataNV ¶¨ÒåµÚ¶ş¸öËÄÔªÊıÔªËØ:
-										R =    qx   qy   qz   qw	  ÆäÖĞ¶¨ÒåÎªÈÆ¹éÒ»»¯µÄÖá[ax,ay,zx] Ğı×ªtheta½Ç¶È£¬Ôò [ qx, qy, qz ] = sin(theta/2) ¡Á [ ax, ay, az ] £¬qw = cos(theta/2)
+										VkSRTDataNV å®šä¹‰ç¬¬äºŒä¸ªå››å…ƒæ•°å…ƒç´ :
+										R =    qx   qy   qz   qw	  å…¶ä¸­å®šä¹‰ä¸ºç»•å½’ä¸€åŒ–çš„è½´[ax,ay,zx] æ—‹è½¬thetaè§’åº¦ï¼Œåˆ™ [ qx, qy, qz ] = sin(theta/2) Ã— [ ax, ay, az ] ï¼Œqw = cos(theta/2)
 
-										VkSRTDataNV ¶¨ÒåµÚÈı¸öÎ»ÒÆ¾ØÕóÔªËØ
+										VkSRTDataNV å®šä¹‰ç¬¬ä¸‰ä¸ªä½ç§»çŸ©é˜µå…ƒç´ 
 										T =   1     0    0   tx
 											  0     1    0   ty
 											  0     0    1   tz
 
-										VkSRTDataNV¶¨ÒåµÄ×îÖÕ±ä»»Îª:  T ¡Á R ¡Á S 
+										VkSRTDataNVå®šä¹‰çš„æœ€ç»ˆå˜æ¢ä¸º:  T Ã— R Ã— S 
 										*/
-										SRTDataNV.sx = 0;//Îª±ä»»ÔÚxÎ¬ÉÏµÄËõ·ÅÁ¿
-										SRTDataNV.a = 0;//ÎªÇĞ±ä±ä»»µÄÒ»¸ö·ÖÁ¿
-										SRTDataNV.b = 0;//ÎªÇĞ±ä±ä»»µÄÒ»¸ö·ÖÁ¿
-										SRTDataNV.pvx = 0;//Îª±ä»»Ö§µãµÄx·ÖÁ¿ÉÏµÄÖµ
-										SRTDataNV.sy = 0;//Îª±ä»»ÔÚyÎ¬ÉÏµÄËõ·ÅÁ¿
-										SRTDataNV.c = 0;//ÎªÇĞ±ä±ä»»µÄÒ»¸ö·ÖÁ¿
-										SRTDataNV.pvy = 0;//Îª±ä»»Ö§µãµÄy·ÖÁ¿ÉÏµÄÖµ
-										SRTDataNV.sz = 0;//Îª±ä»»ÔÚzÎ¬ÉÏµÄËõ·ÅÁ¿
-										SRTDataNV.pvz = 0;//Îª±ä»»Ö§µãµÄz·ÖÁ¿ÉÏµÄÖµ
-										SRTDataNV.qx = 0;//ÎªËÄÔªÊıĞı×ªµÄx·ÖÁ¿Öµ
-										SRTDataNV.qy = 0;//ÎªËÄÔªÊıĞı×ªµÄy·ÖÁ¿Öµ
-										SRTDataNV.qz = 0;//ÎªËÄÔªÊıĞı×ªµÄz·ÖÁ¿Öµ
-										SRTDataNV.qw = 0;//ÎªËÄÔªÊıĞı×ªµÄw·ÖÁ¿Öµ
-										SRTDataNV.tx = 0;//ÎªĞı×ªºóÆ½ÒÆµÄx·ÖÁ¿Öµ
-										SRTDataNV.ty = 0;//ÎªĞı×ªºóÆ½ÒÆµÄy·ÖÁ¿Öµ
-										SRTDataNV.tz = 0;//ÎªĞı×ªºóÆ½ÒÆµÄz·ÖÁ¿Öµ
+										SRTDataNV.sx = 0;//ä¸ºå˜æ¢åœ¨xç»´ä¸Šçš„ç¼©æ”¾é‡
+										SRTDataNV.a = 0;//ä¸ºåˆ‡å˜å˜æ¢çš„ä¸€ä¸ªåˆ†é‡
+										SRTDataNV.b = 0;//ä¸ºåˆ‡å˜å˜æ¢çš„ä¸€ä¸ªåˆ†é‡
+										SRTDataNV.pvx = 0;//ä¸ºå˜æ¢æ”¯ç‚¹çš„xåˆ†é‡ä¸Šçš„å€¼
+										SRTDataNV.sy = 0;//ä¸ºå˜æ¢åœ¨yç»´ä¸Šçš„ç¼©æ”¾é‡
+										SRTDataNV.c = 0;//ä¸ºåˆ‡å˜å˜æ¢çš„ä¸€ä¸ªåˆ†é‡
+										SRTDataNV.pvy = 0;//ä¸ºå˜æ¢æ”¯ç‚¹çš„yåˆ†é‡ä¸Šçš„å€¼
+										SRTDataNV.sz = 0;//ä¸ºå˜æ¢åœ¨zç»´ä¸Šçš„ç¼©æ”¾é‡
+										SRTDataNV.pvz = 0;//ä¸ºå˜æ¢æ”¯ç‚¹çš„zåˆ†é‡ä¸Šçš„å€¼
+										SRTDataNV.qx = 0;//ä¸ºå››å…ƒæ•°æ—‹è½¬çš„xåˆ†é‡å€¼
+										SRTDataNV.qy = 0;//ä¸ºå››å…ƒæ•°æ—‹è½¬çš„yåˆ†é‡å€¼
+										SRTDataNV.qz = 0;//ä¸ºå››å…ƒæ•°æ—‹è½¬çš„zåˆ†é‡å€¼
+										SRTDataNV.qw = 0;//ä¸ºå››å…ƒæ•°æ—‹è½¬çš„wåˆ†é‡å€¼
+										SRTDataNV.tx = 0;//ä¸ºæ—‹è½¬åå¹³ç§»çš„xåˆ†é‡å€¼
+										SRTDataNV.ty = 0;//ä¸ºæ—‹è½¬åå¹³ç§»çš„yåˆ†é‡å€¼
+										SRTDataNV.tz = 0;//ä¸ºæ—‹è½¬åå¹³ç§»çš„zåˆ†é‡å€¼
 
 									}
-									accelerationStructureSRTMotionInstanceNV.transformT0 = SRTDataNV;//ÎªÒ»¸öÃèÊöÓ¦ÓÃµ½¼ÓËÙ½á¹¹ÔÚtime 0.0µÄ±ä»»µÄ VkSRTDataNV
-									accelerationStructureSRTMotionInstanceNV.transformT1 = SRTDataNV;//ÎªÒ»¸öÃèÊöÓ¦ÓÃµ½¼ÓËÙ½á¹¹ÔÚtime 1.0µÄ±ä»»µÄ VkSRTDataNV
+									accelerationStructureSRTMotionInstanceNV.transformT0 = SRTDataNV;//ä¸ºä¸€ä¸ªæè¿°åº”ç”¨åˆ°åŠ é€Ÿç»“æ„åœ¨time 0.0çš„å˜æ¢çš„ VkSRTDataNV
+									accelerationStructureSRTMotionInstanceNV.transformT1 = SRTDataNV;//ä¸ºä¸€ä¸ªæè¿°åº”ç”¨åˆ°åŠ é€Ÿç»“æ„åœ¨time 1.0çš„å˜æ¢çš„ VkSRTDataNV
 								}
-								accelerationStructureMotionInstanceDataNV.srtMotionInstance = accelerationStructureSRTMotionInstanceNV;//Îª°üº¬ SRT motion instanceÊı¾İµÄ VkAccelerationStructureSRTMotionInstanceNV
+								accelerationStructureMotionInstanceDataNV.srtMotionInstance = accelerationStructureSRTMotionInstanceNV;//ä¸ºåŒ…å« SRT motion instanceæ•°æ®çš„ VkAccelerationStructureSRTMotionInstanceNV
 							}
 
-							accelerationStructureMotionInstanceNV.data = accelerationStructureMotionInstanceDataNV;//ÊÇÒ»¸öVkAccelerationStructureMotionInstanceDataNV °üº¬¸Ãmotion instanceµÄÊı¾İ
+							accelerationStructureMotionInstanceNV.data = accelerationStructureMotionInstanceDataNV;//æ˜¯ä¸€ä¸ªVkAccelerationStructureMotionInstanceDataNV åŒ…å«è¯¥motion instanceçš„æ•°æ®
 
 
 						}
-						instanceDataKHR.data = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËconstµØÖ·*//*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressConstKHR*/ };//Èç¹ûarrayOfPointers ÎªVK_TRUE£¬ÔòdataÖ¸ÏòÒ»¸öÊı×é£¬Êı×éÖĞÃ¿¸öÔªËØÊÇÒ»¸öÖ¸ÏòVkAccelerationStructureInstanceKHR ½á¹¹ÌåµÄÖ¸Õë£¬·ñÔòdataÖ¸ÏòÒ»¸öVkAccelerationStructureInstanceKHR »òÕß VkAccelerationStructureMotionInstanceNV ½á¹¹ÌåµÄÊı×é
-						instanceDataKHR.arrayOfPointers = VK_FALSE;//Ö¸Ã÷dataÊÇ·ñÓÃ×÷ÊÇÒ»×éµØÖ·µÄÊıÖµ»òÕß¾ÍÊÇÒ»¸öÊı×é
+						instanceDataKHR.data = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯conståœ°å€*//*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//å¦‚æœarrayOfPointers ä¸ºVK_TRUEï¼Œåˆ™dataæŒ‡å‘ä¸€ä¸ªæ•°ç»„ï¼Œæ•°ç»„ä¸­æ¯ä¸ªå…ƒç´ æ˜¯ä¸€ä¸ªæŒ‡å‘VkAccelerationStructureInstanceKHR ç»“æ„ä½“çš„æŒ‡é’ˆï¼Œå¦åˆ™dataæŒ‡å‘ä¸€ä¸ªVkAccelerationStructureInstanceKHR æˆ–è€… VkAccelerationStructureMotionInstanceNV ç»“æ„ä½“çš„æ•°ç»„
+						instanceDataKHR.arrayOfPointers = VK_FALSE;//æŒ‡æ˜dataæ˜¯å¦ç”¨ä½œæ˜¯ä¸€ç»„åœ°å€çš„æ•°å€¼æˆ–è€…å°±æ˜¯ä¸€ä¸ªæ•°ç»„
 					}
-					geometryDataKHR.instances = instanceDataKHR;// VkAccelerationStructureGeometryInstancesDataKHR Öµ 
+					geometryDataKHR.instances = instanceDataKHR;// VkAccelerationStructureGeometryInstancesDataKHR å€¼ 
 				}
-				geometryKHR.geometry = geometryDataKHR;// VkAccelerationStructureGeometryDataKHRµÄunionÖµÃèÊö¸Ã¼ÓËÙ½á¹¹ÒıÓÃµÄ¼¸ºÎÊı¾İ
+				geometryKHR.geometry = geometryDataKHR;// VkAccelerationStructureGeometryDataKHRçš„unionå€¼æè¿°è¯¥åŠ é€Ÿç»“æ„å¼•ç”¨çš„å‡ ä½•æ•°æ®
 			}
-			accelerationStructureBuildGeometryInfoKHR.pGeometries = &geometryKHR;//Ò»×éVkAccelerationStructureGeometryKHR Êı×éÖ¸Õë
-			accelerationStructureBuildGeometryInfoKHR.ppGeometries = VK_NULL_HANDLE;//Ò»×éVkAccelerationStructureGeometryKHR Êı×éÖ¸ÕëµÄÊı×éÖ¸Õë  ,ºÍpGeometries ²»ÄÜÍ¬Ê±Ê¹ÓÃ,±ØÓĞÒ»¸öÎªVK_NULL_HANDLE,shaderÖĞÒÔ RayGeometryIndexKHR½øĞĞ·ÃÎÊ
-			accelerationStructureBuildGeometryInfoKHR.scratchData = VkDeviceOrHostAddressKHR{ .deviceAddress/*Í¨¹ıvkGetBufferDeviceAddressKHR·µ»Ø*/ = 0/*.hostAddress host¶ËµØÖ·*/ /*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceOrHostAddressKHR*/ };//ÎªÓÃÓÚ¹¹½¨µÄscratchµÄ device »òÕß host¶ËµÄÄÚ´æµØÖ·
+			accelerationStructureBuildGeometryInfoKHR.pGeometries = &geometryKHR;//ä¸€ç»„VkAccelerationStructureGeometryKHR æ•°ç»„æŒ‡é’ˆ
+			accelerationStructureBuildGeometryInfoKHR.ppGeometries = VK_NULL_HANDLE;//ä¸€ç»„VkAccelerationStructureGeometryKHR æ•°ç»„æŒ‡é’ˆçš„æ•°ç»„æŒ‡é’ˆ  ,å’ŒpGeometries ä¸èƒ½åŒæ—¶ä½¿ç”¨,å¿…æœ‰ä¸€ä¸ªä¸ºVK_NULL_HANDLE,shaderä¸­ä»¥ RayGeometryIndexKHRè¿›è¡Œè®¿é—®
+			accelerationStructureBuildGeometryInfoKHR.scratchData = VkDeviceOrHostAddressKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯åœ°å€*/ /*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressKHR*/ };//ä¸ºç”¨äºæ„å»ºçš„scratchçš„ device æˆ–è€… hostç«¯çš„å†…å­˜åœ°å€
 			/*
-			VkAccelerationStructureBuildGeometryInfoKHRÓĞĞ§ÓÃ·¨:
-			1.type ²»ÄÜÎªVK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR
-			2.Èç¹ûgeometryCount ²»Îª0£¬ÔòpGeometries »òppGeometries ±ØĞëÓĞÒ»¸öÎªÓĞĞ§µÄÖ¸Õë£¬ÁíÍâÒ»¸öÎªNULL
-			3.Èç¹ûtype ÎªVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR£¬Ôò£¨1£©pGeometries »òÕß ppGeometries ÖĞµÄgeometryType ±ØĞëÎªVK_GEOMETRY_TYPE_INSTANCES_KHR
-																		 £¨2£©geometryCount ±ØĞëÎª1
-			4.Èç¹ûtype ÎªVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR£¬Ôò£¨1£©pGeometries »òÕß ppGeometries ÖĞµÄgeometryType ²»ÄÜÎªVK_GEOMETRY_TYPE_INSTANCES_KHR
-																		    £¨2£©pGeometries »òÕß ppGeometries ÖĞµÄËùÓĞgeometryµÄgeometryType±ØĞëÏàÍ¬
-																		    £¨3£©geometryCount ±ØĞëĞ¡ÓÚµÈÓÚVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxGeometryCount
-																		    £¨4£©Èç¹ûpGeometries »òÕß ppGeometries ÖĞµÄËùÓĞgeometryµÄgeometryTypeÎªVK_GEOMETRY_TYPE_AABBS_KHR£¬ÔòËùÓĞgeometryÖĞµÄAABBs ±ØĞëĞ¡ÓÚVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPrimitiveCount
-																		    £¨5£©Èç¹ûpGeometries »òÕß ppGeometries ÖĞµÄËùÓĞgeometryµÄgeometryTypeÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬ÔòËùÓĞgeometryÖĞµÄtriangles ±ØĞëĞ¡ÓÚVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPrimitiveCount
-			5.Èç¹ûflagsº¬VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR£¬Ôòflags²»ÄÜº¬VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR
-			6.Èç¹ûdstAccelerationStructure ÒÔVkAccelerationStructureCreateInfoKHR::flagsÖĞº¬VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV ´´½¨£¬ÔòflagsÖĞ±ØĞëº¬ÓĞVK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV
-			7.Èç¹ûflagsÖĞ±ØĞëº¬ÓĞVK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV£¬ÔòdstAccelerationStructure ÒÔVkAccelerationStructureCreateInfoKHR::flagsÖĞº¬VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV ´´½¨
-			8.Èç¹ûflagsÖĞº¬VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV£¬Ôòtype ²»ÄÜÎªVK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR
-			9.Èç¹ûflagsÖĞº¬VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_UPDATE_EXT£¬Ôòflags ²»ÄÜÔÙ°üº¬VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT
+			VkAccelerationStructureBuildGeometryInfoKHRæœ‰æ•ˆç”¨æ³•:
+			1.type ä¸èƒ½ä¸ºVK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR
+			2.å¦‚æœgeometryCount ä¸ä¸º0ï¼Œåˆ™pGeometries æˆ–ppGeometries å¿…é¡»æœ‰ä¸€ä¸ªä¸ºæœ‰æ•ˆçš„æŒ‡é’ˆï¼Œå¦å¤–ä¸€ä¸ªä¸ºNULL
+			3.å¦‚æœtype ä¸ºVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHRï¼Œåˆ™ï¼ˆ1ï¼‰pGeometries æˆ–è€… ppGeometries ä¸­çš„geometryType å¿…é¡»ä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHR
+																		 ï¼ˆ2ï¼‰geometryCount å¿…é¡»ä¸º1
+			4.å¦‚æœtype ä¸ºVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHRï¼Œåˆ™ï¼ˆ1ï¼‰pGeometries æˆ–è€… ppGeometries ä¸­çš„geometryType ä¸èƒ½ä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHR
+																		    ï¼ˆ2ï¼‰pGeometries æˆ–è€… ppGeometries ä¸­çš„æ‰€æœ‰geometryçš„geometryTypeå¿…é¡»ç›¸åŒ
+																		    ï¼ˆ3ï¼‰geometryCount å¿…é¡»å°äºç­‰äºVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxGeometryCount
+																		    ï¼ˆ4ï¼‰å¦‚æœpGeometries æˆ–è€… ppGeometries ä¸­çš„æ‰€æœ‰geometryçš„geometryTypeä¸ºVK_GEOMETRY_TYPE_AABBS_KHRï¼Œåˆ™æ‰€æœ‰geometryä¸­çš„AABBs å¿…é¡»å°äºVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPrimitiveCount
+																		    ï¼ˆ5ï¼‰å¦‚æœpGeometries æˆ–è€… ppGeometries ä¸­çš„æ‰€æœ‰geometryçš„geometryTypeä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™æ‰€æœ‰geometryä¸­çš„triangles å¿…é¡»å°äºVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxPrimitiveCount
+			5.å¦‚æœflagså«VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHRï¼Œåˆ™flagsä¸èƒ½å«VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR
+			6.å¦‚æœdstAccelerationStructure ä»¥VkAccelerationStructureCreateInfoKHR::flagsä¸­å«VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV åˆ›å»ºï¼Œåˆ™flagsä¸­å¿…é¡»å«æœ‰VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV
+			7.å¦‚æœflagsä¸­å¿…é¡»å«æœ‰VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NVï¼Œåˆ™dstAccelerationStructure ä»¥VkAccelerationStructureCreateInfoKHR::flagsä¸­å«VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV åˆ›å»º
+			8.å¦‚æœflagsä¸­å«VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NVï¼Œåˆ™type ä¸èƒ½ä¸ºVK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR
+			9.å¦‚æœflagsä¸­å«VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_UPDATE_EXTï¼Œåˆ™flags ä¸èƒ½å†åŒ…å«VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT
 
 			*/
 
 
-
+			//æŒ‡å®šgeometryä¸­æ•°æ®å­˜å‚¨çš„å†…å­˜åç§»ä¿¡æ¯ï¼Œå¦‚ä½•è·å–å’Œè§£é‡Šè¿™äº›æ•°æ®æ ¹æ®VkGeometryTypeKHRï¼ŒæŒ‡å®šå†…å­˜çš„ä¸€å®šåç§»å¤„å¼€å§‹çš„æ•°æ®å…·ä½“æ˜¯ä»€ä¹ˆï¼Œå‚è§p3259
 			VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfoKHR{};
-			accelerationStructureBuildRangeInfoKHR.firstVertex = 0;
-			accelerationStructureBuildRangeInfoKHR.primitiveCount = 1;
-			accelerationStructureBuildRangeInfoKHR.transformOffset = 0;
-			accelerationStructureBuildRangeInfoKHR.transformOffset = 0;
+			accelerationStructureBuildRangeInfoKHR.firstVertex = 0;//ä¸ºgeometryçš„ä¸‰è§’å½¢å›¾å…ƒçš„ç¬¬ä¸€ä¸ªé¡¶ç‚¹çš„ç´¢å¼•
+			accelerationStructureBuildRangeInfoKHR.primitiveCount = 1;//å®šä¹‰å¯¹åº”åŠ é€Ÿç»“æ„ä¸­geometryçš„å›¾å…ƒæ•°é‡
+			accelerationStructureBuildRangeInfoKHR.primitiveOffset = 0;//æŒ‡å®šå›¾å…ƒæ•°æ®åœ¨å†…å­˜ä¸­çš„èµ·å§‹å­—èŠ‚åç§»é‡
+			accelerationStructureBuildRangeInfoKHR.transformOffset = 0;//æŒ‡å®šå˜æ¢çŸ©é˜µæ•°æ®åœ¨å†…å­˜ä¸­çš„èµ·å§‹å­—èŠ‚åç§»é‡
+			/*
+			VkAccelerationStructureBuildRangeInfoKHRæœ‰æ•ˆç”¨æ³•:
+			1.å¯¹äºç±»å‹ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRçš„geometriesï¼Œï¼ˆ1ï¼‰å¦‚æœgeometry ä½¿ç”¨ç´¢å¼•ï¼Œåˆ™æŒ‡å‘VkAccelerationStructureGeometryTrianglesDataKHR::indexDataçš„primitiveOffsetå¿…é¡»æ˜¯VkAccelerationStructureGeometryTrianglesDataKHR::indexTypeå­—èŠ‚å¤§å°çš„æ•´æ•°å€
+																    ï¼ˆ2ï¼‰å¦‚æœgeometryä¸é€‚ç”¨ç´¢å¼•ï¼Œåˆ™æŒ‡å‘VkAccelerationStructureGeometryTrianglesDataKHR::vertexDataçš„primitiveOffsetå¿…é¡»æ˜¯VkAccelerationStructureGeometryTrianglesDataKHR::vertexFormatåˆ†é‡çš„å­—èŠ‚å¤§å°çš„æ•´æ•°å€
+																    ï¼ˆ3ï¼‰åˆ™æŒ‡å‘VkAccelerationStructureGeometryTrianglesDataKHR::transformDataçš„transformOffsetå¿…é¡»æ˜¯16çš„æ•´æ•°å€
+			2.å¯¹äºç±»å‹ä¸ºVK_GEOMETRY_TYPE_AABBS_KHRçš„geometriesï¼Œåˆ™æŒ‡å‘VkAccelerationStructureGeometryAabbsDataKHR::dataçš„primitiveOffsetå¿…é¡»æ˜¯8çš„æ•´æ•°å€
+			3.å¯¹äºç±»å‹ä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„geometriesï¼Œåˆ™æŒ‡å‘VkAccelerationStructureGeometryInstancesDataKHR::dataçš„primitiveOffsetå¿…é¡»æ˜¯16çš„æ•´æ•°å€
+			*/
+			
 			VkAccelerationStructureBuildRangeInfoKHR* accelerationStructureBuildRangeInfoKHRPointer = &accelerationStructureBuildRangeInfoKHR;
 
-			vkCmdBuildAccelerationStructuresKHR(commandBuffer, 1/*infoCount,Ö¸Ã÷Òª¹¹½¨µÄ¼ÓËÙ½á¹¹µÄÊıÁ¿*/, &accelerationStructureBuildGeometryInfoKHR/*pInfos,infoCount¸öVkAccelerationStructureBuildGeometryInfoKHR Êı×éÖ¸ÕëÖ¸Ã÷Ïà¹Ø²ÎÊı */, &accelerationStructureBuildRangeInfoKHRPointer/*ppBuildRangeInfos£¬infoCount¸öVkAccelerationStructureBuildRangeInfoKHRÖ¸ÕëµÄÊı×éÖÖÖ¸ÕëÖ¸Ã÷pInfoÖĞ¼ÓËÙ½á¹¹Êı¾İ´æ´¢µÄ¶¯Ì¬Æ«ÒÆ*/);//¶ÔsrcAccelerationStructure£¬dstAccelerationStructure ÒÔ¼°scratchDataµÄ±ØĞëÒÔVK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stage½øĞĞÍ¬²½£¬ÒÔVK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR »òÕß VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR½øĞĞ·ÃÎÊ,³ı´ËÖ®ÍâËùÓĞµÄbufferÖ»ÄÜÔÚÏàÍ¬½×¶ÎÒÔVK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR·ÃÎÊ£¬
+			vkCmdBuildAccelerationStructuresKHR(commandBuffer, 1/*infoCount,æŒ‡æ˜è¦æ„å»ºçš„åŠ é€Ÿç»“æ„çš„æ•°é‡*/, &accelerationStructureBuildGeometryInfoKHR/*pInfos,infoCountä¸ªVkAccelerationStructureBuildGeometryInfoKHR æ•°ç»„æŒ‡é’ˆæŒ‡æ˜ç›¸å…³å‚æ•° */, &accelerationStructureBuildRangeInfoKHRPointer/*ppBuildRangeInfosï¼ŒinfoCountä¸ªVkAccelerationStructureBuildRangeInfoKHRæŒ‡é’ˆçš„æ•°ç»„ç§æŒ‡é’ˆæŒ‡æ˜pInfoä¸­åŠ é€Ÿç»“æ„æ•°æ®å­˜å‚¨çš„åŠ¨æ€åç§»*/);//å¯¹srcAccelerationStructureï¼ŒdstAccelerationStructure ä»¥åŠscratchDataçš„å¿…é¡»ä»¥VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageè¿›è¡ŒåŒæ­¥ï¼Œä»¥VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR æˆ–è€… VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHRè¿›è¡Œè®¿é—®,é™¤æ­¤ä¹‹å¤–æ‰€æœ‰çš„bufferåªèƒ½åœ¨ç›¸åŒé˜¶æ®µä»¥VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHRè®¿é—®ï¼Œ
 			/*
-			vkCmdBuildAccelerationStructuresKHRÓĞĞ§ÓÃ·¨:
-			1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureÌØĞÔ±ØĞë¿ªÆô
-			2.pInfosÖĞÃ¿¸öÔªËØµÄmode±ØĞëÊÇÒ»¸öÓĞĞ§µÄVkBuildAccelerationStructureModeKHRÖµ
-			3.pInfosÖĞÈÎºÎsrcAccelerationStructure²»ÊÇVK_NULL_HANDLEµÄÔªËØ£¬ÆäsrcAccelerationStructure±ØĞëÊÇÒ»¸öÓĞĞ§µÄVkAccelerationStructureKHR ¾ä±ú
-			4.¶ÔpInfosÖĞÃ¿¸öÔªËØ£¬Èç¹ûÆämodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬Ôò¸ÃÔªËØµÄsrcAccelerationStructure²»ÄÜÎªVK_NULL_HANDLE	
-			5.¶ÔpInfosÖĞÈÎºÎÔªËØµÄsrcAccelerationStructure ²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄdstAccelerationStructure ÏàÍ¬
-			6.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructure ²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄdstAccelerationStructure ÏàÍ¬
-			7.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructure ±ØĞëÊÇÒ»¸öÓĞĞ§µÄVkAccelerationStructureKHR ¾ä±ú
-			8.pInfosÖĞÃ¿¸öÔªËØ£¬Ôò£¨1£©Èç¹ûÆätypeÎªVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR£¬ÔòÆädstAccelerationStructure±ØĞëVkAccelerationStructureCreateInfoKHR::typeÎªVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR »òÕß VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR´´½¨
-								  £¨2£©Èç¹ûÆätypeÎªVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR£¬ÔòÆädstAccelerationStructure±ØĞëVkAccelerationStructureCreateInfoKHR::typeÎªVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR »òÕß VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR´´½¨
-								  £¨3£©Èç¹ûÆämodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬ÔòsrcAccelerationStructureÖĞinactive primitives²»ÄÜ±äÎªactiveµÄ£¬active primitives²»ÄÜ±äÎªinactiveµÄ
-			9.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructure²»ÄÜ±»ÈÎºÎÆäËûÔªËØµÄgeometryTypeÎªVK_GEOMETRY_TYPE_INSTANCES_KHRµÄ  pGeometries»òÕß ppGeometriesÖĞµÄÔªËØµÄ geometry.instances.dataÒıÓÃ
-			10.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûmodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR  µÄÔªËØµÄsrcAccelerationStructureµÄÄÚ´æ·¶Î§ÖØµş
-			11.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§ÖØµş
-			12.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄscratchDataµÄÄÚ´æ·¶Î§ÖØµş
-			13.pInfosÖĞÈÎºÎÔªËØµÄscratchDataµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄscratchDataµÄÄÚ´æ·¶Î§ÖØµş
-			14.pInfosÖĞÈÎºÎÔªËØµÄscratchDataµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûmodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR(°üº¬ÏàÍ¬ÔªËØ)  µÄÔªËØµÄsrcAccelerationStructureÔªËØµÄsrcAccelerationStructureµÄÄÚ´æ·¶Î§ÖØµş
-			15.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄgeometryTypeÎªVK_GEOMETRY_TYPE_INSTANCES_KHRµÄ  pGeometries»òÕß ppGeometriesÖĞµÄÈÎºÎÔªËØµÄ geometry.instances.dataÒıÓÃµÄ¼ÓËÙ½á¹¹µÄÄÚ´æ·¶Î§ÖØµş
-			16.pInfosÖĞÃ¿¸öÔªËØ£¬Èç¹ûÆämodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬£¨1£©ÔòsrcAccelerationStructure±ØĞëÔÚÏÈÇ°ÒÔVkAccelerationStructureBuildGeometryInfoKHR::flagsÉèÖÃÓĞVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR ¹¹½¨ºÃÁË
-																							  £¨2£©ÔòÆäsrcAccelerationStructure ºÍdstAccelerationStructure ±ØĞëÊÇÍ¬Ò»¸ö¶ÔÏó»òÕß²»º¬ÓĞÈÎºÎmemory aliasing
-																							  £¨3£©ÔòÆägeometryCount ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometryCountÏàÍ¬
-																							  £¨4£©ÔòÆäflags ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄflagsÏàÍ¬
-																							  £¨5£©ÔòÆätype ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄtypeÏàÍ¬
-																							  £¨6£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬ ÔòÆägeometryType ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometryTypeÏàÍ¬
-																							  £¨7£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬ ÔòÆäflags ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄflagsÏàÍ¬
-																							  £¨8£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬ÔòÆägeometry.triangles.vertexFormat ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.vertexFormatÏàÍ¬
-																							  £¨9£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬ÔòÆägeometry.triangles.maxVertex ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.maxVertexÏàÍ¬
-																							  £¨10£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬ÔòÆägeometry.triangles.indexType ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.indexTypeÏàÍ¬
-																							  £¨11£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬Èç¹ûsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.transformDataÎªNULLÔòÆägeometry.triangles.transformData ±ØĞëÎªNULL 
-																							  £¨12£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬Èç¹ûsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.transformData²»ÎªNULLÔòÆägeometry.triangles.transformData ±ØĞë²»ÎªNULL 
-																							  £¨13£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬Èç¹ûÆägeometry.triangles.indexType ²»ÎªVK_INDEX_TYPE_NONE_KHR£¬ÔòÃ¿¸öÒıÓÃµÄË÷ÒıÖµ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨ÒıÓÃµÄË÷ÒıÖµÏàÍ¬
-																							  £¨14£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬ÔòÆä¶ÔÓ¦µÄVkAccelerationStructureBuildRangeInfoKHRµÄprimitiveCount ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄprimitiveCountÏàÍ¬
-																							  £¨15£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹û¸ÃgeometryÊ¹ÓÃË÷Òıindices£¬ÔòÆä¶ÔÓ¦µÄVkAccelerationStructureBuildRangeInfoKHRµÄfirstVertex ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄfirstVertex ÏàÍ¬
-			17.¶ÔpInfos[i].pGeometries »òÕß pInfos[i].ppGeometries Ã¿¸öÒÔgeometryTypeÎªVK_GEOMETRY_TYPE_INSTANCES_KHRµÄÔªËØ£¬Æä¶ÔÓ¦µÄppBuildRangeInfos[i][j].primitiveCount ±ØĞëĞ¡ÓÚµÈÓÚVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount
-			18.¶ÔpInfosÖĞµÄÃ¿¸öÔªËØ£¬ÓÃÓÚ´´½¨dstAccelerationStructureµÄbuffer±ØĞë°ó¶¨µ½VkDeviceMemory¶ÔÏóÉÏ
-			19.pInfosÖĞÃ¿¸öÔªËØ£¬Èç¹ûÆämodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬ÔòÓÃÓÚ´´½¨dstAccelerationStructureµÄbuffer±ØĞë°ó¶¨µ½VkDeviceMemory¶ÔÏóÉÏ
-			20.¶ÔpInfosÖĞµÄÃ¿¸öÔªËØ£¬ÓÃÓÚ´´½¨±»pGeometries »òÕß ppGeometriesÖĞgeometryTypeµÄVK_GEOMETRY_TYPE_INSTANCES_KHR ÒıÓÃµÄacceleration structureµÄbuffer±ØĞë°ó¶¨µ½VkDeviceMemory¶ÔÏóÉÏ
-			21.Èç¹ûpInfos[i].modeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR »òÕß VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬ÔòËùÓĞÔÚpInfos[i].scratchData.deviceAddressµ½pInfos[i].scratchData.deviceAddress + N - 1 Ö®¼äµÄµØÖ·±ØĞëÊÇÔÚÍ¬Ò»¸öbufferµÄdevice address rangeÄÚ£¬ÆäÖĞNÊÇvkGetAccelerationStructureBuildSizesKHR´«ÈëÏàÍ¬VkAccelerationStructureBuildGeometryInfoKHRÒÔ¼°primitive count  ·µ»ØµÄVkAccelerationStructureBuildSizesInfoKHR½á¹¹ÖĞbuildScratchSize³ÉÔ±µÄÖµ
-			22.ÈÎºÎÆäbuffer device addresses ±»pInfos[i].pGeometries ÒÔ¼° pInfos[i].ppGeometriesÖĞµÄËùÓĞgeometry.triangles.vertexData, geometry.triangles.indexData, geometry.triangles.transformData, geometry.aabbs.data, ÒÔ¼° geometry.instances.dataËùÖ¸µÄbuffer±ØĞëÒÔVK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR ´´½¨
-			23.ÈÎºÎÆäbuffer device addresses ±» pInfos[i].scratchData.deviceAddressËùÖ¸µÄbuffer±ØĞëÒÔVK_BUFFER_USAGE_STORAGE_BUFFER_BIT ´´½¨
-			24.¶ÔpInfosÖĞµÄÃ¿¸öÔªËØ£¬Ôò£¨1£©ÆäscratchData.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-									   £¨2£©Èç¹ûscratchData.deviceAddressÊÇÒ»¸önon-sparseµÄaddress£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-									   £¨3£©ÆäscratchData.deviceAddress ±ØĞëÊÇVkPhysicalDeviceAccelerationStructurePropertiesKHR::minAccelerationStructureScratchOffsetAlignmentµÄ±¶Êı
-			25.¶ÔpInfos[i].pGeometries »òÕß pInfos[i].ppGeometriesÖĞÈÎºÎgeometryTypeÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR µÄÔªËØ£¬Ôò£¨1£©geometry.triangles.vertexData.deviceAddress±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																															   £¨2£©Èç¹ûgeometry.triangles.vertexData.deviceAddressËù¶Ônon-sparse µÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																															   £¨3£©geometry.triangles.vertexData.deviceAddressÖĞ±ØĞë¶ÔÆëµ½vertexFormatÖĞ×îĞ¡·ÖÁ¿µÄ×Ö½ÚÊı´óĞ¡
-																															   £¨4£©Èç¹ûgeometry.triangles.indexType ²»ÎªVK_INDEX_TYPE_NONE_KHR£¬Ôògeometry.triangles.indexData.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																															   £¨5£©Èç¹ûgeometry.triangles.indexType ²»ÎªVK_INDEX_TYPE_NONE_KHR£¬Èç¹ûgeometry.triangles.indexData.deviceAddress ÊÇÒ»¸önon-sparseµÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																															   £¨6£©Èç¹ûgeometry.triangles.indexType ²»ÎªVK_INDEX_TYPE_NONE_KHR£¬Ôògeometry.triangles.indexData.deviceAddress ÖĞ±ØĞë¶ÔÆëµ½indexTypeµÄ×Ö½ÚÊı´óĞ¡
-																															   £¨7£©Èç¹ûgeometry.triangles.transformData.deviceAddress ²»Îª0£¬Ôògeometry.triangles.transformData.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																															   £¨8£©Èç¹ûgeometry.triangles.transformData.deviceAddress ÊÇÒ»¸önon-sparseµÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																															   £¨9£©Èç¹ûgeometry.triangles.transformData.deviceAddress ²»Îª0£¬Ôògeometry.triangles.transformData.deviceAddress ÖĞ±ØĞë¶ÔÆëµ½16×Ö½Ú´óĞ¡
-			26.¶ÔpInfos[i].pGeometries »òÕß pInfos[i].ppGeometriesÖĞÈÎºÎgeometryTypeÎªVK_GEOMETRY_TYPE_AABBS_KHR µÄÔªËØ£¬Ôò£¨1£©geometry.aabbs.data.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																														   £¨2£©Èç¹ûgeometry.aabbs.data.deviceAddress ÊÇÒ»¸önon-sparseµÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																														   £¨3£©geometry.aabbs.data.deviceAddress ±ØĞë¶ÔÆëµ½8×Ö½Ú
-			27.¶ÔpInfos[i].pGeometries »òÕß pInfos[i].ppGeometriesÖĞÈÎºÎgeometryTypeÎªVK_GEOMETRY_TYPE_INSTANCES_KHR µÄÔªËØ£¬Ôò£¨1£©Èç¹ûgeometry.arrayOfPointers ÎªVK_FALSE£¬Ôògeometry.instances.data.deviceAddress ±ØĞë¶ÔÆëµ½16×Ö½Ú
-																															   £¨2£©Èç¹ûgeometry.arrayOfPointers ÎªVK_TRUE£¬Ôògeometry.instances.data.deviceAddress ±ØĞë¶ÔÆëµ½8×Ö½Ú
-																															   £¨3£©Èç¹ûgeometry.arrayOfPointers ÎªVK_TRUE£¬Ôògeometry.instances.data.deviceAddressÄÚ´æÖĞµÄÃ¿¸öÔªËØ±ØĞë¶ÔÆëµ½16×Ö½Ú
-																															   £¨4£©geometry.instances.data.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																															   £¨5£©Èç¹ûgeometry.instances.data.deviceAddress ÊÇÒ»¸önon-sparseµÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																															   £¨6£©geometry.instances.data.deviceAddressÄÚ´æÖĞµÄÃ¿¸öVkAccelerationStructureInstanceKHR::accelerationStructureReference ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address »òÕß0
-			28.commandBuffer ²»ÄÜÊÇÒ»¸öprotected command buffer
-			29.¶ÔpInfos[i]µÄÃ¿¸öÔªËØ£¬dstAccelerationStructure ±ØĞëÒÔVkAccelerationStructureCreateInfoKHR::size´óÓÚµÈÓÚ²éÑ¯·µ»ØµÄÄÚ´æ´óĞ¡£¬¼ûµ÷ÓÃvkGetAccelerationStructureBuildSizesKHR£¬´«ÈëpBuildInfo = pInfos[i]ÒÔ¼°pMaxPrimitiveCountsÖĞÃ¿¸öÔªËØÒª´óÓÚµÈÓÚ¶ÔÓ¦ppBuildRangeInfos[i][j].primitiveCountµÄÖµ£¬jÔÚ[0,pInfos[i].geometryCount)
-			30.ppBuildRangeInfos[i]µÄÃ¿¸öÔªËØ±ØĞëÊÇÒ»¸öÓĞĞ§µÄpInfos[i].geometryCount ¸ö VkAccelerationStructureBuildRangeInfoKHR ½á¹¹ÌåÖ¸ÕëÊı×éµÄÖ¸Õë
+			vkCmdBuildAccelerationStructuresKHRæœ‰æ•ˆç”¨æ³•:
+			1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureç‰¹æ€§å¿…é¡»å¼€å¯
+			2.pInfosä¸­æ¯ä¸ªå…ƒç´ çš„modeå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuildAccelerationStructureModeKHRå€¼
+			3.pInfosä¸­ä»»ä½•srcAccelerationStructureä¸æ˜¯VK_NULL_HANDLEçš„å…ƒç´ ï¼Œå…¶srcAccelerationStructureå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureKHR å¥æŸ„
+			4.å¯¹pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™è¯¥å…ƒç´ çš„srcAccelerationStructureä¸èƒ½ä¸ºVK_NULL_HANDLE	
+			5.å¯¹pInfosä¸­ä»»ä½•å…ƒç´ çš„srcAccelerationStructure ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„dstAccelerationStructure ç›¸åŒ
+			6.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructure ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„dstAccelerationStructure ç›¸åŒ
+			7.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructure å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureKHR å¥æŸ„
+			8.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœå…¶typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHRï¼Œåˆ™å…¶dstAccelerationStructureå¿…é¡»VkAccelerationStructureCreateInfoKHR::typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR æˆ–è€… VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHRåˆ›å»º
+								  ï¼ˆ2ï¼‰å¦‚æœå…¶typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHRï¼Œåˆ™å…¶dstAccelerationStructureå¿…é¡»VkAccelerationStructureCreateInfoKHR::typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR æˆ–è€… VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHRåˆ›å»º
+								  ï¼ˆ3ï¼‰å¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™srcAccelerationStructureä¸­inactive primitivesä¸èƒ½å˜ä¸ºactiveçš„ï¼Œactive primitivesä¸èƒ½å˜ä¸ºinactiveçš„
+			9.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureä¸èƒ½è¢«ä»»ä½•å…¶ä»–å…ƒç´ çš„geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„  pGeometriesæˆ–è€… ppGeometriesä¸­çš„å…ƒç´ çš„ geometry.instances.dataå¼•ç”¨
+			10.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR  çš„å…ƒç´ çš„srcAccelerationStructureçš„å†…å­˜èŒƒå›´é‡å 
+			11.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´é‡å 
+			12.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´é‡å 
+			13.pInfosä¸­ä»»ä½•å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´é‡å 
+			14.pInfosä¸­ä»»ä½•å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR(åŒ…å«ç›¸åŒå…ƒç´ )  çš„å…ƒç´ çš„srcAccelerationStructureå…ƒç´ çš„srcAccelerationStructureçš„å†…å­˜èŒƒå›´é‡å 
+			15.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„  pGeometriesæˆ–è€… ppGeometriesä¸­çš„ä»»ä½•å…ƒç´ çš„ geometry.instances.dataå¼•ç”¨çš„åŠ é€Ÿç»“æ„çš„å†…å­˜èŒƒå›´é‡å 
+			16.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œï¼ˆ1ï¼‰åˆ™srcAccelerationStructureå¿…é¡»åœ¨å…ˆå‰ä»¥VkAccelerationStructureBuildGeometryInfoKHR::flagsè®¾ç½®æœ‰VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR æ„å»ºå¥½äº†
+																							  ï¼ˆ2ï¼‰åˆ™å…¶srcAccelerationStructure å’ŒdstAccelerationStructure å¿…é¡»æ˜¯åŒä¸€ä¸ªå¯¹è±¡æˆ–è€…ä¸å«æœ‰ä»»ä½•memory aliasing
+																							  ï¼ˆ3ï¼‰åˆ™å…¶geometryCount å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometryCountç›¸åŒ
+																							  ï¼ˆ4ï¼‰åˆ™å…¶flags å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„flagsç›¸åŒ
+																							  ï¼ˆ5ï¼‰åˆ™å…¶type å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„typeç›¸åŒ
+																							  ï¼ˆ6ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œ åˆ™å…¶geometryType å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometryTypeç›¸åŒ
+																							  ï¼ˆ7ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œ åˆ™å…¶flags å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„flagsç›¸åŒ
+																							  ï¼ˆ8ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶geometry.triangles.vertexFormat å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.vertexFormatç›¸åŒ
+																							  ï¼ˆ9ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶geometry.triangles.maxVertex å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.maxVertexç›¸åŒ
+																							  ï¼ˆ10ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶geometry.triangles.indexType å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.indexTypeç›¸åŒ
+																							  ï¼ˆ11ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œå¦‚æœsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.transformDataä¸ºNULLåˆ™å…¶geometry.triangles.transformData å¿…é¡»ä¸ºNULL 
+																							  ï¼ˆ12ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œå¦‚æœsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.transformDataä¸ä¸ºNULLåˆ™å…¶geometry.triangles.transformData å¿…é¡»ä¸ä¸ºNULL 
+																							  ï¼ˆ13ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œå¦‚æœå…¶geometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™æ¯ä¸ªå¼•ç”¨çš„ç´¢å¼•å€¼å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºå¼•ç”¨çš„ç´¢å¼•å€¼ç›¸åŒ
+																							  ï¼ˆ14ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶å¯¹åº”çš„VkAccelerationStructureBuildRangeInfoKHRçš„primitiveCount å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„primitiveCountç›¸åŒ
+																							  ï¼ˆ15ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœè¯¥geometryä½¿ç”¨ç´¢å¼•indicesï¼Œåˆ™å…¶å¯¹åº”çš„VkAccelerationStructureBuildRangeInfoKHRçš„firstVertex å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„firstVertex ç›¸åŒ
+			17.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometries æ¯ä¸ªä»¥geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„å…ƒç´ ï¼Œå…¶å¯¹åº”çš„ppBuildRangeInfos[i][j].primitiveCount å¿…é¡»å°äºç­‰äºVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount
+			18.å¯¹pInfosä¸­çš„æ¯ä¸ªå…ƒç´ ï¼Œç”¨äºåˆ›å»ºdstAccelerationStructureçš„bufferå¿…é¡»ç»‘å®šåˆ°VkDeviceMemoryå¯¹è±¡ä¸Š
+			19.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™ç”¨äºåˆ›å»ºdstAccelerationStructureçš„bufferå¿…é¡»ç»‘å®šåˆ°VkDeviceMemoryå¯¹è±¡ä¸Š
+			20.å¯¹pInfosä¸­çš„æ¯ä¸ªå…ƒç´ ï¼Œç”¨äºåˆ›å»ºè¢«pGeometries æˆ–è€… ppGeometriesä¸­geometryTypeçš„VK_GEOMETRY_TYPE_INSTANCES_KHR å¼•ç”¨çš„acceleration structureçš„bufferå¿…é¡»ç»‘å®šåˆ°VkDeviceMemoryå¯¹è±¡ä¸Š
+			21.å¦‚æœpInfos[i].modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR æˆ–è€… VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™æ‰€æœ‰åœ¨pInfos[i].scratchData.deviceAddressåˆ°pInfos[i].scratchData.deviceAddress + N - 1 ä¹‹é—´çš„åœ°å€å¿…é¡»æ˜¯åœ¨åŒä¸€ä¸ªbufferçš„device address rangeå†…ï¼Œå…¶ä¸­Næ˜¯vkGetAccelerationStructureBuildSizesKHRä¼ å…¥ç›¸åŒVkAccelerationStructureBuildGeometryInfoKHRä»¥åŠprimitive count  è¿”å›çš„VkAccelerationStructureBuildSizesInfoKHRç»“æ„ä¸­buildScratchSizeæˆå‘˜çš„å€¼
+			22.ä»»ä½•å…¶buffer device addresses è¢«pInfos[i].pGeometries ä»¥åŠ pInfos[i].ppGeometriesä¸­çš„æ‰€æœ‰geometry.triangles.vertexData, geometry.triangles.indexData, geometry.triangles.transformData, geometry.aabbs.data, ä»¥åŠ geometry.instances.dataæ‰€æŒ‡çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR åˆ›å»º
+			23.ä»»ä½•å…¶buffer device addresses è¢« pInfos[i].scratchData.deviceAddressæ‰€æŒ‡çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_STORAGE_BUFFER_BIT åˆ›å»º
+			24.å¯¹pInfosä¸­çš„æ¯ä¸ªå…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰å…¶scratchData.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+									   ï¼ˆ2ï¼‰å¦‚æœscratchData.deviceAddressæ˜¯ä¸€ä¸ªnon-sparseçš„addressï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+									   ï¼ˆ3ï¼‰å…¶scratchData.deviceAddress å¿…é¡»æ˜¯VkPhysicalDeviceAccelerationStructurePropertiesKHR::minAccelerationStructureScratchOffsetAlignmentçš„å€æ•°
+			25.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰geometry.triangles.vertexData.deviceAddresså¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ2ï¼‰å¦‚æœgeometry.triangles.vertexData.deviceAddressæ‰€å¯¹non-sparse çš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ3ï¼‰geometry.triangles.vertexData.deviceAddressä¸­å¿…é¡»å¯¹é½åˆ°vertexFormatä¸­æœ€å°åˆ†é‡çš„å­—èŠ‚æ•°å¤§å°
+																															   ï¼ˆ4ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™geometry.triangles.indexData.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ5ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œå¦‚æœgeometry.triangles.indexData.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ6ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™geometry.triangles.indexData.deviceAddress ä¸­å¿…é¡»å¯¹é½åˆ°indexTypeçš„å­—èŠ‚æ•°å¤§å°
+																															   ï¼ˆ7ï¼‰å¦‚æœgeometry.triangles.transformData.deviceAddress ä¸ä¸º0ï¼Œåˆ™geometry.triangles.transformData.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ8ï¼‰å¦‚æœgeometry.triangles.transformData.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ9ï¼‰å¦‚æœgeometry.triangles.transformData.deviceAddress ä¸ä¸º0ï¼Œåˆ™geometry.triangles.transformData.deviceAddress ä¸­å¿…é¡»å¯¹é½åˆ°16å­—èŠ‚å¤§å°
+			26.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_AABBS_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰geometry.aabbs.data.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																														   ï¼ˆ2ï¼‰å¦‚æœgeometry.aabbs.data.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																														   ï¼ˆ3ï¼‰geometry.aabbs.data.deviceAddress å¿…é¡»å¯¹é½åˆ°8å­—èŠ‚
+			27.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœgeometry.arrayOfPointers ä¸ºVK_FALSEï¼Œåˆ™geometry.instances.data.deviceAddress å¿…é¡»å¯¹é½åˆ°16å­—èŠ‚
+																															   ï¼ˆ2ï¼‰å¦‚æœgeometry.arrayOfPointers ä¸ºVK_TRUEï¼Œåˆ™geometry.instances.data.deviceAddress å¿…é¡»å¯¹é½åˆ°8å­—èŠ‚
+																															   ï¼ˆ3ï¼‰å¦‚æœgeometry.arrayOfPointers ä¸ºVK_TRUEï¼Œåˆ™geometry.instances.data.deviceAddresså†…å­˜ä¸­çš„æ¯ä¸ªå…ƒç´ å¿…é¡»å¯¹é½åˆ°16å­—èŠ‚
+																															   ï¼ˆ4ï¼‰geometry.instances.data.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ5ï¼‰å¦‚æœgeometry.instances.data.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ6ï¼‰geometry.instances.data.deviceAddresså†…å­˜ä¸­çš„æ¯ä¸ªVkAccelerationStructureInstanceKHR::accelerationStructureReference å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address æˆ–è€…0
+			28.commandBuffer ä¸èƒ½æ˜¯ä¸€ä¸ªprotected command buffer
+			29.å¯¹pInfos[i]çš„æ¯ä¸ªå…ƒç´ ï¼ŒdstAccelerationStructure å¿…é¡»ä»¥VkAccelerationStructureCreateInfoKHR::sizeå¤§äºç­‰äºæŸ¥è¯¢è¿”å›çš„å†…å­˜å¤§å°ï¼Œè§è°ƒç”¨vkGetAccelerationStructureBuildSizesKHRï¼Œä¼ å…¥pBuildInfo = pInfos[i]ä»¥åŠpMaxPrimitiveCountsä¸­æ¯ä¸ªå…ƒç´ è¦å¤§äºç­‰äºå¯¹åº”ppBuildRangeInfos[i][j].primitiveCountçš„å€¼ï¼Œjåœ¨[0,pInfos[i].geometryCount)
+			30.ppBuildRangeInfos[i]çš„æ¯ä¸ªå…ƒç´ å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„pInfos[i].geometryCount ä¸ª VkAccelerationStructureBuildRangeInfoKHR ç»“æ„ä½“æŒ‡é’ˆæ•°ç»„çš„æŒ‡é’ˆ
 			*/
 
 
 
 
-			//¹¹½¨ acceleration structures£¬ÆäÖĞÒ»Ğ©²ÎÊı´ÓdeviceÖĞ»ñÈ¡
-			VkDeviceAddress parameDeviceAddress{/*¼ÙÉèÕâÊÇÒ»¸öÓĞĞ§µÄVkDeviceAddress*/ };
+			//æ„å»º acceleration structuresï¼Œå…¶ä¸­ä¸€äº›å‚æ•°ä»deviceä¸­è·å–
+			VkDeviceAddress parameDeviceAddress{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceAddress*/ };
 			uint32_t paramStride{};
 			uint32_t maxPrimitiveCount{};
 			uint32_t* pMaxPrimitiveCount = &maxPrimitiveCount;
-			vkCmdBuildAccelerationStructuresIndirectKHR(commandBuffer, 1/*infoCount,Ö¸Ã÷Òª¹¹½¨µÄ¼ÓËÙ½á¹¹µÄÊıÁ¿*/, &accelerationStructureBuildGeometryInfoKHR/*pInfos,infoCount¸öVkAccelerationStructureBuildGeometryInfoKHR Êı×éÖ¸ÕëÖ¸Ã÷Ïà¹Ø²ÎÊı */,
-				&parameDeviceAddress/*pIndirectDeviceAddresses,ÎªinfoCount¸ö buffer device addresses£¬Ö¸Ïò pInfos[i].geometryCount VkAccelerationStructureBuildRangeInfoKHRÖ¸Ã÷¼ÓËÙ½á¹¹Êı¾İ´æ´¢µÄ¶¯Ì¬Æ«ÒÆ*/, &paramStride/*pIndirectStrides,ÎªinfoCount¸öpIndirectDeviceAddressesÖĞÔªËØÖ®¼äµÄ×Ö½Ú²½³¤.*/, &pMaxPrimitiveCount/*ppMaxPrimitiveCounts,ÎªinfoCount¸öÖ¸ÏòpInfos[i].geometryCount¸öÖµµÄÖ¸ÕëµÄÊı×éÖ¸ÕëÖ¸Ã÷Ã¿¸ögeometry¹¹½¨µÄ×î´óµÄÍ¼ÔªÊıÁ¿*/);// pIndirectDeviceAddressesÔÚVK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageÖĞÍ¬²½£¬ÒÔVK_ACCESS_INDIRECT_COMMAND_READ_BIT½øĞĞ·ÃÎÊ£¬ÆäËûµÄ×ÊÔ´µÄÍ¬²½ºÍ·ÃÎÊºÍ vkCmdBuildAccelerationStructuresKHRÏàÍ¬
+			vkCmdBuildAccelerationStructuresIndirectKHR(commandBuffer, 1/*infoCount,æŒ‡æ˜è¦æ„å»ºçš„åŠ é€Ÿç»“æ„çš„æ•°é‡*/, &accelerationStructureBuildGeometryInfoKHR/*pInfos,infoCountä¸ªVkAccelerationStructureBuildGeometryInfoKHR æ•°ç»„æŒ‡é’ˆæŒ‡æ˜ç›¸å…³å‚æ•° */,
+				&parameDeviceAddress/*pIndirectDeviceAddresses,ä¸ºinfoCountä¸ª buffer device addressesï¼ŒæŒ‡å‘ pInfos[i].geometryCount VkAccelerationStructureBuildRangeInfoKHRæŒ‡æ˜åŠ é€Ÿç»“æ„æ•°æ®å­˜å‚¨çš„åŠ¨æ€åç§»*/, &paramStride/*pIndirectStrides,ä¸ºinfoCountä¸ªpIndirectDeviceAddressesä¸­å…ƒç´ ä¹‹é—´çš„å­—èŠ‚æ­¥é•¿.*/, &pMaxPrimitiveCount/*ppMaxPrimitiveCounts,ä¸ºinfoCountä¸ªæŒ‡å‘pInfos[i].geometryCountä¸ªå€¼çš„æŒ‡é’ˆçš„æ•°ç»„æŒ‡é’ˆæŒ‡æ˜æ¯ä¸ªgeometryæ„å»ºçš„æœ€å¤§çš„å›¾å…ƒæ•°é‡*/);// pIndirectDeviceAddressesåœ¨VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageä¸­åŒæ­¥ï¼Œä»¥VK_ACCESS_INDIRECT_COMMAND_READ_BITè¿›è¡Œè®¿é—®ï¼Œå…¶ä»–çš„èµ„æºçš„åŒæ­¥å’Œè®¿é—®å’Œ vkCmdBuildAccelerationStructuresKHRç›¸åŒ
 			/*
-			vkCmdBuildAccelerationStructuresIndirectKHRÓĞĞ§ÓÃ·¨:
-			1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureIndirectBuildÌØĞÔ±ØĞë¿ªÆô
-			2.pInfosÖĞÃ¿¸öÔªËØµÄmode±ØĞëÊÇÒ»¸öÓĞĞ§µÄVkBuildAccelerationStructureModeKHRÖµ
-			3.pInfosÖĞÈÎºÎsrcAccelerationStructure²»ÊÇVK_NULL_HANDLEµÄÔªËØ£¬ÆäsrcAccelerationStructure±ØĞëÊÇÒ»¸öÓĞĞ§µÄVkAccelerationStructureKHR ¾ä±ú
-			4.¶ÔpInfosÖĞÃ¿¸öÔªËØ£¬Èç¹ûÆämodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬Ôò¸ÃÔªËØµÄsrcAccelerationStructure²»ÄÜÎªVK_NULL_HANDLE
-			5.¶ÔpInfosÖĞÈÎºÎÔªËØµÄsrcAccelerationStructure ²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄdstAccelerationStructure ÏàÍ¬
-			6.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructure ²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄdstAccelerationStructure ÏàÍ¬
-			7.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructure ±ØĞëÊÇÒ»¸öÓĞĞ§µÄVkAccelerationStructureKHR ¾ä±ú
-			8.pInfosÖĞÃ¿¸öÔªËØ£¬Ôò£¨1£©Èç¹ûÆätypeÎªVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR£¬ÔòÆädstAccelerationStructure±ØĞëVkAccelerationStructureCreateInfoKHR::typeÎªVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR »òÕß VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR´´½¨
-								  £¨2£©Èç¹ûÆätypeÎªVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR£¬ÔòÆädstAccelerationStructure±ØĞëVkAccelerationStructureCreateInfoKHR::typeÎªVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR »òÕß VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR´´½¨
-								  £¨3£©Èç¹ûÆämodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬ÔòsrcAccelerationStructureÖĞinactive primitives²»ÄÜ±äÎªactiveµÄ£¬active primitives²»ÄÜ±äÎªinactiveµÄ
-			9.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructure²»ÄÜ±»ÈÎºÎÆäËûÔªËØµÄgeometryTypeÎªVK_GEOMETRY_TYPE_INSTANCES_KHRµÄ  pGeometries»òÕß ppGeometriesÖĞµÄÔªËØµÄ geometry.instances.dataÒıÓÃ
-			10.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûmodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR  µÄÔªËØµÄsrcAccelerationStructureµÄÄÚ´æ·¶Î§ÖØµş
-			11.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§ÖØµş
-			12.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄscratchDataµÄÄÚ´æ·¶Î§ÖØµş
-			13.pInfosÖĞÈÎºÎÔªËØµÄscratchDataµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄscratchDataµÄÄÚ´æ·¶Î§ÖØµş
-			14.pInfosÖĞÈÎºÎÔªËØµÄscratchDataµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûmodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR(°üº¬ÏàÍ¬ÔªËØ)  µÄÔªËØµÄsrcAccelerationStructureÔªËØµÄsrcAccelerationStructureµÄÄÚ´æ·¶Î§ÖØµş
-			15.pInfosÖĞÈÎºÎÔªËØµÄdstAccelerationStructureµÄÄÚ´æ·¶Î§²»ÄÜºÍÈÎºÎÆäËûÔªËØµÄgeometryTypeÎªVK_GEOMETRY_TYPE_INSTANCES_KHRµÄ  pGeometries»òÕß ppGeometriesÖĞµÄÈÎºÎÔªËØµÄ geometry.instances.dataÒıÓÃµÄ¼ÓËÙ½á¹¹µÄÄÚ´æ·¶Î§ÖØµş
-			16.pInfosÖĞÃ¿¸öÔªËØ£¬Èç¹ûÆämodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬£¨1£©ÔòsrcAccelerationStructure±ØĞëÔÚÏÈÇ°ÒÔVkAccelerationStructureBuildGeometryInfoKHR::flagsÉèÖÃÓĞVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR ¹¹½¨ºÃÁË
-																							  £¨2£©ÔòÆäsrcAccelerationStructure ºÍdstAccelerationStructure ±ØĞëÊÇÍ¬Ò»¸ö¶ÔÏó»òÕß²»º¬ÓĞÈÎºÎmemory aliasing
-																							  £¨3£©ÔòÆägeometryCount ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometryCountÏàÍ¬
-																							  £¨4£©ÔòÆäflags ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄflagsÏàÍ¬
-																							  £¨5£©ÔòÆätype ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄtypeÏàÍ¬
-																							  £¨6£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬ ÔòÆägeometryType ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometryTypeÏàÍ¬
-																							  £¨7£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬ ÔòÆäflags ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄflagsÏàÍ¬
-																							  £¨8£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬ÔòÆägeometry.triangles.vertexFormat ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.vertexFormatÏàÍ¬
-																							  £¨9£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬ÔòÆägeometry.triangles.maxVertex ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.maxVertexÏàÍ¬
-																							  £¨10£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬ÔòÆägeometry.triangles.indexType ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.indexTypeÏàÍ¬
-																							  £¨11£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬Èç¹ûsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.transformDataÎªNULLÔòÆägeometry.triangles.transformData ±ØĞëÎªNULL
-																							  £¨12£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬Èç¹ûsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄgeometry.triangles.transformData²»ÎªNULLÔòÆägeometry.triangles.transformData ±ØĞë²»ÎªNULL
-																							  £¨13£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬Èç¹ûÆägeometry.triangles.indexType ²»ÎªVK_INDEX_TYPE_NONE_KHR£¬ÔòÃ¿¸öÒıÓÃµÄË÷ÒıÖµ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨ÒıÓÃµÄË÷ÒıÖµÏàÍ¬
-																							  £¨14£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹ûgeometryType ÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR£¬ÔòÆä¶ÔÓ¦µÄVkAccelerationStructureBuildRangeInfoKHRµÄprimitiveCount ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄprimitiveCountÏàÍ¬
-																							  £¨15£©¶ÔÃ¿¸ö±»ÆäpGeometries »òÕßppGeometries ÒıÓÃµÄVkAccelerationStructureGeometryKHR½á¹¹£¬Èç¹û¸ÃgeometryÊ¹ÓÃË÷Òıindices£¬ÔòÆä¶ÔÓ¦µÄVkAccelerationStructureBuildRangeInfoKHRµÄfirstVertex ±ØĞëºÍsrcAccelerationStructure×îºóÒ»´Î¹¹½¨µÄfirstVertex ÏàÍ¬
-			17.¶ÔpInfos[i].pGeometries »òÕß pInfos[i].ppGeometries Ã¿¸öÒÔgeometryTypeÎªVK_GEOMETRY_TYPE_INSTANCES_KHRµÄÔªËØ£¬Æä¶ÔÓ¦µÄppBuildRangeInfos[i][j].primitiveCount ±ØĞëĞ¡ÓÚµÈÓÚVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount
-			18.¶ÔpInfosÖĞµÄÃ¿¸öÔªËØ£¬ÓÃÓÚ´´½¨dstAccelerationStructureµÄbuffer±ØĞë°ó¶¨µ½VkDeviceMemory¶ÔÏóÉÏ
-			19.pInfosÖĞÃ¿¸öÔªËØ£¬Èç¹ûÆämodeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬ÔòÓÃÓÚ´´½¨dstAccelerationStructureµÄbuffer±ØĞë°ó¶¨µ½VkDeviceMemory¶ÔÏóÉÏ
-			20.¶ÔpInfosÖĞµÄÃ¿¸öÔªËØ£¬ÓÃÓÚ´´½¨±»pGeometries »òÕß ppGeometriesÖĞgeometryTypeµÄVK_GEOMETRY_TYPE_INSTANCES_KHR ÒıÓÃµÄacceleration structureµÄbuffer±ØĞë°ó¶¨µ½VkDeviceMemory¶ÔÏóÉÏ
-			21.Èç¹ûpInfos[i].modeÎªVK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR »òÕß VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR£¬ÔòËùÓĞÔÚpInfos[i].scratchData.deviceAddressµ½pInfos[i].scratchData.deviceAddress + N - 1 Ö®¼äµÄµØÖ·±ØĞëÊÇÔÚÍ¬Ò»¸öbufferµÄdevice address rangeÄÚ£¬ÆäÖĞNÊÇvkGetAccelerationStructureBuildSizesKHR´«ÈëÏàÍ¬VkAccelerationStructureBuildGeometryInfoKHRÒÔ¼°primitive count  ·µ»ØµÄVkAccelerationStructureBuildSizesInfoKHR½á¹¹ÖĞbuildScratchSize³ÉÔ±µÄÖµ
-			22.ÈÎºÎÆäbuffer device addresses ±»pInfos[i].pGeometries ÒÔ¼° pInfos[i].ppGeometriesÖĞµÄËùÓĞgeometry.triangles.vertexData, geometry.triangles.indexData, geometry.triangles.transformData, geometry.aabbs.data, ÒÔ¼° geometry.instances.dataËùÖ¸µÄbuffer±ØĞëÒÔVK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR ´´½¨
-			23.ÈÎºÎÆäbuffer device addresses ±» pInfos[i].scratchData.deviceAddressËùÖ¸µÄbuffer±ØĞëÒÔVK_BUFFER_USAGE_STORAGE_BUFFER_BIT ´´½¨
-			24.¶ÔpInfosÖĞµÄÃ¿¸öÔªËØ£¬Ôò£¨1£©ÆäscratchData.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-									   £¨2£©Èç¹ûscratchData.deviceAddressÊÇÒ»¸önon-sparseµÄaddress£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-									   £¨3£©ÆäscratchData.deviceAddress ±ØĞëÊÇVkPhysicalDeviceAccelerationStructurePropertiesKHR::minAccelerationStructureScratchOffsetAlignmentµÄ±¶Êı
-			25.¶ÔpInfos[i].pGeometries »òÕß pInfos[i].ppGeometriesÖĞÈÎºÎgeometryTypeÎªVK_GEOMETRY_TYPE_TRIANGLES_KHR µÄÔªËØ£¬Ôò£¨1£©geometry.triangles.vertexData.deviceAddress±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																															   £¨2£©Èç¹ûgeometry.triangles.vertexData.deviceAddressËù¶Ônon-sparse µÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																															   £¨3£©geometry.triangles.vertexData.deviceAddressÖĞ±ØĞë¶ÔÆëµ½vertexFormatÖĞ×îĞ¡·ÖÁ¿µÄ×Ö½ÚÊı´óĞ¡
-																															   £¨4£©Èç¹ûgeometry.triangles.indexType ²»ÎªVK_INDEX_TYPE_NONE_KHR£¬Ôògeometry.triangles.indexData.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																															   £¨5£©Èç¹ûgeometry.triangles.indexType ²»ÎªVK_INDEX_TYPE_NONE_KHR£¬Èç¹ûgeometry.triangles.indexData.deviceAddress ÊÇÒ»¸önon-sparseµÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																															   £¨6£©Èç¹ûgeometry.triangles.indexType ²»ÎªVK_INDEX_TYPE_NONE_KHR£¬Ôògeometry.triangles.indexData.deviceAddress ÖĞ±ØĞë¶ÔÆëµ½indexTypeµÄ×Ö½ÚÊı´óĞ¡
-																															   £¨7£©Èç¹ûgeometry.triangles.transformData.deviceAddress ²»Îª0£¬Ôògeometry.triangles.transformData.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																															   £¨8£©Èç¹ûgeometry.triangles.transformData.deviceAddress ÊÇÒ»¸önon-sparseµÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																															   £¨9£©Èç¹ûgeometry.triangles.transformData.deviceAddress ²»Îª0£¬Ôògeometry.triangles.transformData.deviceAddress ÖĞ±ØĞë¶ÔÆëµ½16×Ö½Ú´óĞ¡
-			26.¶ÔpInfos[i].pGeometries »òÕß pInfos[i].ppGeometriesÖĞÈÎºÎgeometryTypeÎªVK_GEOMETRY_TYPE_AABBS_KHR µÄÔªËØ£¬Ôò£¨1£©geometry.aabbs.data.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																														   £¨2£©Èç¹ûgeometry.aabbs.data.deviceAddress ÊÇÒ»¸önon-sparseµÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																														   £¨3£©geometry.aabbs.data.deviceAddress ±ØĞë¶ÔÆëµ½8×Ö½Ú
-			27.¶ÔpInfos[i].pGeometries »òÕß pInfos[i].ppGeometriesÖĞÈÎºÎgeometryTypeÎªVK_GEOMETRY_TYPE_INSTANCES_KHR µÄÔªËØ£¬Ôò£¨1£©Èç¹ûgeometry.arrayOfPointers ÎªVK_FALSE£¬Ôògeometry.instances.data.deviceAddress ±ØĞë¶ÔÆëµ½16×Ö½Ú
-																															   £¨2£©Èç¹ûgeometry.arrayOfPointers ÎªVK_TRUE£¬Ôògeometry.instances.data.deviceAddress ±ØĞë¶ÔÆëµ½8×Ö½Ú
-																															   £¨3£©Èç¹ûgeometry.arrayOfPointers ÎªVK_TRUE£¬Ôògeometry.instances.data.deviceAddressÄÚ´æÖĞµÄÃ¿¸öÔªËØ±ØĞë¶ÔÆëµ½16×Ö½Ú
-																															   £¨4£©geometry.instances.data.deviceAddress ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address
-																															   £¨5£©Èç¹ûgeometry.instances.data.deviceAddress ÊÇÒ»¸önon-sparseµÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-																															   £¨6£©geometry.instances.data.deviceAddressÄÚ´æÖĞµÄÃ¿¸öVkAccelerationStructureInstanceKHR::accelerationStructureReference ±ØĞëÊÇÒ»¸öÓĞĞ§µÄÍ¨¹ıvkGetBufferDeviceAddress»ñÈ¡µÄdevice address »òÕß0
-			28.commandBuffer ²»ÄÜÊÇÒ»¸öprotected command buffer
-			29.¶ÔpIndirectDeviceAddressesÖĞµÄÈÎºÎÔªËØ£¬Èç¹ûÆäbuffer device address ¶ÔÓ¦ÊÇÒ»¸önon-sparseµÄbuffer£¬Ôò¸Ãbuffer±ØĞë°ó¶¨µ½Ò»¸öÍêÕûµÄÁ¬ĞøµÄµ¥¶ÀµÄVkDeviceMemory¶ÔÏóÉÏ
-			30.¶ÔpIndirectDeviceAddresses[i]ÖĞµÄÈÎºÎÔªËØ,ËùÓĞÔÚpIndirectDeviceAddresses[i] µ½pIndirectDeviceAddresses[i] + (pInfos[i].geometryCount ¡Á pIndirectStrides[i]) - 1 µÄdevice addresse ±ØĞëÔÚÏàÍ¬bufferµÄdevice address rangeÄÚ
-			31.¶ÔpIndirectDeviceAddressesÖĞµÄÈÎºÎÔªËØ£¬Æä¶ÔÓ¦µÄbuffer±ØĞëÒÔVK_BUFFER_USAGE_INDIRECT_BUFFER_BIT ´´½¨
-			32.pIndirectDeviceAddressesÖĞµÄÃ¿¸öÔªËØ±ØĞëÊÇ4µÄ±¶Êı
-			33.pIndirectStridesÖĞµÄÃ¿¸öÔªËØ±ØĞëÊÇ4µÄ±¶Êı
-			34.pIndirectDeviceAddressesÖĞµÄÈÎºÎÔªËØÒıÓÃµÄÃ¿¸öVkAccelerationStructureBuildRangeInfoKHR±ØĞëÊÇÒ»¸öÓĞĞ§µÄVkAccelerationStructureBuildRangeInfoKHR½á¹¹
-			35.pInfos[i].dstAccelerationStructure ±ØĞëÒÔVkAccelerationStructureCreateInfoKHR::size ´óÓÚµÈÓÚ²éÑ¯¹¹½¨²Ù×÷·µ»ØµÄÄÚ´æ´óĞ¡£¬¼ûµ÷ÓÃvkGetAccelerationStructureBuildSizesKHR ´«ÈëpBuildInfo = pInfos[i] ÒÔ¼°pMaxPrimitiveCounts = ppMaxPrimitiveCounts[i]
-			36.Ã¿¸öppMaxPrimitiveCounts[i][j]µÄÖµ±ØĞë´óÓÚµÈÓÚpIndirectDeviceAddresses[i] + (j ¡Á pIndirectStrides[i])¶¨Î»µÄVkAccelerationStructureBuildRangeInfoKHRµÄprimitiveCount
-
+			vkCmdBuildAccelerationStructuresIndirectKHRæœ‰æ•ˆç”¨æ³•:
+			1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureIndirectBuildç‰¹æ€§å¿…é¡»å¼€å¯
+			2.pInfosä¸­æ¯ä¸ªå…ƒç´ çš„modeå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuildAccelerationStructureModeKHRå€¼
+			3.pInfosä¸­ä»»ä½•srcAccelerationStructureä¸æ˜¯VK_NULL_HANDLEçš„å…ƒç´ ï¼Œå…¶srcAccelerationStructureå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureKHR å¥æŸ„
+			4.å¯¹pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™è¯¥å…ƒç´ çš„srcAccelerationStructureä¸èƒ½ä¸ºVK_NULL_HANDLE
+			5.å¯¹pInfosä¸­ä»»ä½•å…ƒç´ çš„srcAccelerationStructure ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„dstAccelerationStructure ç›¸åŒ
+			6.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructure ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„dstAccelerationStructure ç›¸åŒ
+			7.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructure å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureKHR å¥æŸ„
+			8.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœå…¶typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHRï¼Œåˆ™å…¶dstAccelerationStructureå¿…é¡»VkAccelerationStructureCreateInfoKHR::typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR æˆ–è€… VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHRåˆ›å»º
+								  ï¼ˆ2ï¼‰å¦‚æœå…¶typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHRï¼Œåˆ™å…¶dstAccelerationStructureå¿…é¡»VkAccelerationStructureCreateInfoKHR::typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR æˆ–è€… VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHRåˆ›å»º
+								  ï¼ˆ3ï¼‰å¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™srcAccelerationStructureä¸­inactive primitivesä¸èƒ½å˜ä¸ºactiveçš„ï¼Œactive primitivesä¸èƒ½å˜ä¸ºinactiveçš„
+			9.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureä¸èƒ½è¢«ä»»ä½•å…¶ä»–å…ƒç´ çš„geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„  pGeometriesæˆ–è€… ppGeometriesä¸­çš„å…ƒç´ çš„ geometry.instances.dataå¼•ç”¨
+			10.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR  çš„å…ƒç´ çš„srcAccelerationStructureçš„å†…å­˜èŒƒå›´é‡å 
+			11.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´é‡å 
+			12.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´é‡å 
+			13.pInfosä¸­ä»»ä½•å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´é‡å 
+			14.pInfosä¸­ä»»ä½•å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR(åŒ…å«ç›¸åŒå…ƒç´ )  çš„å…ƒç´ çš„srcAccelerationStructureå…ƒç´ çš„srcAccelerationStructureçš„å†…å­˜èŒƒå›´é‡å 
+			15.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„  pGeometriesæˆ–è€… ppGeometriesä¸­çš„ä»»ä½•å…ƒç´ çš„ geometry.instances.dataå¼•ç”¨çš„åŠ é€Ÿç»“æ„çš„å†…å­˜èŒƒå›´é‡å 
+			16.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œï¼ˆ1ï¼‰åˆ™srcAccelerationStructureå¿…é¡»åœ¨å…ˆå‰ä»¥VkAccelerationStructureBuildGeometryInfoKHR::flagsè®¾ç½®æœ‰VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR æ„å»ºå¥½äº†
+																							  ï¼ˆ2ï¼‰åˆ™å…¶srcAccelerationStructure å’ŒdstAccelerationStructure å¿…é¡»æ˜¯åŒä¸€ä¸ªå¯¹è±¡æˆ–è€…ä¸å«æœ‰ä»»ä½•memory aliasing
+																							  ï¼ˆ3ï¼‰åˆ™å…¶geometryCount å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometryCountç›¸åŒ
+																							  ï¼ˆ4ï¼‰åˆ™å…¶flags å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„flagsç›¸åŒ
+																							  ï¼ˆ5ï¼‰åˆ™å…¶type å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„typeç›¸åŒ
+																							  ï¼ˆ6ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œ åˆ™å…¶geometryType å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometryTypeç›¸åŒ
+																							  ï¼ˆ7ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œ åˆ™å…¶flags å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„flagsç›¸åŒ
+																							  ï¼ˆ8ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶geometry.triangles.vertexFormat å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.vertexFormatç›¸åŒ
+																							  ï¼ˆ9ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶geometry.triangles.maxVertex å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.maxVertexç›¸åŒ
+																							  ï¼ˆ10ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶geometry.triangles.indexType å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.indexTypeç›¸åŒ
+																							  ï¼ˆ11ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œå¦‚æœsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.transformDataä¸ºNULLåˆ™å…¶geometry.triangles.transformData å¿…é¡»ä¸ºNULL
+																							  ï¼ˆ12ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œå¦‚æœsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.transformDataä¸ä¸ºNULLåˆ™å…¶geometry.triangles.transformData å¿…é¡»ä¸ä¸ºNULL
+																							  ï¼ˆ13ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œå¦‚æœå…¶geometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™æ¯ä¸ªå¼•ç”¨çš„ç´¢å¼•å€¼å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºå¼•ç”¨çš„ç´¢å¼•å€¼ç›¸åŒ
+																							  ï¼ˆ14ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶å¯¹åº”çš„VkAccelerationStructureBuildRangeInfoKHRçš„primitiveCount å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„primitiveCountç›¸åŒ
+																							  ï¼ˆ15ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœè¯¥geometryä½¿ç”¨ç´¢å¼•indicesï¼Œåˆ™å…¶å¯¹åº”çš„VkAccelerationStructureBuildRangeInfoKHRçš„firstVertex å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„firstVertex ç›¸åŒ
+			17.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometries æ¯ä¸ªä»¥geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„å…ƒç´ ï¼Œå…¶å¯¹åº”çš„ppBuildRangeInfos[i][j].primitiveCount å¿…é¡»å°äºç­‰äºVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount
+			18.å¯¹pInfosä¸­çš„æ¯ä¸ªå…ƒç´ ï¼Œç”¨äºåˆ›å»ºdstAccelerationStructureçš„bufferå¿…é¡»ç»‘å®šåˆ°VkDeviceMemoryå¯¹è±¡ä¸Š
+			19.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™ç”¨äºåˆ›å»ºdstAccelerationStructureçš„bufferå¿…é¡»ç»‘å®šåˆ°VkDeviceMemoryå¯¹è±¡ä¸Š
+			20.å¯¹pInfosä¸­çš„æ¯ä¸ªå…ƒç´ ï¼Œç”¨äºåˆ›å»ºè¢«pGeometries æˆ–è€… ppGeometriesä¸­geometryTypeçš„VK_GEOMETRY_TYPE_INSTANCES_KHR å¼•ç”¨çš„acceleration structureçš„bufferå¿…é¡»ç»‘å®šåˆ°VkDeviceMemoryå¯¹è±¡ä¸Š
+			21.å¦‚æœpInfos[i].modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR æˆ–è€… VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™æ‰€æœ‰åœ¨pInfos[i].scratchData.deviceAddressåˆ°pInfos[i].scratchData.deviceAddress + N - 1 ä¹‹é—´çš„åœ°å€å¿…é¡»æ˜¯åœ¨åŒä¸€ä¸ªbufferçš„device address rangeå†…ï¼Œå…¶ä¸­Næ˜¯vkGetAccelerationStructureBuildSizesKHRä¼ å…¥ç›¸åŒVkAccelerationStructureBuildGeometryInfoKHRä»¥åŠprimitive count  è¿”å›çš„VkAccelerationStructureBuildSizesInfoKHRç»“æ„ä¸­buildScratchSizeæˆå‘˜çš„å€¼
+			22.ä»»ä½•å…¶buffer device addresses è¢«pInfos[i].pGeometries ä»¥åŠ pInfos[i].ppGeometriesä¸­çš„æ‰€æœ‰geometry.triangles.vertexData, geometry.triangles.indexData, geometry.triangles.transformData, geometry.aabbs.data, ä»¥åŠ geometry.instances.dataæ‰€æŒ‡çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR åˆ›å»º
+			23.ä»»ä½•å…¶buffer device addresses è¢« pInfos[i].scratchData.deviceAddressæ‰€æŒ‡çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_STORAGE_BUFFER_BIT åˆ›å»º
+			24.å¯¹pInfosä¸­çš„æ¯ä¸ªå…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰å…¶scratchData.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+									   ï¼ˆ2ï¼‰å¦‚æœscratchData.deviceAddressæ˜¯ä¸€ä¸ªnon-sparseçš„addressï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+									   ï¼ˆ3ï¼‰å…¶scratchData.deviceAddress å¿…é¡»æ˜¯VkPhysicalDeviceAccelerationStructurePropertiesKHR::minAccelerationStructureScratchOffsetAlignmentçš„å€æ•°
+			25.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰geometry.triangles.vertexData.deviceAddresså¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ2ï¼‰å¦‚æœgeometry.triangles.vertexData.deviceAddressæ‰€å¯¹non-sparse çš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ3ï¼‰geometry.triangles.vertexData.deviceAddressä¸­å¿…é¡»å¯¹é½åˆ°vertexFormatä¸­æœ€å°åˆ†é‡çš„å­—èŠ‚æ•°å¤§å°
+																															   ï¼ˆ4ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™geometry.triangles.indexData.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ5ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œå¦‚æœgeometry.triangles.indexData.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ6ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™geometry.triangles.indexData.deviceAddress ä¸­å¿…é¡»å¯¹é½åˆ°indexTypeçš„å­—èŠ‚æ•°å¤§å°
+																															   ï¼ˆ7ï¼‰å¦‚æœgeometry.triangles.transformData.deviceAddress ä¸ä¸º0ï¼Œåˆ™geometry.triangles.transformData.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ8ï¼‰å¦‚æœgeometry.triangles.transformData.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ9ï¼‰å¦‚æœgeometry.triangles.transformData.deviceAddress ä¸ä¸º0ï¼Œåˆ™geometry.triangles.transformData.deviceAddress ä¸­å¿…é¡»å¯¹é½åˆ°16å­—èŠ‚å¤§å°
+			26.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_AABBS_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰geometry.aabbs.data.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																														   ï¼ˆ2ï¼‰å¦‚æœgeometry.aabbs.data.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																														   ï¼ˆ3ï¼‰geometry.aabbs.data.deviceAddress å¿…é¡»å¯¹é½åˆ°8å­—èŠ‚
+			27.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœgeometry.arrayOfPointers ä¸ºVK_FALSEï¼Œåˆ™geometry.instances.data.deviceAddress å¿…é¡»å¯¹é½åˆ°16å­—èŠ‚
+																															   ï¼ˆ2ï¼‰å¦‚æœgeometry.arrayOfPointers ä¸ºVK_TRUEï¼Œåˆ™geometry.instances.data.deviceAddress å¿…é¡»å¯¹é½åˆ°8å­—èŠ‚
+																															   ï¼ˆ3ï¼‰å¦‚æœgeometry.arrayOfPointers ä¸ºVK_TRUEï¼Œåˆ™geometry.instances.data.deviceAddresså†…å­˜ä¸­çš„æ¯ä¸ªå…ƒç´ å¿…é¡»å¯¹é½åˆ°16å­—èŠ‚
+																															   ï¼ˆ4ï¼‰geometry.instances.data.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ5ï¼‰å¦‚æœgeometry.instances.data.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ6ï¼‰geometry.instances.data.deviceAddresså†…å­˜ä¸­çš„æ¯ä¸ªVkAccelerationStructureInstanceKHR::accelerationStructureReference å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address æˆ–è€…0
+			28.commandBuffer ä¸èƒ½æ˜¯ä¸€ä¸ªprotected command buffer
+			29.å¯¹pIndirectDeviceAddressesä¸­çš„ä»»ä½•å…ƒç´ ï¼Œå¦‚æœå…¶buffer device address å¯¹åº”æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+			30.å¯¹pIndirectDeviceAddresses[i]ä¸­çš„ä»»ä½•å…ƒç´ ,æ‰€æœ‰åœ¨pIndirectDeviceAddresses[i] åˆ°pIndirectDeviceAddresses[i] + (pInfos[i].geometryCount Ã— pIndirectStrides[i]) - 1 çš„device addresse å¿…é¡»åœ¨ç›¸åŒbufferçš„device address rangeå†…
+			31.å¯¹pIndirectDeviceAddressesä¸­çš„ä»»ä½•å…ƒç´ ï¼Œå…¶å¯¹åº”çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT åˆ›å»º
+			32.pIndirectDeviceAddressesä¸­çš„æ¯ä¸ªå…ƒç´ å¿…é¡»æ˜¯4çš„å€æ•°
+			33.pIndirectStridesä¸­çš„æ¯ä¸ªå…ƒç´ å¿…é¡»æ˜¯4çš„å€æ•°
+			34.pIndirectDeviceAddressesä¸­çš„ä»»ä½•å…ƒç´ å¼•ç”¨çš„æ¯ä¸ªVkAccelerationStructureBuildRangeInfoKHRå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureBuildRangeInfoKHRç»“æ„
+			35.pInfos[i].dstAccelerationStructure å¿…é¡»ä»¥VkAccelerationStructureCreateInfoKHR::size å¤§äºç­‰äºæŸ¥è¯¢æ„å»ºæ“ä½œè¿”å›çš„å†…å­˜å¤§å°ï¼Œè§è°ƒç”¨vkGetAccelerationStructureBuildSizesKHR ä¼ å…¥pBuildInfo = pInfos[i] ä»¥åŠpMaxPrimitiveCounts = ppMaxPrimitiveCounts[i]
+			36.æ¯ä¸ªppMaxPrimitiveCounts[i][j]çš„å€¼å¿…é¡»å¤§äºç­‰äºpIndirectDeviceAddresses[i] + (j Ã— pIndirectStrides[i])å®šä½çš„VkAccelerationStructureBuildRangeInfoKHRçš„primitiveCount
+			
 			*/
 
 		}
+
+
+		//Copying Acceleration Structures  å‚è§p3260
+		{
+			/*
+			æœ‰ä¸€ä¸ªé¢å¤–çš„å‘½ä»¤ï¼Œç”¨äºå¤åˆ¶åŠ é€Ÿç»“æ„è€Œä¸æ›´æ–°å®ƒä»¬çš„å†…å®¹ã€‚ä½†åœ¨æ‹·è´ä¹‹å‰éœ€è¦æŸ¥è¯¢è¿™ä¸ªå¾…æ‹·è´çš„æºåŠ é€Ÿç»“æ„çš„å¤§å°
+			*/
+			VkCommandBuffer commandBuffer{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkCommandBuffer*/ };
+
+
+			//æŸ¥è¯¢åŠ é€Ÿç»“æ„çš„å¤§å°å‚æ•°KHR  ,å¯¹ pAccelerationStructuresçš„åŠ é€Ÿç»“æ„ä»¥ VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR pipeline stage æˆ–è€… VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageåŒæ­¥ï¼Œä»¥VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHRè®¿é—®
+			//å¦‚æœqueryTypeä¸º VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR,åˆ™æŸ¥è¯¢è¿”å›å‹ç¼©åŠ é€Ÿç»“æ„éœ€è¦çš„å­—èŠ‚å¤§å°ï¼Œå¦‚æœqueryTypeä¸º VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHRï¼Œåˆ™æŸ¥è¯¢è¿”å›åºåˆ—åŒ–åŠ é€Ÿç»“æ„æ‰€éœ€è¦çš„å­—èŠ‚å¤§å°
+			VkAccelerationStructureKHR accelerationStructureKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureKHR*/ };
+			vkCmdWriteAccelerationStructuresPropertiesKHR(commandBuffer, 1, &accelerationStructureKHR,
+				VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR/*queryTypeï¼ŒæŒ‡æ˜æŸ¥è¯¢ç±»å‹*/, VkQueryPool{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkQueryPool*/ }/*queryPoolï¼ŒæŒ‡æ˜ç®¡ç†ç»“æœçš„query pool*/, 0/*firstQuery,ä¸ºå­˜æ”¾åŠ é€Ÿç»“æ„æŸ¥è¯¢ç»“æœçš„ç¬¬ä¸€ä¸ªqueryçš„ç´¢å¼•*/);
+			/*
+			vkCmdWriteAccelerationStructuresPropertiesKHRæœ‰æ•ˆç”¨æ³•:
+			1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure ç‰¹æ€§å¿…é¡»å¼€å¯
+			2.queryPool å¿…é¡»ä»¥åŒ¹é…queryTypeåˆ›å»º
+			3.ç”±queryPool ä»¥åŠfirstQueryæŒ‡å®šçš„querieså¿…é¡»æ˜¯unavailableçš„
+			4.ç”¨æ¥åˆ›å»ºpAccelerationStructuresä¸­æ¯ä¸ªåŠ é€Ÿç»“æ„çš„bufferå¿…é¡»å·²ç»ç»‘å®šåˆ°device memory ä¸Š
+			5.firstQuery + accelerationStructureCount å¿…é¡»å°äºç­‰äºqueryPoolä¸­queriesçš„æ•°é‡
+			6.pAccelerationStructuresä¸­çš„æ‰€æœ‰åŠ é€Ÿç»“æ„å¿…é¡»å·²ç»åœ¨è¯¥å‘½ä»¤çš„æ‰§è¡Œå‰æ„å»º
+			7.pAccelerationStructuresä¸­çš„æ‰€æœ‰åŠ é€Ÿç»“æ„å¦‚æœqueryTypeä¸ºVK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHRåˆ™å¿…é¡»ä»¥VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHRåˆ›å»º
+			8.queryTypeå¿…é¡»ä¸ºVK_QUERY_TYPE_ACCELERATION_STRUCTURE_SIZE_KHR,
+							 VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_BOTTOM_LEVEL_POINTERS_KHR,
+							 VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR, æˆ–è€…
+							 VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHR
+
+			*/
+
+
+			//æŸ¥è¯¢åŠ é€Ÿç»“æ„çš„å¤§å°å‚æ•°NV  ,å¯¹ pAccelerationStructuresçš„è®¿é—®ä»¥ VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageåŒæ­¥ï¼Œä»¥VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHRè®¿é—®
+			VkAccelerationStructureNV accelerationStructureNV{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureNV*/ };
+			vkCmdWriteAccelerationStructuresPropertiesNV(commandBuffer, 1, &accelerationStructureNV,
+				VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_NV/*queryTypeï¼ŒæŒ‡æ˜æŸ¥è¯¢ç±»å‹*/, VkQueryPool{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkQueryPool*/ }/*queryPoolï¼ŒæŒ‡æ˜ç®¡ç†ç»“æœçš„query pool*/, 0/*firstQuery,ä¸ºå­˜æ”¾åŠ é€Ÿç»“æ„æŸ¥è¯¢ç»“æœçš„ç¬¬ä¸€ä¸ªqueryçš„ç´¢å¼•*/);
+			/*
+			vkCmdWriteAccelerationStructuresPropertiesNVæœ‰æ•ˆç”¨æ³•:
+			1.queryPool å¿…é¡»ä»¥åŒ¹é…queryTypeåˆ›å»º
+			2.ç”±queryPool ä»¥åŠfirstQueryæŒ‡å®šçš„querieså¿…é¡»æ˜¯unavailableçš„
+			3.ç”¨æ¥åˆ›å»ºpAccelerationStructuresä¸­æ¯ä¸ªåŠ é€Ÿç»“æ„çš„bufferå¿…é¡»å·²ç»é€šè¿‡ vkBindAccelerationStructureMemoryNVç»‘å®šåˆ°device memory ä¸Š
+			4.pAccelerationStructuresä¸­çš„æ‰€æœ‰åŠ é€Ÿç»“æ„å¿…é¡»å·²ç»åœ¨è¯¥å‘½ä»¤çš„æ‰§è¡Œå‰æ„å»º
+			5.pAccelerationStructuresä¸­çš„æ‰€æœ‰åŠ é€Ÿç»“æ„å¦‚æœqueryTypeä¸ºVK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_NVåˆ™å¿…é¡»ä»¥VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHRåˆ›å»º
+			6.queryTypeå¿…é¡»ä¸ºVK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_NV
+
+			*/
+
+
+			//æ‹·è´ä¸€ä¸ªåŠ é€Ÿç»“æ„   ,å¯¹src æˆ–è€…dst ä»¥ VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR pipeline stage æˆ–è€… VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageåŒæ­¥ï¼Œä»¥VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR æˆ–è€… VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHRè®¿é—®
+			vkCmdCopyAccelerationStructureNV(commandBuffer,
+				VkAccelerationStructureNV{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureNV*/ }/*dst,ä¸ºæ‹·è´çš„dst åŠ é€Ÿç»“æ„*/,
+				VkAccelerationStructureNV{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureNV*/ }/*src,ä¸ºæ‹·è´çš„src åŠ é€Ÿç»“æ„*/,
+				VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR/*mode,ä¸º VkCopyAccelerationStructureModeKHRå€¼æŒ‡æ˜æ‹·è´è¿‡ç¨‹ä¸­çš„é¢å¤–æ“ä½œ*/);
+			/*
+			vkCmdCopyAccelerationStructureNVæœ‰æ•ˆç”¨æ³•:
+			1.mode å¿…é¡»ä¸ºVK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHRæˆ–è€… VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR
+			2.src åŠ é€Ÿç»“æ„å¿…é¡»åœ¨è¯¥å‘½ä»¤æ‰§è¡Œå‰è¢«æ„å»º
+			3.å¦‚æœmodeä¸ºVK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR ï¼Œsrc åŠ é€Ÿç»“æ„å¿…é¡»ä»¥VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR æ„å»º
+			4.ç”¨äºåˆ›å»ºsrcï¼ŒdståŠ é€Ÿç»“æ„çš„bufferå¿…é¡»å·²ç»ç»‘å®šåˆ°device memory ä¸Š
+			5.è¯¥å‘½ä»¤è®¿é—®çš„dståº•å±‚çš„memory èŒƒå›´ä¸èƒ½å’Œsrcåº•å±‚çš„memory èŒƒå›´æœ‰é‡å 
+			6.dstå¿…é¡»å·²ç»é€šè¿‡vkBindAccelerationStructureMemoryNVç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryä¸Šäº†
+			*/
+
+
+			VkCopyAccelerationStructureInfoKHR copyAccelerationStructureInfoKHR{};
+			copyAccelerationStructureInfoKHR.sType = VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR;
+			copyAccelerationStructureInfoKHR.pNext = nullptr;
+			copyAccelerationStructureInfoKHR.mode = VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR;/*ä¸º VkCopyAccelerationStructureModeKHRå€¼æŒ‡æ˜æ‹·è´è¿‡ç¨‹ä¸­çš„é¢å¤–æ“ä½œ
+			VkCopyAccelerationStructureModeKHR ï¼ˆç­‰åŒäºVkCopyAccelerationStructureModeNVï¼‰:
+			VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR: åˆ›å»ºä¸€ä¸ªç”¨srcåˆ°dståŠ é€Ÿç»“æ„çš„ç›´æ¥æ‹·è´ï¼Œå¦‚æœsrcåŒ…å«ä¸€ä¸ªåˆ«çš„åŠ é€Ÿç»“æ„çš„å¼•ç”¨ï¼Œåˆ™dstä¹Ÿä¼šåŒ…å«ä¸€ä¸ªå¯¹ç›¸åŒåŠ é€Ÿç»“æ„çš„å¼•ç”¨
+			VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR:  åˆ›å»ºä¸€ä¸ªæ›´ç´§å‡‘çš„srcåˆ°dstçš„æ‹·è´ï¼ŒdståŠ é€Ÿç»“æ„å¿…é¡»è‡³å°‘ä»¥è°ƒç”¨ vkCmdWriteAccelerationStructuresPropertiesKHR æˆ–è€… vkWriteAccelerationStructuresPropertiesKHRä¼ å…¥srcè¿”å›çš„å¤§å°åˆ›å»ºï¼Œå¦‚æœsrcåŒ…å«ä¸€ä¸ªåˆ«çš„åŠ é€Ÿç»“æ„çš„å¼•ç”¨ï¼Œåˆ™dstä¹Ÿä¼šåŒ…å«ä¸€ä¸ªå¯¹ç›¸åŒåŠ é€Ÿç»“æ„çš„å¼•ç”¨
+			VK_COPY_ACCELERATION_STRUCTURE_MODE_SERIALIZE_KHR:  ä»¥ä¸€ç§semi-opaque formatåºåˆ—åŒ–srcåŠ é€Ÿç»“æ„ï¼ˆåºåˆ—åŒ–çš„å¤´éƒ¨ä¿¡æ¯æ ¼å¼è§p3720ï¼‰ï¼Œå­˜åˆ°dståŠ é€Ÿç»“æ„ä¸­å¯ä»¥è¢«ä¸€ä¸ªå…¼å®¹çš„å®ç°é‡æ–°åŠ è½½
+			VK_COPY_ACCELERATION_STRUCTURE_MODE_DESERIALIZE_KHR:  ååºåˆ—åŒ–ä¸€ä¸ªsemi-opaque formatçš„srcåŠ é€Ÿç»“æ„ï¼Œå­˜åˆ°dståŠ é€Ÿç»“æ„ä¸­
+			*/
+			copyAccelerationStructureInfoKHR.dst = VkAccelerationStructureKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureNV*/ };//ä¸ºæ‹·è´çš„dst åŠ é€Ÿç»“æ„
+			copyAccelerationStructureInfoKHR.src = VkAccelerationStructureKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureNV*/ };//ä¸ºæ‹·è´çš„src åŠ é€Ÿç»“æ„
+			/*
+			VkCopyAccelerationStructureInfoKHRæœ‰æ•ˆç”¨æ³•:
+			1.mode å¿…é¡»ä¸ºVK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHRæˆ–è€… VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR
+			2.src åŠ é€Ÿç»“æ„å¿…é¡»åœ¨è¯¥å‘½ä»¤æ‰§è¡Œå‰è¢«æ„å»º
+			3.å¦‚æœmodeä¸ºVK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR ï¼Œsrc åŠ é€Ÿç»“æ„å¿…é¡»ä»¥VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR æ„å»º
+			4.ç”¨äºåˆ›å»ºsrcï¼ŒdståŠ é€Ÿç»“æ„çš„bufferå¿…é¡»å·²ç»ç»‘å®šåˆ°device memory ä¸Š
+			5.è¯¥å‘½ä»¤è®¿é—®çš„dståº•å±‚çš„memory èŒƒå›´ä¸èƒ½å’Œsrcåº•å±‚çš„memory èŒƒå›´æœ‰é‡å 
+			*/
+
+			//æ‹·è´ä¸€ä¸ªåŠ é€Ÿç»“æ„NV   ,å¯¹pInfo->src æˆ–è€…pInfo->dst ä»¥ VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR pipeline stage æˆ–è€… VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageåŒæ­¥ï¼Œä»¥VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR æˆ–è€… VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHRè®¿é—®
+			vkCmdCopyAccelerationStructureKHR(commandBuffer, &copyAccelerationStructureInfoKHR/*pInfo*/);
+			/*
+			vkCmdCopyAccelerationStructureNVæœ‰æ•ˆç”¨æ³•:
+			1. VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureç‰¹æ€§å¿…é¡»å¼€å¯
+			2.ç”¨äºåˆ›å»ºpInfo->srcï¼ŒpInfo->dståŠ é€Ÿç»“æ„çš„bufferå¿…é¡»å·²ç»ç»‘å®šåˆ°device memory ä¸Š
+			*/
+
+
+
+			VkCopyAccelerationStructureToMemoryInfoKHR copyAccelerationStructureToMemoryInfoKHR{};
+			copyAccelerationStructureToMemoryInfoKHR.sType = VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_TO_MEMORY_INFO_KHR;
+			copyAccelerationStructureToMemoryInfoKHR.pNext = nullptr;
+			copyAccelerationStructureToMemoryInfoKHR.dst = VkDeviceOrHostAddressKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯åœ°å€*/ /*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressKHR*/ };//ä¸ºç”¨äºæ‹·è´çš„dst memoryçš„ device æˆ–è€… hostç«¯çš„å†…å­˜åœ°å€
+			copyAccelerationStructureToMemoryInfoKHR.mode = VK_COPY_ACCELERATION_STRUCTURE_MODE_SERIALIZE_KHR;//ä¸º VkCopyAccelerationStructureModeKHRå€¼æŒ‡æ˜æ‹·è´è¿‡ç¨‹ä¸­çš„é¢å¤–æ“ä½œ
+			copyAccelerationStructureToMemoryInfoKHR.src = VkAccelerationStructureKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureNV*/ };//ä¸ºæ‹·è´çš„src åŠ é€Ÿç»“æ„
+			/*
+			VkCopyAccelerationStructureToMemoryInfoKHRæœ‰æ•ˆç”¨æ³•:
+			1.src åŠ é€Ÿç»“æ„å¿…é¡»åœ¨è¯¥å‘½ä»¤æ‰§è¡Œå‰è¢«æ„å»º
+			2.dstæ‰€æŒ‡çš„memoryçš„å¤§å°è‡³å°‘è¦å’ŒsrcåŠ é€Ÿç»“æ„çš„åºåˆ—åŒ–å¤§å°ä¸€æ ·å¤§ï¼Œå‚è§vkWriteAccelerationStructuresPropertiesKHR æˆ–è€…vkCmdWriteAccelerationStructuresPropertiesKHRä¼ å…¥queryTypeä¸ºVK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHRä»¥åŠsrcåŠ é€Ÿç»“æ„
+			3.mode å¿…é¡»ä¸ºVK_COPY_ACCELERATION_STRUCTURE_MODE_SERIALIZE_KHR
+			*/
+			
+			
+			/*
+			æ‹·è´ä¸€ä¸ªåŠ é€Ÿç»“æ„åºåˆ—åŒ–åˆ°device memory ï¼Œå’ŒvkCopyAccelerationStructureToMemoryKHRäº§ç”Ÿç›¸åŒç»“æœï¼Œåªä¸è¿‡è¯¥å‘½ä»¤ä¼šå°†ç»“æœå†™åˆ°device memoryä¸­ï¼Œå…¶è¾“å‡ºå¯ä»¥è¢«vkCmdCopyMemoryToAccelerationStructureKHR æˆ–è€… vkCopyMemoryToAccelerationStructureKHRä½¿ç”¨
+			å¯¹pInfo->src æˆ–è€…pInfo->dst ä»¥ VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR pipeline stage æˆ–è€… VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageåŒæ­¥
+			
+			å¯¹pInfo->srcä»¥VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHRè®¿é—®ï¼Œå¯¹pInfo->dst.deviceAddressä»¥ VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHRè®¿é—®
+			
+			å¯¹åº”å¥æŸ„é€šè¿‡vkGetAccelerationStructureDeviceAddressKHR æˆ–è€… vkGetAccelerationStructureHandleNVè·å–
+			*/
+			vkCmdCopyAccelerationStructureToMemoryKHR(commandBuffer, &copyAccelerationStructureToMemoryInfoKHR);
+			/*
+			vkCmdCopyAccelerationStructureToMemoryKHRæœ‰æ•ˆç”¨æ³•:
+			1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure ç‰¹æ€§å¿…é¡»å¼€å¯
+			2.pInfo->dst.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„ç»‘å®šåˆ°device memoryçš„device addressï¼Œä¸”å¿…é¡»å¯¹é½åˆ°256å­—èŠ‚
+			3.å¦‚æœpInfo->dst.deviceAddressæ‰€æŒ‡çš„bufferæ˜¯non-sparseçš„åˆ™å…¶å¿…é¡»å·²ç»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryä¸Š
+			4.åˆ›å»ºpInfo->srcçš„bufferå¿…é¡»å·²ç»ç»‘å®šåˆ°device memoryä¸Š
+			*/
+			
+			
+			
+			
+			VkCopyMemoryToAccelerationStructureInfoKHR copyMemoryToAccelerationStructureInfoKHR{};
+			copyMemoryToAccelerationStructureInfoKHR.sType = VK_STRUCTURE_TYPE_COPY_MEMORY_TO_ACCELERATION_STRUCTURE_INFO_KHR;
+			copyMemoryToAccelerationStructureInfoKHR.pNext = nullptr;
+			copyMemoryToAccelerationStructureInfoKHR.src = VkDeviceOrHostAddressConstKHR{ .deviceAddress/*é€šè¿‡vkGetBufferDeviceAddressKHRè¿”å›*/ = 0/*.hostAddress hostç«¯åœ°å€*/ /*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeviceOrHostAddressConstKHR*/ };//ä¸ºç”¨äºæ‹·è´çš„src memoryçš„ device æˆ–è€… hostç«¯çš„constå†…å­˜åœ°å€
+			copyMemoryToAccelerationStructureInfoKHR.dst = VkAccelerationStructureKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureNV*/ };//ä¸ºæ‹·è´çš„dst åŠ é€Ÿç»“æ„
+			copyMemoryToAccelerationStructureInfoKHR.mode = VK_COPY_ACCELERATION_STRUCTURE_MODE_DESERIALIZE_KHR;//ä¸º VkCopyAccelerationStructureModeKHRå€¼æŒ‡æ˜æ‹·è´è¿‡ç¨‹ä¸­çš„é¢å¤–æ“ä½œ
+			/*
+			VkCopyMemoryToAccelerationStructureInfoKHRæœ‰æ•ˆç”¨æ³•:
+			1.srcæ‰€æŒ‡çš„memoryå¿…é¡»åŒ…å«å‰çº¿ä½¿ç”¨vkCmdCopyAccelerationStructureToMemoryKHRåºåˆ—åŒ–çš„æ•°æ®
+			2.mode å¿…é¡»ä¸ºVK_COPY_ACCELERATION_STRUCTURE_MODE_DESERIALIZE_KHR
+			3.srcä¸­çš„æ•°æ®å¿…é¡»å«æœ‰ä¸€ä¸ªå’ŒvkGetDeviceAccelerationStructureCompatibilityKHRè¿”å›çš„å’Œdestination physical deviceå…¼å®¹çš„format
+			4.dst å¿…é¡»ä»¥å­—èŠ‚å¤§å°å¤§äºç­‰äºsrcåºåˆ—åŒ–æ•°æ®çš„å¤§å°åˆ›å»º
+			*/
+			
+			
+			/*
+			æ‹·è´device memoryååºåˆ—åŒ–åˆ°ä¸€ä¸ªåŠ é€Ÿç»“æ„ ï¼Œå’ŒvkCopyAccelerationStructureToMemoryKHRäº§ç”Ÿç›¸åŒç»“æœï¼Œåªä¸è¿‡è¯¥å‘½ä»¤ä¹Ÿä¼šå°†æ‹·è´ç»“æœçš„å†™åˆ°device memoryä¸­
+			å¯¹pInfo->src æˆ–è€…pInfo->dst ä»¥ VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR pipeline stage æˆ–è€… VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stageåŒæ­¥
+			
+			å¯¹pInfo->src.deviceAddressä»¥VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHRè®¿é—®ï¼Œå¯¹pInfo->dstä»¥ VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHRè®¿é—®
+			
+			è¯¥å‘½ä»¤å¯ä»¥æ¥å—æ¥è‡ªvkCmdCopyAccelerationStructureToMemoryKHR æˆ–è€… vkCopyAccelerationStructureToMemoryKHRäº§ç”Ÿçš„åŠ é€Ÿç»“æ„
+			*/
+			vkCmdCopyMemoryToAccelerationStructureKHR(commandBuffer, &copyMemoryToAccelerationStructureInfoKHR);
+			/*
+			vkCmdCopyMemoryToAccelerationStructureKHRæœ‰æ•ˆç”¨æ³•:
+			1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure ç‰¹æ€§å¿…é¡»å¼€å¯
+			2.pInfo->src.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„ç»‘å®šåˆ°device memoryçš„device addressï¼Œä¸”å¿…é¡»å¯¹é½åˆ°256å­—èŠ‚
+			3.å¦‚æœpInfo->src.deviceAddressæ‰€æŒ‡çš„bufferæ˜¯non-sparseçš„åˆ™å…¶å¿…é¡»å·²ç»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryä¸Š
+			4.åˆ›å»ºpInfo->dstçš„bufferå¿…é¡»å·²ç»ç»‘å®šåˆ°device memoryä¸Š
+			
+			*/
+			
+			
+			
+			VkAccelerationStructureVersionInfoKHR accelerationStructureVersionInfoKHR{};
+			accelerationStructureVersionInfoKHR.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_VERSION_INFO_KHR;
+			accelerationStructureVersionInfoKHR.pNext = nullptr;
+			uint8_t version = 0;
+			accelerationStructureVersionInfoKHR.pVersionData = &version;//ä¸ºvkCmdCopyAccelerationStructureToMemoryKHRä¸­æè¿°çš„å®šä¹‰åœ¨åŠ é€Ÿç»“æ„ä¸­çš„ç‰ˆæœ¬å¤´ä¿¡æ¯çš„æŒ‡é’ˆï¼Œè¯¥æŒ‡é’ˆæŒ‡å‘2Ã—VK_UUID_SIZE ä¸ªuint8_tå€¼
+			
+			VkAccelerationStructureCompatibilityKHR accelerationStructureCompatibilityKHR{};
+			
+			//æ£€æŸ¥åºåˆ—åŒ–çš„åŠ é€Ÿç»“æ„æ˜¯å¦å’Œå½“å‰deviceå…¼å®¹
+			vkGetDeviceAccelerationStructureCompatibilityKHR(device, &accelerationStructureVersionInfoKHR, &accelerationStructureCompatibilityKHR/*pCompatibility,è¿”å›å…¼å®¹ä¿¡æ¯*/);//VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure ç‰¹æ€§å¿…é¡»å¼€å¯
+			VkAccelerationStructureCompatibilityKHR& accelerationStructureCompatibilityKHRRetured = accelerationStructureCompatibilityKHR;//
+			/*
+			VkAccelerationStructureCompatibilityKHR:
+			VK_ACCELERATION_STRUCTURE_COMPATIBILITY_COMPATIBLE_KHR: æŒ‡æ˜åŠ é€Ÿç»“æ„çš„ç‰ˆæœ¬ä¿¡æ¯å’Œdeviceå…¼å®¹
+			VK_ACCELERATION_STRUCTURE_COMPATIBILITY_INCOMPATIBLE_KHR: æŒ‡æ˜åŠ é€Ÿç»“æ„çš„ç‰ˆæœ¬ä¿¡æ¯å’Œdeviceä¸å…¼å®¹
+			
+			
+			*/
+		}
+
 	}
 
+	//Host Acceleration Structure Operations  å‚è§p3277
+	{
+		/*
+		å¦‚æœ accelerationStructureHostCommandsç‰¹æ€§å¼€å¯ï¼Œåˆ™å®ç°ä¹Ÿæä¾›äº†åœ¨hostç«¯å¯¹åŠ é€Ÿç»“æ„çš„æ“ä½œ:
 
+		hostç«¯											å¯¹åº”            deviceç«¯
+		vkBuildAccelerationStructuresKHR				->				vkCmdBuildAccelerationStructuresKHR
+		vkCopyAccelerationStructureKHR					->				vkCmdCopyAccelerationStructureKHR
+		vkCopyAccelerationStructureToMemoryKHR			->				vkCmdCopyAccelerationStructureToMemoryKHR
+		vkCopyMemoryToAccelerationStructureKHR			->				vkCmdCopyMemoryToAccelerationStructureKHR
+		vkWriteAccelerationStructuresPropertiesKHR		->				vkCmdWriteAccelerationStructuresPropertiesKHR
+		
+		hostç«¯æ“ä½œåŠ é€Ÿç»“æ„çš„å‘½ä»¤è®¿é—®çš„åŠ é€Ÿç»“æ„å¿…é¡»ç»‘å®šåˆ°host-visibleçš„å†…å­˜ï¼Œä¸”æ‰€æœ‰åŠ é€Ÿç»“æ„æ„å»ºçš„æ‰€æœ‰è¾“å…¥æ•°æ®å¿…é¡»å¼•ç”¨hostç«¯çš„åœ°å€è€Œä¸æ˜¯deviceç«¯
+		*/
+
+
+		VkAccelerationStructureBuildGeometryInfoKHR accelerationStructureBuildGeometryInfoKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureBuildGeometryInfoKHR*/};//å‰é¢å·²ç»æè¿°è¿‡è¿™é‡Œä¸å†å¤è¿°
+		VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfoKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureBuildRangeInfoKHR*/ };//å‰é¢å·²ç»æè¿°è¿‡è¿™é‡Œä¸å†å¤è¿°
+		const VkAccelerationStructureBuildRangeInfoKHR* accelerationStructureBuildRangeInfoKHRP = &accelerationStructureBuildRangeInfoKHR;
+		
+		//åœ¨hostç«¯æ„å»ºåŠ é€Ÿç»“æ„  ,ç­‰æ•ˆäºvkCmdBuildAccelerationStructuresKHRï¼Œå‚æ•°è¯¦è§£è§å‰é¢çš„æè¿°ï¼Œè¿™é‡Œä¸å†å¤è¿°ï¼Œè¯¥å‘½ä»¤ä¸ä¼šè¿›è¡Œä»»ä½•å†…å­˜è®¿é—®æ§åˆ¶
+		vkBuildAccelerationStructuresKHR(device, VkDeferredOperationKHR{/*å‡è®¾è¿™æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkDeferredOperationKHR*/ }, 1, & accelerationStructureBuildGeometryInfoKHR,& accelerationStructureBuildRangeInfoKHRP);
+		/*
+		vkBuildAccelerationStructuresKHRæœ‰æ•ˆç”¨æ³•:
+		1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureHostCommandsç‰¹æ€§å¿…é¡»å¼€å¯
+		2.pInfosä¸­æ¯ä¸ªå…ƒç´ çš„modeå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkBuildAccelerationStructureModeKHRå€¼
+		3.pInfosä¸­ä»»ä½•srcAccelerationStructureä¸æ˜¯VK_NULL_HANDLEçš„å…ƒç´ ï¼Œå…¶srcAccelerationStructureå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureKHR å¥æŸ„
+		4.å¯¹pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™è¯¥å…ƒç´ çš„srcAccelerationStructureä¸èƒ½ä¸ºVK_NULL_HANDLE
+		5.å¯¹pInfosä¸­ä»»ä½•å…ƒç´ çš„srcAccelerationStructure ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„dstAccelerationStructure ç›¸åŒ
+		6.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructure ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„dstAccelerationStructure ç›¸åŒ
+		7.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructure å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureKHR å¥æŸ„
+		8.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœå…¶typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHRï¼Œåˆ™å…¶dstAccelerationStructureå¿…é¡»VkAccelerationStructureCreateInfoKHR::typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR æˆ–è€… VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHRåˆ›å»º
+							  ï¼ˆ2ï¼‰å¦‚æœå…¶typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHRï¼Œåˆ™å…¶dstAccelerationStructureå¿…é¡»VkAccelerationStructureCreateInfoKHR::typeä¸ºVK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR æˆ–è€… VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHRåˆ›å»º
+							  ï¼ˆ3ï¼‰å¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™srcAccelerationStructureä¸­inactive primitivesä¸èƒ½å˜ä¸ºactiveçš„ï¼Œactive primitivesä¸èƒ½å˜ä¸ºinactiveçš„
+		9.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureä¸èƒ½è¢«ä»»ä½•å…¶ä»–å…ƒç´ çš„geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„  pGeometriesæˆ–è€… ppGeometriesä¸­çš„å…ƒç´ çš„ geometry.instances.dataå¼•ç”¨
+		10.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR  çš„å…ƒç´ çš„srcAccelerationStructureçš„å†…å­˜èŒƒå›´é‡å 
+		11.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´é‡å 
+		12.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´é‡å 
+		13.pInfosä¸­ä»»ä½•å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´é‡å 
+		14.pInfosä¸­ä»»ä½•å…ƒç´ çš„scratchDataçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR(åŒ…å«ç›¸åŒå…ƒç´ )  çš„å…ƒç´ çš„srcAccelerationStructureå…ƒç´ çš„srcAccelerationStructureçš„å†…å­˜èŒƒå›´é‡å 
+		15.pInfosä¸­ä»»ä½•å…ƒç´ çš„dstAccelerationStructureçš„å†…å­˜èŒƒå›´ä¸èƒ½å’Œä»»ä½•å…¶ä»–å…ƒç´ çš„geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„  pGeometriesæˆ–è€… ppGeometriesä¸­çš„ä»»ä½•å…ƒç´ çš„ geometry.instances.dataå¼•ç”¨çš„åŠ é€Ÿç»“æ„çš„å†…å­˜èŒƒå›´é‡å 
+		16.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œï¼ˆ1ï¼‰åˆ™srcAccelerationStructureå¿…é¡»åœ¨å…ˆå‰ä»¥VkAccelerationStructureBuildGeometryInfoKHR::flagsè®¾ç½®æœ‰VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR æ„å»ºå¥½äº†
+																						  ï¼ˆ2ï¼‰åˆ™å…¶srcAccelerationStructure å’ŒdstAccelerationStructure å¿…é¡»æ˜¯åŒä¸€ä¸ªå¯¹è±¡æˆ–è€…ä¸å«æœ‰ä»»ä½•memory aliasing
+																						  ï¼ˆ3ï¼‰åˆ™å…¶geometryCount å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometryCountç›¸åŒ
+																						  ï¼ˆ4ï¼‰åˆ™å…¶flags å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„flagsç›¸åŒ
+																						  ï¼ˆ5ï¼‰åˆ™å…¶type å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„typeç›¸åŒ
+																						  ï¼ˆ6ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œ åˆ™å…¶geometryType å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometryTypeç›¸åŒ
+																						  ï¼ˆ7ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œ åˆ™å…¶flags å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„flagsç›¸åŒ
+																						  ï¼ˆ8ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶geometry.triangles.vertexFormat å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.vertexFormatç›¸åŒ
+																						  ï¼ˆ9ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶geometry.triangles.maxVertex å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.maxVertexç›¸åŒ
+																						  ï¼ˆ10ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶geometry.triangles.indexType å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.indexTypeç›¸åŒ
+																						  ï¼ˆ11ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œå¦‚æœsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.transformDataä¸ºNULLåˆ™å…¶geometry.triangles.transformData å¿…é¡»ä¸ºNULL
+																						  ï¼ˆ12ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œå¦‚æœsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„geometry.triangles.transformDataä¸ä¸ºNULLåˆ™å…¶geometry.triangles.transformData å¿…é¡»ä¸ä¸ºNULL
+																						  ï¼ˆ13ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œå¦‚æœå…¶geometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™æ¯ä¸ªå¼•ç”¨çš„ç´¢å¼•å€¼å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºå¼•ç”¨çš„ç´¢å¼•å€¼ç›¸åŒ
+																						  ï¼ˆ14ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœgeometryType ä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHRï¼Œåˆ™å…¶å¯¹åº”çš„VkAccelerationStructureBuildRangeInfoKHRçš„primitiveCount å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„primitiveCountç›¸åŒ
+																						  ï¼ˆ15ï¼‰å¯¹æ¯ä¸ªè¢«å…¶pGeometries æˆ–è€…ppGeometries å¼•ç”¨çš„VkAccelerationStructureGeometryKHRç»“æ„ï¼Œå¦‚æœè¯¥geometryä½¿ç”¨ç´¢å¼•indicesï¼Œåˆ™å…¶å¯¹åº”çš„VkAccelerationStructureBuildRangeInfoKHRçš„firstVertex å¿…é¡»å’ŒsrcAccelerationStructureæœ€åä¸€æ¬¡æ„å»ºçš„firstVertex ç›¸åŒ
+		17.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometries æ¯ä¸ªä»¥geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHRçš„å…ƒç´ ï¼Œå…¶å¯¹åº”çš„ppBuildRangeInfos[i][j].primitiveCount å¿…é¡»å°äºç­‰äºVkPhysicalDeviceAccelerationStructurePropertiesKHR::maxInstanceCount
+		18.å¯¹pInfos[i]çš„æ¯ä¸ªå…ƒç´ ï¼ŒdstAccelerationStructure å¿…é¡»ä»¥VkAccelerationStructureCreateInfoKHR::size å¤§äºç­‰äºæŸ¥è¯¢æ„å»ºæ“ä½œè¿”å›çš„å†…å­˜å¤§å°ï¼Œè§è°ƒç”¨vkGetAccelerationStructureBuildSizesKHR ä¼ å…¥pBuildInfo = pInfos[i] ä»¥åŠpMaxPrimitiveCountsä¸­çš„æ¯ä¸ªå…ƒç´ å¤§äºç­‰äºå¯¹åº”çš„ppBuildRangeInfos[i][j].primitiveCountï¼Œå…¶ä¸­jå¤„äº [0,pInfos[i].geometryCount)
+		19.ppBuildRangeInfos[i]ä¸­çš„æ¯ä¸ªå…ƒç´ å¿…é¡»æ˜¯æœ‰æ•ˆçš„pInfos[i].geometryCountä¸ªVkAccelerationStructureBuildRangeInfoKHRæ•°ç»„çš„æŒ‡é’ˆ
+		20.ä»»ä½•deferredOperationå…³è”çš„ä¹‹å‰çš„deferred operation å¿…é¡»å·²ç»å®Œæˆ
+		21.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œåˆ›å»ºå…¶dstAccelerationStructureçš„bufferå¿…é¡»ç»‘å®šåˆ°host-visible device memoryä¸Š
+		22.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™ç”¨äºåˆ›å»ºsrcAccelerationStructureçš„bufferå¿…é¡»ç»‘å®šåˆ°host-visible device memoryä¸Š
+		23.å¯¹pInfosä¸­çš„æ¯ä¸ªå…ƒç´ ï¼Œç”¨äºåˆ›å»ºè¢«pGeometries æˆ–è€… ppGeometriesä¸­geometryTypeçš„VK_GEOMETRY_TYPE_INSTANCES_KHR å¼•ç”¨çš„acceleration structureçš„bufferå¿…é¡»ç»‘å®šåˆ°host-visible device memoryä¸Š
+		24.å¦‚æœpInfos[i].modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR ï¼Œåˆ™æ‰€æœ‰åœ¨pInfos[i].scratchData.hostAddressåˆ°pInfos[i].scratchData.hostAddress + N - 1 ä¹‹é—´çš„åœ°å€å¿…é¡»æ˜¯åœ¨valid host memoryï¼Œå…¶ä¸­Næ˜¯vkGetAccelerationStructureBuildSizesKHRä¼ å…¥ç›¸åŒVkAccelerationStructureBuildGeometryInfoKHRä»¥åŠprimitive count  è¿”å›çš„VkAccelerationStructureBuildSizesInfoKHRç»“æ„ä¸­buildScratchSizeæˆå‘˜çš„å€¼
+		25.å¦‚æœpInfos[i].modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR ï¼Œåˆ™æ‰€æœ‰åœ¨pInfos[i].scratchData.hostAddressåˆ°pInfos[i].scratchData.hostAddress + N - 1 ä¹‹é—´çš„åœ°å€å¿…é¡»æ˜¯åœ¨valid host memoryï¼Œå…¶ä¸­Næ˜¯vkGetAccelerationStructureBuildSizesKHRä¼ å…¥ç›¸åŒVkAccelerationStructureBuildGeometryInfoKHRä»¥åŠprimitive count  è¿”å›çš„VkAccelerationStructureBuildSizesInfoKHRç»“æ„ä¸­updateScratchSizeæˆå‘˜çš„å€¼
+		26.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰ geometry.triangles.vertexData.hostAddresså¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„host address
+																														   ï¼ˆ2ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™geometry.triangles.indexData.hostAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„host address
+																														   ï¼ˆ3ï¼‰å¦‚æœgeometry.triangles.transformData.hostAddress ä¸ä¸º0ï¼Œåˆ™geometry.triangles.transformData.hostAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„host address
+		27.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_AABBS_KHR çš„å…ƒç´ ï¼Œåˆ™geometry.aabbs.data.hostAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„host address
+		28.
+
+		
+		19.pInfosä¸­æ¯ä¸ªå…ƒç´ ï¼Œå¦‚æœå…¶modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™ç”¨äºåˆ›å»ºdstAccelerationStructureçš„bufferå¿…é¡»ç»‘å®šåˆ°VkDeviceMemoryå¯¹è±¡ä¸Š
+			20.å¯¹pInfosä¸­çš„æ¯ä¸ªå…ƒç´ ï¼Œç”¨äºåˆ›å»ºè¢«pGeometries æˆ–è€… ppGeometriesä¸­geometryTypeçš„VK_GEOMETRY_TYPE_INSTANCES_KHR å¼•ç”¨çš„acceleration structureçš„bufferå¿…é¡»ç»‘å®šåˆ°VkDeviceMemoryå¯¹è±¡ä¸Š
+			21.å¦‚æœpInfos[i].modeä¸ºVK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR æˆ–è€… VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHRï¼Œåˆ™æ‰€æœ‰åœ¨pInfos[i].scratchData.deviceAddressåˆ°pInfos[i].scratchData.deviceAddress + N - 1 ä¹‹é—´çš„åœ°å€å¿…é¡»æ˜¯åœ¨åŒä¸€ä¸ªbufferçš„device address rangeå†…ï¼Œå…¶ä¸­Næ˜¯vkGetAccelerationStructureBuildSizesKHRä¼ å…¥ç›¸åŒVkAccelerationStructureBuildGeometryInfoKHRä»¥åŠprimitive count  è¿”å›çš„VkAccelerationStructureBuildSizesInfoKHRç»“æ„ä¸­buildScratchSizeæˆå‘˜çš„å€¼
+			22.ä»»ä½•å…¶buffer device addresses è¢«pInfos[i].pGeometries ä»¥åŠ pInfos[i].ppGeometriesä¸­çš„æ‰€æœ‰geometry.triangles.vertexData, geometry.triangles.indexData, geometry.triangles.transformData, geometry.aabbs.data, ä»¥åŠ geometry.instances.dataæ‰€æŒ‡çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR åˆ›å»º
+			23.ä»»ä½•å…¶buffer device addresses è¢« pInfos[i].scratchData.deviceAddressæ‰€æŒ‡çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_STORAGE_BUFFER_BIT åˆ›å»º
+			24.å¯¹pInfosä¸­çš„æ¯ä¸ªå…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰å…¶scratchData.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+									   ï¼ˆ2ï¼‰å¦‚æœscratchData.deviceAddressæ˜¯ä¸€ä¸ªnon-sparseçš„addressï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+									   ï¼ˆ3ï¼‰å…¶scratchData.deviceAddress å¿…é¡»æ˜¯VkPhysicalDeviceAccelerationStructurePropertiesKHR::minAccelerationStructureScratchOffsetAlignmentçš„å€æ•°
+			25.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_TRIANGLES_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰geometry.triangles.vertexData.deviceAddresså¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ2ï¼‰å¦‚æœgeometry.triangles.vertexData.deviceAddressæ‰€å¯¹non-sparse çš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ3ï¼‰geometry.triangles.vertexData.deviceAddressä¸­å¿…é¡»å¯¹é½åˆ°vertexFormatä¸­æœ€å°åˆ†é‡çš„å­—èŠ‚æ•°å¤§å°
+																															   ï¼ˆ4ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™geometry.triangles.indexData.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ5ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œå¦‚æœgeometry.triangles.indexData.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ6ï¼‰å¦‚æœgeometry.triangles.indexType ä¸ä¸ºVK_INDEX_TYPE_NONE_KHRï¼Œåˆ™geometry.triangles.indexData.deviceAddress ä¸­å¿…é¡»å¯¹é½åˆ°indexTypeçš„å­—èŠ‚æ•°å¤§å°
+																															   ï¼ˆ7ï¼‰å¦‚æœgeometry.triangles.transformData.deviceAddress ä¸ä¸º0ï¼Œåˆ™geometry.triangles.transformData.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ8ï¼‰å¦‚æœgeometry.triangles.transformData.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ9ï¼‰å¦‚æœgeometry.triangles.transformData.deviceAddress ä¸ä¸º0ï¼Œåˆ™geometry.triangles.transformData.deviceAddress ä¸­å¿…é¡»å¯¹é½åˆ°16å­—èŠ‚å¤§å°
+			26.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_AABBS_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰geometry.aabbs.data.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																														   ï¼ˆ2ï¼‰å¦‚æœgeometry.aabbs.data.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																														   ï¼ˆ3ï¼‰geometry.aabbs.data.deviceAddress å¿…é¡»å¯¹é½åˆ°8å­—èŠ‚
+			27.å¯¹pInfos[i].pGeometries æˆ–è€… pInfos[i].ppGeometriesä¸­ä»»ä½•geometryTypeä¸ºVK_GEOMETRY_TYPE_INSTANCES_KHR çš„å…ƒç´ ï¼Œåˆ™ï¼ˆ1ï¼‰å¦‚æœgeometry.arrayOfPointers ä¸ºVK_FALSEï¼Œåˆ™geometry.instances.data.deviceAddress å¿…é¡»å¯¹é½åˆ°16å­—èŠ‚
+																															   ï¼ˆ2ï¼‰å¦‚æœgeometry.arrayOfPointers ä¸ºVK_TRUEï¼Œåˆ™geometry.instances.data.deviceAddress å¿…é¡»å¯¹é½åˆ°8å­—èŠ‚
+																															   ï¼ˆ3ï¼‰å¦‚æœgeometry.arrayOfPointers ä¸ºVK_TRUEï¼Œåˆ™geometry.instances.data.deviceAddresså†…å­˜ä¸­çš„æ¯ä¸ªå…ƒç´ å¿…é¡»å¯¹é½åˆ°16å­—èŠ‚
+																															   ï¼ˆ4ï¼‰geometry.instances.data.deviceAddress å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address
+																															   ï¼ˆ5ï¼‰å¦‚æœgeometry.instances.data.deviceAddress æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+																															   ï¼ˆ6ï¼‰geometry.instances.data.deviceAddresså†…å­˜ä¸­çš„æ¯ä¸ªVkAccelerationStructureInstanceKHR::accelerationStructureReference å¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„é€šè¿‡vkGetBufferDeviceAddressè·å–çš„device address æˆ–è€…0
+			28.commandBuffer ä¸èƒ½æ˜¯ä¸€ä¸ªprotected command buffer
+			29.å¯¹pIndirectDeviceAddressesä¸­çš„ä»»ä½•å…ƒç´ ï¼Œå¦‚æœå…¶buffer device address å¯¹åº”æ˜¯ä¸€ä¸ªnon-sparseçš„bufferï¼Œåˆ™è¯¥bufferå¿…é¡»ç»‘å®šåˆ°ä¸€ä¸ªå®Œæ•´çš„è¿ç»­çš„å•ç‹¬çš„VkDeviceMemoryå¯¹è±¡ä¸Š
+			30.å¯¹pIndirectDeviceAddresses[i]ä¸­çš„ä»»ä½•å…ƒç´ ,æ‰€æœ‰åœ¨pIndirectDeviceAddresses[i] åˆ°pIndirectDeviceAddresses[i] + (pInfos[i].geometryCount Ã— pIndirectStrides[i]) - 1 çš„device addresse å¿…é¡»åœ¨ç›¸åŒbufferçš„device address rangeå†…
+			31.å¯¹pIndirectDeviceAddressesä¸­çš„ä»»ä½•å…ƒç´ ï¼Œå…¶å¯¹åº”çš„bufferå¿…é¡»ä»¥VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT åˆ›å»º
+			32.pIndirectDeviceAddressesä¸­çš„æ¯ä¸ªå…ƒç´ å¿…é¡»æ˜¯4çš„å€æ•°
+			33.pIndirectStridesä¸­çš„æ¯ä¸ªå…ƒç´ å¿…é¡»æ˜¯4çš„å€æ•°
+			34.pIndirectDeviceAddressesä¸­çš„ä»»ä½•å…ƒç´ å¼•ç”¨çš„æ¯ä¸ªVkAccelerationStructureBuildRangeInfoKHRå¿…é¡»æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„VkAccelerationStructureBuildRangeInfoKHRç»“æ„
+			35.pInfos[i].dstAccelerationStructure å¿…é¡»ä»¥VkAccelerationStructureCreateInfoKHR::size å¤§äºç­‰äºæŸ¥è¯¢æ„å»ºæ“ä½œè¿”å›çš„å†…å­˜å¤§å°ï¼Œè§è°ƒç”¨vkGetAccelerationStructureBuildSizesKHR ä¼ å…¥pBuildInfo = pInfos[i] ä»¥åŠpMaxPrimitiveCounts = ppMaxPrimitiveCounts[i]
+			36.æ¯ä¸ªppMaxPrimitiveCounts[i][j]çš„å€¼å¿…é¡»å¤§äºç­‰äºpIndirectDeviceAddresses[i] + (j Ã— pIndirectStrides[i])å®šä½çš„VkAccelerationStructureBuildRangeInfoKHRçš„primitiveCount
+
+
+
+
+â€¢ VUID-vkBuildAccelerationStructuresKHR-pInfos-03775
+For each element of pInfos, the buffer used to create its dstAccelerationStructure member
+must be bound to memory that was not allocated with multiple instances
+â€¢ VUID-vkBuildAccelerationStructuresKHR-pInfos-03776
+For each element of pInfos, if its mode member is
+VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR the buffer used to create its
+srcAccelerationStructure member must be bound to memory that was not allocated with
+multiple instances
+3284
+â€¢ VUID-vkBuildAccelerationStructuresKHR-pInfos-03777
+For each element of pInfos, the buffer used to create each acceleration structure
+referenced by the geometry.instances.data member of any element of pGeometries or
+ppGeometries with a geometryType of VK_GEOMETRY_TYPE_INSTANCES_KHR must be bound to
+memory that was not allocated with multiple instances
+â€¢ VUID-vkBuildAccelerationStructuresKHR-pInfos-03778
+For any element of pInfos[i].pGeometries or pInfos[i].ppGeometries with a geometryType of
+VK_GEOMETRY_TYPE_INSTANCES_KHR, geometry.instances.data.hostAddress must be a valid
+host address
+â€¢ VUID-vkBuildAccelerationStructuresKHR-pInfos-03779
+For any element of pInfos[i].pGeometries or pInfos[i].ppGeometries with a geometryType of
+VK_GEOMETRY_TYPE_INSTANCES_KHR, each VkAccelerationStructureInstanceKHR
+::accelerationStructureReference value in geometry.instances.data.hostAddress must be a
+valid VkAccelerationStructureKHR object
+â€¢ VUID-vkBuildAccelerationStructuresKHR-pInfos-04930
+For any element of pInfos[i].pGeometries or pInfos[i].ppGeometries with a geometryType of
+VK_GEOMETRY_TYPE_INSTANCES_KHR with VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV set,
+each accelerationStructureReference in any structure in
+VkAccelerationStructureMotionInstanceNV value in geometry.instances.data.hostAddress
+must be a valid VkAccelerationStructureKHR object
+		*/
+
+
+	}
 }
 
 NS_TEST_END

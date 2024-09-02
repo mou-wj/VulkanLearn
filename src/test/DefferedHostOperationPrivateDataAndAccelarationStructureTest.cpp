@@ -588,7 +588,7 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 			18.对pInfos中的每个元素，用于创建dstAccelerationStructure的buffer必须绑定到VkDeviceMemory对象上
 			19.pInfos中每个元素，如果其mode为VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR，则用于创建dstAccelerationStructure的buffer必须绑定到VkDeviceMemory对象上
 			20.对pInfos中的每个元素，用于创建被pGeometries 或者 ppGeometries中geometryType的VK_GEOMETRY_TYPE_INSTANCES_KHR 引用的acceleration structure的buffer必须绑定到VkDeviceMemory对象上
-			21.如果pInfos[i].mode为VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR 或者 VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR，则所有在pInfos[i].scratchData.deviceAddress到pInfos[i].scratchData.deviceAddress + N - 1 之间的地址必须是在同一个buffer的device address range内，其中N是vkGetAccelerationStructureBuildSizesKHR传入相同VkAccelerationStructureBuildGeometryInfoKHR以及primitive count  返回的VkAccelerationStructureBuildSizesInfoKHR结构中buildScratchSize成员的值
+			21.如果pInfos[i].mode为VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR 或者 VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR，则所有在pInfos[i].scratchData.deviceAddress到pInfos[i].scratchData.deviceAddress + N - 1 之间的地址必须是在同一个buffer的device address range内，其中N是vkGetAccelerationStructureBuildSizesKHR传入相同VkAccelerationStructureBuildGeometryInfoKHR以及primitive count  返回的VkAccelerationStructureBuildSizesInfoKHR结构中buildScratchSize、updateScratchSize成员的值
 			22.任何其buffer device addresses 被pInfos[i].pGeometries 以及 pInfos[i].ppGeometries中的所有geometry.triangles.vertexData, geometry.triangles.indexData, geometry.triangles.transformData, geometry.aabbs.data, 以及 geometry.instances.data所指的buffer必须以VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR 创建
 			23.任何其buffer device addresses 被 pInfos[i].scratchData.deviceAddress所指的buffer必须以VK_BUFFER_USAGE_STORAGE_BUFFER_BIT 创建
 			24.对pInfos中的每个元素，则（1）其scratchData.deviceAddress 必须是一个有效的通过vkGetBufferDeviceAddress获取的device address
@@ -665,7 +665,7 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 			18.对pInfos中的每个元素，用于创建dstAccelerationStructure的buffer必须绑定到VkDeviceMemory对象上
 			19.pInfos中每个元素，如果其mode为VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR，则用于创建dstAccelerationStructure的buffer必须绑定到VkDeviceMemory对象上
 			20.对pInfos中的每个元素，用于创建被pGeometries 或者 ppGeometries中geometryType的VK_GEOMETRY_TYPE_INSTANCES_KHR 引用的acceleration structure的buffer必须绑定到VkDeviceMemory对象上
-			21.如果pInfos[i].mode为VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR 或者 VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR，则所有在pInfos[i].scratchData.deviceAddress到pInfos[i].scratchData.deviceAddress + N - 1 之间的地址必须是在同一个buffer的device address range内，其中N是vkGetAccelerationStructureBuildSizesKHR传入相同VkAccelerationStructureBuildGeometryInfoKHR以及primitive count  返回的VkAccelerationStructureBuildSizesInfoKHR结构中buildScratchSize成员的值
+			21.如果pInfos[i].mode为VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR 或者 VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR，则所有在pInfos[i].scratchData.deviceAddress到pInfos[i].scratchData.deviceAddress + N - 1 之间的地址必须是在同一个buffer的device address range内，其中N是vkGetAccelerationStructureBuildSizesKHR传入相同VkAccelerationStructureBuildGeometryInfoKHR以及primitive count  返回的VkAccelerationStructureBuildSizesInfoKHR结构中buildScratchSize、updateScratchSize成员的值
 			22.任何其buffer device addresses 被pInfos[i].pGeometries 以及 pInfos[i].ppGeometries中的所有geometry.triangles.vertexData, geometry.triangles.indexData, geometry.triangles.transformData, geometry.aabbs.data, 以及 geometry.instances.data所指的buffer必须以VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR 创建
 			23.任何其buffer device addresses 被 pInfos[i].scratchData.deviceAddress所指的buffer必须以VK_BUFFER_USAGE_STORAGE_BUFFER_BIT 创建
 			24.对pInfos中的每个元素，则（1）其scratchData.deviceAddress 必须是一个有效的通过vkGetBufferDeviceAddress获取的device address
@@ -957,79 +957,71 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 																														   （2）如果geometry.triangles.indexType 不为VK_INDEX_TYPE_NONE_KHR，则geometry.triangles.indexData.hostAddress 必须是一个有效的host address
 																														   （3）如果geometry.triangles.transformData.hostAddress 不为0，则geometry.triangles.transformData.hostAddress 必须是一个有效的host address
 		27.对pInfos[i].pGeometries 或者 pInfos[i].ppGeometries中任何geometryType为VK_GEOMETRY_TYPE_AABBS_KHR 的元素，则geometry.aabbs.data.hostAddress 必须是一个有效的host address
-		28.
-
-		
-		19.pInfos中每个元素，如果其mode为VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR，则用于创建dstAccelerationStructure的buffer必须绑定到VkDeviceMemory对象上
-			20.对pInfos中的每个元素，用于创建被pGeometries 或者 ppGeometries中geometryType的VK_GEOMETRY_TYPE_INSTANCES_KHR 引用的acceleration structure的buffer必须绑定到VkDeviceMemory对象上
-			21.如果pInfos[i].mode为VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR 或者 VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR，则所有在pInfos[i].scratchData.deviceAddress到pInfos[i].scratchData.deviceAddress + N - 1 之间的地址必须是在同一个buffer的device address range内，其中N是vkGetAccelerationStructureBuildSizesKHR传入相同VkAccelerationStructureBuildGeometryInfoKHR以及primitive count  返回的VkAccelerationStructureBuildSizesInfoKHR结构中buildScratchSize成员的值
-			22.任何其buffer device addresses 被pInfos[i].pGeometries 以及 pInfos[i].ppGeometries中的所有geometry.triangles.vertexData, geometry.triangles.indexData, geometry.triangles.transformData, geometry.aabbs.data, 以及 geometry.instances.data所指的buffer必须以VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR 创建
-			23.任何其buffer device addresses 被 pInfos[i].scratchData.deviceAddress所指的buffer必须以VK_BUFFER_USAGE_STORAGE_BUFFER_BIT 创建
-			24.对pInfos中的每个元素，则（1）其scratchData.deviceAddress 必须是一个有效的通过vkGetBufferDeviceAddress获取的device address
-									   （2）如果scratchData.deviceAddress是一个non-sparse的address，则该buffer必须绑定到一个完整的连续的单独的VkDeviceMemory对象上
-									   （3）其scratchData.deviceAddress 必须是VkPhysicalDeviceAccelerationStructurePropertiesKHR::minAccelerationStructureScratchOffsetAlignment的倍数
-			25.对pInfos[i].pGeometries 或者 pInfos[i].ppGeometries中任何geometryType为VK_GEOMETRY_TYPE_TRIANGLES_KHR 的元素，则（1）geometry.triangles.vertexData.deviceAddress必须是一个有效的通过vkGetBufferDeviceAddress获取的device address
-																															   （2）如果geometry.triangles.vertexData.deviceAddress所对non-sparse 的buffer，则该buffer必须绑定到一个完整的连续的单独的VkDeviceMemory对象上
-																															   （3）geometry.triangles.vertexData.deviceAddress中必须对齐到vertexFormat中最小分量的字节数大小
-																															   （4）如果geometry.triangles.indexType 不为VK_INDEX_TYPE_NONE_KHR，则geometry.triangles.indexData.deviceAddress 必须是一个有效的通过vkGetBufferDeviceAddress获取的device address
-																															   （5）如果geometry.triangles.indexType 不为VK_INDEX_TYPE_NONE_KHR，如果geometry.triangles.indexData.deviceAddress 是一个non-sparse的buffer，则该buffer必须绑定到一个完整的连续的单独的VkDeviceMemory对象上
-																															   （6）如果geometry.triangles.indexType 不为VK_INDEX_TYPE_NONE_KHR，则geometry.triangles.indexData.deviceAddress 中必须对齐到indexType的字节数大小
-																															   （7）如果geometry.triangles.transformData.deviceAddress 不为0，则geometry.triangles.transformData.deviceAddress 必须是一个有效的通过vkGetBufferDeviceAddress获取的device address
-																															   （8）如果geometry.triangles.transformData.deviceAddress 是一个non-sparse的buffer，则该buffer必须绑定到一个完整的连续的单独的VkDeviceMemory对象上
-																															   （9）如果geometry.triangles.transformData.deviceAddress 不为0，则geometry.triangles.transformData.deviceAddress 中必须对齐到16字节大小
-			26.对pInfos[i].pGeometries 或者 pInfos[i].ppGeometries中任何geometryType为VK_GEOMETRY_TYPE_AABBS_KHR 的元素，则（1）geometry.aabbs.data.deviceAddress 必须是一个有效的通过vkGetBufferDeviceAddress获取的device address
-																														   （2）如果geometry.aabbs.data.deviceAddress 是一个non-sparse的buffer，则该buffer必须绑定到一个完整的连续的单独的VkDeviceMemory对象上
-																														   （3）geometry.aabbs.data.deviceAddress 必须对齐到8字节
-			27.对pInfos[i].pGeometries 或者 pInfos[i].ppGeometries中任何geometryType为VK_GEOMETRY_TYPE_INSTANCES_KHR 的元素，则（1）如果geometry.arrayOfPointers 为VK_FALSE，则geometry.instances.data.deviceAddress 必须对齐到16字节
-																															   （2）如果geometry.arrayOfPointers 为VK_TRUE，则geometry.instances.data.deviceAddress 必须对齐到8字节
-																															   （3）如果geometry.arrayOfPointers 为VK_TRUE，则geometry.instances.data.deviceAddress内存中的每个元素必须对齐到16字节
-																															   （4）geometry.instances.data.deviceAddress 必须是一个有效的通过vkGetBufferDeviceAddress获取的device address
-																															   （5）如果geometry.instances.data.deviceAddress 是一个non-sparse的buffer，则该buffer必须绑定到一个完整的连续的单独的VkDeviceMemory对象上
-																															   （6）geometry.instances.data.deviceAddress内存中的每个VkAccelerationStructureInstanceKHR::accelerationStructureReference 必须是一个有效的通过vkGetBufferDeviceAddress获取的device address 或者0
-			28.commandBuffer 不能是一个protected command buffer
-			29.对pIndirectDeviceAddresses中的任何元素，如果其buffer device address 对应是一个non-sparse的buffer，则该buffer必须绑定到一个完整的连续的单独的VkDeviceMemory对象上
-			30.对pIndirectDeviceAddresses[i]中的任何元素,所有在pIndirectDeviceAddresses[i] 到pIndirectDeviceAddresses[i] + (pInfos[i].geometryCount × pIndirectStrides[i]) - 1 的device addresse 必须在相同buffer的device address range内
-			31.对pIndirectDeviceAddresses中的任何元素，其对应的buffer必须以VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT 创建
-			32.pIndirectDeviceAddresses中的每个元素必须是4的倍数
-			33.pIndirectStrides中的每个元素必须是4的倍数
-			34.pIndirectDeviceAddresses中的任何元素引用的每个VkAccelerationStructureBuildRangeInfoKHR必须是一个有效的VkAccelerationStructureBuildRangeInfoKHR结构
-			35.pInfos[i].dstAccelerationStructure 必须以VkAccelerationStructureCreateInfoKHR::size 大于等于查询构建操作返回的内存大小，见调用vkGetAccelerationStructureBuildSizesKHR 传入pBuildInfo = pInfos[i] 以及pMaxPrimitiveCounts = ppMaxPrimitiveCounts[i]
-			36.每个ppMaxPrimitiveCounts[i][j]的值必须大于等于pIndirectDeviceAddresses[i] + (j × pIndirectStrides[i])定位的VkAccelerationStructureBuildRangeInfoKHR的primitiveCount
-
-
-
-
-• VUID-vkBuildAccelerationStructuresKHR-pInfos-03775
-For each element of pInfos, the buffer used to create its dstAccelerationStructure member
-must be bound to memory that was not allocated with multiple instances
-• VUID-vkBuildAccelerationStructuresKHR-pInfos-03776
-For each element of pInfos, if its mode member is
-VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR the buffer used to create its
-srcAccelerationStructure member must be bound to memory that was not allocated with
-multiple instances
-3284
-• VUID-vkBuildAccelerationStructuresKHR-pInfos-03777
-For each element of pInfos, the buffer used to create each acceleration structure
-referenced by the geometry.instances.data member of any element of pGeometries or
-ppGeometries with a geometryType of VK_GEOMETRY_TYPE_INSTANCES_KHR must be bound to
-memory that was not allocated with multiple instances
-• VUID-vkBuildAccelerationStructuresKHR-pInfos-03778
-For any element of pInfos[i].pGeometries or pInfos[i].ppGeometries with a geometryType of
-VK_GEOMETRY_TYPE_INSTANCES_KHR, geometry.instances.data.hostAddress must be a valid
-host address
-• VUID-vkBuildAccelerationStructuresKHR-pInfos-03779
-For any element of pInfos[i].pGeometries or pInfos[i].ppGeometries with a geometryType of
-VK_GEOMETRY_TYPE_INSTANCES_KHR, each VkAccelerationStructureInstanceKHR
-::accelerationStructureReference value in geometry.instances.data.hostAddress must be a
-valid VkAccelerationStructureKHR object
-• VUID-vkBuildAccelerationStructuresKHR-pInfos-04930
-For any element of pInfos[i].pGeometries or pInfos[i].ppGeometries with a geometryType of
-VK_GEOMETRY_TYPE_INSTANCES_KHR with VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV set,
-each accelerationStructureReference in any structure in
-VkAccelerationStructureMotionInstanceNV value in geometry.instances.data.hostAddress
-must be a valid VkAccelerationStructureKHR object
+		28.对pInfos中的每个元素，创建其dstAccelerationStructure的buffer必须绑定到没有在multiple instances上分配的memory
+		29.pInfos中每个元素，如果其mode为VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR，则用于创建srcAccelerationStructure的buffer必须绑定到没有在multiple instances上分配的memory
+		30.对pInfos中的每个元素，用于创建被pGeometries 或者 ppGeometries中geometryType的VK_GEOMETRY_TYPE_INSTANCES_KHR 引用的acceleration structure的buffer必须绑定到没有在multiple instances上分配的memory
+		31.对pInfos[i].pGeometries 或者 pInfos[i].ppGeometries中任何geometryType为VK_GEOMETRY_TYPE_INSTANCES_KHR 的元素，则（1）geometry.instances.data.hostAddress 必须是一个有效的host address
+																														   （2）geometry.instances.data.hostAddress内存中的每个VkAccelerationStructureInstanceKHR::accelerationStructureReference 必须是一个有效的VkAccelerationStructureKHR对象
+																														   （3）如果该geometry设置了VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV，则geometry.instances.data.hostAddress内存中的每个VkAccelerationStructureMotionInstanceNV::accelerationStructureReference 必须是一个有效的VkAccelerationStructureKHR对象
 		*/
 
+
+		VkCopyAccelerationStructureInfoKHR copyAccelerationStructureInfoKHR{/*假设这是一个有效的VkCopyAccelerationStructureInfoKHR*/ };//前面已经描述过这里不再复述
+		//在host端拷贝或者压缩一个加速结构  ,等效于vkCmdCopyAccelerationStructureKHR
+		vkCopyAccelerationStructureKHR(device, VkDeferredOperationKHR{/*假设这是一个有效的VkDeferredOperationKHR*/ }, & copyAccelerationStructureInfoKHR);
+		/*
+		vkCopyAccelerationStructureKHR有效用法:
+		1. VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureHostCommands特性必须开启
+		2.任何deferredOperation关联的之前的deferred operation 必须已经完成
+		3.用于创建pInfo->src，pInfo->dst加速结构的buffer必须已经绑定到host-visible device memory上，且该memory没有在multiple instances上分配
+		*/
+
+
+		VkCopyMemoryToAccelerationStructureInfoKHR copyMemoryToAccelerationStructureInfoKHR{/*假设这是一个有效的copyMemoryToAccelerationStructureInfoKHR*/};//前面已经描述过这里不再复述
+		//host端拷贝 host accessible memory 到一个加速结构，等效于vkCmdCopyMemoryToAccelerationStructureKHR，可以接受由vkCmdCopyAccelerationStructureToMemoryKHR 或者vkCopyAccelerationStructureToMemoryKHR产生的加速结构
+		vkCopyMemoryToAccelerationStructureKHR(device, VkDeferredOperationKHR{/*假设这是一个有效的VkDeferredOperationKHR*/ }, & copyMemoryToAccelerationStructureInfoKHR);
+		/*
+		vkCopyMemoryToAccelerationStructureKHR有效用法:
+		1. VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureHostCommands特性必须开启
+		2.任何deferredOperation关联的之前的deferred operation 必须已经完成
+		3.pInfo->src.hostAddress必须是有效的 host pointer，且其必须对齐到16字节
+		4.用于创建pInfo->dst加速结构的buffer必须已经绑定到host-visible device memory上，且该memory没有在multiple instances上分配
+		
+		*/
+
+		VkCopyAccelerationStructureToMemoryInfoKHR copyAccelerationStructureToMemoryInfoKHR{/*假设这是一个有效的VkCopyAccelerationStructureToMemoryInfoKHR*/ };//前面已经描述过这里不再复述
+		//host端拷贝一个加速结构到host accessible memory，等效于vkCmdCopyAccelerationStructureToMemoryKHR，该接口输出可以被vkCmdCopyMemoryToAccelerationStructureKHR 或者vkCopyMemoryToAccelerationStructureKHR使用
+		vkCopyAccelerationStructureToMemoryKHR(device, VkDeferredOperationKHR{/*假设这是一个有效的VkDeferredOperationKHR*/ }, & copyAccelerationStructureToMemoryInfoKHR);
+		/*
+		vkCopyAccelerationStructureToMemoryKHR有效用法:
+		1. VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureHostCommands特性必须开启
+		2.任何deferredOperation关联的之前的deferred operation 必须已经完成
+		3.pInfo->dst.hostAddress必须是有效的 host pointer，且其必须对齐到16字节
+		4.用于创建pInfo->src加速结构的buffer必须已经绑定到host-visible device memory上，且该memory没有在multiple instances上分配
+
+		
+		*/
+
+		uint32_t needSize = 0;
+		//host端查询加速结构的大小参数
+		VkAccelerationStructureKHR accelerationStructureKHR{/*假设这是一个有效的VkAccelerationStructureKHR*/ };
+		vkWriteAccelerationStructuresPropertiesKHR(device, 1, &accelerationStructureKHR,
+			VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR/*queryType，指明查询类型*/, sizeof(needSize)/*dataSize，pData中的字节大小*/,&needSize/*pData,为用户分配的用于存放查询结果的内存指针*/, sizeof(needSize)/*stride,为pData中单独的查询结果之间的字节步长*/);
+		/*
+		vkCmdWriteAccelerationStructuresPropertiesKHR有效用法:
+		1.VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructureHostCommands 特性必须开启
+		2.pAccelerationStructures中的所有加速结构必须已经在该命令的执行前构建
+		3.pAccelerationStructures中的所有加速结构如果queryType为VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR则必须以VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR创建
+		4.queryType必须为VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SIZE_KHR,
+						 VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_BOTTOM_LEVEL_POINTERS_KHR,
+						 VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR, 或者
+						 VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHR
+		5.如果queryType为VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR， VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHR，VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SIZE_KHR 或者VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_BOTTOM_LEVEL_POINTERS_KHR，则（1）stride 必须为VkDeviceSize类型字节大小的整数倍
+																																																																				  （2）pData必须是一个指向VkDeviceSize的数组
+		6.dataSize 必须大于或等于accelerationStructureCount*stride
+		7.用来创建pAccelerationStructures中每个加速结构的buffer必须已经绑定到host-visible device memory上，且该memory没有在multiple instances上分配
+		
+		*/
 
 	}
 }

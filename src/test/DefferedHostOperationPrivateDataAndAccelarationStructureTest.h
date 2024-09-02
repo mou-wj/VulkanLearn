@@ -13,8 +13,11 @@ public:
 	~DefferedHostOperationPrivateDataAndAccelarationStructureTest();
 
 private:
+	//chapter 35
 	void DefferedHostOperationTest();
+	//chapter 36
 	void PrivateDataTest();
+	//chapter 37
 	void AccelerationStructureTest();
 
 };

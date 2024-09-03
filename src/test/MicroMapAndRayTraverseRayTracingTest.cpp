@@ -352,7 +352,7 @@ void MicromapAndRayTraverseRayTracingTest::MicromapTest()
 
 		//Displacement Micromap 参见p3324
 		{
-			//p3324
+			//详情见 p3324 - p3327
 		}
 
 	}

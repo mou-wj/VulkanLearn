@@ -847,7 +847,7 @@ void DefferedHostOperationPrivateDataAndAccelarationStructureTest::AccelerationS
 			
 			
 			/*
-			拷贝device memory反序列化到一个加速结构 ，和vkCopyAccelerationStructureToMemoryKHR产生相同结果，只不过该命令也会将拷贝结果的写到device memory中
+			拷贝device memory反序列化到一个加速结构 ，和vkCopyMemoryToAccelerationStructureKHR产生相同结果
 			对pInfo->src 或者pInfo->dst 以 VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR pipeline stage 或者 VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR pipeline stage同步
 			
 			对pInfo->src.deviceAddress以VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR访问，对pInfo->dst以 VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR访问

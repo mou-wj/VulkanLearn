@@ -20,7 +20,7 @@ void MicromapAndRayTraverseRayTracingTest::MicromapTest()
 
 	opacity micromap存储控制 intersection opacity （参见p3333）的信息
 
-	displacement micromap存储替换sub-triangle 顶点的信息 （参见Displacement Micromap. p3324）
+	displacement micromap存储移动sub-triangle 顶点的信息 （参见Displacement Micromap. p3324）
 
 	可以使用micromap的构建以及拷贝命令来构造一个micromap
 	*/
@@ -360,6 +360,141 @@ void MicromapAndRayTraverseRayTracingTest::MicromapTest()
 
 void MicromapAndRayTraverseRayTracingTest::RayTraverseTest()
 {
+	/*
+	ray traversal处理加速结构中geometry和ray的相交。
+	
+	ray traversal不通过vulkan API直接开始，而是需要一个shader执行OpRayQueryProceedKHR或者一个 pipeline trace ray 指令。
+
+	当rayTracingPipeline 特性开启，则OpTraceRayKHR 可以用于ray tracing，当 rayQuery特性开启，则OpRayQueryProceedKHR可以在任何shader stage使用。
+	*/
+
+
+	//Ray Intersection Candidate Determination  参见p3327
+	{
+		/*
+		ray tracing一旦开始，ray首先会判断是否可能和instance相交，然后再去判断是否可能和instance中的geometry相交。
+
+		一旦判断可能和某个geometry相交，则会将该geometry中图元的顶点从加速结构的顶点空间变换以ray的方向作为-z轴的ray空间中，然后寻找相交备选点，
+		这样图元与ray相交备选点必满足在ray空间中x，y为0，z为一个值的点
+		
+		一旦确定了该备选交点，便会依次进行以下操作:
+		1. Ray Intersection Culling
+		2. Ray Intersection Confirmation
+		3. Ray Closest Hit Determination
+		4. Ray Result Determination
+		*/
+
+	}
+
+
+	// Watertightness  参见p3330   对一些含共享顶点或者共享边的图元，必须保证这些共享顶点或者共享边不能被ray击中多次
+
+
+	//Ray Intersection Culling  参见p3330
+	{
+		/*
+		确定了相交备选点后会经过一系列顺序不定的cull操作然后最终确定相交点。
+		*/
+
+
+		//Ray Primitive Culling  参见p3330
+		{
+			/*
+			如果rayTraversalPrimitiveCulling 或者 rayQuery 特性开启，则可以在ray flags中指定SkipTrianglesKHR 或者SkipAABBsKHR(两者只能用一个)来指出当ray和三角形或者aabbs相交时，该次相交的交点处理终止，不会对该交点做后续操作。
+
+			也可以在创建ray tracing pipeline的时候指定VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR 或者 VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR来达到相同的效果。
+			
+			*/
+		}
+
+		//Ray Mask Culling  参见p3331
+		{
+			/*
+			当用于ray tracing的Cull Mask和VkAccelerationStructureInstanceKHR::mask的操作结果mask & Cull Mask == 0 时指明该加速结构实例对ray不可见，此次相交终止，不再进行后续操作，
+			*/
+		}
+
+		//Ray Face Culling  参见p3331
+		{
+			/*
+			在击中三角形时，如果从ray的方向看去是图元正面（根据图元顶点在ray空间中根据rasterization章节定义的正反面计算公式计算出的值为负数），则 HitKindKHR 会设置为HitKindFrontFacingTriangleKHR，否则会设为HitKindBackFacingTriangleKHR，
+
+			如果ray以OpRayQueryProceedKHR进行，则击中正面时OpRayQueryGetIntersectionFrontFaceKHR会返回true，反之为false。
+
+			如果在ray flags中设置 CullBackFacingTrianglesKHR，则在击中背面的时候，或者如果设置了 CullFrontFacingTrianglesKHR（和前者只能使用一个），在击中正面的时候，此次击中操作终止，不再进行后续操作，如果VkAccelerationStructureInstanceKHR::flags中设置了VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR，则可以反转操作结果，正面的击中判为反面的击中，反之一样。
+
+
+			如果VkAccelerationStructureInstanceKHR::flags中设置了VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR，则可以关闭ray face culling
+			*/
+		}
+
+		//Ray Opacity Culling  参见p3332
+		{
+			/*
+			在ray taversal过程中，如果geometry为透明的（非Opaque的）则该geometry可能会被丢弃。
+
+			geometry的Opeque属性最先由其 VkAccelerationStructureGeometryKHR::flags 是否包含VK_GEOMETRY_OPAQUE_BIT_KHR决定，
+			如果geometry含有Opaque micromap，则进一步使用micromap中说明的属性，再然后由VkAccelerationStructureInstanceKHR::flags
+			中是否包含VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR 或者VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR 决定，Opaque属性
+			还可以在ray flags中包含 OpaqueKHR 或者 NoOpaqueKHR 指定所有的geometry是否是不透明的。
+
+			如果ray以 OpRayQueryProceedKHR进行trace，则 OpRayQueryGetIntersectionCandidateAABBOpaqueKHR可以用来判断是否相交与一个Opaque的AABB，如果是返回true，否则返回false。
+
+			当判断了Opaque属性后，如果ray flags中包含CullOpaqueKHR，则和opaque geometry的相交将终止，不再进行后续操作，如果包含CullNoOpaqueKHR，则和non-opaque geometry的相交将终止，
+			不再进行后续操作。ray flags中OpaqueKHR, NoOpaqueKHR, CullOpaqueKHR, 以及 CullNoOpaqueKHR 只能互斥使用。
+
+			*/
+
+
+
+		
+		}
+
+
+		//Ray Opacity Micromap  参见p3333
+		{
+			/*
+			如果VkAccelerationStructureInstanceKHR::flags中不含VK_GEOMETRY_INSTANCE_DISABLE_OPACITY_MICROMAPS_EXT则可以使用micromap来对geometry的opaque属性进行细粒度的控制。
+
+			详情见p3334
+			
+			*/
+		}
+
+	}
+
+
+
+	//Ray Intersection Confirmation  参见p3334
+	{
+		//AABB Intersection Candidates  参见p3335
+
+		//Triangle and Generated Intersection Candidates  参见p3335
+		{
+			/*
+			基于相交的opaque属性（见前面ray opaque culling）需要额外的shader调用来确定是否继续处理此次相交的备选点，该操作可以对相同备选点执行多次除非指明VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR。
+
+			如果相交的opaque属性为opaque，则此次该确认该备选点，然后传入下一阶段进行后续处理。
+
+			如果相交的opaque属性为non-opaque，则如果shader调用了OpIgnoreIntersectionKHR，则终止对该备选点的处理，如果 any-hit shader为 VK_SHADER_UNUSED_KHR，则确认该备选点，然后传入下一阶段进行后续处理。
+			
+			如果ray 以OpRayQueryProceedKHR 进行，则调用 OpRayQueryConfirmIntersectionKHR确认该备选点，然后对该ray trace继续进行OpRayQueryProceedKHR，如果调用OpRayQueryTerminateKHR则直接终止对该备选点的处理。
+			*/
+		}
+
+	}
+
+	//Ray Closest Hit Determination  参见p3336
+	{
+		/*
+		除非ray flags中设置了TerminateOnFirstHitKHR，否则必须直到所有geometry都测试了且确定或终止了击中备选点找出最近的击中点（备选点都在延-z轴，所以最近点为z最大的点）为止。
+		*/
+	}
+
+	//Ray Result Determination  参见p3336
+	{
+		//一旦相交备选点完成了上述阶段或者强制终止了ray trace，则最终的结果就确定了，对结果的具体描述见p3336
+	}
 }
 
 void MicromapAndRayTraverseRayTracingTest::RayTracingTest()

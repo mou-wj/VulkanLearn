@@ -20,7 +20,7 @@ private:
 	//chapter 40
 	void RayTracingTest();
 };
-TEST_REGISTER(SparseResourcesAndWindowSystemIntergrationTest)
+TEST_REGISTER(MicromapAndRayTraverseRayTracingTest)
 
 
 

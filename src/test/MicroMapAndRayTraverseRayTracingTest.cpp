@@ -767,9 +767,342 @@ void MicromapAndRayTraverseRayTracingTest::RayTracingTest()
 		*/
 
 
+		//当在ray tracing pipeline上开启使用 invocation mask image（通过image的值控制shader invocation）时，指定 invocation mask image
+		vkCmdBindInvocationMaskHUAWEI(commandBuffer, VkImageView{/*假设这是一个有效的VkImageView*/ }/*imageView，为 invocation mask image的image view，如果设置为VK_NULL_HANDLE，则相当于指定一个值以1填充的image*/, VK_IMAGE_LAYOUT_GENERAL/* imageLayout,指明该image作为invocation mask image访问时subresource的layout*/);
+		/*
+		vkCmdBindInvocationMaskHUAWEI有效用法:
+		1.invocationMask 特性必须开启
+		2.如果imageView 不为VK_NULL_HANDLE，则（1）其必须是一个有效的类型为VK_IMAGE_VIEW_TYPE_2D的VkImageView
+											  （2）其format必须为VK_FORMAT_R8_UINT
+											  （3）其必须以VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI 创建
+											  （4）imageLayout必须为VK_IMAGE_LAYOUT_GENERAL
+		3.mask image的分辨率必须匹配vkCmdTraceRaysKHR的width和height
+		4.invocation mask image中的每个元素值必须为0或者1，1代表该invocation 激活。
+		5.vkCmdTraceRaysKHR的depth 必须为1
+		*/
 
+
+		VkTraceRaysIndirectCommandKHR traceRaysIndirectCommandKHR{};
+		traceRaysIndirectCommandKHR.width = 1;//为ray trace query dimensions的width
+		traceRaysIndirectCommandKHR.height = 1;//为ray trace query dimensions的height
+		traceRaysIndirectCommandKHR.depth = 1;//为ray trace query dimensions的depth
+		/*
+		VkTraceRaysIndirectCommandKHR有效用法:
+		1.width，height以及depth必须对应小于等于VkPhysicalDeviceLimits::maxComputeWorkGroupCount[0] × VkPhysicalDeviceLimits::maxComputeWorkGroupSize[0], VkPhysicalDeviceLimits::maxComputeWorkGroupCount[1]  × VkPhysicalDeviceLimits::maxComputeWorkGroupSize[1], VkPhysicalDeviceLimits::maxComputeWorkGroupCount[2] × VkPhysicalDeviceLimits::maxComputeWorkGroupSize[2]。
+		2.width × height × depth 必须小于等于 VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxRayDispatchInvocationCount
+
+		*/
+
+		VkDeviceAddress dimensionsXYZ{/*假设这是一个有效的VkDeviceAddress*/ };//包含VkTraceRaysIndirectCommandKHR数据，指明ray trace query dimensions的width，height以及depth
+
+		//dispatch ray tracing,一些参数从device的内存地址中获取,   执行该命令，则一个包含 width × height × depth 条ray的ray 产生组会被组装
+		vkCmdTraceRaysIndirectKHR(commandBuffer,
+			&raygenShaderBindingTable,
+			&missShaderBindingTable,
+			&hitShaderBindingTable,
+			&callableShaderBindingTable,
+			dimensionsXYZ/*indirectDeviceAddress,为指向VkTraceRaysIndirectCommandKHR 的地址.*/);
+		/*
+		vkCmdTraceRaysKHR有效用法:
+		1.如果一个VkSampler以其magFilter或者minFilter等于VK_FILTER_LINEAR创建，则（1）如果reductionMode为VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE，如果用于采样一个VkImageView作为该命令的结果的compareEnable为VK_FALSE，则该image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+																				 （2）如果reductionMode为VK_SAMPLER_REDUCTION_MODE_MIN 或者VK_SAMPLER_REDUCTION_MODE_MAX之一 用于采样一个VkImageView作为该命令的结果，则该image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT
+		2.如果一个VkSampler以其mipmapMode 等于VK_SAMPLER_MIPMAP_MODE_LINEAR创建，则（1）如果reductionMode为VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE，如果用于采样一个VkImageView作为该命令的结果的compareEnable为VK_FALSE，则该image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+																				 （2）如果reductionMode为VK_SAMPLER_REDUCTION_MODE_MIN 或者VK_SAMPLER_REDUCTION_MODE_MAX之一 用于采样一个VkImageView作为该命令的结果，则该image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT
+		3.如果一个VkSampler以其unnormalizedCoordinates等于VK_TRUE用于采样一个VkImageView作为该命令的结果创建，则（1）该image view的levelCount以及layerCount必须为1
+																												（2）该image view的viewType必须为VK_IMAGE_VIEW_TYPE_1D 或者 VK_IMAGE_VIEW_TYPE_2D
+		4.如果一个VkImageView的采样带depth comparison操作，则image view的format features必须包含VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_DEPTH_COMPARISON_BIT
+		5.如果一个VkImageView使用atomic operations作为该命令的结果进行访问，则image view的format features必须包含VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT
+		6.如果一个VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER类型的 descriptor使用atomic operations作为该命令的结果进行访问，则storage texel buffer的format features必须包含VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT
+		7.如果一个以VK_FILTER_CUBIC_EXT进行采样的VkImageView作为该命令的结果，则image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT
+		8.如果VK_EXT_filter_cubic拓展没有开启，且有任何一个以VK_FILTER_CUBIC_EXT进行采样的VkImageView作为该命令的结果，则其VkImageViewType不能为VK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_VIEW_TYPE_CUBE, 或者 VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+		9.任何一个以VK_FILTER_CUBIC_EXT进行采样的作为该命令的结果的VkImageView，其VkImageViewType和format 必须支持cubic filtering，参见vkGetPhysicalDeviceImageFormatProperties2返回的VkFilterCubicImageViewImageFormatPropertiesEXT::filterCubic
+		10.任何一个以VK_FILTER_CUBIC_EXT进行采样且reduction mode为VK_SAMPLER_REDUCTION_MODE_MIN 或者 VK_SAMPLER_REDUCTION_MODE_MAX之一的作为该命令的结果的VkImageView，其VkImageViewType和format 必须支持带minmax filtering的cubic filtering，参见vkGetPhysicalDeviceImageFormatProperties2返回的VkFilterCubicImageViewImageFormatPropertiesEXT::filterCubicMinmax
+		11.如果cubicRangeClamp特性没有开启，则有任何一个以VK_FILTER_CUBIC_EXT进行采样VkImageView的作为该命令的结果，VkSamplerReductionModeCreateInfo::reductionMode不能为VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_RANGECLAMP_QCOM
+		12.任何一个以VkSamplerReductionModeCreateInfo::reductionMode为VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_RANGECLAMP_QCOM进行采样的作为该命令的结果的VkImageView必须以VK_FILTER_CUBIC_EXT进行采样
+		13.如果selectableCubicWeights特性没有开启，则有任何一个以VK_FILTER_CUBIC_EXT进行采样VkImageView的作为该命令的结果，VkSamplerCubicWeightsCreateInfoQCOM::cubicWeights必须为VK_CUBIC_FILTER_WEIGHTS_CATMULL_ROM_QCOM
+		14.任何一个以VkImageCreateInfo::flags含VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV创建的采样作为该命令结果的VkImage必须以VkSamplerAddressMode为VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE 进行采样
+		15.对于任何作为storage image写入的VkImageView，且其OpTypeImage的format未知，则该image view的 format features必须包含VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT
+		16.对于任何作为storage image读取的VkImageView，且其OpTypeImage的format未知，则该image view的 format features必须包含VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT
+		17.对于任何作为storage storage texel buffer写入的VkBufferView，且其OpTypeImage的format未知，则该buffer view的 buffer features必须包含VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT
+		18.对于任何作为storage storage texel buffer读取的VkBufferView，且其OpTypeImage的format未知，则该buffer view的 buffer features必须包含VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT
+		19.对于每个在绑定的shader中静态使用的set n，一个descriptor set必须被绑定到相同pipeline bind point的set n处，该set n必须和创建当前VkPipeline的VkPipelineLayout或者和创建当前VkShaderEXT的VkDescriptorSetLayout 数组的set n处的布局兼容，参见Pipeline Layout Compatibility p1280
+		20.对于每个在绑定的shader中静态使用的push constant，一个push constant值必须被绑定到相同pipeline bind point的对应处，该push constant必须和创建当前VkPipeline的VkPipelineLayout或者和创建当前VkShaderEXT的VkDescriptorSetLayout 数组中的对应处的布局兼容，参见Pipeline Layout Compatibility p1280
+		21.如果maintenance4特性没有开启，则对于每个在绑定的shader中静态使用的push constant，一个push constant值必须被设置到相同pipeline bind point的对应处，该push constant必须和创建当前VkPipeline的VkPipelineLayout或者和创建当前VkShaderEXT的VkDescriptorSetLayout 数组中的对应处的布局兼容，参见Pipeline Layout Compatibility p1280
+		22.每一个通过vkCmdBindDescriptorSets绑定的descriptor set的descriptors,如果是被不以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建的，且已经绑定到该命令使用的pipeline bind point的VkPipeline静态使用的，则这些descriptors必须是有效的，参见 descriptor validity p1328
+		23.如果通过vkCmdBindDescriptorSets指定绑定到pipeline bind point的VkPipeline要使用的descriptors，则绑定的VkPipeline不能以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建
+		24.在vkCmdSetDescriptorBufferOffsetsEXT中指定绑定的descriptor buffers的descriptors，则（1）如果绑定到pipeline bind point的该命令会使用的VkPipeline以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建，且这些descriptors是动态使用的，则这些descriptors必须是有效的
+																							  （2）如果绑定到pipeline bind point的对应stage的该命令会使用的VkShaderEXT，且这些descriptors是动态使用的，则这些descriptors必须是有效的
+		25.在vkCmdSetDescriptorBufferOffsetsEXT中指定的descriptors在绑定到pipeline bind point的VkPipeline中使用，则VkPipeline必须以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建
+		26.如果一个descriptor在以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建的VkPipeline中动态使用，则descriptor memory必须是驻留内存
+		27.如果一个descriptor在以其VkDescriptorSetLayout以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建的VkShaderEXT中动态使用，则descriptor memory必须是驻留内存
+		28.如果shaderObject 特性没有开启，一个有效的pipeline必须绑定到这个命令使用的绑定到pipeline bind point上
+		29.如果一个pipeline绑定到该命令使用的pipeline bind point上，则不能有任何动态state 设置命令设置任何该VkPipeline 中没有指定的动态 state
+		30.如果一个VkPipeline绑定到该命令使用的pipeline bind point上 或者任何一个会访问一个使用unnormalized coordinates的VkSampler的 VkShaderEXT绑定到该命令使用的pipeline bind point上的pipeline的对应stage，则
+																					（1）在任何shader stage中，VkSampler不能用来采样任何类型为VK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_VIEW_TYPE_1D_ARRAY, VK_IMAGE_VIEW_TYPE_2D_ARRAY 或者 VK_IMAGE_VIEW_TYPE_CUBE_ARRAY的VkImageView
+																					（2）在任何shader stage中，该VkSampler不能和任何带有名字中带有ImplicitLod，Dref 或者 Proj 的SPIR-V OpImageSample* 或者 OpImageSparseSample*指令一起使用
+																					（3）在任何shader stage中，该VkSampler不能和任何包含 LOD bias或者offset 值 的SPIR-V OpImageSample* or OpImageSparseSample*指令一起使用
+		31.如果shaderObject开启，一个有效的pipeline必须绑定到该命令使用的pipeline bind point上或者一个有效的shader objects以及VK_NULL_HANDLE的组合必须绑定到该命令使用的pipeline bind point每一个支持的shader stage上
+		32.如何绑定到该命令使用的pipeline bind point上的VkPipeline的任何stage会访问一个uniform buffer，且该stage对uniformBuffers不以启用VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXT或者VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT 创建，且robustBufferAccess特性未开启，则该stage就不能访问绑定到相同pipeline bind point的descriptor set指定的buffer范围外的值
+		33.如果robustBufferAccess特性未开启，且任何会访问uniform buffer的绑定到该命令使用的pipeline bind point上对应shader stage的VkShaderEXT，则其不能访问绑定到相同pipeline bind point的descriptor set指定的buffer范围外的值
+		34.如何绑定到该命令使用的pipeline bind point上的VkPipeline的任何stage会访问一个storage buffer，且该stage对storageBuffers不以启用VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXT或者VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT 创建，且robustBufferAccess特性未开启，则该stage就不能访问绑定到相同pipeline bind point的descriptor set指定的buffer范围外的值
+		35.如果robustBufferAccess特性未开启，且任何会访问storage buffer的绑定到该命令使用的pipeline bind point上对应shader stage的VkShaderEXT，则其不能访问绑定到相同pipeline bind point的descriptor set指定的buffer范围外的值
+		36.如果commandBuffer 是一个unprotected command buffer，且protectedNoFault 未支持，则任何绑定的shaders访问的资源不能是一个protected resource
+		37.如果一个绑定的shader访问一个VkSampler 或者 VkImageView ，且启用了sampler Y′C BCR conversion，则只能使用OpImageSample* 或者 OpImageSparseSample*指令，不能使用ConstOffset 以及 Offset操作符
+		38.如果一个VkImageView作为该命令的结果进行访问，则（1）image view 的viewType 必须匹配Instruction/Sampler/Image View Validation p1481中描述的OpTypeImage的Dim操作符
+														  （2）image view 的foamrt的numeric type 必须匹配OpTypeImage的Sampled Type操作符
+		39.如果一个VkImageView以一个不是VK_FORMAT_A8_UNORM_KHR的format创建且通过OpImageWrite作为该命令的结果进行访问，则该命令的Texel 操作符的Type必须至少包含和 image view的 format含有的components的个数相同的components个数
+		40.如果一个VkImageView以VK_FORMAT_A8_UNORM_KHR的format创建且通过OpImageWrite作为该命令的结果进行访问，则该命令的Texel 操作符的Type必须包含4个components
+		41.如果一个VkBufferView通过OpImageWrite作为该命令的结果进行访问，则该命令的Texel 操作符的Type必须至少包含和 buffer view的 format含有的components的个数相同的components个数
+		42.如果一个带64-bit component的VkFormat的VkImageView作为该命令的结果进行访问，则该命令的OpTypeImage操作符的SampledType的宽度必须为64
+		43.如果一个带少于64-bit component的VkFormat的VkImageView作为该命令的结果进行访问，则该命令的OpTypeImage操作符的SampledType的宽度必须为32
+		44.如果一个带64-bit component的VkFormat的VkBufferView作为该命令的结果进行访问，则该命令的OpTypeImage操作符的SampledType的宽度必须为64位
+		45.如果一个带少于64-bit component的VkFormat的VkBufferView作为该命令的结果进行访问，则该命令的OpTypeImage操作符的SampledType的宽度必须为32
+		46.如果sparseImageInt64Atomics 特性未开启，则以VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT创建的VkImage对象不能被SampledType宽度为64位的OpTypeImage的atomic instructions访问
+		47.如果sparseImageInt64Atomics 特性未开启，则以VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT创建的VkBuffer对象不能被SampledType宽度为64位的OpTypeImage的atomic instructions访问
+		48.如果OpImageWeightedSampleQCOM用来采样一个作为该命令的结果的VkImageView，则该image view的format features必须包含VK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM
+		49.如果OpImageWeightedSampleQCOM用来采样一个作为该命令的结果的sample weight image的VkImageView，则该image view的format features必须包含VK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOM
+		50.如果OpImageBoxFilterQCOM用来采样一个作为该命令的结果的VkImageView，则该image view的format features必须包含VK_FORMAT_FEATURE_2_BOX_FILTER_SAMPLED_BIT_QCOM
+		51.如果OpImageBlockMatchSSDQCOM，或者 OpImageBlockMatchSADQCOM用来读取一个作为该命令的结果的VkImageView，则（1）该image view的format features必须包含VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
+																												   （2）如果是读取的reference image，指定的reference coordinates不能在integer texel coordinate validation 时候失败
+		52.如果OpImageWeightedSampleQCOM, OpImageBoxFilterQCOM, OpImageBlockMatchWindowSSDQCOM, OpImageBlockMatchWindowSADQCOM, OpImageBlockMatchGatherSSDQCOM,
+													OpImageBlockMatchGatherSADQCOM, OpImageBlockMatchSSDQCOM, 或者 OpImageBlockMatchSADQCOM用来采样一个作为该命令的结果的VkImageView，则该VkSampler必须以VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM创建
+		53.如果任何除了OpImageWeightedSampleQCOM, OpImageBoxFilterQCOM, OpImageBlockMatchWindowSSDQCOM, OpImageBlockMatchWindowSADQCOM, OpImageBlockMatchGatherSSDQCOM, OpImageBlockMatchGatherSADQCOM, OpImageBlockMatchSSDQCOM, 或者 OpImageBlockMatchSADQCOM之外的指令使用VkSampler进行采样作为该命令的结果，则该sampler不能以VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM 创建
+		54.如果OpImageBlockMatchWindow*QCOM or OpImageBlockMatchGather*QCOM指令用来读取VkImageView作为该命令的结果，则（1）VkImageView的format features必须包含VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
+																													  （2）VkImageView的format必须只含有一个component
+		55.如果OpImageBlockMatchWindow*QCOM or OpImageBlockMatchGather*QCOM指令用来读取一个引用的image作为该命令的结果，则指定的 reference coordinates不能在integer texel coordinate validation 时候失败
+		56.任何该命令执行的shader invocation必须已经终止
+		57.如果有一个类型为VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 或者 VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT中任意一个的descriptor作为该命令的结果进行访问，则该descriptor所指的image subresource的layout必须和该descriptor被写入时的layout相同。
+		58.任何该调用引用的shader group handle 必须已经在当前绑定的ray tracing pipeline中查询过。
+		59.如果绑定的tracing pipeline 以VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR 动态状态创建，则该命令必须在当前命令缓冲区之前调用 vkCmdSetRayTracingPipelineStackSizeKHR。
+		60.该命令不能造成一个在shader invocation上执行的pipeline trace ray instruction的递归深度超过了创建该pipeline的maxPipelineRayRecursionDepth。
+		61.commandBuffer 必须不能是protected command buffer。
+		62.pRayGenShaderBindingTable的size 必须等于其stride
+		63.如果pRayGenShaderBindingTable->deviceAddress 所对的buffer 是non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory对象上。
+		64.pRayGenShaderBindingTable->deviceAddress 所对的buffer 必须以VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR 创建
+		65.pRayGenShaderBindingTable->deviceAddress 必须是VkPhysicalDeviceRayTracingPropertiesNV::shaderGroupBaseAlignment的倍数
+		66.如果pMissShaderBindingTable->deviceAddress 所对的buffer 是non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory对象上。
+		67.pMissShaderBindingTable->deviceAddress 所对的buffer 必须以VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR 创建
+		68.pMissShaderBindingTable->deviceAddress 必须是VkPhysicalDeviceRayTracingPropertiesNV::shaderGroupBaseAlignment的倍数
+		69.pMissShaderBindingTable->stride 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleAlignment的倍数，且小于等于VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxShaderGroupStride
+		70.如果pHitShaderBindingTable->deviceAddress 所对的buffer 是non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory对象上。
+		71.pHitShaderBindingTable->deviceAddress 所对的buffer 必须以VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR 创建
+		72.pHitShaderBindingTable->deviceAddress 必须是VkPhysicalDeviceRayTracingPropertiesNV::shaderGroupBaseAlignment的倍数
+		73.pHitShaderBindingTable->stride 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleAlignment的倍数，且小于等于VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxShaderGroupStride
+		74.如果pCallableShaderBindingTable->deviceAddress 所对的buffer 是non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory对象上。
+		75.pCallableShaderBindingTable->deviceAddress 所对的buffer 必须以VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR 创建
+		76.pCallableShaderBindingTable->deviceAddress 必须是VkPhysicalDeviceRayTracingPropertiesNV::shaderGroupBaseAlignment的倍数
+		77.pCallableShaderBindingTable->stride 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleAlignment的倍数，且小于等于VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxShaderGroupStride
+		78.如果当前绑定的ray tracing pipeline 以包含VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR 或者VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR 创建，则pHitShaderBindingTable->deviceAddress 不能为0
+		79.如果当前绑定的ray tracing pipeline 以包含VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR 创建，则pMissShaderBindingTable->deviceAddress 指定的shader group handle 不能为0
+		80.如果当前绑定的ray tracing pipeline 以包含VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR 或者VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR ，VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR 或者VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR 创建， 则用于执行一个any-hit shader作为该命令结果进行访问的 pHitShaderBindingTable->deviceAddress 指定的table中的实体 不能设置为0
+		81.任何被该命令在一个geometryType为VK_GEOMETRY_TYPE_TRIANGLES_KHR的geometry中进行访问的 pHitShaderBindingTable->deviceAddress 指定的table中的任何 非0 hit shader group 实体必须以VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR 创建
+		82.任何被该命令在一个geometryType为VK_GEOMETRY_TYPE_AABBS_KHR的geometry中进行访问的 pHitShaderBindingTable->deviceAddress 指定的table中的任何 非0 hit shader group 实体必须以VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR 创建
+		83.如果indirectDeviceAddress所指的buffer时non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory上，且该buffer必须以VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT 创建
+		84.indirectDeviceAddress 必须是4的倍数
+		85.所有在indirectDeviceAddress 到indirectDeviceAddress + sizeof (VkTraceRaysIndirectCommandKHR) - 1 之间的地址必须在同一个buffer的设备地址范围中
+		86.rayTracingPipelineTraceRaysIndirect 特性必须开启
+		87.如果绑定的ray tracing pipeline 以VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV 创建，则VkPhysicalDeviceRayTracingMotionBlurFeaturesNV::rayTracingMotionBlurPipelineTraceRaysIndirect 特性必须开启
+
+
+		*/
+
+	
+		VkTraceRaysIndirectCommand2KHR traceRaysIndirectCommand2KHR{};
+		traceRaysIndirectCommand2KHR.raygenShaderRecordAddress = VkDeviceAddress{/*假设这是一个有效的VkDeviceAddress*/};//为ray generation shader binding table 的VkDeviceAddress 地址
+		traceRaysIndirectCommand2KHR.raygenShaderRecordSize = 1;//为 raygenShaderRecordAddress 中ray generation shader binding table的字节数数量大小
+		traceRaysIndirectCommand2KHR.missShaderBindingTableAddress = VkDeviceAddress{/*假设这是一个有效的VkDeviceAddress*/ };//为第一个miss shader binding table 的VkDeviceAddress 地址
+		traceRaysIndirectCommand2KHR.missShaderBindingTableSize = 1;//为 missShaderBindingTableAddress 中所有miss shader binding table的字节数数量大小
+		traceRaysIndirectCommand2KHR.missShaderBindingTableStride = 1;//为 missShaderBindingTableAddress 中miss shader binding table之间的字节大小步长
+		traceRaysIndirectCommand2KHR.hitShaderBindingTableAddress = VkDeviceAddress{/*假设这是一个有效的VkDeviceAddress*/ };//为第一个hit shader binding table 的VkDeviceAddress 地址
+		traceRaysIndirectCommand2KHR.hitShaderBindingTableSize = 1;//为 hitShaderBindingTableAddress 中所有hit shader binding table的字节数数量大小
+		traceRaysIndirectCommand2KHR.hitShaderBindingTableStride = 1;//为 hitShaderBindingTableAddress 中hit shader binding table之间的字节大小步长
+		traceRaysIndirectCommand2KHR.callableShaderBindingTableAddress = VkDeviceAddress{/*假设这是一个有效的VkDeviceAddress*/ };//为第一个callable shader binding table 的VkDeviceAddress 地址
+		traceRaysIndirectCommand2KHR.callableShaderBindingTableSize = 1;//为 callableShaderBindingTableAddress 中所有callable shader binding table的字节数数量大小
+		traceRaysIndirectCommand2KHR.callableShaderBindingTableStride = 1;//为 callableShaderBindingTableAddress 中callable shader binding table之间的字节大小步长
+		traceRaysIndirectCommand2KHR.width = 1;//为ray trace query dimensions的width
+		traceRaysIndirectCommand2KHR.height = 1;//为ray trace query dimensions的height
+		traceRaysIndirectCommand2KHR.depth = 1;//为ray trace query dimensions的depth
+		/*
+		VkTraceRaysIndirectCommand2KHR有效用法:
+
+		1.如果raygenShaderRecordAddress 所对的buffer 是non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory对象上。
+		2.raygenShaderRecordAddress 所对的buffer 必须以VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR 创建
+		3.raygenShaderRecordAddress 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment的倍数
+		4.如果missShaderBindingTableAddress 所对的buffer 是non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory对象上。
+		5.missShaderBindingTableAddress 所对的buffer 必须以VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR 创建
+		6.missShaderBindingTableAddress 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment的倍数
+		7.missShaderBindingTableStride 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleAlignment的倍数，且小于等于VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxShaderGroupStride
+		
+		8.如果hitShaderBindingTableAddress 所对的buffer 是non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory对象上。
+		9.hitShaderBindingTableAddress 所对的buffer 必须以VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR 创建
+		10.hitShaderBindingTableAddress 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment的倍数
+		11.hitShaderBindingTableStride 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleAlignment的倍数，且小于等于VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxShaderGroupStride
+		12.如果callableShaderBindingTableAddress 所对的buffer 是non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory对象上。
+		13.callableShaderBindingTableAddress 所对的buffer 必须以VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR 创建
+		14.callableShaderBindingTableAddress 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupBaseAlignment的倍数
+		15.callableShaderBindingTableStride 必须是VkPhysicalDeviceRayTracingPipelinePropertiesKHR::shaderGroupHandleAlignment的倍数，且小于等于VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxShaderGroupStride
+		16.如果当前绑定的ray tracing pipeline 以包含VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR 或者VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR 创建，则hitShaderBindingTableAddress 不能为0
+		17.如果当前绑定的ray tracing pipeline 以包含VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR 创建，则missShaderBindingTableAddress 指定的shader group handle 不能为0
+		18.如果当前绑定的ray tracing pipeline 以包含VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR 或者VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR ，VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR 或者VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR 创建， 则用于执行一个any-hit shader作为该命令结果进行访问的 hitShaderBindingTableAddress 指定的table中的实体 不能设置为0
+		19.任何被该命令在一个geometryType为VK_GEOMETRY_TYPE_TRIANGLES_KHR的geometry中进行访问的 hitShaderBindingTableAddress 指定的table中的任何 非0 hit shader group 实体必须以VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR 创建
+		20.任何被该命令在一个geometryType为VK_GEOMETRY_TYPE_AABBS_KHR的geometry中进行访问的 hitShaderBindingTableAddress 指定的table中的任何 非0 hit shader group 实体必须以VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR 创建
+		21.width，height以及depth必须对应小于等于VkPhysicalDeviceLimits::maxComputeWorkGroupCount[0] × VkPhysicalDeviceLimits::maxComputeWorkGroupSize[0], VkPhysicalDeviceLimits::maxComputeWorkGroupCount[1]  × VkPhysicalDeviceLimits::maxComputeWorkGroupSize[1], VkPhysicalDeviceLimits::maxComputeWorkGroupCount[2] × VkPhysicalDeviceLimits::maxComputeWorkGroupSize[2]。
+		22.width × height × depth 必须小于等于 VkPhysicalDeviceRayTracingPipelinePropertiesKHR::maxRayDispatchInvocationCount
+		*/
+
+
+
+		VkDeviceAddress traceRaysIndirectRarams{/*假设这是一个有效的VkDeviceAddress*/ };//包含VkTraceRaysIndirectCommand2KHR数据，指明dispatch ray tracing 的参数
+
+		//dispatch ray tracing,一些参数从device的内存地址中获取,   执行该命令，则一个包含 width × height × depth 条ray的ray 产生组会被组装
+		vkCmdTraceRaysIndirect2KHR(commandBuffer,
+			traceRaysIndirectRarams/*indirectDeviceAddress,为指向VkTraceRaysIndirectCommand2KHR 的地址.*/);
+		/*
+		vkCmdTraceRaysIndirect2KHR有效用法:
+		1.如果一个VkSampler以其magFilter或者minFilter等于VK_FILTER_LINEAR创建，则（1）如果reductionMode为VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE，如果用于采样一个VkImageView作为该命令的结果的compareEnable为VK_FALSE，则该image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+																				 （2）如果reductionMode为VK_SAMPLER_REDUCTION_MODE_MIN 或者VK_SAMPLER_REDUCTION_MODE_MAX之一 用于采样一个VkImageView作为该命令的结果，则该image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT
+		2.如果一个VkSampler以其mipmapMode 等于VK_SAMPLER_MIPMAP_MODE_LINEAR创建，则（1）如果reductionMode为VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE，如果用于采样一个VkImageView作为该命令的结果的compareEnable为VK_FALSE，则该image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+																				 （2）如果reductionMode为VK_SAMPLER_REDUCTION_MODE_MIN 或者VK_SAMPLER_REDUCTION_MODE_MAX之一 用于采样一个VkImageView作为该命令的结果，则该image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT
+		3.如果一个VkSampler以其unnormalizedCoordinates等于VK_TRUE用于采样一个VkImageView作为该命令的结果创建，则（1）该image view的levelCount以及layerCount必须为1
+																												（2）该image view的viewType必须为VK_IMAGE_VIEW_TYPE_1D 或者 VK_IMAGE_VIEW_TYPE_2D
+		4.如果一个VkImageView的采样带depth comparison操作，则image view的format features必须包含VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_DEPTH_COMPARISON_BIT
+		5.如果一个VkImageView使用atomic operations作为该命令的结果进行访问，则image view的format features必须包含VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT
+		6.如果一个VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER类型的 descriptor使用atomic operations作为该命令的结果进行访问，则storage texel buffer的format features必须包含VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT
+		7.如果一个以VK_FILTER_CUBIC_EXT进行采样的VkImageView作为该命令的结果，则image view的format features必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT
+		8.如果VK_EXT_filter_cubic拓展没有开启，且有任何一个以VK_FILTER_CUBIC_EXT进行采样的VkImageView作为该命令的结果，则其VkImageViewType不能为VK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_VIEW_TYPE_CUBE, 或者 VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+		9.任何一个以VK_FILTER_CUBIC_EXT进行采样的作为该命令的结果的VkImageView，其VkImageViewType和format 必须支持cubic filtering，参见vkGetPhysicalDeviceImageFormatProperties2返回的VkFilterCubicImageViewImageFormatPropertiesEXT::filterCubic
+		10.任何一个以VK_FILTER_CUBIC_EXT进行采样且reduction mode为VK_SAMPLER_REDUCTION_MODE_MIN 或者 VK_SAMPLER_REDUCTION_MODE_MAX之一的作为该命令的结果的VkImageView，其VkImageViewType和format 必须支持带minmax filtering的cubic filtering，参见vkGetPhysicalDeviceImageFormatProperties2返回的VkFilterCubicImageViewImageFormatPropertiesEXT::filterCubicMinmax
+		11.如果cubicRangeClamp特性没有开启，则有任何一个以VK_FILTER_CUBIC_EXT进行采样VkImageView的作为该命令的结果，VkSamplerReductionModeCreateInfo::reductionMode不能为VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_RANGECLAMP_QCOM
+		12.任何一个以VkSamplerReductionModeCreateInfo::reductionMode为VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_RANGECLAMP_QCOM进行采样的作为该命令的结果的VkImageView必须以VK_FILTER_CUBIC_EXT进行采样
+		13.如果selectableCubicWeights特性没有开启，则有任何一个以VK_FILTER_CUBIC_EXT进行采样VkImageView的作为该命令的结果，VkSamplerCubicWeightsCreateInfoQCOM::cubicWeights必须为VK_CUBIC_FILTER_WEIGHTS_CATMULL_ROM_QCOM
+		14.任何一个以VkImageCreateInfo::flags含VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV创建的采样作为该命令结果的VkImage必须以VkSamplerAddressMode为VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE 进行采样
+		15.对于任何作为storage image写入的VkImageView，且其OpTypeImage的format未知，则该image view的 format features必须包含VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT
+		16.对于任何作为storage image读取的VkImageView，且其OpTypeImage的format未知，则该image view的 format features必须包含VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT
+		17.对于任何作为storage storage texel buffer写入的VkBufferView，且其OpTypeImage的format未知，则该buffer view的 buffer features必须包含VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT
+		18.对于任何作为storage storage texel buffer读取的VkBufferView，且其OpTypeImage的format未知，则该buffer view的 buffer features必须包含VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT
+		19.对于每个在绑定的shader中静态使用的set n，一个descriptor set必须被绑定到相同pipeline bind point的set n处，该set n必须和创建当前VkPipeline的VkPipelineLayout或者和创建当前VkShaderEXT的VkDescriptorSetLayout 数组的set n处的布局兼容，参见Pipeline Layout Compatibility p1280
+		20.对于每个在绑定的shader中静态使用的push constant，一个push constant值必须被绑定到相同pipeline bind point的对应处，该push constant必须和创建当前VkPipeline的VkPipelineLayout或者和创建当前VkShaderEXT的VkDescriptorSetLayout 数组中的对应处的布局兼容，参见Pipeline Layout Compatibility p1280
+		21.如果maintenance4特性没有开启，则对于每个在绑定的shader中静态使用的push constant，一个push constant值必须被设置到相同pipeline bind point的对应处，该push constant必须和创建当前VkPipeline的VkPipelineLayout或者和创建当前VkShaderEXT的VkDescriptorSetLayout 数组中的对应处的布局兼容，参见Pipeline Layout Compatibility p1280
+		22.每一个通过vkCmdBindDescriptorSets绑定的descriptor set的descriptors,如果是被不以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建的，且已经绑定到该命令使用的pipeline bind point的VkPipeline静态使用的，则这些descriptors必须是有效的，参见 descriptor validity p1328
+		23.如果通过vkCmdBindDescriptorSets指定绑定到pipeline bind point的VkPipeline要使用的descriptors，则绑定的VkPipeline不能以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建
+		24.在vkCmdSetDescriptorBufferOffsetsEXT中指定绑定的descriptor buffers的descriptors，则（1）如果绑定到pipeline bind point的该命令会使用的VkPipeline以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建，且这些descriptors是动态使用的，则这些descriptors必须是有效的
+																							  （2）如果绑定到pipeline bind point的对应stage的该命令会使用的VkShaderEXT，且这些descriptors是动态使用的，则这些descriptors必须是有效的
+		25.在vkCmdSetDescriptorBufferOffsetsEXT中指定的descriptors在绑定到pipeline bind point的VkPipeline中使用，则VkPipeline必须以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建
+		26.如果一个descriptor在以VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建的VkPipeline中动态使用，则descriptor memory必须是驻留内存
+		27.如果一个descriptor在以其VkDescriptorSetLayout以VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT创建的VkShaderEXT中动态使用，则descriptor memory必须是驻留内存
+		28.如果shaderObject 特性没有开启，一个有效的pipeline必须绑定到这个命令使用的绑定到pipeline bind point上
+		29.如果一个pipeline绑定到该命令使用的pipeline bind point上，则不能有任何动态state 设置命令设置任何该VkPipeline 中没有指定的动态 state
+		30.如果一个VkPipeline绑定到该命令使用的pipeline bind point上 或者任何一个会访问一个使用unnormalized coordinates的VkSampler的 VkShaderEXT绑定到该命令使用的pipeline bind point上的pipeline的对应stage，则
+																					（1）在任何shader stage中，VkSampler不能用来采样任何类型为VK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_VIEW_TYPE_1D_ARRAY, VK_IMAGE_VIEW_TYPE_2D_ARRAY 或者 VK_IMAGE_VIEW_TYPE_CUBE_ARRAY的VkImageView
+																					（2）在任何shader stage中，该VkSampler不能和任何带有名字中带有ImplicitLod，Dref 或者 Proj 的SPIR-V OpImageSample* 或者 OpImageSparseSample*指令一起使用
+																					（3）在任何shader stage中，该VkSampler不能和任何包含 LOD bias或者offset 值 的SPIR-V OpImageSample* or OpImageSparseSample*指令一起使用
+		31.如果shaderObject开启，一个有效的pipeline必须绑定到该命令使用的pipeline bind point上或者一个有效的shader objects以及VK_NULL_HANDLE的组合必须绑定到该命令使用的pipeline bind point每一个支持的shader stage上
+		32.如何绑定到该命令使用的pipeline bind point上的VkPipeline的任何stage会访问一个uniform buffer，且该stage对uniformBuffers不以启用VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXT或者VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT 创建，且robustBufferAccess特性未开启，则该stage就不能访问绑定到相同pipeline bind point的descriptor set指定的buffer范围外的值
+		33.如果robustBufferAccess特性未开启，且任何会访问uniform buffer的绑定到该命令使用的pipeline bind point上对应shader stage的VkShaderEXT，则其不能访问绑定到相同pipeline bind point的descriptor set指定的buffer范围外的值
+		34.如何绑定到该命令使用的pipeline bind point上的VkPipeline的任何stage会访问一个storage buffer，且该stage对storageBuffers不以启用VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_EXT或者VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2_EXT 创建，且robustBufferAccess特性未开启，则该stage就不能访问绑定到相同pipeline bind point的descriptor set指定的buffer范围外的值
+		35.如果robustBufferAccess特性未开启，且任何会访问storage buffer的绑定到该命令使用的pipeline bind point上对应shader stage的VkShaderEXT，则其不能访问绑定到相同pipeline bind point的descriptor set指定的buffer范围外的值
+		36.如果commandBuffer 是一个unprotected command buffer，且protectedNoFault 未支持，则任何绑定的shaders访问的资源不能是一个protected resource
+		37.如果一个绑定的shader访问一个VkSampler 或者 VkImageView ，且启用了sampler Y′C BCR conversion，则只能使用OpImageSample* 或者 OpImageSparseSample*指令，不能使用ConstOffset 以及 Offset操作符
+		38.如果一个VkImageView作为该命令的结果进行访问，则（1）image view 的viewType 必须匹配Instruction/Sampler/Image View Validation p1481中描述的OpTypeImage的Dim操作符
+														  （2）image view 的foamrt的numeric type 必须匹配OpTypeImage的Sampled Type操作符
+		39.如果一个VkImageView以一个不是VK_FORMAT_A8_UNORM_KHR的format创建且通过OpImageWrite作为该命令的结果进行访问，则该命令的Texel 操作符的Type必须至少包含和 image view的 format含有的components的个数相同的components个数
+		40.如果一个VkImageView以VK_FORMAT_A8_UNORM_KHR的format创建且通过OpImageWrite作为该命令的结果进行访问，则该命令的Texel 操作符的Type必须包含4个components
+		41.如果一个VkBufferView通过OpImageWrite作为该命令的结果进行访问，则该命令的Texel 操作符的Type必须至少包含和 buffer view的 format含有的components的个数相同的components个数
+		42.如果一个带64-bit component的VkFormat的VkImageView作为该命令的结果进行访问，则该命令的OpTypeImage操作符的SampledType的宽度必须为64
+		43.如果一个带少于64-bit component的VkFormat的VkImageView作为该命令的结果进行访问，则该命令的OpTypeImage操作符的SampledType的宽度必须为32
+		44.如果一个带64-bit component的VkFormat的VkBufferView作为该命令的结果进行访问，则该命令的OpTypeImage操作符的SampledType的宽度必须为64位
+		45.如果一个带少于64-bit component的VkFormat的VkBufferView作为该命令的结果进行访问，则该命令的OpTypeImage操作符的SampledType的宽度必须为32
+		46.如果sparseImageInt64Atomics 特性未开启，则以VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT创建的VkImage对象不能被SampledType宽度为64位的OpTypeImage的atomic instructions访问
+		47.如果sparseImageInt64Atomics 特性未开启，则以VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT创建的VkBuffer对象不能被SampledType宽度为64位的OpTypeImage的atomic instructions访问
+		48.如果OpImageWeightedSampleQCOM用来采样一个作为该命令的结果的VkImageView，则该image view的format features必须包含VK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM
+		49.如果OpImageWeightedSampleQCOM用来采样一个作为该命令的结果的sample weight image的VkImageView，则该image view的format features必须包含VK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOM
+		50.如果OpImageBoxFilterQCOM用来采样一个作为该命令的结果的VkImageView，则该image view的format features必须包含VK_FORMAT_FEATURE_2_BOX_FILTER_SAMPLED_BIT_QCOM
+		51.如果OpImageBlockMatchSSDQCOM，或者 OpImageBlockMatchSADQCOM用来读取一个作为该命令的结果的VkImageView，则（1）该image view的format features必须包含VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
+																												   （2）如果是读取的reference image，指定的reference coordinates不能在integer texel coordinate validation 时候失败
+		52.如果OpImageWeightedSampleQCOM, OpImageBoxFilterQCOM, OpImageBlockMatchWindowSSDQCOM, OpImageBlockMatchWindowSADQCOM, OpImageBlockMatchGatherSSDQCOM,
+													OpImageBlockMatchGatherSADQCOM, OpImageBlockMatchSSDQCOM, 或者 OpImageBlockMatchSADQCOM用来采样一个作为该命令的结果的VkImageView，则该VkSampler必须以VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM创建
+		53.如果任何除了OpImageWeightedSampleQCOM, OpImageBoxFilterQCOM, OpImageBlockMatchWindowSSDQCOM, OpImageBlockMatchWindowSADQCOM, OpImageBlockMatchGatherSSDQCOM, OpImageBlockMatchGatherSADQCOM, OpImageBlockMatchSSDQCOM, 或者 OpImageBlockMatchSADQCOM之外的指令使用VkSampler进行采样作为该命令的结果，则该sampler不能以VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM 创建
+		54.如果OpImageBlockMatchWindow*QCOM or OpImageBlockMatchGather*QCOM指令用来读取VkImageView作为该命令的结果，则（1）VkImageView的format features必须包含VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM
+																													  （2）VkImageView的format必须只含有一个component
+		55.如果OpImageBlockMatchWindow*QCOM or OpImageBlockMatchGather*QCOM指令用来读取一个引用的image作为该命令的结果，则指定的 reference coordinates不能在integer texel coordinate validation 时候失败
+		56.任何该命令执行的shader invocation必须已经终止
+		57.如果有一个类型为VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 或者 VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT中任意一个的descriptor作为该命令的结果进行访问，则该descriptor所指的image subresource的layout必须和该descriptor被写入时的layout相同。
+		58.任何该调用引用的shader group handle 必须已经在当前绑定的ray tracing pipeline中查询过。
+		59.如果绑定的tracing pipeline 以VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR 动态状态创建，则该命令必须在当前命令缓冲区之前调用 vkCmdSetRayTracingPipelineStackSizeKHR。
+		60.该命令不能造成一个在shader invocation上执行的pipeline trace ray instruction的递归深度超过了创建该pipeline的maxPipelineRayRecursionDepth。
+		61.commandBuffer 必须不能是protected command buffer。
+		62.如果indirectDeviceAddress所指的buffer时non-sparse的则其必须绑定到完整的连续的单独的VkDeviceMemory上，且该buffer必须以VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT 创建
+		63.indirectDeviceAddress 必须是4的倍数
+		64.所有在indirectDeviceAddress 到indirectDeviceAddress + sizeof (VkTraceRaysIndirectCommand2KHR) - 1 之间的地址必须在同一个buffer的设备地址范围中
+		65.rayTracingPipelineTraceRaysIndirect2 特性必须开启
+		66.如果绑定的ray tracing pipeline 以VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV 创建，则VkPhysicalDeviceRayTracingMotionBlurFeaturesNV::rayTracingMotionBlurPipelineTraceRaysIndirect 特性必须开启
+
+		
+		*/
 	}
 
+
+	//Shader Binding Table  参见p3391
+	{
+		/*
+		shader binding table是用来建立ray tracing pipeline 和acceleration structures之间联系的资源。指明操作加速结构中geometry的shader，也包含该shader可访问的纹理，设备地址以及常量资源。shader binding tables以一个VkBuffer进行管理。
+
+		shader binding table中的每个实体包含 shaderGroupHandleSize个字节，其值可通过 vkGetRayTracingShaderGroupHandlesKHR 查询指明shader，或者0全为0指明所有shader为VK_SHADER_UNUSED_KHR。余下由stride指定的数据可以在shader中通过 ShaderRecordBufferKHR 进行访问
+
+		shader binding table通过 vkCmdTraceRaysNV, vkCmdTraceRaysKHR, 或者 vkCmdTraceRaysIndirectKHR传递给ray tracing pipeline，以VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR pipeline stage 同步，以VK_ACCESS_SHADER_READ_BIT 进行访问
+		*/
+		
+		//Indexing Rules  参见p3392
+		{
+			/*
+			为了在ray tracing过程中正确执行shader以及访问资源，实现需要正确计算索引用于访问shader binding table
+			
+			
+			对Ray Generation Shaders:
+				因为每个ray tracing dispatch只会执行一个ray generation shader，所以传递给vkCmdTraceRaysKHR 或者vkCmdTraceRaysNV的raygen shader binding table不要计算索引。
+			
+			-----------------------------------------------------
+			对Hit Shaders:
+				对 vkCmdTraceRaysKHR 命令,正确计算pHitShaderBindingTable的一个索引为:
+					pHitShaderBindingTable->deviceAddress + pHitShaderBindingTable->stride × ( instanceShaderBindingTableRecordOffset + geometryIndex × sbtRecordStride + sbtRecordOffset ),
+								
+				对 vkCmdTraceRaysNV 命令，正确计算hitShaderBindingTableBuffer的一个索引为:
+					hitShaderBindingOffset + hitShaderBindingStride × ( instanceShaderBindingTableRecordOffset + geometryIndex × sbtRecordStride + sbtRecordOffset )
+
+				其中其中instanceShaderBindingTableRecordOffset 为相交的instance的VkAccelerationStructureInstanceKHR::instanceShaderBindingTableRecordOffset,geometryIndex 指明为加速结构中相交的geometry的索引，sbtRecordOffset 以及 sbtRecordStride 是传递给traceNV() 或者 traceRayEXT() shader指令的参数（GLSL），在SPIR-V中为传递给 pipeline trace ray指令的SBTOffset 以及 SBTStride
+			
+			-----------------------------------------------------
+			对Miss Shaders:
+				对 vkCmdTraceRaysKHR 命令,正确计算pMissShaderBindingTable的一个索引为:
+					pMissShaderBindingTable->deviceAddress + pMissShaderBindingTable->stride × missIndex
+
+				对 vkCmdTraceRaysNV 命令，正确计算missShaderBindingTableBuffer的一个索引为:
+					missShaderBindingOffset + missShaderBindingStride × missIndex
+
+				其中其中 missIndex  是传递给traceNV() 或者 traceRayEXT() shader指令的参数（GLSL），在SPIR-V中为传递给 pipeline trace ray指令的 MissIndex
+
+			------------------------------------------------------
+			对Callable Shaders:
+				对 vkCmdTraceRaysKHR 命令,正确计算pCallableShaderBindingTable的一个索引为:
+					pCallableShaderBindingTable->deviceAddress + pCallableShaderBindingTable->stride × sbtRecordIndex
+
+				对 vkCmdTraceRaysNV 命令，正确计算callableShaderBindingTableBuffer的一个索引为:
+					callableShaderBindingOffset + callableShaderBindingStride × sbtRecordIndex
+
+				其中其中 sbtRecordIndex  是传递给traceNV() 或者 traceRayEXT() shader指令的参数（GLSL），在SPIR-V中为传递给 OpExecuteCallableNV 或者 OpExecuteCallableKHR的 SBTIndex
+
+			
+			*/
+
+		}
+	}
+
+
+	//Ray Tracing Pipeline Stack  参见p3394
+
+	//Ray Tracing Capture Replay  参见p3395  ,类似于bufferDeviceAddressCaptureReplay
+
+	//Ray Tracing Validation  参见p3395， 开启 ray tracing validation 特性能够使警告和错误信息能够通过 messenger callback直接传递给实现，然后在应用程序端的debug或者Log系统中处理
 }
 
 NS_TEST_END

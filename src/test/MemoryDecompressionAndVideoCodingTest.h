@@ -15,6 +15,8 @@ public:
 private:
 	//chater 41
 	void MemoryDecompressionTest();
+	//chater 42
+	void VideoCodingTest();
 
 };
 TEST_REGISTER(MemoryDecompressionAndVideoCodingTest)

@@ -360,7 +360,67 @@ typedef struct VkAccelerationStructureTrianglesDisplacementMicromapNV {
 	VkMicromapEXT                       micromap;
 } VkAccelerationStructureTrianglesDisplacementMicromapNV;
 
+typedef uint32_t StdVideoAV1Level;
+// Provided by VK_KHR_video_decode_av1
+typedef struct VkVideoDecodeAV1CapabilitiesKHR {
+	VkStructureType     sType;
+	void* pNext;
+	StdVideoAV1Level    maxLevel;
+} VkVideoDecodeAV1CapabilitiesKHR;
 
 
+typedef VkFlags VkVideoEncodeH264CapabilityFlagsKHR;
+
+typedef VkFlags VkVideoEncodeH264StdFlagsKHR;
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264CapabilitiesKHR {
+	VkStructureType                        sType;
+	void* pNext;
+	VkVideoEncodeH264CapabilityFlagsKHR    flags;
+	StdVideoH264LevelIdc                   maxLevelIdc;
+	uint32_t                               maxSliceCount;
+	uint32_t                               maxPPictureL0ReferenceCount;
+	uint32_t                               maxBPictureL0ReferenceCount;
+	uint32_t                               maxL1ReferenceCount;
+	uint32_t                               maxTemporalLayerCount;
+	VkBool32                               expectDyadicTemporalLayerPattern;
+	int32_t                                minQp;
+	int32_t                                maxQp;
+	VkBool32                               prefersGopRemainingFrames;
+	VkBool32                               requiresGopRemainingFrames;
+	VkVideoEncodeH264StdFlagsKHR           stdSyntaxFlags;
+} VkVideoEncodeH264CapabilitiesKHR;
+
+
+typedef VkFlags VkVideoEncodeH265CapabilityFlagsKHR;
+
+typedef VkFlags VkVideoEncodeH265StdFlagsKHR;
+
+typedef VkFlags VkVideoEncodeH265CtbSizeFlagsKHR;
+
+typedef VkFlags VkVideoEncodeH265TransformBlockSizeFlagsKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265CapabilitiesKHR {
+	VkStructureType                                sType;
+	void* pNext;
+	VkVideoEncodeH265CapabilityFlagsKHR            flags;
+	StdVideoH265LevelIdc                           maxLevelIdc;
+	uint32_t                                       maxSliceSegmentCount;
+	VkExtent2D                                     maxTiles;
+	VkVideoEncodeH265CtbSizeFlagsKHR               ctbSizes;
+	VkVideoEncodeH265TransformBlockSizeFlagsKHR    transformBlockSizes;
+	uint32_t                                       maxPPictureL0ReferenceCount;
+	uint32_t                                       maxBPictureL0ReferenceCount;
+	uint32_t                                       maxL1ReferenceCount;
+	uint32_t                                       maxSubLayerCount;
+	VkBool32                                       expectDyadicTemporalSubLayerPattern;
+	int32_t                                        minQp;
+	int32_t                                        maxQp;
+	VkBool32                                       prefersGopRemainingFrames;
+	VkBool32                                       requiresGopRemainingFrames;
+	VkVideoEncodeH265StdFlagsKHR                   stdSyntaxFlags;
+} VkVideoEncodeH265CapabilitiesKHR;
 
 NS_TEST_END

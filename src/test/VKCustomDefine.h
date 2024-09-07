@@ -423,4 +423,169 @@ typedef struct VkVideoEncodeH265CapabilitiesKHR {
 	VkVideoEncodeH265StdFlagsKHR                   stdSyntaxFlags;
 } VkVideoEncodeH265CapabilitiesKHR;
 
+
+
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264SessionCreateInfoKHR {
+	VkStructureType         sType;
+	const void* pNext;
+	VkBool32                useMaxLevelIdc;
+	StdVideoH264LevelIdc    maxLevelIdc;
+} VkVideoEncodeH264SessionCreateInfoKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265SessionCreateInfoKHR {
+	VkStructureType         sType;
+	const void* pNext;
+	VkBool32                useMaxLevelIdc;
+	StdVideoH265LevelIdc    maxLevelIdc;
+} VkVideoEncodeH265SessionCreateInfoKHR;
+
+typedef uint32_t StdVideoAV1SequenceHeader;//这里任意自定义一个
+
+// Provided by VK_KHR_video_decode_av1
+typedef struct VkVideoDecodeAV1SessionParametersCreateInfoKHR {
+	VkStructureType                     sType;
+	const void* pNext;
+	const StdVideoAV1SequenceHeader* pStdSequenceHeader;
+} VkVideoDecodeAV1SessionParametersCreateInfoKHR;
+
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264SessionParametersAddInfoKHR {
+	VkStructureType                            sType;
+	const void* pNext;
+	uint32_t                                   stdSPSCount;
+	const StdVideoH264SequenceParameterSet* pStdSPSs;
+	uint32_t                                   stdPPSCount;
+	const StdVideoH264PictureParameterSet* pStdPPSs;
+} VkVideoEncodeH264SessionParametersAddInfoKHR;
+
+typedef struct VkVideoEncodeH264SessionParametersCreateInfoKHR {
+	VkStructureType sType;
+	const void* pNext;
+	uint32_t maxStdSPSCount;
+	uint32_t maxStdPPSCount;
+	const VkVideoEncodeH264SessionParametersAddInfoKHR* pParametersAddInfo;
+} VkVideoEncodeH264SessionParametersCreateInfoKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265SessionParametersAddInfoKHR {
+	VkStructureType                            sType;
+	const void* pNext;
+	uint32_t                                   stdVPSCount;
+	const StdVideoH265VideoParameterSet* pStdVPSs;
+	uint32_t                                   stdSPSCount;
+	const StdVideoH265SequenceParameterSet* pStdSPSs;
+	uint32_t                                   stdPPSCount;
+	const StdVideoH265PictureParameterSet* pStdPPSs;
+} VkVideoEncodeH265SessionParametersAddInfoKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265SessionParametersCreateInfoKHR {
+	VkStructureType                                        sType;
+	const void* pNext;
+	uint32_t                                               maxStdVPSCount;
+	uint32_t                                               maxStdSPSCount;
+	uint32_t                                               maxStdPPSCount;
+	const VkVideoEncodeH265SessionParametersAddInfoKHR* pParametersAddInfo;
+} VkVideoEncodeH265SessionParametersCreateInfoKHR;
+
+
+// Provided by VK_KHR_video_encode_queue
+typedef struct VkVideoEncodeQualityLevelInfoKHR {
+	VkStructureType    sType;
+	const void* pNext;
+	uint32_t           qualityLevel;
+} VkVideoEncodeQualityLevelInfoKHR;
+
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264GopRemainingFrameInfoKHR {
+	VkStructureType    sType;
+	const void* pNext;
+	VkBool32           useGopRemainingFrames;
+	uint32_t           gopRemainingI;
+	uint32_t           gopRemainingP;
+	uint32_t           gopRemainingB;
+} VkVideoEncodeH264GopRemainingFrameInfoKHR;
+
+typedef VkFlags VkVideoEncodeH264RateControlFlagsKHR;
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264RateControlInfoKHR {
+	VkStructureType                         sType;
+	const void* pNext;
+	VkVideoEncodeH264RateControlFlagsKHR    flags;
+	uint32_t                                gopFrameCount;
+	uint32_t                                idrPeriod;
+	uint32_t                                consecutiveBFrameCount;
+	uint32_t                                temporalLayerCount;
+} VkVideoEncodeH264RateControlInfoKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265GopRemainingFrameInfoKHR {
+	VkStructureType    sType;
+	const void* pNext;
+	VkBool32           useGopRemainingFrames;
+	uint32_t           gopRemainingI;
+	uint32_t           gopRemainingP;
+	uint32_t           gopRemainingB;
+} VkVideoEncodeH265GopRemainingFrameInfoKHR;
+
+typedef VkFlags VkVideoEncodeH265RateControlFlagsKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265RateControlInfoKHR {
+	VkStructureType                         sType;
+	const void* pNext;
+	VkVideoEncodeH265RateControlFlagsKHR    flags;
+	uint32_t                                gopFrameCount;
+	uint32_t                                idrPeriod;
+	uint32_t                                consecutiveBFrameCount;
+	uint32_t                                subLayerCount;
+} VkVideoEncodeH265RateControlInfoKHR;
+
+typedef uint32_t StdVideoDecodeAV1ReferenceInfo;//这里任意定义一个只做示例
+
+// Provided by VK_KHR_video_decode_av1
+typedef struct VkVideoDecodeAV1DpbSlotInfoKHR {
+	VkStructureType                          sType;
+	const void* pNext;
+	const StdVideoDecodeAV1ReferenceInfo* pStdReferenceInfo;
+} VkVideoDecodeAV1DpbSlotInfoKHR;
+
+typedef uint32_t StdVideoEncodeH264ReferenceInfo;//这里任意定义一个只做示例
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264DpbSlotInfoKHR {
+	VkStructureType                           sType;
+	const void* pNext;
+	const StdVideoEncodeH264ReferenceInfo* pStdReferenceInfo;
+} VkVideoEncodeH264DpbSlotInfoKHR;
+
+typedef uint32_t StdVideoEncodeH265ReferenceInfo;//这里任意定义一个只做示例
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265DpbSlotInfoKHR {
+	VkStructureType                           sType;
+	const void* pNext;
+	const StdVideoEncodeH265ReferenceInfo* pStdReferenceInfo;
+} VkVideoEncodeH265DpbSlotInfoKHR;
+
+
+
+// Provided by VK_KHR_video_maintenance1
+typedef struct VkVideoInlineQueryInfoKHR {
+	VkStructureType    sType;
+	const void* pNext;
+	VkQueryPool        queryPool;
+	uint32_t           firstQuery;
+	uint32_t           queryCount;
+} VkVideoInlineQueryInfoKHR;
+
+
+
+
 NS_TEST_END

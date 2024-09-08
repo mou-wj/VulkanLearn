@@ -867,6 +867,191 @@ void MemoryDecompressionAndVideoCodingTest::VideoCodingTest()
 
 	}
 
+
+	//Video Decode Operations  参见p3474
+	{
+		/*
+		video decode operations 消耗来自video bitstream buffer 以及一个或多个 reference pictures中压缩的数据，然后产生一个 decode output picture 以及可选的一个reconstructed  picture
+		
+		video decode operations 中对资源的同步在VK_PIPELINE_STAGE_2_VIDEO_DECODE_BIT_KHR stage，其中用于该操作输入的资源以 VK_ACCESS_2_VIDEO_DECODE_READ_BIT_KHR 访问，输出以VK_ACCESS_2_VIDEO_DECODE_WRITE_BIT_KHR 访问。用于在操作中的image的layout在除了该image只用于作为一个decode output picture 为VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR，其他情况下为VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR
+		*/
+
+
+		// Codec-Specific Semantics 参见p3475  简单描述就是video decode operations的一些步骤或者行为是 codec-specific，即对应不用的codec操作类型，这些步骤和行为可能有所不用
+
+		// Video Decode Operation Steps  参见p3475  简单描述video decode operations的一些步骤为： 读取压缩的数据 -> 执行重建操作 -> 写出解码数据
+
+
+		//Capabilities 参见p3476
+		{
+
+			//VkVideoDecodeCapabilitiesKHR 可以包含在调用 vkGetPhysicalDeviceVideoCapabilitiesKHR传入的 VkVideoCapabilitiesKHR.pNext中用于返回视频解码能力的信息
+			//VkVideoCapabilitiesKHR.pNext
+			VkVideoDecodeCapabilitiesKHR videoDecodeCapabilitiesKHR{};
+			videoDecodeCapabilitiesKHR.sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_CAPABILITIES_KHR;
+			videoDecodeCapabilitiesKHR.pNext = nullptr;
+			videoDecodeCapabilitiesKHR.flags = VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR;/*为 VkVideoDecodeCapabilityFlagBitsKHR 组合值位掩码指明支持的视频解码能力
+			VkVideoDecodeCapabilityFlagBitsKHR:
+			VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR : 指明在一个video decode operation中支持使用相同的video picture 作为reconstructed picture 和decode output picture
+			VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_DISTINCT_BIT_KHR : 指明在一个video decode operation中支持使用不同的video picture 作为reconstructed picture 和decode output picture
+			*/
+
+
+		}
+
+
+		//Video Decode Commands 参见p3477
+		{
+			VkCommandBuffer commandBuffer{/*假设这是一个有效的VkCommandBuffer*/ };
+
+			struct VideoDecodeInfoKHREXT {
+				VkVideoDecodeAV1PictureInfoKHR videoDecodeAV1PictureInfoKHR{};
+				VkVideoDecodeH264PictureInfoKHR videoDecodeH264PictureInfoKHR{};
+				VkVideoDecodeH265PictureInfoKHR videoDecodeH265PictureInfoKHR{};
+				VkVideoInlineQueryInfoKHR videoInlineQueryInfoKHR{};
+				VideoDecodeInfoKHREXT() {
+					Init();
+				}
+				void Init() {
+					videoDecodeAV1PictureInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//未定义所以这里定义为非法值
+					videoDecodeAV1PictureInfoKHR.pNext = nullptr;
+					videoDecodeH264PictureInfoKHR.sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PICTURE_INFO_KHR;
+					videoDecodeH264PictureInfoKHR.pNext = nullptr;
+					videoDecodeH265PictureInfoKHR.sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PICTURE_INFO_KHR;
+					videoDecodeH265PictureInfoKHR.pNext = nullptr;
+					videoInlineQueryInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//未定义所以这里定义为非法值
+					videoInlineQueryInfoKHR.pNext = nullptr;;
+				}
+
+
+			};
+
+
+
+			//启动opCount个 video decode operations
+			VkVideoDecodeInfoKHR videoDecodeInfoKHR{};
+			videoDecodeInfoKHR.sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_INFO_KHR;
+			VideoDecodeInfoKHREXT videoDecodeInfoKHREXT{};
+			videoDecodeInfoKHR.pNext = &videoDecodeInfoKHREXT.videoDecodeAV1PictureInfoKHR;
+			videoDecodeInfoKHR.flags = 0;//保留未来使用
+			videoDecodeInfoKHR.srcBuffer = VkBuffer{/*假设这是一个有效的VkBuffer*/};//为读取 encoded bitstream的 source video bitstream buffer
+			videoDecodeInfoKHR.srcBufferOffset = 0;//srcBuffer 中的起始字节偏移量
+			videoDecodeInfoKHR.srcBufferRange = 4;//srcBuffer 中从srcBufferOffset开始的字节数
+			VkVideoPictureResourceInfoKHR dstPictureResource{};
+			{
+				dstPictureResource.sType = VK_STRUCTURE_TYPE_VIDEO_PICTURE_RESOURCE_INFO_KHR;
+				dstPictureResource.pNext = nullptr;
+				dstPictureResource.baseArrayLayer = 0;
+				dstPictureResource.codedExtent = VkExtent2D{ .width = 1,.height = 1 };
+				dstPictureResource.codedOffset = VkOffset2D{ .x = 0,.y = 0 };
+				dstPictureResource.imageViewBinding = VkImageView{/*假设这是一个有效的VkImageView*/ };
+			}
+			videoDecodeInfoKHR.dstPictureResource = dstPictureResource;//指明用于Decode Output Picture的video picture resource
+			VkVideoReferenceSlotInfoKHR videoReferenceSlotInfoKHR{};
+			{
+				videoReferenceSlotInfoKHR.sType = VK_STRUCTURE_TYPE_VIDEO_REFERENCE_SLOT_INFO_KHR;
+				videoReferenceSlotInfoKHR.pNext = nullptr;
+				videoReferenceSlotInfoKHR.slotIndex = 0;
+				VkVideoPictureResourceInfoKHR testPictureResource{/*假设这是一个有效的VkVideoPictureResourceInfoKHR*/ };
+				videoReferenceSlotInfoKHR.pPictureResource = &testPictureResource;
+
+			}
+			videoDecodeInfoKHR.pSetupReferenceSlot = &videoReferenceSlotInfoKHR;//为NULL或者VkVideoReferenceSlotInfoKHR 指针， 指明可选的Reconstructed Picture 信息
+			videoDecodeInfoKHR.referenceSlotCount = 1;// pReferenceSlots 中元素个数
+			videoDecodeInfoKHR.pReferenceSlots = &videoReferenceSlotInfoKHR;//为NULL或者VkVideoReferenceSlotInfoKHR 数组指针，描述用于video decode operation 的DPB slots 以及对应的 reference picture （激活的Reference Picture 组）
+			/*
+			VkVideoDecodeInfoKHR有效用法:
+			1.srcBuffer 必须以VK_BUFFER_USAGE_VIDEO_DECODE_SRC_BIT_KHR 标记创建
+			2.srcBufferOffset 必须小于srcBuffer的大小
+			3.srcBufferRange 必须小于等于srcBuffer的大小 减去srcBufferOffset
+			4.如果pSetupReferenceSlot 不为NULL，则其slotIndex 不能为负数，其pPictureResource 不能为NULL
+			5.pReferenceSlots 中每个元素的slotIndex 不能为负数，pPictureResource 不能为NULL
+
+			*/
+
+
+			//该接口的其他注意信息以及使用时一些参数的限制信息见 *** p3478 - p3480
+			vkCmdDecodeVideoKHR(commandBuffer, &videoDecodeInfoKHR);
+			/*
+			vkCmdDecodeVideoKHR有效用法:
+			1.绑定的video session 必须以一个 decode operation 创建，且在该命令在设备上执行的时候video session 不能为非初始化的状态
+			2.对每个激活的query，对应query type的激活的query 索引加上 opCount 必须小于等于该query type的最后一个激活的query 索引加1
+			3.如果绑定的video session 以VK_VIDEO_SESSION_CREATE_INLINE_QUERIES_BIT_KHR 创建，且pDecodeInfo->pNext中包含一个queryPool 指定一个有效的VkQueryPool的VkVideoInlineQueryInfoKHR，则（1）VkVideoInlineQueryInfoKHR::queryCount 必须等于opCount
+																																															 （2）所有该命令使用的VkVideoInlineQueryInfoKHR中的query必须为unavailable的状态
+																																															 （3）则用于创建VkVideoInlineQueryInfoKHR.queryPool的 queryType 必须为VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR
+																																															 （4）VkVideoInlineQueryInfoKHR.queryPool 必须要以VkQueryPoolCreateInfo.pNext中包含一个和video session创建时VkVideoSessionCreateInfoKHR::pVideoProfile 中一个元素相等的VkVideoProfileInfoKHR 创建
+																																															 （5）如果用于创建VkVideoInlineQueryInfoKHR.queryPool的 queryType 必须为VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR，则commandBuffer所在的VkCommandPool的队列族必须支持result status queries，见队列族的VkQueueFamilyQueryResultStatusPropertiesKHR::queryResultStatusSupport
+			4.pDecodeInfo->srcBuffer 必须兼容于绑定的video session 创建时使用的video profile
+			5.如果commandBuffer是unprotected command buffer 且protectedNoFault不支持，则pDecodeInfo->srcBuffer 不能是protected buffer
+			6.如果commandBuffer是protected command buffer 且protectedNoFault不支持，则pDecodeInfo->srcBuffer 必须是protected buffer
+			7.pDecodeInfo->srcBufferOffset 必须是调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入绑定video session创建时的video profile返回的VkVideoCapabilitiesKHR::minBitstreamBufferOffsetAlignment的整数倍
+			8.pDecodeInfo->srcBufferRange 必须是调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入绑定video session创建时的video profile返回的VkVideoCapabilitiesKHR::minBitstreamBufferSizeAlignment的整数倍
+			9.如果pDecodeInfo->pSetupReferenceSlot 不为NULL，则调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入绑定video session创建时的video profile返回VkVideoDecodeCapabilitiesKHR::flags 不包含VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR，则pDecodeInfo->dstPictureResource 以及 pDecodeInfo->pSetupReferenceSlot->pPictureResource 指定的video picture resources 必须匹配
+			10.如果pDecodeInfo->pSetupReferenceSlot 不为NULL，则调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入绑定video session创建时的video profile返回VkVideoDecodeCapabilitiesKHR::flags 不包含VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR，且绑定的video session不以video codec operation 创建或者VkVideoDecodeAV1ProfileInfoKHR::filmGrainSupport不为VK_TRUE，或者decoded picture的film grain 未开启，则pDecodeInfo->dstPictureResource 以及 pDecodeInfo->pSetupReferenceSlot->pPictureResource 指定的video picture resources 必须匹配
+			11.pDecodeInfo->dstPictureResource.imageViewBinding 必须兼容绑定的video session创建时的video profile
+			12.pDecodeInfo->dstPictureResource.imageViewBinding 的format必须匹配创建video session时使用的VkVideoSessionCreateInfoKHR::pictureFormat
+			13.pDecodeInfo->dstPictureResource.codedOffset 必须是codedOffsetGranularity 的整数倍
+			14.pDecodeInfo->dstPictureResource.codedExtent 必须在创建video session 时使用的VkVideoSessionCreateInfoKHR::minCodedExtent 和 VkVideoSessionCreateInfoKHR::maxCodedExtent 之间
+			15.pDecodeInfo->dstPictureResource.imageViewBinding 必须以VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR 创建
+			16.如果commandBuffer是unprotected command buffer 且protectedNoFault不支持，则pDecodeInfo->dstPictureResource.imageViewBinding 不能从protected image 上创建
+			17.如果commandBuffer是protected command buffer 且protectedNoFault不支持，则pDecodeInfo->dstPictureResource.imageViewBinding 必须从protected image 上创建
+			18.pDecodeInfo->pSetupReferenceSlot 必须不为NULL除非绑定的video session 被创建时指定了VkVideoSessionCreateInfoKHR::maxDpbSlots 为0
+			19.如果 pDecodeInfo->pSetupReferenceSlot 不为NULL，则（1）pDecodeInfo->pSetupReferenceSlot->slotIndex 必须小于等于创建video session 时 VkVideoSessionCreateInfoKHR::maxDpbSlots 指定的最大DPB槽数量
+																 （2）pDecodeInfo->pSetupReferenceSlot->pPictureResource->codedOffset 必须为codedOffsetGranularity 的整数倍
+																 （3）pDecodeInfo->pSetupReferenceSlot->pPictureResource 必须匹配一个绑定的reference picture resource
+			20.activeReferencePictureCount 必须小于等于创建video session 时指定的 VkVideoSessionCreateInfoKHR::maxActiveReferencePictures
+			21.pDecodeInfo->pReferenceSlots 中每个元素的slotIndex 必须小于等于创建video session 时 VkVideoSessionCreateInfoKHR::maxDpbSlots 指定的最大DPB槽数量
+			22.每个pDecodeInfo->pReferenceSlots 元素的pPictureResource 所指的VkVideoPictureResourceInfoKHR::codedOffset 必须为codedOffsetGranularity 的整数倍
+			23.每个pDecodeInfo->pReferenceSlots 元素的pPictureResource 必须匹配一个绑定的关联到其slotIndex指定的DPB slot 索引上的reference picture resource
+			24.每个pDecodeInfo->pReferenceSlots 元素的pPictureResource 所指的video picture resource 必须在pDecodeInfo->pReferenceSlots 中是唯一的
+			25.dpbFrameUseCount，dpbFrameUseCount 以及dpbBottomFieldUseCount中所有元素必须小于等于1 （这三个量是隐含的，通过计算出来的，具体见p3478 - p3480）
+			26.如果 pDecodeInfo->pSetupReferenceSlot 为NULL 或者pDecodeInfo->pSetupReferenceSlot->pPictureResource 没有引用到和pDecodeInfo->dstPictureResource 相同的image subresource，则pDecodeInfo->dstPictureResource 引用的image subresource 在该命令在设备上执行时layout必须为 VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR
+			27.如果 pDecodeInfo->pSetupReferenceSlot 不为NULL 且pDecodeInfo->pSetupReferenceSlot->pPictureResource 引用到和pDecodeInfo->dstPictureResource 相同的image subresource，则pDecodeInfo->dstPictureResource 引用的image subresource 在该命令在设备上执行时layout必须为 VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR
+			28.如果pDecodeInfo->pSetupReferenceSlot 不为NULL，则pDecodeInfo->pSetupReferenceSlot->pPictureResource 所指的image subresource 在该命令在设备上执行时layout必须为 VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR
+			29.pDecodeInfo->pReferenceSlots 中每个元素的pPictureResource 引用的image subresource 在该命令在设备上执行时layout必须为 VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR
+			30.如果绑定的video session 以video codec operation 为 VK_VIDEO_CODEC_OPERATION_DECODE_H264_BIT_KHR 创建，则（1）pDecodeInfo->pNext中必须包含一个VkVideoDecodeH264PictureInfoKHR结构
+																													   （2）如果video session不以支持interlaced frame 创建，则decode output picture 必须代表一个frame
+																													   （3）则pDecodeInfo->pNext中的VkVideoDecodeH264PictureInfoKHR.pSliceOffsets 的所有元素 必须小于pDecodeInfo->srcBufferRange
+																													   （4）绑定的video session parameters 必须包含seq_parameter_set_id 匹配pDecodeInfo->pNext中VkVideoDecodeH264PictureInfoKHR::pStdPictureInfo 中元素的StdVideoDecodeH264PictureInfo::seq_parameter_set_id的 StdVideoH264SequenceParameterSet 实体
+																													   （5）绑定的video session parameters 必须包含seq_parameter_set_id 以及pic_parameter_set_id 匹配pDecodeInfo->pNext中VkVideoDecodeH264PictureInfoKHR::pStdPictureInfo 中元素的 StdVideoDecodeH264PictureInfo::seq_parameter_set_id 以及StdVideoDecodeH264PictureInfo::pic_parameter_set_id 的 StdVideoH264PictureParameterSet 实体
+																													   （6）如果pDecodeInfo->pSetupReferenceSlot 不为NULL，则pDecodeInfo->pSetupReferenceSlot->pNext中必须包含一个VkVideoDecodeH264DpbSlotInfoKHR
+																													   （7）如果video session不以支持interlaced frame 创建，且pDecodeInfo->pSetupReferenceSlot 不为NULL，则reconstructed picture 必须代表一个frame
+																													   （8）则pDecodeInfo->pReferenceSlots中每个元素的pNext中必须包含一个VkVideoDecodeH264DpbSlotInfoKHR
+																													   （9）如果video session不以支持interlaced frame 创建，则pDecodeInfo->pReferenceSlots 中每个激活的reference picture 必须代表一个frame
+																													   （10）如果pDecodeInfo->pSetupReferenceSlot 不为NULL，且 decode output picture 表示一个frame，则reconstructed picture 也必须表示一个frame
+																													   （11）如果pDecodeInfo->pSetupReferenceSlot 不为NULL，且 decode output picture 表示一个top field，则reconstructed picture 也必须表示一个top field
+																													   （12）如果pDecodeInfo->pSetupReferenceSlot 不为NULL，且 decode output picture 表示一个bottom field，则reconstructed picture 也必须表示一个bottom field
+																													   （13）如果pDecodeInfo->pReferenceSlots 中一个激活的reference picture 代表一个frame，则该元素的slotIndex指定的关联到frame picture的 DPB slot index 必须匹配在该命令在设备上执行时相同元素的pPictureResource 所指的video picture resource
+																													   （14）如果pDecodeInfo->pReferenceSlots 中一个激活的reference picture 代表一个top field，则该元素的slotIndex指定的关联到top field picture的 DPB slot index 必须匹配在该命令在设备上执行时相同元素的pPictureResource 所指的video picture resource
+																													   （15）如果pDecodeInfo->pReferenceSlots 中一个激活的reference picture 代表一个bottom field，则该元素的slotIndex指定的关联到bottom field picture的 DPB slot index 必须匹配在该命令在设备上执行时相同元素的pPictureResource 所指的video picture resource
+			31.如果绑定的video session 以video codec operation 为 VK_VIDEO_CODEC_OPERATION_DECODE_H265_BIT_KHR 创建，则（1）pDecodeInfo->pNext中必须包含一个VkVideoDecodeH265PictureInfoKHR结构
+																													   （2）则pDecodeInfo->pNext中的VkVideoDecodeH265PictureInfoKHR.pSliceSegmentOffsets 的所有元素 必须小于pDecodeInfo->srcBufferRange
+																													   （3）绑定的video session parameters 必须包含vps_video_parameter_set_id 匹配pDecodeInfo->pNext中VkVideoDecodeH265PictureInfoKHR::pStdPictureInfo 中元素的StdVideoDecodeH265PictureInfo::sps_video_parameter_set_id的 StdVideoH265VideoParameterSet 实体
+																													   （4）绑定的video session parameters 必须包含sps_video_parameter_set_id 以及 sps_seq_parameter_set_id 匹配pDecodeInfo->pNext中VkVideoDecodeH265PictureInfoKHR::pStdPictureInfo 中元素的StdVideoDecodeH265PictureInfo::sps_video_parameter_set_id 以及 StdVideoDecodeH265PictureInfo::pps_seq_parameter_set_id 的 StdVideoH265SequenceParameterSet 实体
+																													   （5）绑定的video session parameters 必须包含sps_video_parameter_set_id, pps_seq_parameter_set_id, 以及 pps_pic_parameter_set_id 都匹配pDecodeInfo->pNext中VkVideoDecodeH265PictureInfoKHR::pStdPictureInfo 中元素的StdVideoDecodeH265PictureInfo::sps_video_parameter_set_id, StdVideoDecodeH265PictureInfo::pps_seq_parameter_set_id, 以及 StdVideoDecodeH265PictureInfo::pps_pic_parameter_set_id 的 StdVideoH265PictureParameterSet 实体
+																													   （6）如果pDecodeInfo->pSetupReferenceSlot 不为NULL，则pDecodeInfo->pSetupReferenceSlot->pNext中必须包含一个VkVideoDecodeH265DpbSlotInfoKHR
+																													   （7）则pDecodeInfo->pReferenceSlots中每个元素的pNext中必须包含一个VkVideoDecodeH265DpbSlotInfoKHR
+			32.如果绑定的video session 以video codec operation 为 VK_VIDEO_CODEC_OPERATION_DECODE_AV1_BIT_KHR 创建，则（1）如果也已VkVideoDecodeAV1ProfileInfoKHR::filmGrainSupport 设为VK_FALSE创建，则decoded picture不能开启film grain
+																													  （2）如果pDecodeInfo->pSetupReferenceSlot 不为NULL，且decoded picture 开启film grain，则pDecodeInfo->dstPictureResource 以及pDecodeInfo->pSetupReferenceSlot->pPictureResource 所指的video picture resources 不能匹配
+																													  （3）pDecodeInfo->pNext中必须包含一个VkVideoDecodeAV1PictureInfoKHR结构
+																													  （4）则pDecodeInfo->pNext中的VkVideoDecodeAV1PictureInfoKHR.frameHeaderOffset 必须小于pDecodeInfo->srcBufferRange的最小值
+																													  （5）则pDecodeInfo->pNext中的VkVideoDecodeAV1PictureInfoKHR.pTileOffsets 的所有元素 必须小于pDecodeInfo->srcBufferRange
+																													  （6）则pDecodeInfo->pNext中的VkVideoDecodeAV1PictureInfoKHR 中pTileOffsets 以及pTileSizes 的任意i元素，其pTileOffsets[i] + pTileSizes[i]  必须小于等于pDecodeInfo->srcBufferRange
+																													  （7）如果pDecodeInfo->pSetupReferenceSlot 不为NULL，则pDecodeInfo->pSetupReferenceSlot->pNext中必须包含一个VkVideoDecodeAV1DpbSlotInfoKHR
+																													  （8）则pDecodeInfo->pReferenceSlots中每个元素的pNext中必须包含一个VkVideoDecodeAV1DpbSlotInfoKHR
+																													  （9）则pDecodeInfo->pNext中的VkVideoDecodeAV1PictureInfoKHR.referenceNameSlotIndices 中的每个元素必须为负数或者 必须等于pDecodeInfo->pReferenceSlots 中一个元素的slotIndex
+																													  （10）则pDecodeInfo->pReferenceSlots 中每个元素的slotIndex 必须等于  pDecodeInfo->pNext中的VkVideoDecodeAV1PictureInfoKHR.referenceNameSlotIndices 中的一个元素值
+
+			*/
+		}
+
+	}
+
+
+	//Decode Operations  参见p3491
+	{
+
+	}
 }
 
 

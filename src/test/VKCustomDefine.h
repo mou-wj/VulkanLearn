@@ -585,7 +585,19 @@ typedef struct VkVideoInlineQueryInfoKHR {
 	uint32_t           queryCount;
 } VkVideoInlineQueryInfoKHR;
 
+typedef uint32_t StdVideoDecodeAV1PictureInfo;//这里任意定义一个只做示例
 
+#define VK_MAX_VIDEO_AV1_REFERENCES_PER_FRAME_KHR 1 //这里任意定义一个只做示例
 
-
+// Provided by VK_KHR_video_decode_av1
+typedef struct VkVideoDecodeAV1PictureInfoKHR {
+	VkStructureType                        sType;
+	const void* pNext;
+	const StdVideoDecodeAV1PictureInfo* pStdPictureInfo;
+	int32_t                                referenceNameSlotIndices[VK_MAX_VIDEO_AV1_REFERENCES_PER_FRAME_KHR];
+	uint32_t                               frameHeaderOffset;
+	uint32_t                               tileCount;
+	const uint32_t* pTileOffsets;
+	const uint32_t* pTileSizes;
+} VkVideoDecodeAV1PictureInfoKHR;
 NS_TEST_END

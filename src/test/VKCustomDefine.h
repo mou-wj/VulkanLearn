@@ -600,4 +600,40 @@ typedef struct VkVideoDecodeAV1PictureInfoKHR {
 	const uint32_t* pTileOffsets;
 	const uint32_t* pTileSizes;
 } VkVideoDecodeAV1PictureInfoKHR;
+
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264NaluSliceInfoKHR {
+	VkStructureType                         sType;
+	const void* pNext;
+	int32_t                                 constantQp;
+	const StdVideoEncodeH264SliceHeader* pStdSliceHeader;
+} VkVideoEncodeH264NaluSliceInfoKHR;
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264PictureInfoKHR {
+	VkStructureType                             sType;
+	const void* pNext;
+	uint32_t                                    naluSliceEntryCount;
+	const VkVideoEncodeH264NaluSliceInfoKHR* pNaluSliceEntries;
+	const StdVideoEncodeH264PictureInfo* pStdPictureInfo;
+	VkBool32                                    generatePrefixNalu;
+} VkVideoEncodeH264PictureInfoKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265NaluSliceSegmentInfoKHR {
+	VkStructureType                                sType;
+	const void* pNext;
+	int32_t                                        constantQp;
+	const StdVideoEncodeH265SliceSegmentHeader* pStdSliceSegmentHeader;
+} VkVideoEncodeH265NaluSliceSegmentInfoKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265PictureInfoKHR {
+	VkStructureType                                    sType;
+	const void* pNext;
+	uint32_t                                           naluSliceSegmentEntryCount;
+	const VkVideoEncodeH265NaluSliceSegmentInfoKHR* pNaluSliceSegmentEntries;
+	const StdVideoEncodeH265PictureInfo* pStdPictureInfo;
+} VkVideoEncodeH265PictureInfoKHR;
 NS_TEST_END

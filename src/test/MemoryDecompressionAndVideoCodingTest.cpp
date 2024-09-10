@@ -1710,6 +1710,86 @@ void MemoryDecompressionAndVideoCodingTest::VideoCodingTest()
 
 	//Video Encode Rate Control  参见p3559
 	{
+		/*
+		video coding 使用 bitrate 来衡量每秒编码的video bitstream data的大小，且为 encoded bitstream data 大小和使用 frame rate的函数。
+
+		速率控制算法可以在video encode operations 中用来调节bitrate的大小。
+
+		*/
+
+
+		// Rate Control Modes  参见p3560
+		{
+			/*
+			当重置了video session后是无法控制速率的，只有在改变了video session的速率配置后才可以。
+
+			速率控制有两类：
+				> Per-operation rate control  - 针对每个video encode operation ,速率间接受大小，质量或者其他encoding参数控制
+				> Stream-level rate control  -  在多个video encode operations 中直接指定速率，而不受encoding参数的控制
+			*/
+
+			//VkVideoEncodeRateControlModeFlagBitsKHR 速率控制模式
+			VkVideoEncodeRateControlModeFlagBitsKHR rateControlMode = VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR;
+			/*
+			VkVideoEncodeRateControlModeFlagBitsKHR:
+			VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR : 指定使用implementation-specific 速率控制
+			VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DISABLED_BIT_KHR : 速率控制被禁用，应用将指定每个操作的速率控制参数来控制编码质量，在这种模式下，编码pictures将使用的速率和之前的编码操作的速率独立。根据具体类型将分别使用VkVideoEncodeH264NaluSliceInfoKHR::constantQp 或者VkVideoEncodeH265NaluSliceSegmentInfoKHR::constantQp 来控制编码质量
+			VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR : 指定使用constant bitrate (CBR) 速率控制，在这种模式下实现将在服从其他速率参数限制的情况下尝试使用固定常量的速率来产生编码的bitstream
+			VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR : 指定使用variable bitrate (VBR) 速率控制，在这种模式下实现将在服从其他速率参数限制的情况下尝试使用可变的速率来产生编码的bitstream。
+
+			*/
+		}
+
+
+		//Leaky Bucket Model   leaky bucket model 用于 stream-level rate control，简单将就是相当于在video encoder 以及decoder 之间加入了一个接口，编码的数据会不断通过这个接口让decoder获取然后处理，这可以有效避免两者处理速率不匹配时产生的 underflow 以及overflow，其他详细描述见p3561。
+
+
+		//Rate Control Layers  参见p3562   简单将就是一些标准允许将encoded pictures关联到指定的video coding layers，这样stream-level rate control就可以使用一个或者多个 rate control layers 来进行配置
+
+		//Rate Control State  参见p3562
+		{
+			/*
+			rate control state 在video session中维护，其参数通过VkVideoEncodeRateControlInfoKHR 来指定。主要指定rate control state 以及 rate control layers， 具体如何指定见p3562
+			*/
+
+
+			//在VkVideoBeginCodingInfoKHR.pNext中或者  VkVideoCodingControlInfoKHR.pNext中包含VkVideoEncodeRateControlInfoKHR 来配置或者更新编码速率控制配置
+			VkVideoEncodeRateControlInfoKHR videoEncodeRateControlInfoKHR{};
+			videoEncodeRateControlInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有指定这里设置为非法值
+			videoEncodeRateControlInfoKHR.pNext = nullptr;
+			videoEncodeRateControlInfoKHR.flags = 0;//保留未来使用
+			videoEncodeRateControlInfoKHR.rateControlMode = VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR;//一个 VkVideoEncodeRateControlModeFlagBitsKHR 值指明 rate control mode
+			videoEncodeRateControlInfoKHR.layerCount = 1;//pLayers 中元素个数
+			VkVideoEncodeRateControlLayerInfoKHR videoEncodeRateControlLayerInfoKHR{};//指定每个单独的rate control layer的配置
+			{
+				videoEncodeRateControlLayerInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义这里定义为非法值
+				videoEncodeRateControlLayerInfoKHR.pNext = nullptr;//可以包含 VkVideoEncodeH264RateControlLayerInfoKHR 或者VkVideoEncodeH265RateControlLayerInfoKHR
+				videoEncodeRateControlLayerInfoKHR.averageBitrate = 256;//为实现的速率控制算法指定的平均bitrate
+				videoEncodeRateControlLayerInfoKHR.maxBitrate = 256;//为实现的速率控制算法指定的峰值bitrate
+				videoEncodeRateControlLayerInfoKHR.frameRateNumerator = 1;//为实现的速率控制算法估定的frame rate的分子，必须大于0
+				videoEncodeRateControlLayerInfoKHR.frameRateDenominator = 1;///为实现的速率控制算法估定的frame rate的分母，必须大于0
+				videoEncodeRateControlLayerInfoKHR.virtualBufferSizeInMs = 256;//为毫秒内对 leaky bucket model的速率控制算法使用的virtual buffer的大小
+				videoEncodeRateControlLayerInfoKHR.initialVirtualBufferSizeInMs = 256;//为毫秒内对 leaky bucket model的速率控制算法使用的virtual buffer的初始容量
+			}
+			videoEncodeRateControlInfoKHR.pLayers = &videoEncodeRateControlLayerInfoKHR;//一组VkVideoEncodeRateControlLayerInfoKHR 数组指针，指明各个rate control layer的速率控制配置
+			/*
+			VkVideoEncodeRateControlInfoKHR有效用法:
+			1.如果rateControlMode 为VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR 或者VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DISABLED_BIT_KHR，则layerCount 必须为0
+			2.如果rateControlMode 为VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR 或者VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR，则layerCount 必须大于0
+			3.如果rateControlMode 不为VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR，则其必须指定一个包含在调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入使用的video profile 返回的VkVideoEncodeCapabilitiesKHR::rateControlModes中的一个比特设置
+			4.layerCount 必须小于等于调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入使用的video profile 返回的VkVideoEncodeCapabilitiesKHR::maxRateControlLayers
+			5.对pLayers 中的每个元素，其averageBitrate 成员必须在1到调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入使用的video profile 返回的VkVideoEncodeCapabilitiesKHR::maxBitrate 给出
+			6.对pLayers 中的每个元素，其maxBitrate 成员必须在1到调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入使用的video profile 返回的VkVideoEncodeCapabilitiesKHR::maxBitrate 给出
+			7.如果rateControlMode 为VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR，则对pLayers 中的每个元素，其averageBitrate 成员必须等于其 maxBitrate 成员
+			8.如果rateControlMode 为VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR，则对pLayers 中的每个元素，其averageBitrate 成员必须小于或等于其 maxBitrate 成员
+			9.如果layerCount 不为0，则virtualBufferSizeInMs 必须大于0
+			10.如果layerCount 不为0，则initialVirtualBufferSizeInMs 必须小于 virtualBufferSizeInMs
+			11.如果使用的video profile的videoCodecOperation 为VK_VIDEO_CODEC_OPERATION_ENCODE_H264_BIT_KHR，且pNext包含一个VkVideoEncodeH264RateControlInfoKHR结构体，且layerCount 大于1 ，则layerCount必须等于VkVideoEncodeH264RateControlInfoKHR::temporalLayerCount
+			12.如果使用的video profile的videoCodecOperation 为VK_VIDEO_CODEC_OPERATION_ENCODE_H265_BIT_KHR，且pNext包含一个VkVideoEncodeH265RateControlInfoKHR结构体，且layerCount 大于1 ，则layerCount必须等于VkVideoEncodeH265RateControlInfoKHR::subLayerCount
+			*/
+
+
+		}
 
 	}
 

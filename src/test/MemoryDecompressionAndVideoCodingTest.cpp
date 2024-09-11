@@ -2017,9 +2017,9 @@ void MemoryDecompressionAndVideoCodingTest::VideoCodingTest()
 			{
 				videoEncodeH264NaluSliceInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义这里设置为非法值
 				videoEncodeH264NaluSliceInfoKHR.pNext = nullptr;
-				videoEncodeH264NaluSliceInfoKHR.constantQp = 0;
+				videoEncodeH264NaluSliceInfoKHR.constantQp = 0;//如果当前的video session的配置使用 rate control mode 为VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DISABLED_BIT_KHR，则该值指明该slice使用的QP值
 				StdVideoEncodeH264SliceHeader stdVideoEncodeH264SliceHeader{/*假设这是一个有效的StdVideoEncodeH264SliceHeader*/};
-				videoEncodeH264NaluSliceInfoKHR.pStdSliceHeader = &stdVideoEncodeH264SliceHeader;
+				videoEncodeH264NaluSliceInfoKHR.pStdSliceHeader = &stdVideoEncodeH264SliceHeader;//一个StdVideoEncodeH264SliceHeader 指针，指明该slice的 H.264 slice header parameters
 			}
 			videoEncodeH264PictureInfoKHR.pNaluSliceEntries = &videoEncodeH264NaluSliceInfoKHR;//VkVideoEncodeH264NaluSliceInfoKHR 数组指针，指明input picture中每个编码的H.264 slices 的参数
 			StdVideoEncodeH264PictureInfo stdVideoEncodeH264PictureInfo{/*假设这是一个有效的StdVideoEncodeH264PictureInfo*/};
@@ -2027,22 +2027,120 @@ void MemoryDecompressionAndVideoCodingTest::VideoCodingTest()
 			videoEncodeH264PictureInfoKHR.generatePrefixNalu = VK_FALSE;//控制是否在 slice NALUs产生到target bitstream之前生成 prefix NALUs（见ITU-T H.264 Specification 的7.3.2.12 以及 7.4.2.12节的定义）
 			/*
 			VkVideoEncodeH264PictureInfoKHR有效用法:
-
-			
-			
+			1.naluSliceEntryCount 必须在1 到调用vkGetPhysicalDeviceVideoCapabilitiesKHR 传入使用的video profile返回的VkVideoEncodeH264CapabilitiesKHR::maxSliceCount 之间
+			2.如果调用vkGetPhysicalDeviceVideoCapabilitiesKHR 传入使用的video profile返回的VkVideoEncodeH264CapabilitiesKHR::flags 不包含VK_VIDEO_ENCODE_H264_CAPABILITY_GENERATE_PREFIX_NALU_BIT_KHR，则 generatePrefixNalu 必须为VK_FALSE
+			3.如果调用vkGetPhysicalDeviceVideoCapabilitiesKHR 传入使用的video profile返回的VkVideoEncodeH264CapabilitiesKHR::flags 不包含VK_VIDEO_ENCODE_H264_CAPABILITY_PREDICTION_WEIGHT_TABLE_GENERATED_BIT_KHR 且任何pNaluSliceEntries中元素对应的slice 使用weighted sample prediction，则该元素的VkVideoEncodeH264NaluSliceInfoKHR::pStdSliceHeader->pWeightTable 不能为NULL 
+			4.如果调用vkGetPhysicalDeviceVideoCapabilitiesKHR 传入使用的video profile返回的VkVideoEncodeH264CapabilitiesKHR::flags 不包含VK_VIDEO_ENCODE_H264_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_KHR 则pNaluSliceEntries中所有元素的VkVideoEncodeH264NaluSliceInfoKHR::pStdSliceHeader->slice_type 必须相同
 			
 			*/
 
-			//可以在 VkVideoDecodeInfoKHR::pSetupReferenceSlot->pNext 以及  VkVideoDecodeInfoKHR::pReferenceSlots->pNext 中包含VkVideoDecodeH264DpbSlotInfoKHR  来指明codec-specific reference picture information，具体信息如何解释见  p3501 ***
-			VkVideoDecodeH264DpbSlotInfoKHR  videoDecodeH264DpbSlotInfoKHR{};
-			videoDecodeH264DpbSlotInfoKHR.sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_DPB_SLOT_INFO_KHR;
-			videoDecodeH264DpbSlotInfoKHR.pNext = nullptr;
-			StdVideoDecodeH264ReferenceInfo stdVideoDecodeH264ReferenceInfo{/*假设这是一个有效的StdVideoDecodeH264ReferenceInfo 结构体*/ };
-			videoDecodeH264DpbSlotInfoKHR.pStdReferenceInfo = &stdVideoDecodeH264ReferenceInfo;//一个StdVideoDecodeH264ReferenceInfo 指针，指明 H.264 reference information
+			//可以在 VkVideoEncodeInfoKHR::pSetupReferenceSlot->pNext 以及  VkVideoEncodeInfoKHR::pReferenceSlots->pNext 中包含VkVideoEncodeH264DpbSlotInfoKHR  来指明codec-specific reference picture information，具体信息如何解释见  p3589 ***
+			VkVideoEncodeH264DpbSlotInfoKHR  videoEncodeH264DpbSlotInfoKHR{};
+			videoEncodeH264DpbSlotInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义这里设置为非法值
+			videoEncodeH264DpbSlotInfoKHR.pNext = nullptr;
+			StdVideoEncodeH264ReferenceInfo stdVideoEncodeH264ReferenceInfo{/*假设这是一个有效的StdVideoEncodeH264ReferenceInfo 结构体*/ };
+			videoEncodeH264DpbSlotInfoKHR.pStdReferenceInfo = &stdVideoEncodeH264ReferenceInfo;//一个StdVideoEncodeH264ReferenceInfo 指针，指明 H.264 reference information
 
 		}
 
+
+		// H.264 Encode Rate Control  参见p3590
+		{
+			/*
+			H.264 encoding中，当处理encoding subsequent frames的时候，按照顺序不同类型的picture的处理遵循一个规律的模式是很常见的，这种模式称为group of pictures (GOP)
+			
+			GOP的分类主要为open 以及closed 两类。
+
+			其他关于GOP 的详细描述 以及其他类型的模式 见 ** p3590 - p3593
+			*/
+
+
+			//当在调用 vkCmdControlVideoCodingKHR时，如果VkVideoCodingControlInfoKHR::flags 中包含VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_BIT_KHR， 则VkVideoEncodeH264RateControlInfoKHR 可以包含在VkVideoCodingControlInfoKHR.pNext中用于给rate control algorithm 一些指示。 
+			VkVideoEncodeH264RateControlInfoKHR videoEncodeH264RateControlInfoKHR{};
+			videoEncodeH264RateControlInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义这里设置为非法值
+			videoEncodeH264RateControlInfoKHR.pNext = nullptr;
+			videoEncodeH264RateControlInfoKHR.flags = 0;/* VkVideoEncodeH264RateControlFlagBitsKHR 组合值位掩码，指明H.264 rate control 标志
+			VkVideoEncodeH264RateControlFlagBitsKHR:
+			VK_VIDEO_ENCODE_H264_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_KHR : 指定rate control algorithm 应该尝试产生一个HRD兼容的bitstream，具体定义见ITU-T H.264 Specification 的annex C 章节
+			VK_VIDEO_ENCODE_H264_RATE_CONTROL_REGULAR_GOP_BIT_KHR : 指定应用打算根据指定的VkVideoEncodeH264RateControlInfoKHR的gopFrameCount，idrPeriod, 以及 consecutiveBFrameCount 参数 使用一个常规的GOP结构 
+			VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_KHR : 指定应用打算按照GOP结构中的flat reference pattern 进行编码
+			VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_KHR : 指定应用打算按照GOP结构中的dyadic reference pattern 进行编码
+			VK_VIDEO_ENCODE_H264_RATE_CONTROL_TEMPORAL_LAYER_PATTERN_DYADIC_BIT_KHR : 指定应用打算按照一个dyadic temporal layer pattern 进行编码
+
+			*/
+			videoEncodeH264RateControlInfoKHR.gopFrameCount = 1;//为一个 group of pictures (GOP) 中打算使用的frame 的数量，如果设置为0，rate control algorithm将假定一个基于实现的GOP长度，如果设置为 UINT32_MAX，则GOP长度认为是无穷
+			videoEncodeH264RateControlInfoKHR.idrPeriod = 1;//为两个 IDR frames （见p3591）之间间隔的frames的数量，如果设置为0，rate control algorithm将假定一个基于实现的IDR period，如果设置为 UINT32_MAX，则IDR period认为是无穷
+			videoEncodeH264RateControlInfoKHR.consecutiveBFrameCount = 1;//为一个GOP中 I 以及/或者 P frames 之间连续的B frames的数量
+			videoEncodeH264RateControlInfoKHR.temporalLayerCount = 1;//指明应用打算使用的H.264 temporal layers的数量
+			/*
+			VkVideoEncodeH264RateControlInfoKHR有效用法:
+			1.如果调用vkGetPhysicalDeviceVideoCapabilitiesKHR 传入使用的video profile返回的VkVideoEncodeH264CapabilitiesKHR::flags 不包含VK_VIDEO_ENCODE_H264_CAPABILITY_HRD_COMPLIANCE_BIT_KHR， 则 flags 不能包含VK_VIDEO_ENCODE_H264_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_KHR
+			2.如果flags包含VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_KHR 或者VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_KHR，则其必须也包含VK_VIDEO_ENCODE_H264_RATE_CONTROL_REGULAR_GOP_BIT_KHR
+			3.如果flags包含VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_KHR，则其不能包含VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_KHR
+			4.如果flags包含VK_VIDEO_ENCODE_H264_RATE_CONTROL_REGULAR_GOP_BIT_KHR，则gopFrameCount必须大于0
+			5.如果idrPeriod 不为0，则其必须大于等于gopFrameCount
+			6.如果consecutiveBFrameCount 不为0，则其必须小于gopFrameCount
+			*/
+
+
+
+			/*
+			Rate Control Layers:
+
+			在调用vkCmdControlVideoCodingKHR 时，如果 VkVideoCodingControlInfoKHR::flags 包含VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_BIT_KHR ，且video session以 VK_VIDEO_CODEC_OPERATION_ENCODE_H264_BIT_KHR 创建，则
+			可以在VkVideoEncodeRateControlInfoKHR.pLayers中元素VkVideoEncodeRateControlLayerInfoKHR.pNext的中包含VkVideoEncodeH264RateControlLayerInfoKHR，用来指明对应 rate control layer的H.264-specific rate control 参数
+			*/
+			VkVideoEncodeH264RateControlLayerInfoKHR videoEncodeH264RateControlLayerInfoKHR{};
+			videoEncodeH264RateControlLayerInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义这里使用非法值
+			videoEncodeH264RateControlLayerInfoKHR.pNext = nullptr;
+			videoEncodeH264RateControlLayerInfoKHR.useMinQp = VK_TRUE;//指定是否rate control 确定的QP值是否要限制最小值为minQp
+			videoEncodeH264RateControlLayerInfoKHR.minQp = VkVideoEncodeH264QpKHR{.qpI = 0 /*为用于 I pictures 的QP值*/ ,.qpP = 0/*为用于 P pictures 的QP值*/, .qpB = 0 /*为用于 B pictures 的QP值*/ };//指定每个picture 类型的QP值下界，在useMinQp 为VK_TRUE时有效
+			videoEncodeH264RateControlLayerInfoKHR.useMaxQp = VK_FALSE;//指定是否rate control 确定的QP值是否要限制最大值为maxQp
+			videoEncodeH264RateControlLayerInfoKHR.maxQp = VkVideoEncodeH264QpKHR{ .qpI = 0 /*为用于 I pictures 的QP值*/ ,.qpP = 0/*为用于 P pictures 的QP值*/, .qpB = 0 /*为用于 B pictures 的QP值*/ };//指定每个picture 类型的QP值上界，在useMaxQp 为VK_TRUE时有效
+			videoEncodeH264RateControlLayerInfoKHR.useMaxFrameSize = 1;//指明是否 rate control algorithm 使用该值作为每个picture类型的编码的frame大小的上界
+			videoEncodeH264RateControlLayerInfoKHR.maxFrameSize = VkVideoEncodeH264FrameSizeKHR{ .frameISize = 1/*为用于 I pictures 的字节数大小*/,.framePSize = 1/*为用于 P pictures 的字节数大小*/,.frameBSize = 1 /*为用于 B pictures 的字节数大小*/ };//指定每个picture 类型的编码的frame大小的上界，在useMaxFrameSize 为VK_TRUE时有效
+			/*
+			VkVideoEncodeH264RateControlLayerInfoKHR有效用法:
+			1.如果useMinQp 为VK_TRUE，则minQp.qpI, minQp.qpP, minQp.qpB 必须在调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入使用的video profile返回的VkVideoEncodeH264CapabilitiesKHR::minQp 和 VkVideoEncodeH264CapabilitiesKHR::maxQp 之间
+			2.如果useMaxQp 为VK_TRUE，则maxQp.qpI, maxQp.qpP, maxQp.qpB 必须在调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入使用的video profile返回的VkVideoEncodeH264CapabilitiesKHR::minQp 和 VkVideoEncodeH264CapabilitiesKHR::maxQp 之间
+			3.如果useMinQp 为VK_TRUE，且调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入使用的video profile返回的VkVideoEncodeH264CapabilitiesKHR::flags 中不包含VK_VIDEO_ENCODE_H264_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_KHR，则minQp.qpI, minQp.qpP, minQp.qpB 都必须相同
+			4.如果useMaxQp 为VK_TRUE，且调用vkGetPhysicalDeviceVideoCapabilitiesKHR传入使用的video profile返回的VkVideoEncodeH264CapabilitiesKHR::flags 中不包含VK_VIDEO_ENCODE_H264_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_KHR，则maxQp.qpI, maxQp.qpP, maxQp.qpB 都必须相同
+			5.如果useMinQp 以及 useMaxQp 都为VK_TRUE，则minQp.qpI, minQp.qpP, minQp.qpB 必须对应小于等于maxQp.qpI, maxQp.qpP, maxQp.qpB
+			*/
+
+
+
+			/*
+			GOP Remaining Frames
+			只有对给定的video profile的VkVideoEncodeH264CapabilitiesKHR::requiresGopRemainingFrames 为VK_TRUE时，包含在VkVideoBeginCodingInfoKHR.pNext中的VkVideoEncodeH264GopRemainingFrameInfoKHR::useGopRemainingFrames为VK_TRUE才有效
+			*/
+			VkVideoEncodeH264GopRemainingFrameInfoKHR  videoEncodeH264GopRemainingFrameInfoKHR{};
+			videoEncodeH264GopRemainingFrameInfoKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;
+			videoEncodeH264GopRemainingFrameInfoKHR.pNext = nullptr;
+			videoEncodeH264GopRemainingFrameInfoKHR.useGopRemainingFrames = VK_TRUE;//指定 rate control algorithm 是否使用gopRemainingI，gopRemainingP，gopRemainingB,如果为VK_FALSE,则不使用，这些参数被忽略
+			videoEncodeH264GopRemainingFrameInfoKHR.gopRemainingI = 1;//为在下一次 video encode operation 执行前 rate control algorithm 应该认为的GOP中剩余的 I frames 的数量
+			videoEncodeH264GopRemainingFrameInfoKHR.gopRemainingP = 1;//为在下一次 video encode operation 执行前 rate control algorithm 应该认为的GOP中剩余的 P frames 的数量
+			videoEncodeH264GopRemainingFrameInfoKHR.gopRemainingB = 1;//为在下一次 video encode operation 执行前 rate control algorithm 应该认为的GOP中剩余的 B frames 的数量
+
+		}
+
+
+		//H.264 Encode Requirements  参见p3599
+		{
+			/*
+			要支持H.265 encoding，则physical device至少要含有一个支持VK_VIDEO_CODEC_OPERATION_ENCODE_H264_BIT_KHR的队列族，见vkGetPhysicalDeviceQueueFamilyProperties2返回的VkQueueFamilyVideoPropertiesKHR::videoCodecOperations
+
+			除此之外，还要求physical device要必须支持指定的需要，具体见p3599
+			Table 57. Required Video Std Header Versions
+			Table 58. Required Video Capabilities
+
+			*/
+		}
+
 	}
+
+
+
 
 }
 

@@ -679,5 +679,23 @@ typedef struct VkVideoEncodeH264SessionParametersFeedbackInfoKHR {
 	VkBool32           hasStdPPSOverrides;
 } VkVideoEncodeH264SessionParametersFeedbackInfoKHR;
 
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264FrameSizeKHR {
+	uint32_t    frameISize;
+	uint32_t    framePSize;
+	uint32_t    frameBSize;
+} VkVideoEncodeH264FrameSizeKHR;
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264RateControlLayerInfoKHR {
+	VkStructureType                  sType;
+	const void* pNext;
+	VkBool32                         useMinQp;
+	VkVideoEncodeH264QpKHR           minQp;
+	VkBool32                         useMaxQp;
+	VkVideoEncodeH264QpKHR           maxQp;
+	VkBool32                         useMaxFrameSize;
+	VkVideoEncodeH264FrameSizeKHR    maxFrameSize;
+} VkVideoEncodeH264RateControlLayerInfoKHR;
 
 NS_TEST_END

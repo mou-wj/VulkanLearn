@@ -636,4 +636,48 @@ typedef struct VkVideoEncodeH265PictureInfoKHR {
 	const VkVideoEncodeH265NaluSliceSegmentInfoKHR* pNaluSliceSegmentEntries;
 	const StdVideoEncodeH265PictureInfo* pStdPictureInfo;
 } VkVideoEncodeH265PictureInfoKHR;
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264QpKHR {
+	int32_t    qpI;
+	int32_t    qpP;
+	int32_t    qpB;
+} VkVideoEncodeH264QpKHR;
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264QualityLevelPropertiesKHR {
+	VkStructureType                         sType;
+	void* pNext;
+	VkVideoEncodeH264RateControlFlagsKHR    preferredRateControlFlags;
+	uint32_t                                preferredGopFrameCount;
+	uint32_t                                preferredIdrPeriod;
+	uint32_t                                preferredConsecutiveBFrameCount;
+	uint32_t                                preferredTemporalLayerCount;
+	VkVideoEncodeH264QpKHR                  preferredConstantQp;
+	uint32_t                                preferredMaxL0ReferenceCount;
+	uint32_t                                preferredMaxL1ReferenceCount;
+	VkBool32                                preferredStdEntropyCodingModeFlag;
+} VkVideoEncodeH264QualityLevelPropertiesKHR;
+
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264SessionParametersGetInfoKHR {
+	VkStructureType    sType;
+	const void* pNext;
+	VkBool32           writeStdSPS;
+	VkBool32           writeStdPPS;
+	uint32_t           stdSPSId;
+	uint32_t           stdPPSId;
+} VkVideoEncodeH264SessionParametersGetInfoKHR;
+
+
+// Provided by VK_KHR_video_encode_h264
+typedef struct VkVideoEncodeH264SessionParametersFeedbackInfoKHR {
+	VkStructureType    sType;
+	void* pNext;
+	VkBool32           hasStdSPSOverrides;
+	VkBool32           hasStdPPSOverrides;
+} VkVideoEncodeH264SessionParametersFeedbackInfoKHR;
+
+
 NS_TEST_END

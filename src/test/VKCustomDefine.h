@@ -698,4 +698,67 @@ typedef struct VkVideoEncodeH264RateControlLayerInfoKHR {
 	VkVideoEncodeH264FrameSizeKHR    maxFrameSize;
 } VkVideoEncodeH264RateControlLayerInfoKHR;
 
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265QpKHR {
+	int32_t    qpI;
+	int32_t    qpP;
+	int32_t    qpB;
+} VkVideoEncodeH265QpKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265QualityLevelPropertiesKHR {
+	VkStructureType                         sType;
+	void* pNext;
+	VkVideoEncodeH265RateControlFlagsKHR    preferredRateControlFlags;
+	uint32_t                                preferredGopFrameCount;
+	uint32_t                                preferredIdrPeriod;
+	uint32_t                                preferredConsecutiveBFrameCount;
+	uint32_t                                preferredSubLayerCount;
+	VkVideoEncodeH265QpKHR                  preferredConstantQp;
+	uint32_t                                preferredMaxL0ReferenceCount;
+	uint32_t                                preferredMaxL1ReferenceCount;
+} VkVideoEncodeH265QualityLevelPropertiesKHR;
+
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265SessionParametersGetInfoKHR {
+	VkStructureType    sType;
+	const void* pNext;
+	VkBool32           writeStdVPS;
+	VkBool32           writeStdSPS;
+	VkBool32           writeStdPPS;
+	uint32_t           stdVPSId;
+	uint32_t           stdSPSId;
+	uint32_t           stdPPSId;
+} VkVideoEncodeH265SessionParametersGetInfoKHR;
+
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265SessionParametersFeedbackInfoKHR {
+	VkStructureType    sType;
+	void* pNext;
+	VkBool32           hasStdVPSOverrides;
+	VkBool32           hasStdSPSOverrides;
+	VkBool32           hasStdPPSOverrides;
+} VkVideoEncodeH265SessionParametersFeedbackInfoKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265FrameSizeKHR {
+	uint32_t    frameISize;
+	uint32_t    framePSize;
+	uint32_t    frameBSize;
+} VkVideoEncodeH265FrameSizeKHR;
+
+// Provided by VK_KHR_video_encode_h265
+typedef struct VkVideoEncodeH265RateControlLayerInfoKHR {
+	VkStructureType                  sType;
+	const void* pNext;
+	VkBool32                         useMinQp;
+	VkVideoEncodeH265QpKHR           minQp;
+	VkBool32                         useMaxQp;
+	VkVideoEncodeH265QpKHR           maxQp;
+	VkBool32                         useMaxFrameSize;
+	VkVideoEncodeH265FrameSizeKHR    maxFrameSize;
+} VkVideoEncodeH265RateControlLayerInfoKHR;
+
 NS_TEST_END

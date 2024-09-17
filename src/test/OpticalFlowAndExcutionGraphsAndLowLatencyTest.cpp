@@ -642,4 +642,129 @@ void OpticalFlowAndExcutionGraphsAndLowLatencyTest::ExecutionGraphsTest()
 }
 
 
+void OpticalFlowAndExcutionGraphsAndLowLatencyTest::LowLatency2Test()
+{
+	//Latency Reduction  参见p3701
+	{
+		VkSwapchainKHR swapchainKHR{/*假设这是一个有效的VkSwapChainKHR*/ };
+
+		//开启swapchain上的 low latency mode
+		VkLatencySleepModeInfoNV latencySleepModeInfoNV{};
+		latencySleepModeInfoNV.sType = VK_STRUCTURE_TYPE_LATENCY_SLEEP_MODE_INFO_NV;
+		latencySleepModeInfoNV.pNext = nullptr;
+		latencySleepModeInfoNV.lowLatencyMode = VK_TRUE;//指明是否开启low latency mode
+		latencySleepModeInfoNV.lowLatencyBoost = VK_TRUE;//允许应用提示GPU提升性能以在逐渐提高的能量消耗中增加对latency的节省
+		latencySleepModeInfoNV.minimumIntervalUs = 1;//是对设置的swapchain的vkQueuePresentKHR调用之间的毫秒间隔
+
+		vkSetLatencySleepModeNV(device, swapchainKHR, &latencySleepModeInfoNV);
+
+
+		//提供同步原语用于延迟 lower latency的host CPU work
+		VkLatencySleepInfoNV latencySleepInfoNV{};
+		latencySleepInfoNV.sType = VK_STRUCTURE_TYPE_LATENCY_SLEEP_INFO_NV;
+		latencySleepInfoNV.pNext = nullptr;
+		latencySleepInfoNV.signalSemaphore = VkSemaphore{/*假设这是一个有效的VkSemaphore*/ };//是一个要触发的semaphore指明应用应该消耗input sampling work，必须为一个timeline semaphore
+		latencySleepInfoNV.value = 0;//指明消耗sampling work 的 signalSemaphore的值
+
+		vkLatencySleepNV(device, swapchainKHR, &latencySleepInfoNV);
+
+
+
+		//应用在产生frame的不同阶段提供了时间戳
+		VkSetLatencyMarkerInfoNV setLatencyMarkerInfoNV{};
+		setLatencyMarkerInfoNV.sType = VK_STRUCTURE_TYPE_SET_LATENCY_MARKER_INFO_NV;
+		setLatencyMarkerInfoNV.pNext = nullptr;
+		setLatencyMarkerInfoNV.presentID = 0;//为用户提供的一个值，用于将时间戳关联到一个vkQueuePresentKHR 命令，对应VkPresentIdKHR::pPresentIds中的
+		setLatencyMarkerInfoNV.marker = VK_LATENCY_MARKER_INPUT_SAMPLE_NV;//VkLatencyMarkerNV值，为记录的时间戳的类型
+		/*
+		VkLatencyMarkerNV:
+		VK_LATENCY_MARKER_SIMULATION_START_NV : 应该在每个frame的simulation执行开始之前调用，该调用之后为vkLatencySleepNV
+		VK_LATENCY_MARKER_SIMULATION_END_NV : 应该在每个frame的simulation执行结束时调用
+		VK_LATENCY_MARKER_RENDERSUBMIT_START_NV : 应该在每个frame的渲染提交执行开始时调用，不能用与异步渲染
+		VK_LATENCY_MARKER_RENDERSUBMIT_END_NV : 应该在每个frame的渲染提交执行结束时调用
+		VK_LATENCY_MARKER_PRESENT_START_NV : 应该在vkQueuePresentKHR 之前调用
+		VK_LATENCY_MARKER_PRESENT_END_NV : 应该在vkQueuePresentKHR 返回时调用
+		VK_LATENCY_MARKER_INPUT_SAMPLE_NV : 应该在应用获取input数据之前调用
+		VK_LATENCY_MARKER_TRIGGER_FLASH_NV : 应该在当一个鼠标点击时间发生时的VK_LATENCY_MARKER_SIMULATION_START_NV 以及 VK_LATENCY_MARKER_SIMULATION_END_NV之间的任何时候调用
+
+		*/
+
+		vkSetLatencyMarkerNV(device, swapchainKHR, &setLatencyMarkerInfoNV);
+
+
+		//获取一个包含最新的 latency数据的数组
+		std::vector<VkLatencyTimingsFrameReportNV> latencyTimingsFrameReportNVs{};
+
+		VkGetLatencyMarkerInfoNV getLatencyMarkerInfoNV{};
+		getLatencyMarkerInfoNV.sType = VK_STRUCTURE_TYPE_GET_LATENCY_MARKER_INFO_NV;
+		getLatencyMarkerInfoNV.pNext = nullptr;
+		getLatencyMarkerInfoNV.timingCount = 0;//为可用的或者已经查询过的 latency data关联的先前frame的数量
+		getLatencyMarkerInfoNV.pTimings = nullptr;//为NULL或者 VkLatencyTimingsFrameReportNV 数组指针
+
+		vkGetLatencyTimingsNV(device, swapchainKHR, &getLatencyMarkerInfoNV);
+		latencyTimingsFrameReportNVs.resize(getLatencyMarkerInfoNV.timingCount);
+		getLatencyMarkerInfoNV.pTimings = latencyTimingsFrameReportNVs.data();
+
+		vkGetLatencyTimingsNV(device, swapchainKHR, &getLatencyMarkerInfoNV);//假设成功返回了一个结果
+
+		VkLatencyTimingsFrameReportNV &latencyTimingsFrameReportNV = latencyTimingsFrameReportNVs[0];
+		latencyTimingsFrameReportNV.sType = VK_STRUCTURE_TYPE_LATENCY_TIMINGS_FRAME_REPORT_NV;
+		latencyTimingsFrameReportNV.pNext = nullptr;
+		latencyTimingsFrameReportNV.presentID = 0;//为用户提供的一个值，用于将时间戳关联到一个vkQueuePresentKHR 命令，对应VkPresentIdKHR::pPresentIds中的
+		latencyTimingsFrameReportNV.inputSampleTimeUs = 0;//为调用vkSetLatencyMarkerNV设置为VK_LATENCY_MARKER_INPUT_SAMPLE_NV时返回的时间戳的值
+		latencyTimingsFrameReportNV.simStartTimeUs = 0;//为调用vkSetLatencyMarkerNV设置为 VK_LATENCY_MARKER_SIMULATION_START_NV时返回的时间戳的值
+		latencyTimingsFrameReportNV.simEndTimeUs = 0;//为调用vkSetLatencyMarkerNV设置为  VK_LATENCY_MARKER_SIMULATION_END_NV时返回的时间戳的值
+		latencyTimingsFrameReportNV.renderSubmitStartTimeUs = 0;//为调用vkSetLatencyMarkerNV设置为  VK_LATENCY_MARKER_RENDERSUBMIT_START_NV时返回的时间戳的值
+		latencyTimingsFrameReportNV.renderSubmitEndTimeUs = 0;//为调用vkSetLatencyMarkerNV设置为 VK_LATENCY_MARKER_RENDERSUBMIT_END_NV时返回的时间戳的值
+		latencyTimingsFrameReportNV.presentStartTimeUs = 0;//为调用vkSetLatencyMarkerNV设置为 VK_LATENCY_MARKER_PRESENT_START_NV时返回的时间戳的值
+		latencyTimingsFrameReportNV.presentEndTimeUs = 0;//为调用vkSetLatencyMarkerNV设置为VK_LATENCY_MARKER_PRESENT_END_NV时返回的时间戳的值
+		latencyTimingsFrameReportNV.driverStartTimeUs = 0;//为该frame的第一个vkQueueSubmit调用时返回的时间戳的值
+		latencyTimingsFrameReportNV.driverEndTimeUs = 0;//为Vulkan Driver上处理的最后一个 vkQueueSubmit处理完后返回的时间戳的值
+		latencyTimingsFrameReportNV.osRenderQueueStartTimeUs = 0;//为Vulkan Driver上处理的最后一个 vkQueueSubmit处理完后返回的时间戳的值
+		latencyTimingsFrameReportNV.osRenderQueueEndTimeUs = 0;//为第一个提交抵达GPU时返回的时间戳的值
+		latencyTimingsFrameReportNV.gpuRenderStartTimeUs = 0;//为第一个提交抵达GPU时返回的时间戳的值
+		latencyTimingsFrameReportNV.gpuRenderEndTimeUs = 0;//为该frame在GPU上的最后一个提交完成时返回的时间戳的值
+
+
+		VkLatencySubmissionPresentIdNV latencySubmissionPresentIdNV{};//用于vkQueueSubmit
+		latencySubmissionPresentIdNV.sType = VK_STRUCTURE_TYPE_LATENCY_SUBMISSION_PRESENT_ID_NV;
+		latencySubmissionPresentIdNV.pNext = nullptr;
+		latencySubmissionPresentIdNV.presentID = 0;//用于将vkQueueSubmit 关联到一个之前的vkQueuePresentKHR ，通过对应到VkPresentIdKHR::pPresentIds中的值.
+
+
+		//应用可以标记一个queue 为 Out of Band的，即当对 latency evaluation时所有 在该队列上执行的vkQueueSubmit会被忽略
+		VkOutOfBandQueueTypeInfoNV outOfBandQueueTypeInfoNV{};
+		outOfBandQueueTypeInfoNV.sType = VK_STRUCTURE_TYPE_OUT_OF_BAND_QUEUE_TYPE_INFO_NV;
+		outOfBandQueueTypeInfoNV.pNext = nullptr;
+		outOfBandQueueTypeInfoNV.queueType = VK_OUT_OF_BAND_QUEUE_TYPE_PRESENT_NV;//VkOutOfBandQueueTypeNV值，指明标记为Out of Band的queue的用途
+		/*
+		VkOutOfBandQueueTypeNV:
+		VK_OUT_OF_BAND_QUEUE_TYPE_RENDER_NV : 指明该work会被提交到该queue
+		VK_OUT_OF_BAND_QUEUE_TYPE_PRESENT_NV : 指明该queue将用于present
+
+		*/
+
+		vkQueueNotifyOutOfBandNV(VkQueue{/*假设这是一个有效的VkQueue*/ }, &outOfBandQueueTypeInfoNV);
+
+
+
+		//允许 low latency mode 用于swapchain，在VkSwapchainCreateInfoKHR.pNext中包含一个VkSwapchainLatencyCreateInfoNV
+		VkSwapchainLatencyCreateInfoNV swapchainLatencyCreateInfoNV{};
+		swapchainLatencyCreateInfoNV.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_LATENCY_CREATE_INFO_NV;
+		swapchainLatencyCreateInfoNV.pNext = nullptr;
+		swapchainLatencyCreateInfoNV.latencyModeEnable = VK_TRUE;//指明创建的swapchain是否使用low latency mode
+
+
+		VkLatencySurfaceCapabilitiesNV  latencySurfaceCapabilitiesNV{};//该结构提用于返回优化的用于low latency mode的 present mode
+		latencySurfaceCapabilitiesNV.sType = VK_STRUCTURE_TYPE_LATENCY_SURFACE_CAPABILITIES_NV;
+		latencySurfaceCapabilitiesNV.pNext = nullptr;
+		latencySurfaceCapabilitiesNV.presentModeCount = 1;//为pPresentModes 中元素个数
+		VkPresentModeKHR presenModeKHR = VK_PRESENT_MODE_MAILBOX_KHR;
+		latencySurfaceCapabilitiesNV.pPresentModes = &presenModeKHR;//一组VkPresentModeKHR 数组指针，指明提供的用于low latency mode的优化的present mode
+	}
+
+
+}
+
+
 NS_TEST_END

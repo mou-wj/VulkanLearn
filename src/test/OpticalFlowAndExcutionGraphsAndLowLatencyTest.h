@@ -17,7 +17,8 @@ private:
 	void OpticalFlowTest();
 	//chater 44
 	void ExecutionGraphsTest();
-
+	//chater 45
+	void LowLatency2Test();
 
 };
 TEST_REGISTER(OpticalFlowAndExcutionGraphsAndLowLatencyTest)

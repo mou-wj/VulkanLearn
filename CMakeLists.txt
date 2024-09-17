@@ -42,67 +42,67 @@ else()
 endif()
 
 #glslang 3rd
-set(Glslang_INSTALL_DIR "D:/GlslangInstall")
-if(NOT EXISTS ${Glslang_INSTALL_DIR})
-	message(FATAL_ERROR "glslang not found in ${Glslang_INSTALL_DIR}")
-else()
-	
-	if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-		set(BuildType Debug)
-	else() 
-		set(BuildType Release)
-	endif()
-	list(APPEND IncludeDir3rd ${Glslang_INSTALL_DIR}/${BuildType}/include/glslang)
-	#list(APPEND LibDir3rd ${Glslang_INSTALL_DIR}/lib)
-	file(GLOB GlslangLibs ${Glslang_INSTALL_DIR}/${BuildType}/lib/*.lib)
-	list(APPEND Libs3rd ${GlslangLibs})
-	#message(FATAL_ERROR "glslng include ${Glslang_INSTALL_DIR}/${BuildType}/include/glslang")
-	#message(FATAL_ERROR "glslng libs ${GlslangLibs}")
-
-
-endif()
+#set(Glslang_INSTALL_DIR "D:/GlslangInstall")
+#if(NOT EXISTS ${Glslang_INSTALL_DIR})
+#	message(FATAL_ERROR "glslang not found in ${Glslang_INSTALL_DIR}")
+#else()
+#	
+#	if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+#		set(BuildType Debug)
+#	else() 
+#		set(BuildType Release)
+#	endif()
+#	list(APPEND IncludeDir3rd ${Glslang_INSTALL_DIR}/${BuildType}/include/glslang)
+#	#list(APPEND LibDir3rd ${Glslang_INSTALL_DIR}/lib)
+#	file(GLOB GlslangLibs ${Glslang_INSTALL_DIR}/${BuildType}/lib/*.lib)
+#	list(APPEND Libs3rd ${GlslangLibs})
+#	#message(FATAL_ERROR "glslng include ${Glslang_INSTALL_DIR}/${BuildType}/include/glslang")
+#	#message(FATAL_ERROR "glslng libs ${GlslangLibs}")
+#
+#
+#endif()
 
 #spirvcross 3rd
-set(SpirvCross_INSTALL_DIR "D:/SpirvCrossInstall")
-if(NOT EXISTS ${SpirvCross_INSTALL_DIR})
-	message(FATAL_ERROR "spriv_cross not found in ${SpirvCross_INSTALL_DIR}")
-else()
-	
-	if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-		set(BuildType x64-Debug)
-	else() 
-		set(BuildType x64-Release)
-	endif()
-	list(APPEND IncludeDir3rd ${SpirvCross_INSTALL_DIR}/${BuildType}/include/spirv_cross)
-	#list(APPEND LibDir3rd ${Glslang_INSTALL_DIR}/lib)
-	file(GLOB SprivCrossLibs ${SpirvCross_INSTALL_DIR}/${BuildType}/lib/*.lib)
-	list(APPEND Libs3rd ${SprivCrossLibs})
-	#message(FATAL_ERROR "sprivcross libs ${SprivCrossLibs}")
-
-
-endif()
+#set(SpirvCross_INSTALL_DIR "D:/SpirvCrossInstall")
+#if(NOT EXISTS ${SpirvCross_INSTALL_DIR})
+#	message(FATAL_ERROR "spriv_cross not found in ${SpirvCross_INSTALL_DIR}")
+#else()
+#	
+#	if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+#		set(BuildType x64-Debug)
+#	else() 
+#		set(BuildType x64-Release)
+#	endif()
+#	list(APPEND IncludeDir3rd ${SpirvCross_INSTALL_DIR}/${BuildType}/include/spirv_cross)
+#	#list(APPEND LibDir3rd ${Glslang_INSTALL_DIR}/lib)
+#	file(GLOB SprivCrossLibs ${SpirvCross_INSTALL_DIR}/${BuildType}/lib/*.lib)
+#	list(APPEND Libs3rd ${SprivCrossLibs})
+#	#message(FATAL_ERROR "sprivcross libs ${SprivCrossLibs}")
+#
+#
+#endif()
 
 #spirvtools 3rd
-set(SpirvTools_INSTALL_DIR "D:/SpirvToolsInstall")
-if(NOT EXISTS ${SpirvTools_INSTALL_DIR})
-	message(FATAL_ERROR "spriv_tools not found in ${SpirvTools_INSTALL_DIR}")
-else()
-	
-	if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-		set(BuildType x64-Debug)
-	else() 
-		set(BuildType x64-Release)
-	endif()
-	list(APPEND IncludeDir3rd ${SpirvTools_INSTALL_DIR}/${BuildType}/include/spirv_tools)
-	list(APPEND LibDir3rd ${Glslang_INSTALL_DIR}/lib)
-	#list(APPEND ${LibDir3rd} ${SpirvTools_INSTALL_DIR}/${BuildType}/lib )
-	#file(GLOB SprivToolsLibs ${SpirvTools_INSTALL_DIR}/${BuildType}/lib/*.lib)
-	set(SprivToolsLibDir ${SpirvTools_INSTALL_DIR}/${BuildType}/lib)
-	list(APPEND Libs3rd ${SprivToolsLibs} ${SprivToolsLibDir}/SPIRV-Tools.lib ${SprivToolsLibDir}/SPIRV-Tools-opt.lib)
-	#message(FATAL_ERROR "sprivcross libs ${SprivCrossLibs}")
-
-
-endif()
+#set(SpirvTools_INSTALL_DIR "D:/SpirvToolsInstall")
+#if(NOT EXISTS ${SpirvTools_INSTALL_DIR})
+#	message(FATAL_ERROR "spriv_tools not found in ${SpirvTools_INSTALL_DIR}")
+#else()
+#	
+#	if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+#		set(BuildType x64-Debug)
+#	else() 
+#		set(BuildType x64-Release)
+#	endif()
+#	list(APPEND IncludeDir3rd ${SpirvTools_INSTALL_DIR}/${BuildType}/include/spirv_tools)
+#	list(APPEND LibDir3rd ${Glslang_INSTALL_DIR}/lib)
+#	#list(APPEND ${LibDir3rd} ${SpirvTools_INSTALL_DIR}/${BuildType}/lib )
+#	#file(GLOB SprivToolsLibs ${SpirvTools_INSTALL_DIR}/${BuildType}/lib/*.lib)
+#	set(SprivToolsLibDir ${SpirvTools_INSTALL_DIR}/${BuildType}/lib)
+#	list(APPEND Libs3rd ${SprivToolsLibs} ${SprivToolsLibDir}/SPIRV-Tools.lib ${SprivToolsLibDir}/SPIRV-Tools-opt.lib)
+#	#message(FATAL_ERROR "sprivcross libs ${SprivCrossLibs}")
+#
+#
+#endif()
 
 
 file(GLOB_RECURSE SrcFiles ./src/*.cpp ./src/*.h ./src/*.c)

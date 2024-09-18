@@ -16,7 +16,8 @@ private:
 
 	//chater 46
 	void ExtendingVulkanTest();
-
+	//chater 47
+	void FeaturesTest();
 
 
 };

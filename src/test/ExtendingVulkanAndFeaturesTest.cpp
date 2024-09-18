@@ -202,7 +202,7 @@ void ExtendingVulkanAndFeatuesTest::FeaturesTest()
 	Features描述了不是所有实现都支持的功能。是物理设备的特性，且是可选的，使用前必须显式开启。
 	*/
 
-	
+
 
 
 	//查询支持的features  参见p3731
@@ -273,7 +273,7 @@ void ExtendingVulkanAndFeatuesTest::FeaturesTest()
 	//等价于vkGetPhysicalDeviceFeaturesKHR
 	vkGetPhysicalDeviceFeatures2(physicalDevice, &physicalDeviceFeatures2);//假设正确返回了结果
 	physicalDeviceFeatures2.features = physicalDeviceFeatures;//为一个VkPhysicalDeviceFeatures
-	
+
 
 
 	//VkPhysicalDeviceVulkan11Features ,  可以包含在VkPhysicalDeviceFeatures2.pNext中
@@ -352,21 +352,192 @@ void ExtendingVulkanAndFeatuesTest::FeaturesTest()
 	VkPhysicalDeviceVulkan13Features physicalDeviceVulkan13Features{};
 	physicalDeviceVulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
 	physicalDeviceVulkan13Features.pNext = nullptr;
-	physicalDeviceVulkan13Features.robustImageAccess = VK_FALSE;
-	physicalDeviceVulkan13Features.inlineUniformBlock = VK_FALSE;
-	physicalDeviceVulkan13Features.descriptorBindingInlineUniformBlockUpdateAfterBind = VK_FALSE;
-	physicalDeviceVulkan13Features.pipelineCreationCacheControl = VK_FALSE;
-	physicalDeviceVulkan13Features.privateData = VK_FALSE;
-	physicalDeviceVulkan13Features.shaderDemoteToHelperInvocation = VK_FALSE;
-	physicalDeviceVulkan13Features.shaderTerminateInvocation = VK_FALSE;
-	physicalDeviceVulkan13Features.subgroupSizeControl = VK_FALSE;
-	physicalDeviceVulkan13Features.computeFullSubgroups = VK_FALSE;
-	physicalDeviceVulkan13Features.synchronization2 = VK_FALSE;
-	physicalDeviceVulkan13Features.textureCompressionASTC_HDR = VK_FALSE;
-	physicalDeviceVulkan13Features.shaderZeroInitializeWorkgroupMemory = VK_FALSE;
-	physicalDeviceVulkan13Features.dynamicRendering = VK_FALSE;
-	physicalDeviceVulkan13Features.shaderIntegerDotProduct = VK_FALSE;
-	physicalDeviceVulkan13Features.maintenance4 = VK_FALSE;
+	physicalDeviceVulkan13Features.robustImageAccess = VK_FALSE;//指明对image的访问会对image view的维度进行边界检查
+	physicalDeviceVulkan13Features.inlineUniformBlock = VK_FALSE;//指明是否支持inline uniform block descriptor，如果不支持，则不能使用 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+	physicalDeviceVulkan13Features.descriptorBindingInlineUniformBlockUpdateAfterBind = VK_FALSE;//指定是否支持在绑定一个descriptor set之后更新inline uniform block descriptors，如果不支持，则VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT不能和 VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK一起使用
+	physicalDeviceVulkan13Features.pipelineCreationCacheControl = VK_FALSE;//指定Vk*PipelineCreateInfo::flags 中是否可以包含VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT 或者 VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT，  VkPipelineCacheCreateInfo::flags 中是否可以包含 VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT
+	physicalDeviceVulkan13Features.privateData = VK_FALSE;//指明是否支持 private data，见p3202
+	physicalDeviceVulkan13Features.shaderDemoteToHelperInvocation = VK_FALSE;//指明是否支持SPIR-V DemoteToHelperInvocationEXT 能力
+	physicalDeviceVulkan13Features.shaderTerminateInvocation = VK_FALSE;//指明是否支持SPIR-V modules 使用 SPV_KHR_terminate_invocation 拓展
+	physicalDeviceVulkan13Features.subgroupSizeControl = VK_FALSE;//指明是否可以通过VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT 以及  VkPipelineShaderStageRequiredSubgroupSizeCreateInfo 来指定subgroup size
+	physicalDeviceVulkan13Features.computeFullSubgroups = VK_FALSE;//指明compute , mesh, 或者 task shaders是否可以通过VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT 来要求使用完整的subgroup
+	physicalDeviceVulkan13Features.synchronization2 = VK_FALSE;//指明是否支持 VK_KHR_synchronization2 拓展中说明的一组同步命令
+	physicalDeviceVulkan13Features.textureCompressionASTC_HDR = VK_FALSE;//指明是否支持所有的ASTC HDR 压缩纹理格式，如果支持，则如VK_FORMAT_ASTC_*** 的optimalTilingFeatures 必须包含VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT, VK_FORMAT_FEATURE_BLIT_SRC_BIT 以及 VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+	physicalDeviceVulkan13Features.shaderZeroInitializeWorkgroupMemory = VK_FALSE;//指明是否支持初始化一个Workgroup storage class类型的变量
+	physicalDeviceVulkan13Features.dynamicRendering = VK_FALSE;//指明是否可以通过使用 vkCmdBeginRendering 支持动态render pass instance
+	physicalDeviceVulkan13Features.shaderIntegerDotProduct = VK_FALSE;//指明shader module是否可以声明DotProductInputAllKHR, DotProductInput4x8BitKHR, DotProductInput4x8BitPackedKHR 以及 DotProductKHR 能力
+	physicalDeviceVulkan13Features.maintenance4 = VK_FALSE;//指明是否支持: 1.使用 VkPipelineLayout 创建一个对象后立即销毁该pipeline；2.LocalSizeId 可以替换 LocalSize;3.以相同参数创建的image的对齐要求相同;4.buffer以及image的大小内存要求不会大于另一个内存比该buffer或者image大的内存大小要求;5.在动态访问之前Push constants不必初始化;6.接口匹配规则允许大的output vec和小的input vec匹配，多的分量会被丢弃
+
+
+	// VkPhysicalDeviceVariablePointersFeatures  ，等价于 VkPhysicalDeviceVariablePointersFeaturesKHR ,  可以包含在VkPhysicalDeviceFeatures2.pNext中 
+	VkPhysicalDeviceVariablePointersFeatures  physicalDeviceVariablePointersFeatures{};
+	physicalDeviceVariablePointersFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES;
+	physicalDeviceVariablePointersFeatures.pNext = nullptr;
+	physicalDeviceVariablePointersFeatures.variablePointersStorageBuffer = VK_FALSE;//指明是否支持SPIR-V VariablePointersStorageBuffer 能力，如果支持，则可以在shader module中声明SPV_KHR_variable_pointers 拓展或者 VariablePointersStorageBuffer 能力
+	physicalDeviceVariablePointersFeatures.variablePointers = VK_FALSE;//指明是否支持SPIR-V VariablePointers 能力，如果支持，则可以在shader module中声明 VariablePointers 能力，如果该能力支持，则variablePointersStorageBuffer 也必须支持
+
+
+	// VkPhysicalDeviceMultiviewFeatures，等价于 VkPhysicalDeviceMultiviewFeaturesKHR ,  可以包含在VkPhysicalDeviceFeatures2.pNext中 
+	VkPhysicalDeviceMultiviewFeatures physicalDeviceMultiviewFeatures{};
+	physicalDeviceMultiviewFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES;
+	physicalDeviceMultiviewFeatures.pNext = nullptr;
+	physicalDeviceMultiviewFeatures.multiview = VK_FALSE;//指明在一个render pass中是否支持multiview 渲染，如果不支持，则每个subpass的view mask必须为0
+	physicalDeviceMultiviewFeatures.multiviewGeometryShader = VK_FALSE;//指明是否支持在一个含有geometry shaders的 render pass中进行multiview渲染，如果不支持，则含有view mask不为0的pipeline不能包含geometry shaders， 如果该特性支持，则multiview 必须支持
+	physicalDeviceMultiviewFeatures.multiviewTessellationShader = VK_FALSE;//指明是否支持在一个含有 tessellation shaders的 render pass中进行multiview渲染，如果不支持，则含有view mask不为0的pipeline不能包含 tessellation shaders， 如果该特性支持，则multiview 必须支持
+
+
+	//VkPhysicalDeviceShaderAtomicFloatFeaturesEXT ,   可以包含在VkPhysicalDeviceFeatures2.pNext中 
+	VkPhysicalDeviceShaderAtomicFloatFeaturesEXT physicalDeviceShaderAtomicFloatFeaturesEXT{};
+	physicalDeviceShaderAtomicFloatFeaturesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT_FEATURES_EXT;
+	physicalDeviceShaderAtomicFloatFeaturesEXT.pNext = nullptr;
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderBufferFloat32Atomics = VK_FALSE;//指明shader是否可以在storage buffer上执行32-bit 浮点load, store 以及 exchange atomic operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderBufferFloat32AtomicAdd = VK_FALSE;//指明shader是否可以在storage buffer上执行32-bit 浮点add atomic operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderBufferFloat64Atomics = VK_FALSE;//指明shader是否可以在storage buffer上执行64-bit 浮点load, store 以及 exchange atomic operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderBufferFloat64AtomicAdd = VK_FALSE;//指明shader是否可以在storage buffer上执行64-bit 浮点add atomic operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderSharedFloat32Atomics = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行32-bit 浮点load, store 以及 exchange atomic operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderSharedFloat32AtomicAdd = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行32-bit 浮点add atomic operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderSharedFloat64Atomics = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行64-bit 浮点load, store 以及 exchange atomic operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderSharedFloat64AtomicAdd = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行64-bit 浮点add atomic operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderImageFloat32Atomics = VK_FALSE;//指明shader是否可以执行32-bit 浮点load, store 以及 exchange atomic image operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.shaderImageFloat32AtomicAdd = VK_FALSE;//指明shader是否可以执行32-bit 浮点add atomic image operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.sparseImageFloat32Atomics = VK_FALSE;//指明shader是否可以在 sparse images上执行64-bit 浮点load, store 以及 exchange atomic operations
+	physicalDeviceShaderAtomicFloatFeaturesEXT.sparseImageFloat32AtomicAdd = VK_FALSE;//指明shader是否可以在 sparse images上执行64-bit 浮点add atomic operations
+
+
+	//VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT，  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT  physicalDeviceShaderAtomicFloat2FeaturesEXT{};
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT_2_FEATURES_EXT;
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.pNext = nullptr;
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderBufferFloat16Atomics = VK_FALSE;//指明shader是否可以在storage buffer上执行16-bit 浮点load, store 以及 exchange atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderBufferFloat16AtomicAdd = VK_FALSE;//指明shader是否可以在storage buffer上执行16-bit 浮点add atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderBufferFloat16AtomicMinMax = VK_FALSE;//指明shader是否可以在storage buffer上执行16-bit 浮点min 以及max atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderBufferFloat32AtomicMinMax = VK_FALSE;//指明shader是否可以在storage buffer上执行32-bit 浮点min 以及max atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderBufferFloat64AtomicMinMax = VK_FALSE;//指明shader是否可以在storage buffer上执行64-bit 浮点min 以及max atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderSharedFloat16Atomics = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行16-bit 浮点load, store 以及 exchange atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderSharedFloat16AtomicAdd = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行16-bit 浮点add atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderSharedFloat16AtomicMinMax = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行16-bit 浮点min 以及max atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderSharedFloat32AtomicMinMax = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行32-bit 浮点min 以及max atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderSharedFloat64AtomicMinMax = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行64-bit 浮点min 以及max atomic operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.shaderImageFloat32AtomicMinMax = VK_FALSE;//指明shader是否可以执行32-bit 浮点min 以及max atomic image operations
+	physicalDeviceShaderAtomicFloat2FeaturesEXT.sparseImageFloat32AtomicMinMax = VK_FALSE;//指明shader是否可以执行64-bit 浮点min 以及max atomic image operations
+
+
+	// VkPhysicalDeviceShaderAtomicInt64Features ，等价于 VkPhysicalDeviceShaderAtomicInt64FeaturesKHR ,  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceShaderAtomicInt64Features  physicalDeviceShaderAtomicInt64Features{};
+	physicalDeviceShaderAtomicInt64Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES;
+	physicalDeviceShaderAtomicInt64Features.pNext = nullptr;
+	physicalDeviceShaderAtomicInt64Features.shaderBufferInt64Atomics = VK_FALSE;//指明shader是否可以在buffer上执行64-bit 有符号以及无符号整数 atomic operations
+	physicalDeviceShaderAtomicInt64Features.shaderSharedInt64Atomics = VK_FALSE;//指明shader是否可以在shared 以及 payload memory上执行64-bit 有符号以及无符号整数 atomic operations
+
+
+	//VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT ，  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT physicalDeviceShaderImageAtomicInt64FeaturesEXT{};
+	physicalDeviceShaderImageAtomicInt64FeaturesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_ATOMIC_INT64_FEATURES_EXT;
+	physicalDeviceShaderImageAtomicInt64FeaturesEXT.pNext = nullptr;
+	physicalDeviceShaderImageAtomicInt64FeaturesEXT.shaderImageInt64Atomics = VK_FALSE;//指明shader是否可以在image上执行64-bit 有符号以及无符号整数 atomic operations
+	physicalDeviceShaderImageAtomicInt64FeaturesEXT.sparseImageInt64Atomics = VK_FALSE;//指明shader是否可以在sparse images上执行64-bit 有符号以及无符号整数 atomic operations
+
+
+	// VkPhysicalDevice8BitStorageFeatures ,等价于VkPhysicalDevice8BitStorageFeaturesKHR，  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDevice8BitStorageFeatures   physicalDevice8BitStorageFeatures{};
+	physicalDevice8BitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES;
+	physicalDevice8BitStorageFeatures.pNext = nullptr;
+	physicalDevice8BitStorageFeatures.storageBuffer8BitAccess = VK_FALSE;//指明是否StorageBuffer, ShaderRecordBufferKHR, 或者 PhysicalStorageBuffer storage class中有Block声明的对象是否能够含有8-bit的整数成员
+	physicalDevice8BitStorageFeatures.uniformAndStorageBuffer8BitAccess = VK_FALSE;//指明是否Uniform storage class中有Block声明的对象是否能够含有8-bit的整数成员
+	physicalDevice8BitStorageFeatures.storagePushConstant8 = VK_FALSE;//指明是否PushConstant storage class能够含有8-bit的整数成员
+
+
+	//VkPhysicalDevice16BitStorageFeatures ，等价于 VkPhysicalDevice16BitStorageFeaturesKHR ,  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDevice16BitStorageFeatures physicalDevice16BitStorageFeatures{};
+	physicalDevice16BitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES;
+	physicalDevice16BitStorageFeatures.pNext = nullptr;
+	physicalDevice16BitStorageFeatures.storageBuffer16BitAccess = VK_FALSE;//指明是否StorageBuffer, ShaderRecordBufferKHR, 或者 PhysicalStorageBuffer storage class中有Block声明的对象是否能够含有16-bit的整数以及浮点数成员
+	physicalDevice16BitStorageFeatures.uniformAndStorageBuffer16BitAccess = VK_FALSE;//指明是否Uniform storage class中有Block声明的对象是否能够含有16-bit的整数以及浮点数成员
+	physicalDevice16BitStorageFeatures.storagePushConstant16 = VK_FALSE;//指明是否PushConstant storage class能够含有16-bit的整数以及浮点数成员
+	physicalDevice16BitStorageFeatures.storageInputOutput16 = VK_FALSE;//指明是否 Input 以及 Output storage classes能够含有16-bit的整数以及浮点数成员
+
+
+
+	//VkPhysicalDeviceShaderFloat16Int8Features ，等价于VkPhysicalDeviceShaderFloat16Int8FeaturesKHR,  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceShaderFloat16Int8Features physicalDeviceShaderFloat16Int8Features{};
+	physicalDeviceShaderFloat16Int8Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT16_INT8_FEATURES;
+	physicalDeviceShaderFloat16Int8Features.pNext = nullptr;
+	physicalDeviceShaderFloat16Int8Features.shaderFloat16 = VK_FALSE;//指明shader code中是否支持16-bit浮点
+	physicalDeviceShaderFloat16Int8Features.shaderInt8 = VK_FALSE;//指明shader code中是否支持8-bit有符号以及无符号整数
+
+
+
+	//VkPhysicalDeviceShaderClockFeaturesKHR， 可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceShaderClockFeaturesKHR  physicalDeviceShaderClockFeaturesKHR{};
+	physicalDeviceShaderClockFeaturesKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义所以这里定义为非法值
+	physicalDeviceShaderClockFeaturesKHR.pNext = nullptr;
+	physicalDeviceShaderClockFeaturesKHR.shaderSubgroupClock = VK_FALSE;//指明shaders可以进行Subgroup scoped clock reads
+	physicalDeviceShaderClockFeaturesKHR.shaderDeviceClock = VK_FALSE;//指明shaders可以进行Device scoped clock reads.
+
+
+
+	//VkPhysicalDeviceSamplerYcbcrConversionFeatures ，等价于 VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR ,  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceSamplerYcbcrConversionFeatures  physicalDeviceSamplerYcbcrConversionFeatures{};
+	physicalDeviceSamplerYcbcrConversionFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES;
+	physicalDeviceSamplerYcbcrConversionFeatures.pNext = nullptr;
+	physicalDeviceSamplerYcbcrConversionFeatures.samplerYcbcrConversion = VK_FALSE;//指明是否支持sampler YCbCr conversion,如果不支持的话就不能使用sampler Y′CBCR conversion
+
+
+	//VkPhysicalDeviceProtectedMemoryFeatures ,  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceProtectedMemoryFeatures physicalDeviceProtectedMemoryFeatures{};
+	physicalDeviceProtectedMemoryFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES;
+	physicalDeviceProtectedMemoryFeatures.pNext = nullptr;
+	physicalDeviceProtectedMemoryFeatures.protectedMemory = VK_FALSE;//指明是否支持protected memory
+
+
+	//VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT  ,  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT physicalDeviceBlendOperationAdvancedFeaturesEXT{};
+	physicalDeviceBlendOperationAdvancedFeaturesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT;
+	physicalDeviceBlendOperationAdvancedFeaturesEXT.pNext = nullptr;
+	physicalDeviceBlendOperationAdvancedFeaturesEXT.advancedBlendCoherentOperations = VK_FALSE;//指明是否使用 advanced blend operations的blending操作保证按照primitive order 原子性执行。如果支持，则认为VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT 等同于VK_ACCESS_COLOR_ATTACHMENT_READ_BIT，不需要额外同步，如果不支持则需要memory dependencies
+
+
+	//VkPhysicalDeviceConditionalRenderingFeaturesEXT ,  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceConditionalRenderingFeaturesEXT physicalDeviceConditionalRenderingFeaturesEXT{};
+	physicalDeviceConditionalRenderingFeaturesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONDITIONAL_RENDERING_FEATURES_EXT;
+	physicalDeviceConditionalRenderingFeaturesEXT.pNext = nullptr;
+	physicalDeviceConditionalRenderingFeaturesEXT.conditionalRendering = VK_FALSE;//指明是否支持conditional rendering
+	physicalDeviceConditionalRenderingFeaturesEXT.inheritedConditionalRendering = VK_FALSE;//指明当在primary command buffer中激活conditional rendering时，是否可以执行secondary command buffer
+
+
+	// VkPhysicalDeviceShaderDrawParametersFeatures ，等价于 VkPhysicalDeviceShaderDrawParameterFeatures ,  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceShaderDrawParametersFeatures physicalDeviceShaderDrawParametersFeatures{};
+	physicalDeviceShaderDrawParametersFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES;
+	physicalDeviceShaderDrawParametersFeatures.pNext = nullptr;
+	physicalDeviceShaderDrawParametersFeatures.shaderDrawParameters = VK_FALSE;//指明是否支持SPIR-V DrawParameters 能力，如果不支持，则shader module中不能声明SPV_KHR_shader_draw_parameters 扩展以及 DrawParameters 能力。
+
+
+	//VkPhysicalDeviceMeshShaderFeaturesNV  ，  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceMeshShaderFeaturesNV physicalDeviceMeshShaderFeaturesNV{};
+	physicalDeviceMeshShaderFeaturesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
+	physicalDeviceMeshShaderFeaturesNV.pNext = nullptr;
+	physicalDeviceMeshShaderFeaturesNV.taskShader = VK_FALSE;//指明是否支持 task shaders，如果不支持，则不能使用VK_SHADER_STAGE_TASK_BIT_NV 以及 VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV
+	physicalDeviceMeshShaderFeaturesNV.meshShader = VK_FALSE;//指明是否支持 mesh shaders，如果不支持，则不能使用VK_SHADER_STAGE_MESH_BIT_NV 以及 VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV
+
+
+	//VkPhysicalDeviceMeshShaderFeaturesEXT ，  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceMeshShaderFeaturesEXT physicalDeviceMeshShaderFeaturesEXT{};
+	physicalDeviceMeshShaderFeaturesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT;
+	physicalDeviceMeshShaderFeaturesEXT.pNext = nullptr;
+	physicalDeviceMeshShaderFeaturesEXT.taskShader;//指明是否支持 task shaders，如果不支持，则不能使用VK_SHADER_STAGE_TASK_BIT_EXT 以及 VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT
+	physicalDeviceMeshShaderFeaturesEXT.meshShader;//指明是否支持 mesh shaders，如果不支持，则不能使用VK_SHADER_STAGE_MESH_BIT_EXT 以及 VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT
+	physicalDeviceMeshShaderFeaturesEXT.multiviewMeshShader;//指明是否支持在一个含有mesh shaders的 render pass中进行multiview渲染，如果不支持，则含有view mask不为0的pipeline不能包含mesh shaders，如果开启则VkPhysicalDeviceMultiviewFeaturesKHR::multiview 必须开启
+	physicalDeviceMeshShaderFeaturesEXT.primitiveFragmentShadingRateMeshShader;//指明mesh shaders中是否支持primitive fragment shading rate，如果开启则VkPhysicalDeviceFragmentShadingRateFeaturesKHR::primitiveFragmentShadingRate 必须开启
+	physicalDeviceMeshShaderFeaturesEXT.meshShaderQueries;//指明是否支持使用VK_QUERY_TYPE_MESH_PRIMITIVES_GENERATED_EXT 创建VkQueryPool以及 支持statistic queries能够包含VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT 以及VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT
+
+
+	//VkPhysicalDeviceMemoryDecompressionFeaturesNV ，  可以包含在VkPhysicalDeviceFeatures2.pNext中
+	VkPhysicalDeviceMemoryDecompressionFeaturesNV physicalDeviceMemoryDecompressionFeaturesNV{};
+	physicalDeviceMemoryDecompressionFeaturesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_PROPERTIES_NV;
+	physicalDeviceMemoryDecompressionFeaturesNV.pNext = nullptr;
+	physicalDeviceMemoryDecompressionFeaturesNV.memoryDecompression = VK_FALSE;//指明是否支持memory decompression
+
+
 
 }
 

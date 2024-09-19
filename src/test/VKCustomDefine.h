@@ -761,4 +761,60 @@ typedef struct VkVideoEncodeH265RateControlLayerInfoKHR {
 	VkVideoEncodeH265FrameSizeKHR    maxFrameSize;
 } VkVideoEncodeH265RateControlLayerInfoKHR;
 
+
+// Provided by VK_KHR_vertex_attribute_divisor
+typedef struct VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 vertexAttributeInstanceRateDivisor;
+	VkBool32 vertexAttributeInstanceRateZeroDivisor;
+} VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR;
+
+
+// Provided by VK_QNX_external_memory_screen_buffer
+typedef struct VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 screenBufferImport;
+} VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX;
+
+
+// Provided by VK_KHR_index_type_uint8
+typedef struct VkPhysicalDeviceIndexTypeUint8FeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 indexTypeUint8;
+} VkPhysicalDeviceIndexTypeUint8FeaturesKHR;
+
+
+// Provided by VK_EXT_legacy_vertex_attributes
+typedef struct VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 legacyVertexAttributes;
+} VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT;
+
+
+// Provided by VK_KHR_line_rasterization
+typedef struct VkPhysicalDeviceLineRasterizationFeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 rectangularLines;
+	VkBool32 bresenhamLines;
+	VkBool32 smoothLines;
+	VkBool32 stippledRectangularLines;
+	VkBool32 stippledBresenhamLines;
+	VkBool32 stippledSmoothLines;
+} VkPhysicalDeviceLineRasterizationFeaturesKHR;
+
+
+// Provided by VK_KHR_video_maintenance1
+typedef struct VkPhysicalDeviceVideoMaintenance1FeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 videoMaintenance1;
+} VkPhysicalDeviceVideoMaintenance1FeaturesKHR;
+
+
+
 NS_TEST_END

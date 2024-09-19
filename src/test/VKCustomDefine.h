@@ -816,5 +816,15 @@ typedef struct VkPhysicalDeviceVideoMaintenance1FeaturesKHR {
 } VkPhysicalDeviceVideoMaintenance1FeaturesKHR;
 
 
+// Provided by VK_NV_device_generated_commands_compute
+typedef struct VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 deviceGeneratedCompute;
+	VkBool32 deviceGeneratedComputePipelines;
+	VkBool32 deviceGeneratedComputeCaptureReplay;
+} VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV;
+
+
 
 NS_TEST_END

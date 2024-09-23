@@ -1883,7 +1883,10 @@ void ExtendingVulkanAndFeatuesTest::FeaturesTest()
 	//----------------------------------------------------------------------------
 
 
-	//
+	//Feature Requirements   在满足一定条件下，所有vulkan实现都必须要支持的特性详情  参见p3899 - p3907 ***
+
+
+	//Profile Features  支持 Roadmap 2022 profile的vulkan实现必须支持的特性详情   参见 p3907 - p3908 ;支持 Roadmap 2024 profile的vulkan实现必须支持的特性详情   参见 p3908
 
 
 

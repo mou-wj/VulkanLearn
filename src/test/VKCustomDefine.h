@@ -825,6 +825,209 @@ typedef struct VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV {
 	VkBool32 deviceGeneratedComputeCaptureReplay;
 } VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV;
 
+// Provided by VK_NV_ray_tracing_validation
+typedef struct VkPhysicalDeviceRayTracingValidationFeaturesNV {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 rayTracingValidation;
+} VkPhysicalDeviceRayTracingValidationFeaturesNV;
+
+
+// Provided by VK_KHR_maintenance6
+typedef struct VkPhysicalDeviceMaintenance6FeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 maintenance6;
+} VkPhysicalDeviceMaintenance6FeaturesKHR;
+
+// Provided by VK_EXT_nested_command_buffer
+typedef struct VkPhysicalDeviceNestedCommandBufferFeaturesEXT {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 nestedCommandBuffer;
+	VkBool32 nestedCommandBufferRendering;
+	VkBool32 nestedCommandBufferSimultaneousUse;
+} VkPhysicalDeviceNestedCommandBufferFeaturesEXT;
+
+//Provided by VK_KHR_shader_float_controls2
+typedef struct VkPhysicalDeviceShaderFloatControls2FeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 shaderFloatControls2;
+} VkPhysicalDeviceShaderFloatControls2FeaturesKHR;
+
+
+// Provided by VK_QCOM_image_processing2
+typedef struct VkPhysicalDeviceImageProcessing2FeaturesQCOM {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 textureBlockMatch2;
+} VkPhysicalDeviceImageProcessing2FeaturesQCOM;
+
+// Provided by VK_EXT_frame_boundary
+typedef struct VkPhysicalDeviceFrameBoundaryFeaturesEXT {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 frameBoundary;
+} VkPhysicalDeviceFrameBoundaryFeaturesEXT;
+
+// Provided by VK_NV_extended_sparse_address_space
+typedef struct VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 extendedSparseAddressSpace;
+} VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV;
+
+// Provided by VK_HUAWEI_cluster_culling_shader
+typedef struct VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 clusterShadingRate;
+} VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI;
+
+// Provided by VK_QCOM_filter_cubic_clamp
+typedef struct VkPhysicalDeviceCubicClampFeaturesQCOM {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 cubicRangeClamp;
+} VkPhysicalDeviceCubicClampFeaturesQCOM;
+
+// Provided by VK_QCOM_ycbcr_degamma
+typedef struct VkPhysicalDeviceYcbcrDegammaFeaturesQCOM {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 ycbcrDegamma;
+} VkPhysicalDeviceYcbcrDegammaFeaturesQCOM;
+
+// Provided by VK_QCOM_filter_cubic_weights
+typedef struct VkPhysicalDeviceCubicWeightsFeaturesQCOM {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 selectableCubicWeights;
+} VkPhysicalDeviceCubicWeightsFeaturesQCOM;
+
+
+// Provided by VK_NV_descriptor_pool_overallocation
+typedef struct VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 descriptorPoolOverallocation;
+} VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV;
+
+
+// Provided by VK_NV_per_stage_descriptor_set
+typedef struct VkPhysicalDevicePerStageDescriptorSetFeaturesNV {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 perStageDescriptorSet;
+	VkBool32 dynamicPipelineLayout;
+} VkPhysicalDevicePerStageDescriptorSetFeaturesNV;
+
+
+// Provided by VK_NV_cuda_kernel_launch
+typedef struct VkPhysicalDeviceCudaKernelLaunchFeaturesNV {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 cudaKernelLaunchFeatures;
+} VkPhysicalDeviceCudaKernelLaunchFeaturesNV;
+
+// Provided by VK_KHR_shader_maximal_reconvergence
+typedef struct VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 shaderMaximalReconvergence;
+} VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR;
+
+// Provided by VK_ANDROID_external_format_resolve
+typedef struct VkPhysicalDeviceExternalFormatResolveFeaturesANDROID {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 externalFormatResolve;
+} VkPhysicalDeviceExternalFormatResolveFeaturesANDROID;
+
+// Provided by VK_ARM_scheduling_controls
+typedef struct VkPhysicalDeviceSchedulingControlsFeaturesARM {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 schedulingControls;
+} VkPhysicalDeviceSchedulingControlsFeaturesARM;
+
+// Provided by VK_IMG_relaxed_line_rasterization
+typedef struct VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 relaxedLineRasterization;
+} VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG;
+
+// Provided by VK_ARM_render_pass_striped
+typedef struct VkPhysicalDeviceRenderPassStripedFeaturesARM {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 renderPassStriped;
+} VkPhysicalDeviceRenderPassStripedFeaturesARM;
+
+
+// Provided by VK_KHR_shader_subgroup_rotate
+typedef struct VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 shaderSubgroupRotate;
+	VkBool32 shaderSubgroupRotateClustered;
+} VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR;
+
+// Provided by VK_KHR_shader_expect_assume
+typedef struct VkPhysicalDeviceShaderExpectAssumeFeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 shaderExpectAssume;
+} VkPhysicalDeviceShaderExpectAssumeFeaturesKHR;
+
+// Provided by VK_KHR_dynamic_rendering_local_read
+typedef struct VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 dynamicRenderingLocalRead;
+} VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR;
+
+// Provided by VK_KHR_shader_quad_control
+typedef struct VkPhysicalDeviceShaderQuadControlFeaturesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 shaderQuadControl;
+} VkPhysicalDeviceShaderQuadControlFeaturesKHR;
+
+// Provided by VK_EXT_map_memory_placed
+typedef struct VkPhysicalDeviceMapMemoryPlacedFeaturesEXT {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 memoryMapPlaced;
+	VkBool32 memoryMapRangePlaced;
+	VkBool32 memoryUnmapReserve;
+} VkPhysicalDeviceMapMemoryPlacedFeaturesEXT;
+
+
+// Provided by VK_NV_shader_atomic_float16_vector
+typedef struct VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 shaderFloat16VectorAtomics;
+} VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV;
+
+
+// Provided by VK_NV_raw_access_chains
+typedef struct VkPhysicalDeviceRawAccessChainsFeaturesNV {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 shaderRawAccessChains;
+} VkPhysicalDeviceRawAccessChainsFeaturesNV;
+
+// Provided by VK_MESA_image_alignment_control
+typedef struct VkPhysicalDeviceImageAlignmentControlFeaturesMESA {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 imageAlignmentControl;
+} VkPhysicalDeviceImageAlignmentControlFeaturesMESA;
+
 
 
 NS_TEST_END

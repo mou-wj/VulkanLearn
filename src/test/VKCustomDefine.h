@@ -1029,5 +1029,13 @@ typedef struct VkPhysicalDeviceImageAlignmentControlFeaturesMESA {
 } VkPhysicalDeviceImageAlignmentControlFeaturesMESA;
 
 
+// Provided by VK_EXT_legacy_vertex_attributes
+typedef struct VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 nativeUnalignedPerformance;
+} VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT;
+
+
 
 NS_TEST_END

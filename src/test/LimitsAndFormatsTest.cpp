@@ -192,6 +192,75 @@ void LimitsAndFormatsTest::LimitsTest()
 
 
 
+    //VkPhysicalDeviceDiscardRectanglePropertiesEXT ,可以包含在VkPhysicalDeviceProperties2.pNext中
+    VkPhysicalDeviceDiscardRectanglePropertiesEXT physicalDeviceDiscardRectanglePropertiesEXT{};
+    physicalDeviceDiscardRectanglePropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT;
+    physicalDeviceDiscardRectanglePropertiesEXT.pNext = nullptr;
+    physicalDeviceDiscardRectanglePropertiesEXT.maxDiscardRectangles = 10;//为可以指定的active discard rectangles的最大数量
+
+
+    //VkPhysicalDeviceSampleLocationsPropertiesEXT ,可以包含在VkPhysicalDeviceProperties2.pNext中
+    VkPhysicalDeviceSampleLocationsPropertiesEXT physicalDeviceSampleLocationsPropertiesEXT{};
+    physicalDeviceSampleLocationsPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT;
+    physicalDeviceSampleLocationsPropertiesEXT.pNext = nullptr;
+    physicalDeviceSampleLocationsPropertiesEXT.sampleLocationSampleCounts;//为 VkSampleCountFlagBits 组合值位掩码，指明sample count支持自定义采样点位置
+    physicalDeviceSampleLocationsPropertiesEXT.maxSampleLocationGridSize;//为 sampleLocationSampleCounts 中支持的所有采样点可以有不同位置的 pixel grid 的最大大小
+    physicalDeviceSampleLocationsPropertiesEXT.sampleLocationCoordinateRange[2];//为支持的sample location coordinates的范围
+	physicalDeviceSampleLocationsPropertiesEXT.sampleLocationSubPixelBits;//sample locations的subpixel精度的bit数
+	physicalDeviceSampleLocationsPropertiesEXT.variableSampleLocations;//指定用于所有pipeline的且绑定到command buffer中subpass中的sample locations必须匹配，如果为VK_TRUE，则允许不同subpass的sample locations不同，否则必须相同
+
+
+    //VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT ,可以包含在VkPhysicalDeviceProperties2.pNext中
+    VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT physicalDeviceLegacyVertexAttributesPropertiesEXT{};
+    physicalDeviceLegacyVertexAttributesPropertiesEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义这里定义为非法值
+    physicalDeviceLegacyVertexAttributesPropertiesEXT.pNext = nullptr;
+    physicalDeviceLegacyVertexAttributesPropertiesEXT.nativeUnalignedPerformance = VK_FALSE;//指定相比于 aligned fetches，unaligned vertex fetches 不会造成明显的显示问题
+
+
+    //VkPhysicalDeviceExternalMemoryHostPropertiesEXT ,可以包含在VkPhysicalDeviceProperties2.pNext中
+    VkPhysicalDeviceExternalMemoryHostPropertiesEXT physicalDeviceExternalMemoryHostPropertiesEXT{};
+    physicalDeviceExternalMemoryHostPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT;
+    physicalDeviceExternalMemoryHostPropertiesEXT.pNext = nullptr;
+	physicalDeviceExternalMemoryHostPropertiesEXT.minImportedHostPointerAlignment = VK_FALSE;//指明可以导入到vulkan 对象的host指针的基地址以及大小的字节对齐要求，必须是2的指数
+
+
+    //VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX ,可以包含在VkPhysicalDeviceProperties2.pNext中
+    VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX physicalDeviceMultiviewPerViewAttributesPropertiesNVX{};
+    physicalDeviceMultiviewPerViewAttributesPropertiesNVX.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
+    physicalDeviceMultiviewPerViewAttributesPropertiesNVX.pNext = nullptr;
+    physicalDeviceMultiviewPerViewAttributesPropertiesNVX.perViewPositionAllComponents = VK_FALSE;//指明是否支持 per-view的位置的其他分量可以和X分量不同
+
+
+    //VkPhysicalDevicePointClippingProperties，等同于 VkPhysicalDevicePointClippingPropertiesKHR ,可以包含在VkPhysicalDeviceProperties2.pNext中
+    VkPhysicalDevicePointClippingProperties physicalDevicePointClippingProperties{};
+    physicalDevicePointClippingProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES;
+    physicalDevicePointClippingProperties.pNext = nullptr;
+	physicalDevicePointClippingProperties.pointClippingBehavior;//一个VkPointClippingBehavior 值指明支持的point clipping behavior
+
+
+    //VkPhysicalDeviceSubgroupProperties  ,可以包含在VkPhysicalDeviceProperties2.pNext中
+    VkPhysicalDeviceSubgroupProperties physicalDeviceSubgroupProperties{};
+    physicalDeviceSubgroupProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
+    physicalDeviceSubgroupProperties.pNext = nullptr;
+    physicalDeviceSubgroupProperties.subgroupSize;//为每个subgroup的默认调用次数，其他详细信息见p3930
+	physicalDeviceSubgroupProperties.supportedStages;//为 VkShaderStageFlagBits 组合值，描述支持subgroup scope的group operations的shader stages，其他详细信息见p3930
+	physicalDeviceSubgroupProperties.supportedOperations;//为 VkSubgroupFeatureFlagBits 组合值，描述device支持subgroup scope的subgroup operations 集合，其他详细信息见p3930
+    /*
+    VkSubgroupFeatureFlagBits:
+    VK_SUBGROUP_FEATURE_BASIC_BIT : 指明device将接受包含GroupNonUniform的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_VOTE_BIT : 指明device将接受包含GroupNonUniformVote的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_ARITHMETIC_BIT : 指明device将接受包含GroupNonUniformArithmetic的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_BALLOT_BIT specifies : 指明device将接受包含GroupNonUniformBallot的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_SHUFFLE_BIT : 指明device将接受包含GroupNonUniformShuffle的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT : 指明device将接受包含GroupNonUniformShuffleRelative的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_CLUSTERED_BIT : 指明device将接受包含GroupNonUniformClustered的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_QUAD_BIT : 指明device将接受包含GroupNonUniformQuad的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV : 指明device将接受包含GroupNonUniformPartitionedNV的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_ROTATE_BIT_KHR : 指明device将接受包含GroupNonUniformRotateKHR的SPIR-V shader modules。
+    VK_SUBGROUP_FEATURE_ROTATE_CLUSTERED_BIT_KHR : 指明device将接受使用OpGroupNonUniformRotateKHR的ClusterSize操作符的SPIR-V shader modules。    
+    
+    */
+    physicalDeviceSubgroupProperties.quadOperationsInAllStages;//指明是否所有stages支持 quad group operations，或者只是限制到fragment 以及 compute stages.
 
 
 

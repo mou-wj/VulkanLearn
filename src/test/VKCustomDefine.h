@@ -1036,6 +1036,22 @@ typedef struct VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT {
 	VkBool32 nativeUnalignedPerformance;
 } VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT;
 
+// Provided by VK_KHR_vertex_attribute_divisor
+typedef struct VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR {
+	VkStructureType sType;
+	void* pNext;
+	uint32_t maxVertexAttribDivisor;
+	VkBool32 supportsNonZeroFirstInstance;
+} VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR;
+
+// Provided by VK_KHR_maintenance6
+typedef struct VkPhysicalDeviceMaintenance6PropertiesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 blockTexelViewCompatibleMultipleLayers;
+	uint32_t maxCombinedImageSamplerDescriptorCount;
+	VkBool32 fragmentShadingRateClampCombinerInputs;
+} VkPhysicalDeviceMaintenance6PropertiesKHR;
 
 
 NS_TEST_END

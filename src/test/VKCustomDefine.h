@@ -1053,5 +1053,35 @@ typedef struct VkPhysicalDeviceMaintenance6PropertiesKHR {
 	VkBool32 fragmentShadingRateClampCombinerInputs;
 } VkPhysicalDeviceMaintenance6PropertiesKHR;
 
+// Provided by VK_KHR_cooperative_matrix
+typedef struct VkPhysicalDeviceCooperativeMatrixPropertiesKHR {
+	VkStructureType sType;
+	void* pNext;
+	VkShaderStageFlags cooperativeMatrixSupportedStages;
+} VkPhysicalDeviceCooperativeMatrixPropertiesKHR;
+
+// Provided by VK_KHR_line_rasterization
+typedef struct VkPhysicalDeviceLineRasterizationPropertiesKHR {
+	VkStructureType sType;
+	void* pNext;
+	uint32_t lineSubPixelPrecisionBits;
+} VkPhysicalDeviceLineRasterizationPropertiesKHR;
+
+
+// Provided by VK_KHR_portability_subset
+typedef struct VkPhysicalDevicePortabilitySubsetPropertiesKHR {
+	VkStructureType sType;
+	void* pNext;
+	uint32_t minVertexInputBindingStrideAlignment;
+} VkPhysicalDevicePortabilitySubsetPropertiesKHR;
+
+
+
+
+
+
+
+
+
 
 NS_TEST_END

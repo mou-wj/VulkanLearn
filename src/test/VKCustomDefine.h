@@ -1076,11 +1076,78 @@ typedef struct VkPhysicalDevicePortabilitySubsetPropertiesKHR {
 } VkPhysicalDevicePortabilitySubsetPropertiesKHR;
 
 
+// Provided by VK_EXT_nested_command_buffer
+typedef struct VkPhysicalDeviceNestedCommandBufferPropertiesEXT {
+	VkStructureType sType;
+	void* pNext;
+	uint32_t maxCommandBufferNestingLevel;
+} VkPhysicalDeviceNestedCommandBufferPropertiesEXT;
 
+// Provided by VK_NV_displacement_micromap
+typedef struct VkPhysicalDeviceDisplacementMicromapPropertiesNV {
+	VkStructureType sType;
+	void* pNext;
+	uint32_t maxDisplacementMicromapSubdivisionLevel;
+} VkPhysicalDeviceDisplacementMicromapPropertiesNV;
 
+// Provided by VK_AMDX_shader_enqueue
+typedef struct VkPhysicalDeviceShaderEnqueuePropertiesAMDX {
+	VkStructureType sType;
+	void* pNext;
+	uint32_t maxExecutionGraphDepth;
+	uint32_t maxExecutionGraphShaderOutputNodes;
+	uint32_t maxExecutionGraphShaderPayloadSize;
+	uint32_t maxExecutionGraphShaderPayloadCount;
+	uint32_t executionGraphDispatchAddressAlignment;
+} VkPhysicalDeviceShaderEnqueuePropertiesAMDX;
 
+// Provided by VK_NV_extended_sparse_address_space
+typedef struct VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV {
+	VkStructureType sType;
+	void* pNext;
+	VkDeviceSize extendedSparseAddressSpaceSize;
+	VkImageUsageFlags extendedSparseImageUsageFlags;
+	VkBufferUsageFlags extendedSparseBufferUsageFlags;
+} VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV;
 
+// Provided by VK_NV_cuda_kernel_launch
+typedef struct VkPhysicalDeviceCudaKernelLaunchPropertiesNV {
+	VkStructureType sType;
+	void* pNext;
+	uint32_t computeCapabilityMinor;
+	uint32_t computeCapabilityMajor;
+} VkPhysicalDeviceCudaKernelLaunchPropertiesNV;
 
+// Provided by VK_ANDROID_external_format_resolve
+typedef struct VkPhysicalDeviceExternalFormatResolvePropertiesANDROID {
+	VkStructureType sType;
+	void* pNext;
+	VkBool32 nullColorAttachmentWithExternalFormatResolve;
+	VkChromaLocation externalFormatResolveChromaOffsetX;
+	VkChromaLocation externalFormatResolveChromaOffsetY;
+} VkPhysicalDeviceExternalFormatResolvePropertiesANDROID;
+
+// Provided by VK_ARM_render_pass_striped
+typedef struct VkPhysicalDeviceRenderPassStripedPropertiesARM {
+	VkStructureType sType;
+	void* pNext;
+	VkExtent2D renderPassStripeGranularity;
+	uint32_t maxRenderPassStripes;
+} VkPhysicalDeviceRenderPassStripedPropertiesARM;
+
+// Provided by VK_EXT_map_memory_placed
+typedef struct VkPhysicalDeviceMapMemoryPlacedPropertiesEXT {
+	VkStructureType sType;
+	void* pNext;
+	VkDeviceSize minPlacedMemoryMapAlignment;
+} VkPhysicalDeviceMapMemoryPlacedPropertiesEXT;
+
+// Provided by VK_MESA_image_alignment_control
+typedef struct VkPhysicalDeviceImageAlignmentControlPropertiesMESA {
+	VkStructureType sType;
+	void* pNext;
+	uint32_t supportedImageAlignmentMask;
+} VkPhysicalDeviceImageAlignmentControlPropertiesMESA;
 
 
 

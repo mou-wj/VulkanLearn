@@ -1,4 +1,4 @@
-#include "LimitsAndFormatsTest.h"
+ï»¿#include "LimitsAndFormatsTest.h"
 NS_TEST_BEGIN
 LimitsAndFormatsTest::LimitsAndFormatsTest()
 {
@@ -14,778 +14,1943 @@ LimitsAndFormatsTest::~LimitsAndFormatsTest()
 
 void LimitsAndFormatsTest::LimitsTest()
 {
-	//limitsÊÇÓ¦ÓÃĞèÒªÒâÊ¶µ½µÄ ÒÀÀµÊµÏÖµÄµÄ×îĞ¡ÏŞÖÆ£¬×î´óÏŞÖÆÒÔ¼°ÆäËûdeviceÊôĞÔµÄÏŞÖÆ£¬ÕâĞ©ÏŞÖÆ¼û VkPhysicalDeviceLimits »òÕßVkPhysicalDeviceProperties»òÕßVkPhysicalDeviceProperties2£¬»òÆäËûµÄproperties
+	//limitsæ˜¯åº”ç”¨éœ€è¦æ„è¯†åˆ°çš„ ä¾èµ–å®ç°çš„çš„æœ€å°é™åˆ¶ï¼Œæœ€å¤§é™åˆ¶ä»¥åŠå…¶ä»–deviceå±æ€§çš„é™åˆ¶ï¼Œè¿™äº›é™åˆ¶è§ VkPhysicalDeviceLimits æˆ–è€…VkPhysicalDevicePropertiesæˆ–è€…VkPhysicalDeviceProperties2ï¼Œæˆ–å…¶ä»–çš„properties
     VkPhysicalDeviceProperties physicalDeviceProperties{};
     vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
 
 
 	VkPhysicalDeviceLimits &physicalDeviceLimits = physicalDeviceProperties.limits;
-    physicalDeviceLimits.maxImageDimension1D;//Ö¸Ã÷¿É´´½¨µÄimageTypeÎªVK_IMAGE_TYPE_1D µÄimageµÄwidthµÄ×î´óÖµ£¬ÔÚÄ³Ğ©image´´½¨²ÎÊı×éºÏÏÂ£¬¸ÃÖµ¿ÉÄÜ³¬¹ıÕâÀïÁĞ¾ÙµÄÖµ£¬¾ßÌå¼ûvkGetPhysicalDeviceImageFormatProperties
-    physicalDeviceLimits.maxImageDimension2D;//Ö¸Ã÷¿É´´½¨µÄimageTypeÎªVK_IMAGE_TYPE_2DÇÒ²»º¬VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT µÄimageµÄwidth »òÕß heightµÄ×î´óÖµ£¬ÔÚÄ³Ğ©image´´½¨²ÎÊı×éºÏÏÂ£¬¸ÃÖµ¿ÉÄÜ³¬¹ıÕâÀïÁĞ¾ÙµÄÖµ£¬¾ßÌå¼ûvkGetPhysicalDeviceImageFormatProperties
-    physicalDeviceLimits.maxImageDimension3D;//Ö¸Ã÷¿É´´½¨µÄimageTypeÎª VK_IMAGE_TYPE_3D µÄimageµÄwidth £¬height»òÕßdepth µÄ×î´óÖµ£¬ÔÚÄ³Ğ©image´´½¨²ÎÊı×éºÏÏÂ£¬¸ÃÖµ¿ÉÄÜ³¬¹ıÕâÀïÁĞ¾ÙµÄÖµ£¬¾ßÌå¼ûvkGetPhysicalDeviceImageFormatProperties
-    physicalDeviceLimits.maxImageDimensionCube;//Ö¸Ã÷¿É´´½¨µÄimageTypeÎªVK_IMAGE_TYPE_2DÇÒº¬VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT µÄimageµÄwidth »òÕß heightµÄ×î´óÖµ£¬ÔÚÄ³Ğ©image´´½¨²ÎÊı×éºÏÏÂ£¬¸ÃÖµ¿ÉÄÜ³¬¹ıÕâÀïÁĞ¾ÙµÄÖµ£¬¾ßÌå¼ûvkGetPhysicalDeviceImageFormatProperties
-    physicalDeviceLimits.maxImageArrayLayers;//ÎªimageÖĞ×î´óµÄlayerÊı
-    physicalDeviceLimits.maxTexelBufferElements;//ÎªÒ»¸öÒÔVK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT »òÕß VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT ´´½¨µÄbufferµÄbuffer viewÖĞ¿ÉÑ°Ö·µÄtexelµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.maxUniformBufferRange;//Ö¸Ã÷¶ÔVK_DESCRIPTOR_TYPE_UNIFORM_BUFFER »òÕß VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMICÀàĞÍµÄdescriptorsµÄ´«µİ¸ø vkUpdateDescriptorSetsµÄVkDescriptorBufferInfo.range²ÎÊıµÄ×î´óÖµ
-    physicalDeviceLimits.maxStorageBufferRange;//Ö¸Ã÷¶ÔVK_DESCRIPTOR_TYPE_STORAGE_BUFFER »òÕß VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICÀàĞÍµÄdescriptorsµÄ´«µİ¸ø vkUpdateDescriptorSetsµÄVkDescriptorBufferInfo.range²ÎÊıµÄ×î´óÖµ
-    physicalDeviceLimits.maxPushConstantsSize;//Îªpush constance ÄÚ´æ³ØµÄ×î´ó×Ö½Ú´óĞ¡£¬¶ÔVkPipelineLayoutCreateInfo.pPushConstantRangesµÄÃ¿¸öÔªËØµÄ£¨size + offset£©±ØĞëĞ¡ÓÚ¸ÃÖµ
-    physicalDeviceLimits.maxMemoryAllocationCount;//ÎªvkAllocateMemory ·ÖÅäµÄdevice memory¶ÔÏóµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.maxSamplerAllocationCount;//ÎªvkCreateSampler ´´½¨µÄsampler¶ÔÏóµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.bufferImageGranularity;//Îª buffer »òÕß linear image resources»òÕßoptimal image resources¿ÉÒÔÔÚÍ¬Ò»VkDeviceMemory¶ÔÏóÖĞÁÚ½Ó°ó¶¨ÇÒ²»ÖØ¸´µÄ×Ö½ÚÁ£¶È
-    physicalDeviceLimits.sparseAddressSpaceSize;//Îªsparse memory resourcesµÄ×ÜµÄ¿ÉÓÃµÄµØÖ·×Ö½Ú¿Õ¼ä£¬¸ù¾İ extendedSparseAddressSpace ÌØĞÔ¾ßÌåµÄ¶ÔÏóµÄ¿ÉÓÃ¿Õ¼ä¿ÉÄÜ»á±»ÍØÕ¹
-    physicalDeviceLimits.maxBoundDescriptorSets;//ÎªpipelineÍ¬Ò»Ê±¼ä¿ÉÒÔÊ¹ÓÃµÄdescriptor setµÄÊıÁ¿£¬ÇÒshader moduleÖĞDescriptorSetÉùÃ÷±ØĞëĞ¡ÓÚ¸ÃÖµ
-    physicalDeviceLimits.maxPerStageDescriptorSamplers;//Îªpipeline layoutÖĞÒ»¸öshader stageÖĞ¿ÉÒÔ·ÃÎÊµÄsamplerµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3912
-    physicalDeviceLimits.maxPerStageDescriptorUniformBuffers;//Îªpipeline layoutÖĞÒ»¸öshader stageÖĞ¿ÉÒÔ·ÃÎÊµÄuniform buffersµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3912
-    physicalDeviceLimits.maxPerStageDescriptorStorageBuffers;//Îªpipeline layoutÖĞÒ»¸öshader stageÖĞ¿ÉÒÔ·ÃÎÊµÄstorage buffersµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3913
-    physicalDeviceLimits.maxPerStageDescriptorSampledImages;//Îªpipeline layoutÖĞÒ»¸öshader stageÖĞ¿ÉÒÔ·ÃÎÊµÄsampled imagesµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3913
-    physicalDeviceLimits.maxPerStageDescriptorStorageImages;//Îªpipeline layoutÖĞÒ»¸öshader stageÖĞ¿ÉÒÔ·ÃÎÊµÄstorage imagesµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3913
-    physicalDeviceLimits.maxPerStageDescriptorInputAttachments;//Îªpipeline layoutÖĞÒ»¸öshader stageÖĞ¿ÉÒÔ·ÃÎÊµÄinput attachmentµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3913
-    physicalDeviceLimits.maxPerStageResources;//Îªpipeline layoutÖĞÒ»¸öshader stageÖĞ¿ÉÒÔ·ÃÎÊµÄ×ÊÔ´resourcesµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3913
-    physicalDeviceLimits.maxDescriptorSetSamplers;//ÎªÒ»¸öpipeline layoutÖĞ¿ÉÒÔ°üº¬µÄsamplersµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3914
-    physicalDeviceLimits.maxDescriptorSetUniformBuffers;//ÎªÒ»¸öpipeline layoutÖĞ¿ÉÒÔ°üº¬µÄuniform buffersµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3914
-    physicalDeviceLimits.maxDescriptorSetUniformBuffersDynamic;//ÎªÒ»¸öpipeline layoutÖĞ¿ÉÒÔ°üº¬µÄdynamic uniform buffersµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3914
-    physicalDeviceLimits.maxDescriptorSetStorageBuffers;//ÎªÒ»¸öpipeline layoutÖĞ¿ÉÒÔ°üº¬µÄ storage buffersµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3914
-    physicalDeviceLimits.maxDescriptorSetStorageBuffersDynamic;//ÎªÒ»¸öpipeline layoutÖĞ¿ÉÒÔ°üº¬µÄdynamic storage buffersµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3914
-    physicalDeviceLimits.maxDescriptorSetSampledImages;//ÎªÒ»¸öpipeline layoutÖĞ¿ÉÒÔ°üº¬µÄsampled imagesµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3914
-    physicalDeviceLimits.maxDescriptorSetStorageImages;//ÎªÒ»¸öpipeline layoutÖĞ¿ÉÒÔ°üº¬µÄstorage imagesµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3914
-    physicalDeviceLimits.maxDescriptorSetInputAttachments;//ÎªÒ»¸öpipeline layoutÖĞ¿ÉÒÔ°üº¬µÄinput attachmentµÄ×î´óÊıÁ¿£¬Ö»ÓĞ·ûºÏÏà¹ØÀàĞÍ»òÕßÆäËûÌõ¼şµÄdescriptor²Å»á¼ÆÈë´ËÏŞÖÆ£¬¼ûp3914
-    physicalDeviceLimits.maxVertexInputAttributes;//Îªgraphics pipelineÖĞ¿ÉÒÔÖ¸¶¨µÄvertex input attributesµÄ×î´óÊıÁ¿£¬ÏêÏ¸ÃèÊö¼ûp3915
-    physicalDeviceLimits.maxVertexInputBindings;//Îªgraphics pipelineÖĞ¿ÉÒÔÖ¸¶¨µÄÌá¹©vertex input attributesµÄvertex bufferµÄ×î´óÊıÁ¿£¬ÏêÏ¸ÃèÊö¼ûp3915
-    physicalDeviceLimits.maxVertexInputAttributeOffset;//Îª¿ÉÒÔÌí¼Óµ½ vertex input binding strideµÄvertex input attribute offsetµÄ×î´óÖµ£¬ÏêÏ¸ÃèÊö¼ûp3915
-    physicalDeviceLimits.maxVertexInputBindingStride;//ÎªÒ»¸ö vertex input bindingÖĞ¿ÉÒÔÖ¸¶¨µÄvertex input binding strideµÄ×î´óÖµ£¬ÏêÏ¸ÃèÊö¼ûp3915
-    physicalDeviceLimits.maxVertexOutputComponents;//Îªshader Êä³ö±äÁ¿·ÖÁ¿ÊıµÄ×î´óÖµ
-    physicalDeviceLimits.maxTessellationGenerationLevel;//Îªfixed-function tessellation primitive generator Ö§³ÖµÄ tessellation generation levelµÄ×î´óÖµ
-    physicalDeviceLimits.maxTessellationPatchSize;//Îªtessellation control shader ÒÔ¼° tessellation primitive generator¿ÉÒÔ´¦ÀíµÄÃ¿¸öpatchµÄ¶¥µãÊıµÄ×î´óÖµ£¬ÏêÏ¸ÃèÊö¼ûp3915 
-    physicalDeviceLimits.maxTessellationControlPerVertexInputComponents;//Îª¿ÉÒÔÌá¹©¸ø tessellation control shader stage×÷Îªper-vertex inputsµÄÊäÈë±äÁ¿µÄ·ÖÁ¿ÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxTessellationControlPerVertexOutputComponents;//Îª¿ÉÒÔ´Ó tessellation control shader stageÊä³öµÄper-vertex output variablesµÄ·ÖÁ¿ÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxTessellationControlPerPatchOutputComponents;//Îª¿ÉÒÔ´Ó tessellation control shader stageÊä³öµÄper-patch output variablesµÄ·ÖÁ¿ÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxTessellationControlTotalOutputComponents;//Îª¿ÉÒÔ´Ó tessellation control shader stageÊä³öµÄper-vertex ÒÔ¼° per-patch output variablesµÄ·ÖÁ¿×ÜÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxTessellationEvaluationInputComponents;//Îª¿ÉÒÔÌá¹©¸ø tessellation evaluation shader stage×÷Îªper-vertex inputsµÄÊäÈë±äÁ¿µÄ·ÖÁ¿ÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxTessellationEvaluationOutputComponents;//Îª¿ÉÒÔ´Ó tessellation evaluation shader stageÊä³öµÄper-vertex output variablesµÄ·ÖÁ¿ÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxGeometryShaderInvocations;//Îªinstanced geometry shaders¿ÉÒÔµ÷ÓÃµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.maxGeometryInputComponents;//Îª¿ÉÒÔÌá¹©¸ø geometry shader stage×÷ÎªinputsµÄÊäÈë±äÁ¿µÄ·ÖÁ¿ÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxGeometryOutputComponents;//Îª¿ÉÒÔ´Ó geometry shader stageÊä³öµÄoutput variablesµÄ·ÖÁ¿ÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxGeometryOutputVertices;//ÎªÈÎºÎgeometry shader ¿ÉÒÔ·¢ÉäµÄ×î´ó¶¥µãÊı
-    physicalDeviceLimits.maxGeometryTotalOutputComponents;//Îª¿ÉÒÔ´Ó geometry shader stageÊä³öµÄËùÓĞ·¢Éä¶¥µãµÄoutput variablesµÄ·ÖÁ¿Êı×ÜÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxFragmentInputComponents;//Îª¿ÉÒÔÌá¹©¸ø fragment shader stage×÷ÎªinputsµÄÊäÈë±äÁ¿µÄ·ÖÁ¿ÊıµÄ×î´ó´óĞ¡
-    physicalDeviceLimits.maxFragmentOutputAttachments;//Îª¿ÉÒÔ´Ó fragment shader stage¿ÉÒÔĞ´³öµÄµÄoutput attachmentsµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.maxFragmentDualSrcAttachments;//Îªµ±¿ªÆôblendingÇÒÊ¹ÓÃÁËÒ»ÖÖdual source blend modesÊ±¿ÉÒÔ´Ó fragment shader stage¿ÉÒÔĞ´³öµÄµÄoutput attachmentsµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.maxFragmentCombinedOutputResources;//Îª fragment shader stageÖĞ¿ÉÒÔÊ¹ÓÃµÄ storage buffers, storage imagesÒÔ¼° Location ÉùÃ÷µÄÊä³ö color attachmentsµÄ×ÜÊıµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.maxComputeSharedMemorySize;//Îªcompute shader stage ÖĞ shader modules ÖĞÒÔ Workgroup storage class ÉùÃ÷£¨»òÕßGLSLÖĞÒÔsharedÉùÃ÷£©µÄ±äÁ¿µÄ×î´ó×Ö½Ú´æ´¢´óĞ¡
-    physicalDeviceLimits.maxComputeWorkGroupCount[3];//ÎªÒ»¸ödispatching command ÅÉ·¢µÄlocal workgroupsµÄ×î´ó´óĞ¡£¬·Ö±ğ¶ÔÓ¦X£¬Y£¬Z
-    physicalDeviceLimits.maxComputeWorkGroupInvocations;//ÎªÒ»¸ölocal workgroupÖĞ¿ÉÒÔµ÷ÓÃµÄcompute shader×Ü¹²µÄ×î´óÊıÁ¿£¬ÆäËûÏêÇé¼ûp3916
-    physicalDeviceLimits.maxComputeWorkGroupSize[3];//ÎªÃ¿¸öÎ¬¶È local compute workgroupµÄ×î´ó´óĞ¡£¬ÆäËûÏêÇé¼ûp3916
-    physicalDeviceLimits.subPixelPrecisionBits;//Îªframebuffer coordinatesÖĞsubpixel ¾«¶ÈµÄ×î´óbitÊı
-    physicalDeviceLimits.subTexelPrecisionBits;//ÎªÑØ×ÅÓÃÓÚminification and magnification filtersµÄimageµÄÖáµÄ»®·Ö¾«¶ÈµÄbitÊı£¬ÆäËûÏêÇé¼ûp3916
-    physicalDeviceLimits.mipmapPrecisionBits;//ÊÇÈ·¶¨Ã¿¸ö mip ¼¶¶Ô mip ¹ıÂË½á¹ûµÄ¹±Ï×Ê±£¬¶Ô mipmap ¼ÓÔØµÄ LOD ¼ÆËã½øĞĞ½Ø¶ÏÊ±ËùÊ¹ÓÃµÄÎ»ÊıµÄÊıÁ¿£¬ÏêÇé¼ûp3916
-    physicalDeviceLimits.maxDrawIndexedIndexValue;//ÎªÊ¹ÓÃ32-bit Ë÷ÒıÊ±indexed draw calls¿ÉÒÔÊ¹ÓÃµÄ×î´óË÷ÒıÖµ
-    physicalDeviceLimits.maxDrawIndirectCount;//Îª indirect drawing calls ¿ÉÒÔÖ§³ÖµÄ×î´ódraw count
-    physicalDeviceLimits.maxSamplerLodBias;//Îªabsolute sampler LOD biasµÄ×î´óÖµ£¬ÆäËûĞÅÏ¢¼ûp3917
-    physicalDeviceLimits.maxSamplerAnisotropy;//Îª sampler anisotropyµÄ×î´ó¼¶±ğ£¬ÆäËûĞÅÏ¢¼ûp3917
-    physicalDeviceLimits.maxViewports;//Îª active viewportsµÄ×î´óÊıÁ¿£¬ÆäËûĞÅÏ¢¼ûp3917
-    physicalDeviceLimits.maxViewportDimensions[2];//Îª viewportÎ¬¶ÈwidthÒÔ¼°heightµÄ×î´óÖµ£¬ÆäËûĞÅÏ¢¼ûp3917
-    physicalDeviceLimits.viewportBoundsRange[2];//ÎªviewportµÄcorners±ØĞë°üº¬µÄ [minimum, maximum]·¶Î§£¬ÆäËûĞÅÏ¢¼ûp3917
-    physicalDeviceLimits.viewportSubPixelBits;//Îªviewport±ß½çµÄsubpixel¾«¶ÈµÄbitÊı
-    physicalDeviceLimits.minMemoryMapAlignment;//ÎªÔÚhostÄÚ´æ¿Õ¼ä·ÖÅäµÄhost ¿É¼ûµÄmemoryÄÚ´æ·ÖÅäµÄ×Ö½Ú¶ÔÆëµÄ×îĞ¡Öµ£¬ÆäËûĞÅÏ¢¼ûp3917
-    physicalDeviceLimits.minTexelBufferOffsetAlignment;//Îªtexel buffersµÄ VkBufferViewCreateInfo.offsetËù¶ÔµÄ×Ö½Ú¶ÔÆëµÄ×îĞ¡Öµ£¬Îª2µÄÖ¸Êı£¬ÆäËûĞÅÏ¢¼ûp3917
-    physicalDeviceLimits.minUniformBufferOffsetAlignment;//Îªuniform buffersµÄ VkDescriptorBufferInfo.offsetËù¶ÔµÄ×Ö½Ú¶ÔÆëµÄ×îĞ¡Öµ£¬Îª2µÄÖ¸Êı£¬ÆäËûĞÅÏ¢¼ûp3917
-    physicalDeviceLimits.minStorageBufferOffsetAlignment;//Îªstorage buffersµÄ VkDescriptorBufferInfo.offsetËù¶ÔµÄ×Ö½Ú¶ÔÆëµÄ×îĞ¡Öµ£¬Îª2µÄÖ¸Êı£¬ÆäËûĞÅÏ¢¼ûp3917
-    physicalDeviceLimits.minTexelOffset;//ÎªÈÎºÎOpImageSample* »òÕß OpImageFetch*  imageÖ¸ÁîµÄConstOffset image²Ù×÷·ûµÄ×îĞ¡Æ«ÒÆÖµ
-    physicalDeviceLimits.maxTexelOffset;//ÎªÈÎºÎOpImageSample* »òÕß OpImageFetch*  imageÖ¸ÁîµÄConstOffset image²Ù×÷·ûµÄ×î´óÆ«ÒÆÖµ
-    physicalDeviceLimits.minTexelGatherOffset;//ÎªÈÎºÎ OpImage*Gather  imageÖ¸ÁîµÄOffset, ConstOffset, »òÕß ConstOffsets image²Ù×÷·ûµÄ×îĞ¡Æ«ÒÆÖµ
-    physicalDeviceLimits.maxTexelGatherOffset;//ÎªÈÎºÎ OpImage*Gather  imageÖ¸ÁîµÄOffset, ConstOffset, »òÕß ConstOffsets image²Ù×÷·ûµÄ×îĞ¡Æ«ÒÆÖµ
-    physicalDeviceLimits.minInterpolationOffset;//ÎªInterpolateAtOffset ÍØÕ¹Ö¸ÁîµÄ Offset²Ù×÷·ûµÄ×îĞ¡¸º×îĞ¡Öµ
-    physicalDeviceLimits.maxInterpolationOffset;//ÎªInterpolateAtOffset ÍØÕ¹Ö¸ÁîµÄ Offset²Ù×÷·ûµÄ×î´óÕı×î´óÖµ
-    physicalDeviceLimits.subPixelInterpolationOffsetBits;//Ö´ĞĞInterpolateAtOffsetÀ©Õ¹Ö¸ÁîÊ±£¬xºÍyÆ«ÒÆÁ¿¿ÉÄÜÒÔ¶¨µãÖµ½øĞĞÉáÈëµÄĞ¡ÊıÎ»Êı
-    physicalDeviceLimits.maxFramebufferWidth;//ÎªframebufferµÄwidthµÄ×î´óÖµ
-    physicalDeviceLimits.maxFramebufferHeight;//ÎªframebufferµÄheightµÄ×î´óÖµ
-    physicalDeviceLimits.maxFramebufferLayers;//ÎªframebufferÖĞº¬ÓĞlayersµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.framebufferColorSampleCounts;//ÎªËùÓĞ¸ñÊ½Îª¸¡µã»òÕß¶¥µãÊıµÄframebuffer color attachmentsÖ§³ÖµÄsample countsµÄVkSampleCountFlagBits×éºÏÖµ
-    physicalDeviceLimits.framebufferDepthSampleCounts;//ÎªËùÓĞ¸ñÊ½°üº¬depthµÄframebuffer depth/stencil attachmentsÖ§³ÖµÄdepth sample countsµÄVkSampleCountFlagBits×éºÏÖµ
-    physicalDeviceLimits.framebufferStencilSampleCounts;//ÎªËùÓĞ¸ñÊ½°üº¬stencilµÄframebuffer depth/stencil attachmentsÖ§³ÖµÄstencil sample countsµÄVkSampleCountFlagBits×éºÏÖµ
-    physicalDeviceLimits.framebufferNoAttachmentsSampleCounts;//Îª²»º¬¸½¼şµÄsubpass Ö§³ÖµÄsample countsµÄVkSampleCountFlagBits×éºÏÖµ
-    physicalDeviceLimits.maxColorAttachments;//Îªrender passÖĞsubpass¿ÉÒÔÊ¹ÓÃµÄcolor attachmentsµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.sampledImageColorSampleCounts;// VkSampleCountFlagBits ×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷ËùÓĞÒÔVK_IMAGE_TILING_OPTIMAL´´½¨µÄ£¬usage°üº¬VK_IMAGE_USAGE_SAMPLED_BITÇÒº¬non-integer color formatµÄËùÓĞ2D imageÖ§³ÖµÄsample counts
-    physicalDeviceLimits.sampledImageIntegerSampleCounts;// VkSampleCountFlagBits ×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷ËùÓĞÒÔVK_IMAGE_TILING_OPTIMAL´´½¨µÄ£¬usage°üº¬VK_IMAGE_USAGE_SAMPLED_BITÇÒº¬integer color formatµÄËùÓĞ2D imageÖ§³ÖµÄsample counts
-    physicalDeviceLimits.sampledImageDepthSampleCounts;// VkSampleCountFlagBits ×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷ËùÓĞÒÔVK_IMAGE_TILING_OPTIMAL´´½¨µÄ£¬usage°üº¬VK_IMAGE_USAGE_SAMPLED_BITÇÒº¬depth formatµÄËùÓĞ2D imageÖ§³ÖµÄsample counts
-    physicalDeviceLimits.sampledImageStencilSampleCounts;// VkSampleCountFlagBits ×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷ËùÓĞÒÔVK_IMAGE_TILING_OPTIMAL´´½¨µÄ£¬usage°üº¬VK_IMAGE_USAGE_SAMPLED_BITÇÒº¬stencil formatµÄËùÓĞ2D imageÖ§³ÖµÄsample counts
-    physicalDeviceLimits.storageImageSampleCounts;// VkSampleCountFlagBits ×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷ËùÓĞÒÔVK_IMAGE_TILING_OPTIMAL´´½¨µÄ£¬usage°üº¬VK_IMAGE_USAGE_STORAGE_BITµÄËùÓĞ2D imageÖ§³ÖµÄsample counts
-    physicalDeviceLimits.maxSampleMaskWords;//ÎªÒÔSampleMask ÉùÃ÷µÄ±äÁ¿µÄÊı×éÔªËØµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.timestampComputeAndGraphics;//Ö¸Ã÷Ö§³ÖËùÓĞgraphics ÒÔ¼° compute queuesÉÏµÄtimestamps£¬ÆäËûĞÅÏ¢¼ûp3919
-    physicalDeviceLimits.timestampPeriod;//Îªtimastamp queryÔö¼Ó1ËùĞèÒªµÄÄÉÃëÊı
-    physicalDeviceLimits.maxClipDistances;//Îª¿ÉÓÃÓÚÒ»¸öshader stageµÄ clip distancesµÄ×î´óÖµ
-    physicalDeviceLimits.maxCullDistances;//Îª¿ÉÓÃÓÚÒ»¸öshader stageµÄ cull distancesµÄ×î´óÖµ
-    physicalDeviceLimits.maxCombinedClipAndCullDistances;//Îª¿ÉÓÃÓÚÒ»¸öshader stageµÄ°ó¶¨µÄ clipÒÔ¼°cull distancesµÄÊıÁ¿µÄ×î´óÖµ
-    physicalDeviceLimits.discreteQueuePriorities;//Îª»ùÓÚ VkDeviceQueueCreateInfo::pQueuePrioritiesÖĞÃ¿¸öÔªËØÖµµÄ¿ÉÒÔÅÅÁĞÎª¶ÓÁĞµÄÀëÉ¢ÊôĞÔµÄ×î´óÊıÁ¿
-    physicalDeviceLimits.pointSizeRange[2];//Îªpoint size£¨ PointSizeÄÚÇ¶±äÁ¿£©Ö§³ÖµÄ´óĞ¡·¶Î§[minimum,maximum]
-    physicalDeviceLimits.lineWidthRange[2];//ÎªÏß¿í£¨ ¹âÕ¤»¯ lineWidth²ÎÊı£©Ö§³ÖµÄ´óĞ¡·¶Î§[minimum,maximum]
-    physicalDeviceLimits.pointSizeGranularity;//Îªpoint size£¨ PointSizeÄÚÇ¶±äÁ¿£©Ö§³ÖµÄ´óĞ¡·¶Î§ÄÚµÄ¼ä¸ôÁ£¶È
-    physicalDeviceLimits.lineWidthGranularity;//ÎªÏß¿í£¨ ¹âÕ¤»¯ lineWidth²ÎÊı£©Ö§³ÖµÄ´óĞ¡·¶Î§ÄÚµÄ¼ä¸ôÁ£¶È
-    physicalDeviceLimits.strictLines;//Ö¸Ã÷ÊÇ·ñÏß°´ÕÕÊ×Ñ¡·½·¨½øĞĞ¹âÕ¤»¯£¬ÆäËûĞÅÏ¢¼ûp3920
-    physicalDeviceLimits.standardSampleLocations;//Ö¸Ã÷ÊÇ·ñ¹âÕ¤»¯ÊÇ·ñÊÇ·ñ±ê×¼µÄ²ÉÑùµãÎ»ÖÃ£¬ÆäËûĞÅÏ¢¼ûp3920
-    physicalDeviceLimits.optimalBufferCopyOffsetAlignment;//Îª×î¼ÑµÄbuffer offset alignment£¬»ùÓÚ×Ö½Ú£¬¶ÔÃüÁî:vkCmdCopyBufferToImage2, vkCmdCopyBufferToImage, vkCmdCopyImageToBuffer2, vkCmdCopyImageToBuffer,vkCopyMemoryToImageEXT ÒÔ¼° vkCopyImageToMemoryEXT
-    physicalDeviceLimits.optimalBufferCopyRowPitchAlignment;//Îª×î¼ÑµÄbuffer row pitch alignment£¬»ùÓÚ×Ö½Ú£¬¶ÔÃüÁî:vkCmdCopyBufferToImage2, vkCmdCopyBufferToImage, vkCmdCopyImageToBuffer2, vkCmdCopyImageToBuffer,vkCopyMemoryToImageEXT ÒÔ¼° vkCopyImageToMemoryEXT
-    physicalDeviceLimits.nonCoherentAtomSize;//Îª²¢·¢·ÃÎÊ host-mapped device memoryÊ±µÄÄÚ´æ·¶Î§µÄ×Ö½Ú´óĞ¡ÒÔ¼°×Ö½Ú¶ÔÆë
+    physicalDeviceLimits.maxImageDimension1D;//æŒ‡æ˜å¯åˆ›å»ºçš„imageTypeä¸ºVK_IMAGE_TYPE_1D çš„imageçš„widthçš„æœ€å¤§å€¼ï¼Œåœ¨æŸäº›imageåˆ›å»ºå‚æ•°ç»„åˆä¸‹ï¼Œè¯¥å€¼å¯èƒ½è¶…è¿‡è¿™é‡Œåˆ—ä¸¾çš„å€¼ï¼Œå…·ä½“è§vkGetPhysicalDeviceImageFormatProperties
+    physicalDeviceLimits.maxImageDimension2D;//æŒ‡æ˜å¯åˆ›å»ºçš„imageTypeä¸ºVK_IMAGE_TYPE_2Dä¸”ä¸å«VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT çš„imageçš„width æˆ–è€… heightçš„æœ€å¤§å€¼ï¼Œåœ¨æŸäº›imageåˆ›å»ºå‚æ•°ç»„åˆä¸‹ï¼Œè¯¥å€¼å¯èƒ½è¶…è¿‡è¿™é‡Œåˆ—ä¸¾çš„å€¼ï¼Œå…·ä½“è§vkGetPhysicalDeviceImageFormatProperties
+    physicalDeviceLimits.maxImageDimension3D;//æŒ‡æ˜å¯åˆ›å»ºçš„imageTypeä¸º VK_IMAGE_TYPE_3D çš„imageçš„width ï¼Œheightæˆ–è€…depth çš„æœ€å¤§å€¼ï¼Œåœ¨æŸäº›imageåˆ›å»ºå‚æ•°ç»„åˆä¸‹ï¼Œè¯¥å€¼å¯èƒ½è¶…è¿‡è¿™é‡Œåˆ—ä¸¾çš„å€¼ï¼Œå…·ä½“è§vkGetPhysicalDeviceImageFormatProperties
+    physicalDeviceLimits.maxImageDimensionCube;//æŒ‡æ˜å¯åˆ›å»ºçš„imageTypeä¸ºVK_IMAGE_TYPE_2Dä¸”å«VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT çš„imageçš„width æˆ–è€… heightçš„æœ€å¤§å€¼ï¼Œåœ¨æŸäº›imageåˆ›å»ºå‚æ•°ç»„åˆä¸‹ï¼Œè¯¥å€¼å¯èƒ½è¶…è¿‡è¿™é‡Œåˆ—ä¸¾çš„å€¼ï¼Œå…·ä½“è§vkGetPhysicalDeviceImageFormatProperties
+    physicalDeviceLimits.maxImageArrayLayers;//ä¸ºimageä¸­æœ€å¤§çš„layeræ•°
+    physicalDeviceLimits.maxTexelBufferElements;//ä¸ºä¸€ä¸ªä»¥VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT æˆ–è€… VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT åˆ›å»ºçš„bufferçš„buffer viewä¸­å¯å¯»å€çš„texelçš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.maxUniformBufferRange;//æŒ‡æ˜å¯¹VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER æˆ–è€… VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMICç±»å‹çš„descriptorsçš„ä¼ é€’ç»™ vkUpdateDescriptorSetsçš„VkDescriptorBufferInfo.rangeå‚æ•°çš„æœ€å¤§å€¼
+    physicalDeviceLimits.maxStorageBufferRange;//æŒ‡æ˜å¯¹VK_DESCRIPTOR_TYPE_STORAGE_BUFFER æˆ–è€… VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMICç±»å‹çš„descriptorsçš„ä¼ é€’ç»™ vkUpdateDescriptorSetsçš„VkDescriptorBufferInfo.rangeå‚æ•°çš„æœ€å¤§å€¼
+    physicalDeviceLimits.maxPushConstantsSize;//ä¸ºpush constance å†…å­˜æ± çš„æœ€å¤§å­—èŠ‚å¤§å°ï¼Œå¯¹VkPipelineLayoutCreateInfo.pPushConstantRangesçš„æ¯ä¸ªå…ƒç´ çš„ï¼ˆsize + offsetï¼‰å¿…é¡»å°äºè¯¥å€¼
+    physicalDeviceLimits.maxMemoryAllocationCount;//ä¸ºvkAllocateMemory åˆ†é…çš„device memoryå¯¹è±¡çš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.maxSamplerAllocationCount;//ä¸ºvkCreateSampler åˆ›å»ºçš„samplerå¯¹è±¡çš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.bufferImageGranularity;//ä¸º buffer æˆ–è€… linear image resourcesæˆ–è€…optimal image resourceså¯ä»¥åœ¨åŒä¸€VkDeviceMemoryå¯¹è±¡ä¸­é‚»æ¥ç»‘å®šä¸”ä¸é‡å¤çš„å­—èŠ‚ç²’åº¦
+    physicalDeviceLimits.sparseAddressSpaceSize;//ä¸ºsparse memory resourcesçš„æ€»çš„å¯ç”¨çš„åœ°å€å­—èŠ‚ç©ºé—´ï¼Œæ ¹æ® extendedSparseAddressSpace ç‰¹æ€§å…·ä½“çš„å¯¹è±¡çš„å¯ç”¨ç©ºé—´å¯èƒ½ä¼šè¢«æ‹“å±•
+    physicalDeviceLimits.maxBoundDescriptorSets;//ä¸ºpipelineåŒä¸€æ—¶é—´å¯ä»¥ä½¿ç”¨çš„descriptor setçš„æ•°é‡ï¼Œä¸”shader moduleä¸­DescriptorSetå£°æ˜å¿…é¡»å°äºè¯¥å€¼
+    physicalDeviceLimits.maxPerStageDescriptorSamplers;//ä¸ºpipeline layoutä¸­ä¸€ä¸ªshader stageä¸­å¯ä»¥è®¿é—®çš„samplerçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3912
+    physicalDeviceLimits.maxPerStageDescriptorUniformBuffers;//ä¸ºpipeline layoutä¸­ä¸€ä¸ªshader stageä¸­å¯ä»¥è®¿é—®çš„uniform buffersçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3912
+    physicalDeviceLimits.maxPerStageDescriptorStorageBuffers;//ä¸ºpipeline layoutä¸­ä¸€ä¸ªshader stageä¸­å¯ä»¥è®¿é—®çš„storage buffersçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3913
+    physicalDeviceLimits.maxPerStageDescriptorSampledImages;//ä¸ºpipeline layoutä¸­ä¸€ä¸ªshader stageä¸­å¯ä»¥è®¿é—®çš„sampled imagesçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3913
+    physicalDeviceLimits.maxPerStageDescriptorStorageImages;//ä¸ºpipeline layoutä¸­ä¸€ä¸ªshader stageä¸­å¯ä»¥è®¿é—®çš„storage imagesçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3913
+    physicalDeviceLimits.maxPerStageDescriptorInputAttachments;//ä¸ºpipeline layoutä¸­ä¸€ä¸ªshader stageä¸­å¯ä»¥è®¿é—®çš„input attachmentçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3913
+    physicalDeviceLimits.maxPerStageResources;//ä¸ºpipeline layoutä¸­ä¸€ä¸ªshader stageä¸­å¯ä»¥è®¿é—®çš„èµ„æºresourcesçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3913
+    physicalDeviceLimits.maxDescriptorSetSamplers;//ä¸ºä¸€ä¸ªpipeline layoutä¸­å¯ä»¥åŒ…å«çš„samplersçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3914
+    physicalDeviceLimits.maxDescriptorSetUniformBuffers;//ä¸ºä¸€ä¸ªpipeline layoutä¸­å¯ä»¥åŒ…å«çš„uniform buffersçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3914
+    physicalDeviceLimits.maxDescriptorSetUniformBuffersDynamic;//ä¸ºä¸€ä¸ªpipeline layoutä¸­å¯ä»¥åŒ…å«çš„dynamic uniform buffersçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3914
+    physicalDeviceLimits.maxDescriptorSetStorageBuffers;//ä¸ºä¸€ä¸ªpipeline layoutä¸­å¯ä»¥åŒ…å«çš„ storage buffersçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3914
+    physicalDeviceLimits.maxDescriptorSetStorageBuffersDynamic;//ä¸ºä¸€ä¸ªpipeline layoutä¸­å¯ä»¥åŒ…å«çš„dynamic storage buffersçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3914
+    physicalDeviceLimits.maxDescriptorSetSampledImages;//ä¸ºä¸€ä¸ªpipeline layoutä¸­å¯ä»¥åŒ…å«çš„sampled imagesçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3914
+    physicalDeviceLimits.maxDescriptorSetStorageImages;//ä¸ºä¸€ä¸ªpipeline layoutä¸­å¯ä»¥åŒ…å«çš„storage imagesçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3914
+    physicalDeviceLimits.maxDescriptorSetInputAttachments;//ä¸ºä¸€ä¸ªpipeline layoutä¸­å¯ä»¥åŒ…å«çš„input attachmentçš„æœ€å¤§æ•°é‡ï¼Œåªæœ‰ç¬¦åˆç›¸å…³ç±»å‹æˆ–è€…å…¶ä»–æ¡ä»¶çš„descriptoræ‰ä¼šè®¡å…¥æ­¤é™åˆ¶ï¼Œè§p3914
+    physicalDeviceLimits.maxVertexInputAttributes;//ä¸ºgraphics pipelineä¸­å¯ä»¥æŒ‡å®šçš„vertex input attributesçš„æœ€å¤§æ•°é‡ï¼Œè¯¦ç»†æè¿°è§p3915
+    physicalDeviceLimits.maxVertexInputBindings;//ä¸ºgraphics pipelineä¸­å¯ä»¥æŒ‡å®šçš„æä¾›vertex input attributesçš„vertex bufferçš„æœ€å¤§æ•°é‡ï¼Œè¯¦ç»†æè¿°è§p3915
+    physicalDeviceLimits.maxVertexInputAttributeOffset;//ä¸ºå¯ä»¥æ·»åŠ åˆ° vertex input binding strideçš„vertex input attribute offsetçš„æœ€å¤§å€¼ï¼Œè¯¦ç»†æè¿°è§p3915
+    physicalDeviceLimits.maxVertexInputBindingStride;//ä¸ºä¸€ä¸ª vertex input bindingä¸­å¯ä»¥æŒ‡å®šçš„vertex input binding strideçš„æœ€å¤§å€¼ï¼Œè¯¦ç»†æè¿°è§p3915
+    physicalDeviceLimits.maxVertexOutputComponents;//ä¸ºshader è¾“å‡ºå˜é‡åˆ†é‡æ•°çš„æœ€å¤§å€¼
+    physicalDeviceLimits.maxTessellationGenerationLevel;//ä¸ºfixed-function tessellation primitive generator æ”¯æŒçš„ tessellation generation levelçš„æœ€å¤§å€¼
+    physicalDeviceLimits.maxTessellationPatchSize;//ä¸ºtessellation control shader ä»¥åŠ tessellation primitive generatorå¯ä»¥å¤„ç†çš„æ¯ä¸ªpatchçš„é¡¶ç‚¹æ•°çš„æœ€å¤§å€¼ï¼Œè¯¦ç»†æè¿°è§p3915 
+    physicalDeviceLimits.maxTessellationControlPerVertexInputComponents;//ä¸ºå¯ä»¥æä¾›ç»™ tessellation control shader stageä½œä¸ºper-vertex inputsçš„è¾“å…¥å˜é‡çš„åˆ†é‡æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxTessellationControlPerVertexOutputComponents;//ä¸ºå¯ä»¥ä» tessellation control shader stageè¾“å‡ºçš„per-vertex output variablesçš„åˆ†é‡æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxTessellationControlPerPatchOutputComponents;//ä¸ºå¯ä»¥ä» tessellation control shader stageè¾“å‡ºçš„per-patch output variablesçš„åˆ†é‡æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxTessellationControlTotalOutputComponents;//ä¸ºå¯ä»¥ä» tessellation control shader stageè¾“å‡ºçš„per-vertex ä»¥åŠ per-patch output variablesçš„åˆ†é‡æ€»æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxTessellationEvaluationInputComponents;//ä¸ºå¯ä»¥æä¾›ç»™ tessellation evaluation shader stageä½œä¸ºper-vertex inputsçš„è¾“å…¥å˜é‡çš„åˆ†é‡æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxTessellationEvaluationOutputComponents;//ä¸ºå¯ä»¥ä» tessellation evaluation shader stageè¾“å‡ºçš„per-vertex output variablesçš„åˆ†é‡æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxGeometryShaderInvocations;//ä¸ºinstanced geometry shaderså¯ä»¥è°ƒç”¨çš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.maxGeometryInputComponents;//ä¸ºå¯ä»¥æä¾›ç»™ geometry shader stageä½œä¸ºinputsçš„è¾“å…¥å˜é‡çš„åˆ†é‡æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxGeometryOutputComponents;//ä¸ºå¯ä»¥ä» geometry shader stageè¾“å‡ºçš„output variablesçš„åˆ†é‡æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxGeometryOutputVertices;//ä¸ºä»»ä½•geometry shader å¯ä»¥å‘å°„çš„æœ€å¤§é¡¶ç‚¹æ•°
+    physicalDeviceLimits.maxGeometryTotalOutputComponents;//ä¸ºå¯ä»¥ä» geometry shader stageè¾“å‡ºçš„æ‰€æœ‰å‘å°„é¡¶ç‚¹çš„output variablesçš„åˆ†é‡æ•°æ€»æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxFragmentInputComponents;//ä¸ºå¯ä»¥æä¾›ç»™ fragment shader stageä½œä¸ºinputsçš„è¾“å…¥å˜é‡çš„åˆ†é‡æ•°çš„æœ€å¤§å¤§å°
+    physicalDeviceLimits.maxFragmentOutputAttachments;//ä¸ºå¯ä»¥ä» fragment shader stageå¯ä»¥å†™å‡ºçš„çš„output attachmentsçš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.maxFragmentDualSrcAttachments;//ä¸ºå½“å¼€å¯blendingä¸”ä½¿ç”¨äº†ä¸€ç§dual source blend modesæ—¶å¯ä»¥ä» fragment shader stageå¯ä»¥å†™å‡ºçš„çš„output attachmentsçš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.maxFragmentCombinedOutputResources;//ä¸º fragment shader stageä¸­å¯ä»¥ä½¿ç”¨çš„ storage buffers, storage imagesä»¥åŠ Location å£°æ˜çš„è¾“å‡º color attachmentsçš„æ€»æ•°çš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.maxComputeSharedMemorySize;//ä¸ºcompute shader stage ä¸­ shader modules ä¸­ä»¥ Workgroup storage class å£°æ˜ï¼ˆæˆ–è€…GLSLä¸­ä»¥sharedå£°æ˜ï¼‰çš„å˜é‡çš„æœ€å¤§å­—èŠ‚å­˜å‚¨å¤§å°
+    physicalDeviceLimits.maxComputeWorkGroupCount[3];//ä¸ºä¸€ä¸ªdispatching command æ´¾å‘çš„local workgroupsçš„æœ€å¤§å¤§å°ï¼Œåˆ†åˆ«å¯¹åº”Xï¼ŒYï¼ŒZ
+    physicalDeviceLimits.maxComputeWorkGroupInvocations;//ä¸ºä¸€ä¸ªlocal workgroupä¸­å¯ä»¥è°ƒç”¨çš„compute shaderæ€»å…±çš„æœ€å¤§æ•°é‡ï¼Œå…¶ä»–è¯¦æƒ…è§p3916
+    physicalDeviceLimits.maxComputeWorkGroupSize[3];//ä¸ºæ¯ä¸ªç»´åº¦ local compute workgroupçš„æœ€å¤§å¤§å°ï¼Œå…¶ä»–è¯¦æƒ…è§p3916
+    physicalDeviceLimits.subPixelPrecisionBits;//ä¸ºframebuffer coordinatesä¸­subpixel ç²¾åº¦çš„æœ€å¤§bitæ•°
+    physicalDeviceLimits.subTexelPrecisionBits;//ä¸ºæ²¿ç€ç”¨äºminification and magnification filtersçš„imageçš„è½´çš„åˆ’åˆ†ç²¾åº¦çš„bitæ•°ï¼Œå…¶ä»–è¯¦æƒ…è§p3916
+    physicalDeviceLimits.mipmapPrecisionBits;//æ˜¯ç¡®å®šæ¯ä¸ª mip çº§å¯¹ mip è¿‡æ»¤ç»“æœçš„è´¡çŒ®æ—¶ï¼Œå¯¹ mipmap åŠ è½½çš„ LOD è®¡ç®—è¿›è¡Œæˆªæ–­æ—¶æ‰€ä½¿ç”¨çš„ä½æ•°çš„æ•°é‡ï¼Œè¯¦æƒ…è§p3916
+    physicalDeviceLimits.maxDrawIndexedIndexValue;//ä¸ºä½¿ç”¨32-bit ç´¢å¼•æ—¶indexed draw callså¯ä»¥ä½¿ç”¨çš„æœ€å¤§ç´¢å¼•å€¼
+    physicalDeviceLimits.maxDrawIndirectCount;//ä¸º indirect drawing calls å¯ä»¥æ”¯æŒçš„æœ€å¤§draw count
+    physicalDeviceLimits.maxSamplerLodBias;//ä¸ºabsolute sampler LOD biasçš„æœ€å¤§å€¼ï¼Œå…¶ä»–ä¿¡æ¯è§p3917
+    physicalDeviceLimits.maxSamplerAnisotropy;//ä¸º sampler anisotropyçš„æœ€å¤§çº§åˆ«ï¼Œå…¶ä»–ä¿¡æ¯è§p3917
+    physicalDeviceLimits.maxViewports;//ä¸º active viewportsçš„æœ€å¤§æ•°é‡ï¼Œå…¶ä»–ä¿¡æ¯è§p3917
+    physicalDeviceLimits.maxViewportDimensions[2];//ä¸º viewportç»´åº¦widthä»¥åŠheightçš„æœ€å¤§å€¼ï¼Œå…¶ä»–ä¿¡æ¯è§p3917
+    physicalDeviceLimits.viewportBoundsRange[2];//ä¸ºviewportçš„cornerså¿…é¡»åŒ…å«çš„ [minimum, maximum]èŒƒå›´ï¼Œå…¶ä»–ä¿¡æ¯è§p3917
+    physicalDeviceLimits.viewportSubPixelBits;//ä¸ºviewportè¾¹ç•Œçš„subpixelç²¾åº¦çš„bitæ•°
+    physicalDeviceLimits.minMemoryMapAlignment;//ä¸ºåœ¨hostå†…å­˜ç©ºé—´åˆ†é…çš„host å¯è§çš„memoryå†…å­˜åˆ†é…çš„å­—èŠ‚å¯¹é½çš„æœ€å°å€¼ï¼Œå…¶ä»–ä¿¡æ¯è§p3917
+    physicalDeviceLimits.minTexelBufferOffsetAlignment;//ä¸ºtexel buffersçš„ VkBufferViewCreateInfo.offsetæ‰€å¯¹çš„å­—èŠ‚å¯¹é½çš„æœ€å°å€¼ï¼Œä¸º2çš„æŒ‡æ•°ï¼Œå…¶ä»–ä¿¡æ¯è§p3917
+    physicalDeviceLimits.minUniformBufferOffsetAlignment;//ä¸ºuniform buffersçš„ VkDescriptorBufferInfo.offsetæ‰€å¯¹çš„å­—èŠ‚å¯¹é½çš„æœ€å°å€¼ï¼Œä¸º2çš„æŒ‡æ•°ï¼Œå…¶ä»–ä¿¡æ¯è§p3917
+    physicalDeviceLimits.minStorageBufferOffsetAlignment;//ä¸ºstorage buffersçš„ VkDescriptorBufferInfo.offsetæ‰€å¯¹çš„å­—èŠ‚å¯¹é½çš„æœ€å°å€¼ï¼Œä¸º2çš„æŒ‡æ•°ï¼Œå…¶ä»–ä¿¡æ¯è§p3917
+    physicalDeviceLimits.minTexelOffset;//ä¸ºä»»ä½•OpImageSample* æˆ–è€… OpImageFetch*  imageæŒ‡ä»¤çš„ConstOffset imageæ“ä½œç¬¦çš„æœ€å°åç§»å€¼
+    physicalDeviceLimits.maxTexelOffset;//ä¸ºä»»ä½•OpImageSample* æˆ–è€… OpImageFetch*  imageæŒ‡ä»¤çš„ConstOffset imageæ“ä½œç¬¦çš„æœ€å¤§åç§»å€¼
+    physicalDeviceLimits.minTexelGatherOffset;//ä¸ºä»»ä½• OpImage*Gather  imageæŒ‡ä»¤çš„Offset, ConstOffset, æˆ–è€… ConstOffsets imageæ“ä½œç¬¦çš„æœ€å°åç§»å€¼
+    physicalDeviceLimits.maxTexelGatherOffset;//ä¸ºä»»ä½• OpImage*Gather  imageæŒ‡ä»¤çš„Offset, ConstOffset, æˆ–è€… ConstOffsets imageæ“ä½œç¬¦çš„æœ€å°åç§»å€¼
+    physicalDeviceLimits.minInterpolationOffset;//ä¸ºInterpolateAtOffset æ‹“å±•æŒ‡ä»¤çš„ Offsetæ“ä½œç¬¦çš„æœ€å°è´Ÿæœ€å°å€¼
+    physicalDeviceLimits.maxInterpolationOffset;//ä¸ºInterpolateAtOffset æ‹“å±•æŒ‡ä»¤çš„ Offsetæ“ä½œç¬¦çš„æœ€å¤§æ­£æœ€å¤§å€¼
+    physicalDeviceLimits.subPixelInterpolationOffsetBits;//æ‰§è¡ŒInterpolateAtOffsetæ‰©å±•æŒ‡ä»¤æ—¶ï¼Œxå’Œyåç§»é‡å¯èƒ½ä»¥å®šç‚¹å€¼è¿›è¡Œèˆå…¥çš„å°æ•°ä½æ•°
+    physicalDeviceLimits.maxFramebufferWidth;//ä¸ºframebufferçš„widthçš„æœ€å¤§å€¼
+    physicalDeviceLimits.maxFramebufferHeight;//ä¸ºframebufferçš„heightçš„æœ€å¤§å€¼
+    physicalDeviceLimits.maxFramebufferLayers;//ä¸ºframebufferä¸­å«æœ‰layersçš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.framebufferColorSampleCounts;//ä¸ºæ‰€æœ‰æ ¼å¼ä¸ºæµ®ç‚¹æˆ–è€…é¡¶ç‚¹æ•°çš„framebuffer color attachmentsæ”¯æŒçš„sample countsçš„VkSampleCountFlagBitsç»„åˆå€¼
+    physicalDeviceLimits.framebufferDepthSampleCounts;//ä¸ºæ‰€æœ‰æ ¼å¼åŒ…å«depthçš„framebuffer depth/stencil attachmentsæ”¯æŒçš„depth sample countsçš„VkSampleCountFlagBitsç»„åˆå€¼
+    physicalDeviceLimits.framebufferStencilSampleCounts;//ä¸ºæ‰€æœ‰æ ¼å¼åŒ…å«stencilçš„framebuffer depth/stencil attachmentsæ”¯æŒçš„stencil sample countsçš„VkSampleCountFlagBitsç»„åˆå€¼
+    physicalDeviceLimits.framebufferNoAttachmentsSampleCounts;//ä¸ºä¸å«é™„ä»¶çš„subpass æ”¯æŒçš„sample countsçš„VkSampleCountFlagBitsç»„åˆå€¼
+    physicalDeviceLimits.maxColorAttachments;//ä¸ºrender passä¸­subpasså¯ä»¥ä½¿ç”¨çš„color attachmentsçš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.sampledImageColorSampleCounts;// VkSampleCountFlagBits ç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜æ‰€æœ‰ä»¥VK_IMAGE_TILING_OPTIMALåˆ›å»ºçš„ï¼ŒusageåŒ…å«VK_IMAGE_USAGE_SAMPLED_BITä¸”å«non-integer color formatçš„æ‰€æœ‰2D imageæ”¯æŒçš„sample counts
+    physicalDeviceLimits.sampledImageIntegerSampleCounts;// VkSampleCountFlagBits ç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜æ‰€æœ‰ä»¥VK_IMAGE_TILING_OPTIMALåˆ›å»ºçš„ï¼ŒusageåŒ…å«VK_IMAGE_USAGE_SAMPLED_BITä¸”å«integer color formatçš„æ‰€æœ‰2D imageæ”¯æŒçš„sample counts
+    physicalDeviceLimits.sampledImageDepthSampleCounts;// VkSampleCountFlagBits ç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜æ‰€æœ‰ä»¥VK_IMAGE_TILING_OPTIMALåˆ›å»ºçš„ï¼ŒusageåŒ…å«VK_IMAGE_USAGE_SAMPLED_BITä¸”å«depth formatçš„æ‰€æœ‰2D imageæ”¯æŒçš„sample counts
+    physicalDeviceLimits.sampledImageStencilSampleCounts;// VkSampleCountFlagBits ç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜æ‰€æœ‰ä»¥VK_IMAGE_TILING_OPTIMALåˆ›å»ºçš„ï¼ŒusageåŒ…å«VK_IMAGE_USAGE_SAMPLED_BITä¸”å«stencil formatçš„æ‰€æœ‰2D imageæ”¯æŒçš„sample counts
+    physicalDeviceLimits.storageImageSampleCounts;// VkSampleCountFlagBits ç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜æ‰€æœ‰ä»¥VK_IMAGE_TILING_OPTIMALåˆ›å»ºçš„ï¼ŒusageåŒ…å«VK_IMAGE_USAGE_STORAGE_BITçš„æ‰€æœ‰2D imageæ”¯æŒçš„sample counts
+    physicalDeviceLimits.maxSampleMaskWords;//ä¸ºä»¥SampleMask å£°æ˜çš„å˜é‡çš„æ•°ç»„å…ƒç´ çš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.timestampComputeAndGraphics;//æŒ‡æ˜æ”¯æŒæ‰€æœ‰graphics ä»¥åŠ compute queuesä¸Šçš„timestampsï¼Œå…¶ä»–ä¿¡æ¯è§p3919
+    physicalDeviceLimits.timestampPeriod;//ä¸ºtimastamp queryå¢åŠ 1æ‰€éœ€è¦çš„çº³ç§’æ•°
+    physicalDeviceLimits.maxClipDistances;//ä¸ºå¯ç”¨äºä¸€ä¸ªshader stageçš„ clip distancesçš„æœ€å¤§å€¼
+    physicalDeviceLimits.maxCullDistances;//ä¸ºå¯ç”¨äºä¸€ä¸ªshader stageçš„ cull distancesçš„æœ€å¤§å€¼
+    physicalDeviceLimits.maxCombinedClipAndCullDistances;//ä¸ºå¯ç”¨äºä¸€ä¸ªshader stageçš„ç»‘å®šçš„ clipä»¥åŠcull distancesçš„æ•°é‡çš„æœ€å¤§å€¼
+    physicalDeviceLimits.discreteQueuePriorities;//ä¸ºåŸºäº VkDeviceQueueCreateInfo::pQueuePrioritiesä¸­æ¯ä¸ªå…ƒç´ å€¼çš„å¯ä»¥æ’åˆ—ä¸ºé˜Ÿåˆ—çš„ç¦»æ•£å±æ€§çš„æœ€å¤§æ•°é‡
+    physicalDeviceLimits.pointSizeRange[2];//ä¸ºpoint sizeï¼ˆ PointSizeå†…åµŒå˜é‡ï¼‰æ”¯æŒçš„å¤§å°èŒƒå›´[minimum,maximum]
+    physicalDeviceLimits.lineWidthRange[2];//ä¸ºçº¿å®½ï¼ˆ å…‰æ …åŒ– lineWidthå‚æ•°ï¼‰æ”¯æŒçš„å¤§å°èŒƒå›´[minimum,maximum]
+    physicalDeviceLimits.pointSizeGranularity;//ä¸ºpoint sizeï¼ˆ PointSizeå†…åµŒå˜é‡ï¼‰æ”¯æŒçš„å¤§å°èŒƒå›´å†…çš„é—´éš”ç²’åº¦
+    physicalDeviceLimits.lineWidthGranularity;//ä¸ºçº¿å®½ï¼ˆ å…‰æ …åŒ– lineWidthå‚æ•°ï¼‰æ”¯æŒçš„å¤§å°èŒƒå›´å†…çš„é—´éš”ç²’åº¦
+    physicalDeviceLimits.strictLines;//æŒ‡æ˜æ˜¯å¦çº¿æŒ‰ç…§é¦–é€‰æ–¹æ³•è¿›è¡Œå…‰æ …åŒ–ï¼Œå…¶ä»–ä¿¡æ¯è§p3920
+    physicalDeviceLimits.standardSampleLocations;//æŒ‡æ˜æ˜¯å¦å…‰æ …åŒ–æ˜¯å¦æ˜¯å¦æ ‡å‡†çš„é‡‡æ ·ç‚¹ä½ç½®ï¼Œå…¶ä»–ä¿¡æ¯è§p3920
+    physicalDeviceLimits.optimalBufferCopyOffsetAlignment;//ä¸ºæœ€ä½³çš„buffer offset alignmentï¼ŒåŸºäºå­—èŠ‚ï¼Œå¯¹å‘½ä»¤:vkCmdCopyBufferToImage2, vkCmdCopyBufferToImage, vkCmdCopyImageToBuffer2, vkCmdCopyImageToBuffer,vkCopyMemoryToImageEXT ä»¥åŠ vkCopyImageToMemoryEXT
+    physicalDeviceLimits.optimalBufferCopyRowPitchAlignment;//ä¸ºæœ€ä½³çš„buffer row pitch alignmentï¼ŒåŸºäºå­—èŠ‚ï¼Œå¯¹å‘½ä»¤:vkCmdCopyBufferToImage2, vkCmdCopyBufferToImage, vkCmdCopyImageToBuffer2, vkCmdCopyImageToBuffer,vkCopyMemoryToImageEXT ä»¥åŠ vkCopyImageToMemoryEXT
+    physicalDeviceLimits.nonCoherentAtomSize;//ä¸ºå¹¶å‘è®¿é—® host-mapped device memoryæ—¶çš„å†…å­˜èŒƒå›´çš„å­—èŠ‚å¤§å°ä»¥åŠå­—èŠ‚å¯¹é½
 
 
     //VkSampleCountFlagBits
     VkSampleCountFlagBits sampleCountFlagBits{};
     /*
-    VK_SAMPLE_COUNT_1_BIT  : Ö¸Ã÷Ò»¸öimageº¬ one sample per pixel.
-    VK_SAMPLE_COUNT_2_BIT  : Ö¸Ã÷Ò»¸öimageº¬ 2 samples per pixel.
-    VK_SAMPLE_COUNT_4_BIT  : Ö¸Ã÷Ò»¸öimageº¬ 4 samples per pixel.
-    VK_SAMPLE_COUNT_8_BIT  : Ö¸Ã÷Ò»¸öimageº¬ 8 samples per pixel.
-    VK_SAMPLE_COUNT_16_BIT  : Ö¸Ã÷Ò»¸öimageº¬ 16 samples per pixel.
-    VK_SAMPLE_COUNT_32_BIT  : Ö¸Ã÷Ò»¸öimageº¬ 32 samples per pixel.
-    VK_SAMPLE_COUNT_64_BIT  : Ö¸Ã÷Ò»¸öimageº¬ 64 samples per pixel.  
+    VK_SAMPLE_COUNT_1_BIT  : æŒ‡æ˜ä¸€ä¸ªimageå« one sample per pixel.
+    VK_SAMPLE_COUNT_2_BIT  : æŒ‡æ˜ä¸€ä¸ªimageå« 2 samples per pixel.
+    VK_SAMPLE_COUNT_4_BIT  : æŒ‡æ˜ä¸€ä¸ªimageå« 4 samples per pixel.
+    VK_SAMPLE_COUNT_8_BIT  : æŒ‡æ˜ä¸€ä¸ªimageå« 8 samples per pixel.
+    VK_SAMPLE_COUNT_16_BIT  : æŒ‡æ˜ä¸€ä¸ªimageå« 16 samples per pixel.
+    VK_SAMPLE_COUNT_32_BIT  : æŒ‡æ˜ä¸€ä¸ªimageå« 32 samples per pixel.
+    VK_SAMPLE_COUNT_64_BIT  : æŒ‡æ˜ä¸€ä¸ªimageå« 64 samples per pixel.  
     */
 
 
-    //»ñÈ¡ÊôĞÔºÍlimit
+    //è·å–å±æ€§å’Œlimit
     VkPhysicalDeviceProperties2 physicalDeviceProperties2{};
     vkGetPhysicalDeviceProperties2(physicalDevice, &physicalDeviceProperties2);
 
 
-    //VkPhysicalDevicePushDescriptorPropertiesKHR  ,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDevicePushDescriptorPropertiesKHR  ,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDevicePushDescriptorPropertiesKHR physicalDevicePushDescriptorPropertiesKHR{};
     physicalDevicePushDescriptorPropertiesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR;
     physicalDevicePushDescriptorPropertiesKHR.pNext = nullptr;
-    physicalDevicePushDescriptorPropertiesKHR.maxPushDescriptors = 10;//Ö¸Ã÷ÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR´´½¨µÄdescriptor set layoutÖĞ¿ÉÒÔÊ¹ÓÃµÄdescriptorsµÄ×î´óÊıÁ¿
+    physicalDevicePushDescriptorPropertiesKHR.maxPushDescriptors = 10;//æŒ‡æ˜ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHRåˆ›å»ºçš„descriptor set layoutä¸­å¯ä»¥ä½¿ç”¨çš„descriptorsçš„æœ€å¤§æ•°é‡
 
 
-    //VkPhysicalDeviceMultiviewProperties  £¬µÈ¼ÛÓÚVkPhysicalDeviceMultiviewPropertiesKHR,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMultiviewProperties  ï¼Œç­‰ä»·äºVkPhysicalDeviceMultiviewPropertiesKHR,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceMultiviewProperties physicalDeviceMultiviewProperties{};
     physicalDeviceMultiviewProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES;
     physicalDeviceMultiviewProperties.pNext = nullptr;
-    physicalDeviceMultiviewProperties.maxMultiviewViewCount = 10;//Îª±ÈÔÚsubpassÖĞ¿ÉÒÔÊ¹ÓÃµÄviewportË÷ÒıµÄ×î´óÖµ´ó1µÄÊı
-    physicalDeviceMultiviewProperties.maxMultiviewInstanceIndex = 10;//ÎªÒ»¸öÔÚmultiview render pass ÊµÀıÖĞ¼ÇÂ¼µÄ»æÖÆÃüÁîÄÜÉú³ÉµÄinstance indexµÄ×î´óÖµ
+    physicalDeviceMultiviewProperties.maxMultiviewViewCount = 10;//ä¸ºæ¯”åœ¨subpassä¸­å¯ä»¥ä½¿ç”¨çš„viewportç´¢å¼•çš„æœ€å¤§å€¼å¤§1çš„æ•°
+    physicalDeviceMultiviewProperties.maxMultiviewInstanceIndex = 10;//ä¸ºä¸€ä¸ªåœ¨multiview render pass å®ä¾‹ä¸­è®°å½•çš„ç»˜åˆ¶å‘½ä»¤èƒ½ç”Ÿæˆçš„instance indexçš„æœ€å¤§å€¼
 
 
-    //VkPhysicalDeviceFloatControlsProperties  £¬µÈ¼ÛÓÚVkPhysicalDeviceFloatControlsPropertiesKHR,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceFloatControlsProperties  ï¼Œç­‰ä»·äºVkPhysicalDeviceFloatControlsPropertiesKHR,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceFloatControlsProperties physicalDeviceFloatControlsProperties{};
     physicalDeviceFloatControlsProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR;
     physicalDeviceFloatControlsProperties.pNext = nullptr;
-    physicalDeviceFloatControlsProperties.denormBehaviorIndependence = VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL;//Ò»¸ö VkShaderFloatControlsIndependence Öµ£¬Ö¸Ã÷ denorm behaviorÄÜ¹»»òÕßÈçºÎÊÇ·ñ¶Ô²»Í¬µÄbit¿í¶È½øĞĞ¶ÀÁ¢µÄÉèÖÃ
+    physicalDeviceFloatControlsProperties.denormBehaviorIndependence = VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL;//ä¸€ä¸ª VkShaderFloatControlsIndependence å€¼ï¼ŒæŒ‡æ˜ denorm behaviorèƒ½å¤Ÿæˆ–è€…å¦‚ä½•æ˜¯å¦å¯¹ä¸åŒçš„bitå®½åº¦è¿›è¡Œç‹¬ç«‹çš„è®¾ç½®
     /*
-    VkShaderFloatControlsIndependence µÈ¼ÛÓÚVkShaderFloatControlsIndependenceKHR:
-    VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_32_BIT_ONLY : Ö¸Ã÷shader float controls¶Ô32-bit¸¡µãÊıµÄ¿ÉÒÔµ¥¶ÀÉèÖÃ£¬ÆäËû¸¡µãÀàĞÍµÄbit¿í¶È±ØĞëºÍÆäËûµÄÉèÖÃÎªÏàÍ¬µÄ
-    VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL specifies : Ö¸Ã÷shader float controls¶ÔËùÓĞbit¿í¶È¿ÉÒÔµ¥¶ÀÉèÖÃ
-    VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_NONE specifies : Ö¸Ã÷shader float controls¶ÔËùÓĞbit¿í¶È±ØĞëÉèÖÃÎªÏàÍ¬µÄ
+    VkShaderFloatControlsIndependence ç­‰ä»·äºVkShaderFloatControlsIndependenceKHR:
+    VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_32_BIT_ONLY : æŒ‡æ˜shader float controlså¯¹32-bitæµ®ç‚¹æ•°çš„å¯ä»¥å•ç‹¬è®¾ç½®ï¼Œå…¶ä»–æµ®ç‚¹ç±»å‹çš„bitå®½åº¦å¿…é¡»å’Œå…¶ä»–çš„è®¾ç½®ä¸ºç›¸åŒçš„
+    VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL : æŒ‡å®š : æŒ‡æ˜shader float controlså¯¹æ‰€æœ‰bitå®½åº¦å¯ä»¥å•ç‹¬è®¾ç½®
+    VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_NONE : æŒ‡å®š : æŒ‡æ˜shader float controlså¯¹æ‰€æœ‰bitå®½åº¦å¿…é¡»è®¾ç½®ä¸ºç›¸åŒçš„
 
     */
-    physicalDeviceFloatControlsProperties.roundingModeIndependence = VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL;//Ò»¸ö VkShaderFloatControlsIndependence Öµ£¬Ö¸Ã÷rounding modesÄÜ¹»»òÕßÈçºÎÊÇ·ñ¶Ô²»Í¬µÄbit¿í¶È½øĞĞ¶ÀÁ¢µÄÉèÖÃ
-    physicalDeviceFloatControlsProperties.shaderSignedZeroInfNanPreserveFloat16 = VK_FALSE;//Ö¸Ã÷·ûºÅ0£¬NaNÒÔ¼°¡À¡ŞÊÇ·ñÔÚ16-bit¸¡µã¼ÆËãÖĞ±»±£Áô£¬Ò²Ö¸Ã÷ÊÇ·ñSignedZeroInfNanPreserve execution mode¿ÉÓÃÓÚ16-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderSignedZeroInfNanPreserveFloat32 = VK_FALSE;//Ö¸Ã÷·ûºÅ0£¬NaNÒÔ¼°¡À¡ŞÊÇ·ñÔÚ32-bit¸¡µã¼ÆËãÖĞ±»±£Áô£¬Ò²Ö¸Ã÷ÊÇ·ñSignedZeroInfNanPreserve execution mode¿ÉÓÃÓÚ32-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderSignedZeroInfNanPreserveFloat64 = VK_FALSE;//Ö¸Ã÷·ûºÅ0£¬NaNÒÔ¼°¡À¡ŞÊÇ·ñÔÚ64-bit¸¡µã¼ÆËãÖĞ±»±£Áô£¬Ò²Ö¸Ã÷ÊÇ·ñSignedZeroInfNanPreserve execution mode¿ÉÓÃÓÚ64-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderDenormPreserveFloat16 = VK_FALSE;//Ö¸Ã÷denormals ·Ç¹æ¸ñ»¯ÊıÊÇ·ñÔÚ16-bit¸¡µã¼ÆËãÖĞ±»±£Áô£¬Ò²Ö¸Ã÷ÊÇ·ñDenormPreserve execution mode¿ÉÓÃÓÚ16-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderDenormPreserveFloat32 = VK_FALSE;//Ö¸Ã÷denormals ·Ç¹æ¸ñ»¯ÊıÊÇ·ñÔÚ32-bit¸¡µã¼ÆËãÖĞ±»±£Áô£¬Ò²Ö¸Ã÷ÊÇ·ñDenormPreserve execution mode¿ÉÓÃÓÚ32-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderDenormPreserveFloat64 = VK_FALSE;//Ö¸Ã÷denormals ·Ç¹æ¸ñ»¯ÊıÊÇ·ñÔÚ64-bit¸¡µã¼ÆËãÖĞ±»±£Áô£¬Ò²Ö¸Ã÷ÊÇ·ñDenormPreserve execution mode¿ÉÓÃÓÚ64-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderDenormFlushToZeroFloat16 = VK_FALSE;//Ö¸Ã÷denormals ·Ç¹æ¸ñ»¯ÊıÊÇ·ñÔÚ16-bit¸¡µã¼ÆËãÖĞ±»Ë¢ĞÂÎª0£¬Ò²Ö¸Ã÷ÊÇ·ñDenormFlushToZero execution mode¿ÉÓÃÓÚ16-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderDenormFlushToZeroFloat32 = VK_FALSE;//Ö¸Ã÷denormals ·Ç¹æ¸ñ»¯ÊıÊÇ·ñÔÚ32-bit¸¡µã¼ÆËãÖĞ±»Ë¢ĞÂÎª0£¬Ò²Ö¸Ã÷ÊÇ·ñDenormFlushToZero execution mode¿ÉÓÃÓÚ32-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderDenormFlushToZeroFloat64 = VK_FALSE;//Ö¸Ã÷denormals ·Ç¹æ¸ñ»¯ÊıÊÇ·ñÔÚ64-bit¸¡µã¼ÆËãÖĞ±»Ë¢ĞÂÎª0£¬Ò²Ö¸Ã÷ÊÇ·ñDenormFlushToZero execution mode¿ÉÓÃÓÚ64-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderRoundingModeRTEFloat16 = VK_FALSE;//Ö¸Ã÷ÊÇ·ñÔÚ16-bit¸¡µãËã·¨ºÍ×ª»»Ö¸ÁîÖĞÖ§³Öround-to-nearest-even rounding mode£¬Ò²Ö¸Ã÷ÊÇ·ñRoundingModeRTE execution mode¿ÉÓÃÓÚ16-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderRoundingModeRTEFloat32 = VK_FALSE;//Ö¸Ã÷ÊÇ·ñÔÚ32-bit¸¡µãËã·¨ºÍ×ª»»Ö¸ÁîÖĞÖ§³Öround-to-nearest-even rounding mode£¬Ò²Ö¸Ã÷ÊÇ·ñRoundingModeRTE execution mode¿ÉÓÃÓÚ32-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderRoundingModeRTEFloat64 = VK_FALSE;//Ö¸Ã÷ÊÇ·ñÔÚ64-bit¸¡µãËã·¨ºÍ×ª»»Ö¸ÁîÖĞÖ§³Öround-to-nearest-even rounding mode£¬Ò²Ö¸Ã÷ÊÇ·ñRoundingModeRTE execution mode¿ÉÓÃÓÚ64-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderRoundingModeRTZFloat16 = VK_FALSE;//Ö¸Ã÷ÊÇ·ñÔÚ16-bit¸¡µãËã·¨ºÍ×ª»»Ö¸ÁîÖĞÖ§³Öround-towards-zero rounding mode£¬Ò²Ö¸Ã÷ÊÇ·ñRoundingModeRTZ execution mode¿ÉÓÃÓÚ16-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderRoundingModeRTZFloat32 = VK_FALSE;//Ö¸Ã÷ÊÇ·ñÔÚ32-bit¸¡µãËã·¨ºÍ×ª»»Ö¸ÁîÖĞÖ§³Öround-towards-zero rounding mode£¬Ò²Ö¸Ã÷ÊÇ·ñRoundingModeRTZ execution mode¿ÉÓÃÓÚ32-bit¸¡µãÀàĞÍ
-    physicalDeviceFloatControlsProperties.shaderRoundingModeRTZFloat64 = VK_FALSE;//Ö¸Ã÷ÊÇ·ñÔÚ64-bit¸¡µãËã·¨ºÍ×ª»»Ö¸ÁîÖĞÖ§³Öround-towards-zero rounding mode£¬Ò²Ö¸Ã÷ÊÇ·ñRoundingModeRTZ execution mode¿ÉÓÃÓÚ64-bit¸¡µãÀàĞÍ
+    physicalDeviceFloatControlsProperties.roundingModeIndependence = VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL;//ä¸€ä¸ª VkShaderFloatControlsIndependence å€¼ï¼ŒæŒ‡æ˜rounding modesèƒ½å¤Ÿæˆ–è€…å¦‚ä½•æ˜¯å¦å¯¹ä¸åŒçš„bitå®½åº¦è¿›è¡Œç‹¬ç«‹çš„è®¾ç½®
+    physicalDeviceFloatControlsProperties.shaderSignedZeroInfNanPreserveFloat16 = VK_FALSE;//æŒ‡æ˜ç¬¦å·0ï¼ŒNaNä»¥åŠÂ±âˆæ˜¯å¦åœ¨16-bitæµ®ç‚¹è®¡ç®—ä¸­è¢«ä¿ç•™ï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦SignedZeroInfNanPreserve execution modeå¯ç”¨äº16-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderSignedZeroInfNanPreserveFloat32 = VK_FALSE;//æŒ‡æ˜ç¬¦å·0ï¼ŒNaNä»¥åŠÂ±âˆæ˜¯å¦åœ¨32-bitæµ®ç‚¹è®¡ç®—ä¸­è¢«ä¿ç•™ï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦SignedZeroInfNanPreserve execution modeå¯ç”¨äº32-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderSignedZeroInfNanPreserveFloat64 = VK_FALSE;//æŒ‡æ˜ç¬¦å·0ï¼ŒNaNä»¥åŠÂ±âˆæ˜¯å¦åœ¨64-bitæµ®ç‚¹è®¡ç®—ä¸­è¢«ä¿ç•™ï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦SignedZeroInfNanPreserve execution modeå¯ç”¨äº64-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderDenormPreserveFloat16 = VK_FALSE;//æŒ‡æ˜denormals éè§„æ ¼åŒ–æ•°æ˜¯å¦åœ¨16-bitæµ®ç‚¹è®¡ç®—ä¸­è¢«ä¿ç•™ï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦DenormPreserve execution modeå¯ç”¨äº16-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderDenormPreserveFloat32 = VK_FALSE;//æŒ‡æ˜denormals éè§„æ ¼åŒ–æ•°æ˜¯å¦åœ¨32-bitæµ®ç‚¹è®¡ç®—ä¸­è¢«ä¿ç•™ï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦DenormPreserve execution modeå¯ç”¨äº32-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderDenormPreserveFloat64 = VK_FALSE;//æŒ‡æ˜denormals éè§„æ ¼åŒ–æ•°æ˜¯å¦åœ¨64-bitæµ®ç‚¹è®¡ç®—ä¸­è¢«ä¿ç•™ï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦DenormPreserve execution modeå¯ç”¨äº64-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderDenormFlushToZeroFloat16 = VK_FALSE;//æŒ‡æ˜denormals éè§„æ ¼åŒ–æ•°æ˜¯å¦åœ¨16-bitæµ®ç‚¹è®¡ç®—ä¸­è¢«åˆ·æ–°ä¸º0ï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦DenormFlushToZero execution modeå¯ç”¨äº16-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderDenormFlushToZeroFloat32 = VK_FALSE;//æŒ‡æ˜denormals éè§„æ ¼åŒ–æ•°æ˜¯å¦åœ¨32-bitæµ®ç‚¹è®¡ç®—ä¸­è¢«åˆ·æ–°ä¸º0ï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦DenormFlushToZero execution modeå¯ç”¨äº32-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderDenormFlushToZeroFloat64 = VK_FALSE;//æŒ‡æ˜denormals éè§„æ ¼åŒ–æ•°æ˜¯å¦åœ¨64-bitæµ®ç‚¹è®¡ç®—ä¸­è¢«åˆ·æ–°ä¸º0ï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦DenormFlushToZero execution modeå¯ç”¨äº64-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderRoundingModeRTEFloat16 = VK_FALSE;//æŒ‡æ˜æ˜¯å¦åœ¨16-bitæµ®ç‚¹ç®—æ³•å’Œè½¬æ¢æŒ‡ä»¤ä¸­æ”¯æŒround-to-nearest-even rounding modeï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦RoundingModeRTE execution modeå¯ç”¨äº16-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderRoundingModeRTEFloat32 = VK_FALSE;//æŒ‡æ˜æ˜¯å¦åœ¨32-bitæµ®ç‚¹ç®—æ³•å’Œè½¬æ¢æŒ‡ä»¤ä¸­æ”¯æŒround-to-nearest-even rounding modeï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦RoundingModeRTE execution modeå¯ç”¨äº32-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderRoundingModeRTEFloat64 = VK_FALSE;//æŒ‡æ˜æ˜¯å¦åœ¨64-bitæµ®ç‚¹ç®—æ³•å’Œè½¬æ¢æŒ‡ä»¤ä¸­æ”¯æŒround-to-nearest-even rounding modeï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦RoundingModeRTE execution modeå¯ç”¨äº64-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderRoundingModeRTZFloat16 = VK_FALSE;//æŒ‡æ˜æ˜¯å¦åœ¨16-bitæµ®ç‚¹ç®—æ³•å’Œè½¬æ¢æŒ‡ä»¤ä¸­æ”¯æŒround-towards-zero rounding modeï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦RoundingModeRTZ execution modeå¯ç”¨äº16-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderRoundingModeRTZFloat32 = VK_FALSE;//æŒ‡æ˜æ˜¯å¦åœ¨32-bitæµ®ç‚¹ç®—æ³•å’Œè½¬æ¢æŒ‡ä»¤ä¸­æ”¯æŒround-towards-zero rounding modeï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦RoundingModeRTZ execution modeå¯ç”¨äº32-bitæµ®ç‚¹ç±»å‹
+    physicalDeviceFloatControlsProperties.shaderRoundingModeRTZFloat64 = VK_FALSE;//æŒ‡æ˜æ˜¯å¦åœ¨64-bitæµ®ç‚¹ç®—æ³•å’Œè½¬æ¢æŒ‡ä»¤ä¸­æ”¯æŒround-towards-zero rounding modeï¼Œä¹ŸæŒ‡æ˜æ˜¯å¦RoundingModeRTZ execution modeå¯ç”¨äº64-bitæµ®ç‚¹ç±»å‹
 
 
 
-    //VkPhysicalDeviceDiscardRectanglePropertiesEXT ,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceDiscardRectanglePropertiesEXT ,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceDiscardRectanglePropertiesEXT physicalDeviceDiscardRectanglePropertiesEXT{};
     physicalDeviceDiscardRectanglePropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT;
     physicalDeviceDiscardRectanglePropertiesEXT.pNext = nullptr;
-    physicalDeviceDiscardRectanglePropertiesEXT.maxDiscardRectangles = 10;//Îª¿ÉÒÔÖ¸¶¨µÄactive discard rectanglesµÄ×î´óÊıÁ¿
+    physicalDeviceDiscardRectanglePropertiesEXT.maxDiscardRectangles = 10;//ä¸ºå¯ä»¥æŒ‡å®šçš„active discard rectanglesçš„æœ€å¤§æ•°é‡
 
 
-    //VkPhysicalDeviceSampleLocationsPropertiesEXT ,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceSampleLocationsPropertiesEXT ,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceSampleLocationsPropertiesEXT physicalDeviceSampleLocationsPropertiesEXT{};
     physicalDeviceSampleLocationsPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT;
     physicalDeviceSampleLocationsPropertiesEXT.pNext = nullptr;
-    physicalDeviceSampleLocationsPropertiesEXT.sampleLocationSampleCounts;//Îª VkSampleCountFlagBits ×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷sample countÖ§³Ö×Ô¶¨Òå²ÉÑùµãÎ»ÖÃ
-    physicalDeviceSampleLocationsPropertiesEXT.maxSampleLocationGridSize;//Îª sampleLocationSampleCounts ÖĞÖ§³ÖµÄËùÓĞ²ÉÑùµã¿ÉÒÔÓĞ²»Í¬Î»ÖÃµÄ pixel grid µÄ×î´ó´óĞ¡
-    physicalDeviceSampleLocationsPropertiesEXT.sampleLocationCoordinateRange[2];//ÎªÖ§³ÖµÄsample location coordinatesµÄ·¶Î§
-	physicalDeviceSampleLocationsPropertiesEXT.sampleLocationSubPixelBits;//sample locationsµÄsubpixel¾«¶ÈµÄbitÊı
-	physicalDeviceSampleLocationsPropertiesEXT.variableSampleLocations;//Ö¸¶¨ÓÃÓÚËùÓĞpipelineµÄÇÒ°ó¶¨µ½command bufferÖĞsubpassÖĞµÄsample locations±ØĞëÆ¥Åä£¬Èç¹ûÎªVK_TRUE£¬ÔòÔÊĞí²»Í¬subpassµÄsample locations²»Í¬£¬·ñÔò±ØĞëÏàÍ¬
+    physicalDeviceSampleLocationsPropertiesEXT.sampleLocationSampleCounts;//ä¸º VkSampleCountFlagBits ç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜sample countæ”¯æŒè‡ªå®šä¹‰é‡‡æ ·ç‚¹ä½ç½®
+    physicalDeviceSampleLocationsPropertiesEXT.maxSampleLocationGridSize;//ä¸º sampleLocationSampleCounts ä¸­æ”¯æŒçš„æ‰€æœ‰é‡‡æ ·ç‚¹å¯ä»¥æœ‰ä¸åŒä½ç½®çš„ pixel grid çš„æœ€å¤§å¤§å°
+    physicalDeviceSampleLocationsPropertiesEXT.sampleLocationCoordinateRange[2];//ä¸ºæ”¯æŒçš„sample location coordinatesçš„èŒƒå›´
+	physicalDeviceSampleLocationsPropertiesEXT.sampleLocationSubPixelBits;//sample locationsçš„subpixelç²¾åº¦çš„bitæ•°
+	physicalDeviceSampleLocationsPropertiesEXT.variableSampleLocations;//æŒ‡å®šç”¨äºæ‰€æœ‰pipelineçš„ä¸”ç»‘å®šåˆ°command bufferä¸­subpassä¸­çš„sample locationså¿…é¡»åŒ¹é…ï¼Œå¦‚æœä¸ºVK_TRUEï¼Œåˆ™å…è®¸ä¸åŒsubpassçš„sample locationsä¸åŒï¼Œå¦åˆ™å¿…é¡»ç›¸åŒ
 
 
-    //VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT ,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT ,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT physicalDeviceLegacyVertexAttributesPropertiesEXT{};
-    physicalDeviceLegacyVertexAttributesPropertiesEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Ã»ÓĞ¶¨ÒåÕâÀï¶¨ÒåÎª·Ç·¨Öµ
+    physicalDeviceLegacyVertexAttributesPropertiesEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
     physicalDeviceLegacyVertexAttributesPropertiesEXT.pNext = nullptr;
-    physicalDeviceLegacyVertexAttributesPropertiesEXT.nativeUnalignedPerformance = VK_FALSE;//Ö¸¶¨Ïà±ÈÓÚ aligned fetches£¬unaligned vertex fetches ²»»áÔì³ÉÃ÷ÏÔµÄÏÔÊ¾ÎÊÌâ
+    physicalDeviceLegacyVertexAttributesPropertiesEXT.nativeUnalignedPerformance = VK_FALSE;//æŒ‡å®šç›¸æ¯”äº aligned fetchesï¼Œunaligned vertex fetches ä¸ä¼šé€ æˆæ˜æ˜¾çš„æ˜¾ç¤ºé—®é¢˜
 
 
-    //VkPhysicalDeviceExternalMemoryHostPropertiesEXT ,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceExternalMemoryHostPropertiesEXT ,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceExternalMemoryHostPropertiesEXT physicalDeviceExternalMemoryHostPropertiesEXT{};
     physicalDeviceExternalMemoryHostPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT;
     physicalDeviceExternalMemoryHostPropertiesEXT.pNext = nullptr;
-	physicalDeviceExternalMemoryHostPropertiesEXT.minImportedHostPointerAlignment = VK_FALSE;//Ö¸Ã÷¿ÉÒÔµ¼Èëµ½vulkan ¶ÔÏóµÄhostÖ¸ÕëµÄ»ùµØÖ·ÒÔ¼°´óĞ¡µÄ×Ö½Ú¶ÔÆëÒªÇó£¬±ØĞëÊÇ2µÄÖ¸Êı
+	physicalDeviceExternalMemoryHostPropertiesEXT.minImportedHostPointerAlignment = VK_FALSE;//æŒ‡æ˜å¯ä»¥å¯¼å…¥åˆ°vulkan å¯¹è±¡çš„hostæŒ‡é’ˆçš„åŸºåœ°å€ä»¥åŠå¤§å°çš„å­—èŠ‚å¯¹é½è¦æ±‚ï¼Œå¿…é¡»æ˜¯2çš„æŒ‡æ•°
 
 
-    //VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX ,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX ,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX physicalDeviceMultiviewPerViewAttributesPropertiesNVX{};
     physicalDeviceMultiviewPerViewAttributesPropertiesNVX.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
     physicalDeviceMultiviewPerViewAttributesPropertiesNVX.pNext = nullptr;
-    physicalDeviceMultiviewPerViewAttributesPropertiesNVX.perViewPositionAllComponents = VK_FALSE;//Ö¸Ã÷ÊÇ·ñÖ§³Ö per-viewµÄÎ»ÖÃµÄÆäËû·ÖÁ¿¿ÉÒÔºÍX·ÖÁ¿²»Í¬
+    physicalDeviceMultiviewPerViewAttributesPropertiesNVX.perViewPositionAllComponents = VK_FALSE;//æŒ‡æ˜æ˜¯å¦æ”¯æŒ per-viewçš„ä½ç½®çš„å…¶ä»–åˆ†é‡å¯ä»¥å’ŒXåˆ†é‡ä¸åŒ
 
 
-    //VkPhysicalDevicePointClippingProperties£¬µÈÍ¬ÓÚ VkPhysicalDevicePointClippingPropertiesKHR ,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDevicePointClippingPropertiesï¼Œç­‰åŒäº VkPhysicalDevicePointClippingPropertiesKHR ,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDevicePointClippingProperties physicalDevicePointClippingProperties{};
     physicalDevicePointClippingProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES;
     physicalDevicePointClippingProperties.pNext = nullptr;
-	physicalDevicePointClippingProperties.pointClippingBehavior;//Ò»¸öVkPointClippingBehavior ÖµÖ¸Ã÷Ö§³ÖµÄpoint clipping behavior
+	physicalDevicePointClippingProperties.pointClippingBehavior;//ä¸€ä¸ªVkPointClippingBehavior å€¼æŒ‡æ˜æ”¯æŒçš„point clipping behavior
 
 
-    //VkPhysicalDeviceSubgroupProperties  ,¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceSubgroupProperties  ,å¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceSubgroupProperties physicalDeviceSubgroupProperties{};
     physicalDeviceSubgroupProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
     physicalDeviceSubgroupProperties.pNext = nullptr;
-    physicalDeviceSubgroupProperties.subgroupSize;//ÎªÃ¿¸ösubgroupµÄÄ¬ÈÏµ÷ÓÃ´ÎÊı£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3930
-	physicalDeviceSubgroupProperties.supportedStages;//Îª VkShaderStageFlagBits ×éºÏÖµ£¬ÃèÊöÖ§³Ösubgroup scopeµÄgroup operationsµÄshader stages£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3930
-	physicalDeviceSubgroupProperties.supportedOperations;//Îª VkSubgroupFeatureFlagBits ×éºÏÖµ£¬ÃèÊödeviceÖ§³Ösubgroup scopeµÄsubgroup operations ¼¯ºÏ£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3930
+    physicalDeviceSubgroupProperties.subgroupSize;//ä¸ºæ¯ä¸ªsubgroupçš„é»˜è®¤è°ƒç”¨æ¬¡æ•°ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3930
+	physicalDeviceSubgroupProperties.supportedStages;//ä¸º VkShaderStageFlagBits ç»„åˆå€¼ï¼Œæè¿°æ”¯æŒsubgroup scopeçš„group operationsçš„shader stagesï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3930
+	physicalDeviceSubgroupProperties.supportedOperations;//ä¸º VkSubgroupFeatureFlagBits ç»„åˆå€¼ï¼Œæè¿°deviceæ”¯æŒsubgroup scopeçš„subgroup operations é›†åˆï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3930
     /*
     VkSubgroupFeatureFlagBits:
-    VK_SUBGROUP_FEATURE_BASIC_BIT : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_VOTE_BIT : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformVoteµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_ARITHMETIC_BIT : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformArithmeticµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_BALLOT_BIT specifies : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformBallotµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_SHUFFLE_BIT : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformShuffleµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformShuffleRelativeµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_CLUSTERED_BIT : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformClusteredµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_QUAD_BIT : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformQuadµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformPartitionedNVµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_ROTATE_BIT_KHR : Ö¸Ã÷device½«½ÓÊÜ°üº¬GroupNonUniformRotateKHRµÄSPIR-V shader modules¡£
-    VK_SUBGROUP_FEATURE_ROTATE_CLUSTERED_BIT_KHR : Ö¸Ã÷device½«½ÓÊÜÊ¹ÓÃOpGroupNonUniformRotateKHRµÄClusterSize²Ù×÷·ûµÄSPIR-V shader modules¡£    
+    VK_SUBGROUP_FEATURE_BASIC_BIT : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_VOTE_BIT : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformVoteçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_ARITHMETIC_BIT : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformArithmeticçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_BALLOT_BIT : æŒ‡å®š : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformBallotçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_SHUFFLE_BIT : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformShuffleçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformShuffleRelativeçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_CLUSTERED_BIT : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformClusteredçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_QUAD_BIT : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformQuadçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformPartitionedNVçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_ROTATE_BIT_KHR : æŒ‡æ˜deviceå°†æ¥å—åŒ…å«GroupNonUniformRotateKHRçš„SPIR-V shader modulesã€‚
+    VK_SUBGROUP_FEATURE_ROTATE_CLUSTERED_BIT_KHR : æŒ‡æ˜deviceå°†æ¥å—ä½¿ç”¨OpGroupNonUniformRotateKHRçš„ClusterSizeæ“ä½œç¬¦çš„SPIR-V shader modulesã€‚    
     
     */
-    physicalDeviceSubgroupProperties.quadOperationsInAllStages;//Ö¸Ã÷ÊÇ·ñËùÓĞstagesÖ§³Ö quad group operations£¬»òÕßÖ»ÊÇÏŞÖÆµ½fragment ÒÔ¼° compute stages.
+    physicalDeviceSubgroupProperties.quadOperationsInAllStages;//æŒ‡æ˜æ˜¯å¦æ‰€æœ‰stagesæ”¯æŒ quad group operationsï¼Œæˆ–è€…åªæ˜¯é™åˆ¶åˆ°fragment ä»¥åŠ compute stages.
 
 
 
-    //VkPhysicalDeviceSubgroupSizeControlProperties  £¬µÈ¼ÛÓÚVkPhysicalDeviceSubgroupSizeControlPropertiesEXT £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceSubgroupSizeControlProperties  ï¼Œç­‰ä»·äºVkPhysicalDeviceSubgroupSizeControlPropertiesEXT ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceSubgroupSizeControlProperties physicalDeviceSubgroupSizeControlProperties{};
     physicalDeviceSubgroupSizeControlProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
     physicalDeviceSubgroupSizeControlProperties.pNext = nullptr;
-    physicalDeviceSubgroupSizeControlProperties.minSubgroupSize;//ÎªdeviceÖ§³ÖµÄ×îĞ¡µÄsubgroup ´óĞ¡£¬Îª2µÄÖ¸Êı£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3932
-    physicalDeviceSubgroupSizeControlProperties.maxSubgroupSize;//ÎªdeviceÖ§³ÖµÄ×î´óµÄsubgroup ´óĞ¡£¬Îª2µÄÖ¸Êı£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3932
-    physicalDeviceSubgroupSizeControlProperties.maxComputeWorkgroupSubgroups;//ÎªworkgroupÖĞÖ§³ÖµÄsubgroup µÄ×î´óÊıÁ¿
-    physicalDeviceSubgroupSizeControlProperties.requiredSubgroupSizeStages;//VkShaderStageFlagsÖµ£¬ÎªĞèÒªÖ¸¶¨subgroup´óĞ¡µÄÒ»×éshader stage×éºÏ
+    physicalDeviceSubgroupSizeControlProperties.minSubgroupSize;//ä¸ºdeviceæ”¯æŒçš„æœ€å°çš„subgroup å¤§å°ï¼Œä¸º2çš„æŒ‡æ•°ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3932
+    physicalDeviceSubgroupSizeControlProperties.maxSubgroupSize;//ä¸ºdeviceæ”¯æŒçš„æœ€å¤§çš„subgroup å¤§å°ï¼Œä¸º2çš„æŒ‡æ•°ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3932
+    physicalDeviceSubgroupSizeControlProperties.maxComputeWorkgroupSubgroups;//ä¸ºworkgroupä¸­æ”¯æŒçš„subgroup çš„æœ€å¤§æ•°é‡
+    physicalDeviceSubgroupSizeControlProperties.requiredSubgroupSizeStages;//VkShaderStageFlagså€¼ï¼Œä¸ºéœ€è¦æŒ‡å®šsubgroupå¤§å°çš„ä¸€ç»„shader stageç»„åˆ
 
 
-    //VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT physicalDeviceBlendOperationAdvancedPropertiesEXT{};
     physicalDeviceBlendOperationAdvancedPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT;
     physicalDeviceBlendOperationAdvancedPropertiesEXT.pNext = nullptr;
-    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendMaxColorAttachments;//¶ÔÓÚÊ¹ÓÃ advanced blend operationµÄpipeline£¬¸ÃÖµÎªsubpassÖĞ¿ÉÒÔÊ¹ÓÃµÄcolor attachmentË÷ÒıµÄ×î´óÖµ¼Ó1
-    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendIndependentBlend;//Ö¸Ã÷Ã¿¸öatttachmentµÄadvanced blend operationsÊÇ·ñ¿ÉÒÔ²»Í¬
-    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendNonPremultipliedSrcColor;//Ö¸Ã÷ÊÇ·ñsource color ¿ÉÒÔÈÏ×÷ÊÇnon-premultipliedµÄ£¬Èç¹ûÎªVK_FALSE£¬Ôò VkPipelineColorBlendAdvancedStateCreateInfoEXT::srcPremultiplied ±ØĞëÎªVK_TRUE
-    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendNonPremultipliedDstColor;//Ö¸Ã÷ÊÇ·ñdestination color ¿ÉÒÔÈÏ×÷ÊÇnon-premultipliedµÄ£¬Èç¹ûÎªVK_FALSE£¬Ôò VkPipelineColorBlendAdvancedStateCreateInfoEXT::dstPremultiplied ±ØĞëÎªVK_TRUE
-    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendCorrelatedOverlap;//Ö¸Ã÷ÊÇ·ñoverlap mode ¿ÉÒÔÈÏ×÷ÊÇÏà¹ØµÄ£¬Èç¹ûÎªVK_FALSE£¬Ôò VkPipelineColorBlendAdvancedStateCreateInfoEXT::blendOverlap ±ØĞëÎªVK_BLEND_OVERLAP_UNCORRELATED_EXT
-    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendAllOperations;//Ö¸Ã÷ÊÇ·ñÖ§³ÖËùÓĞµÄadvanced blend operationÃ¶¾ÙÖµ
+    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendMaxColorAttachments;//å¯¹äºä½¿ç”¨ advanced blend operationçš„pipelineï¼Œè¯¥å€¼ä¸ºsubpassä¸­å¯ä»¥ä½¿ç”¨çš„color attachmentç´¢å¼•çš„æœ€å¤§å€¼åŠ 1
+    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendIndependentBlend;//æŒ‡æ˜æ¯ä¸ªatttachmentçš„advanced blend operationsæ˜¯å¦å¯ä»¥ä¸åŒ
+    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendNonPremultipliedSrcColor;//æŒ‡æ˜æ˜¯å¦source color å¯ä»¥è®¤ä½œæ˜¯non-premultipliedçš„ï¼Œå¦‚æœä¸ºVK_FALSEï¼Œåˆ™ VkPipelineColorBlendAdvancedStateCreateInfoEXT::srcPremultiplied å¿…é¡»ä¸ºVK_TRUE
+    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendNonPremultipliedDstColor;//æŒ‡æ˜æ˜¯å¦destination color å¯ä»¥è®¤ä½œæ˜¯non-premultipliedçš„ï¼Œå¦‚æœä¸ºVK_FALSEï¼Œåˆ™ VkPipelineColorBlendAdvancedStateCreateInfoEXT::dstPremultiplied å¿…é¡»ä¸ºVK_TRUE
+    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendCorrelatedOverlap;//æŒ‡æ˜æ˜¯å¦overlap mode å¯ä»¥è®¤ä½œæ˜¯ç›¸å…³çš„ï¼Œå¦‚æœä¸ºVK_FALSEï¼Œåˆ™ VkPipelineColorBlendAdvancedStateCreateInfoEXT::blendOverlap å¿…é¡»ä¸ºVK_BLEND_OVERLAP_UNCORRELATED_EXT
+    physicalDeviceBlendOperationAdvancedPropertiesEXT.advancedBlendAllOperations;//æŒ‡æ˜æ˜¯å¦æ”¯æŒæ‰€æœ‰çš„advanced blend operationæšä¸¾å€¼
 
 
-    //VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT physicalDeviceVertexAttributeDivisorPropertiesEXT{};
     physicalDeviceVertexAttributeDivisorPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT;
     physicalDeviceVertexAttributeDivisorPropertiesEXT.pNext = nullptr;
-    physicalDeviceVertexAttributeDivisorPropertiesEXT.maxVertexAttribDivisor;//Îªµ± instanced rendering ¿ªÆôÊ±£¬ÄÜ¹»ÖØ¸´vertex attribute dataµÄinstancesµÄ×î´óÊıÁ¿
+    physicalDeviceVertexAttributeDivisorPropertiesEXT.maxVertexAttribDivisor;//ä¸ºå½“ instanced rendering å¼€å¯æ—¶ï¼Œèƒ½å¤Ÿé‡å¤vertex attribute dataçš„instancesçš„æœ€å¤§æ•°é‡
 
 
-    //VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR physicalDeviceVertexAttributeDivisorPropertiesKHR{};
-    physicalDeviceVertexAttributeDivisorPropertiesKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Ã»ÓĞ¶¨ÒåÕâÀï¶¨ÒåÎª·Ç·¨Öµ
+    physicalDeviceVertexAttributeDivisorPropertiesKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
     physicalDeviceVertexAttributeDivisorPropertiesKHR.pNext = nullptr;
-    physicalDeviceVertexAttributeDivisorPropertiesKHR.maxVertexAttribDivisor;//Îªµ± instanced rendering ¿ªÆôÊ±£¬ÄÜ¹»ÖØ¸´vertex attribute dataµÄinstancesµÄ×î´óÊıÁ¿
-    physicalDeviceVertexAttributeDivisorPropertiesKHR.supportsNonZeroFirstInstance;//Ö¸Ã÷ÊÇ·ñÖ§³Öµ±VkVertexInputBindingDivisorDescriptionKHR::divisor ²»Îª1 Ê±drawing commandsµÄfirstInstance ²ÎÊıÊÇ·ñ¿ÉÒÔÎª ·Ç0Öµ
+    physicalDeviceVertexAttributeDivisorPropertiesKHR.maxVertexAttribDivisor;//ä¸ºå½“ instanced rendering å¼€å¯æ—¶ï¼Œèƒ½å¤Ÿé‡å¤vertex attribute dataçš„instancesçš„æœ€å¤§æ•°é‡
+    physicalDeviceVertexAttributeDivisorPropertiesKHR.supportsNonZeroFirstInstance;//æŒ‡æ˜æ˜¯å¦æ”¯æŒå½“VkVertexInputBindingDivisorDescriptionKHR::divisor ä¸ä¸º1 æ—¶drawing commandsçš„firstInstance å‚æ•°æ˜¯å¦å¯ä»¥ä¸º é0å€¼
 
 
-    //VkPhysicalDeviceSamplerFilterMinmaxProperties £¬µÈ¼ÛÓÚVkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceSamplerFilterMinmaxProperties ï¼Œç­‰ä»·äºVkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceSamplerFilterMinmaxProperties physicalDeviceSamplerFilterMinmaxProperties{};
     physicalDeviceSamplerFilterMinmaxProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES;
     physicalDeviceSamplerFilterMinmaxProperties.pNext = nullptr;
-    physicalDeviceSamplerFilterMinmaxProperties.filterMinmaxSingleComponentFormats;//Ö¸Ã÷ÊÇ·ñ×îĞ¡µÄformat¼¯ºÏÖ§³Ömin/max filtering£¬ÏêÏ¸ĞÅÏ¢¼ûp3936
-    physicalDeviceSamplerFilterMinmaxProperties.filterMinmaxImageComponentMapping;//Ö¸Ã÷ÊÇ·ñÖ§³Öµ±½øĞĞmin/max filtering µÄÊ±ºò¿ÉÒÔ¶Ôimage×önon-identity component mapping
+    physicalDeviceSamplerFilterMinmaxProperties.filterMinmaxSingleComponentFormats;//æŒ‡æ˜æ˜¯å¦æœ€å°çš„formaté›†åˆæ”¯æŒmin/max filteringï¼Œè¯¦ç»†ä¿¡æ¯è§p3936
+    physicalDeviceSamplerFilterMinmaxProperties.filterMinmaxImageComponentMapping;//æŒ‡æ˜æ˜¯å¦æ”¯æŒå½“è¿›è¡Œmin/max filtering çš„æ—¶å€™å¯ä»¥å¯¹imageåšnon-identity component mapping
 
 
-    //VkPhysicalDeviceProtectedMemoryProperties £¬µÈ¼ÛÓÚVkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceProtectedMemoryProperties ï¼Œç­‰ä»·äºVkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceProtectedMemoryProperties physicalDeviceProtectedMemoryProperties{};
     physicalDeviceProtectedMemoryProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES;
     physicalDeviceProtectedMemoryProperties.pNext = nullptr;
-    physicalDeviceProtectedMemoryProperties.protectedNoFault;//Ö¸¶¨µ±Ó¦ÓÃ³ÌĞò³¢ÊÔÔÚÊÜ±£»¤µÄ¶ÓÁĞ²Ù×÷ÖĞĞ´ÈëÎ´ÊÜ±£»¤µÄÄÚ´æ£¬´Ó protected memory ¶ÁÈ¡unprotected queue ²Ù×÷£¬»òÔÚ protected queue ²Ù×÷ÖĞÖ´ĞĞ²éÑ¯¡£Èç¹û´ËÏŞÖÆVK_TRUE£¬Ôò´ËÀàĞ´Èë½«±»¶ªÆú»òĞ´Èë¡¢¶ÁÈ¡ºÍ²éÑ¯µÄÎ´¶¨ÒåÖµ½«·µ»Ø undefined Öµ¡£Èç¹û´ËÏŞÖÆVK_FALSE£¬ÔòÓ¦ÓÃ³ÌĞò²»µÃÖ´ĞĞÕâĞ©²Ù×÷
+    physicalDeviceProtectedMemoryProperties.protectedNoFault;//æŒ‡å®šå½“åº”ç”¨ç¨‹åºå°è¯•åœ¨å—ä¿æŠ¤çš„é˜Ÿåˆ—æ“ä½œä¸­å†™å…¥æœªå—ä¿æŠ¤çš„å†…å­˜ï¼Œä» protected memory è¯»å–unprotected queue æ“ä½œï¼Œæˆ–åœ¨ protected queue æ“ä½œä¸­æ‰§è¡ŒæŸ¥è¯¢ã€‚å¦‚æœæ­¤é™åˆ¶VK_TRUEï¼Œåˆ™æ­¤ç±»å†™å…¥å°†è¢«ä¸¢å¼ƒæˆ–å†™å…¥ã€è¯»å–å’ŒæŸ¥è¯¢çš„æœªå®šä¹‰å€¼å°†è¿”å› undefined å€¼ã€‚å¦‚æœæ­¤é™åˆ¶VK_FALSEï¼Œåˆ™åº”ç”¨ç¨‹åºä¸å¾—æ‰§è¡Œè¿™äº›æ“ä½œ
 
 
-    //VkPhysicalDeviceMaintenance3Properties £¬µÈ¼ÛÓÚVkPhysicalDeviceMaintenance3PropertiesKHR £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMaintenance3Properties ï¼Œç­‰ä»·äºVkPhysicalDeviceMaintenance3PropertiesKHR ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceMaintenance3Properties physicalDeviceMaintenance3Properties{};
     physicalDeviceMaintenance3Properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES;
     physicalDeviceMaintenance3Properties.pNext = nullptr;
-    physicalDeviceMaintenance3Properties.maxPerSetDescriptors;//ÎªÒ»¸ödescriptor setÖĞËùÓĞÀàĞÍdescriptorsµÄ×ÜºÍµÄ×î´óÊıÁ¿
-    physicalDeviceMaintenance3Properties.maxMemoryAllocationSize;//Îª¿ÉÒÔ´´½¨µÄmemory allocationµÄ×î´ó´óĞ¡
+    physicalDeviceMaintenance3Properties.maxPerSetDescriptors;//ä¸ºä¸€ä¸ªdescriptor setä¸­æ‰€æœ‰ç±»å‹descriptorsçš„æ€»å’Œçš„æœ€å¤§æ•°é‡
+    physicalDeviceMaintenance3Properties.maxMemoryAllocationSize;//ä¸ºå¯ä»¥åˆ›å»ºçš„memory allocationçš„æœ€å¤§å¤§å°
 
 
-    //VkPhysicalDeviceMaintenance4Properties £¬µÈ¼ÛÓÚVkPhysicalDeviceMaintenance4PropertiesKHR £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMaintenance4Properties ï¼Œç­‰ä»·äºVkPhysicalDeviceMaintenance4PropertiesKHR ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceMaintenance4Properties physicalDeviceMaintenance4Properties{};
     physicalDeviceMaintenance4Properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_PROPERTIES;
     physicalDeviceMaintenance4Properties.pNext = nullptr;
-    physicalDeviceMaintenance4Properties.maxBufferSize;//Îª¿ÉÒÔ´´½¨µÄVkBufferµÄ×î´ó´óĞ¡
+    physicalDeviceMaintenance4Properties.maxBufferSize;//ä¸ºå¯ä»¥åˆ›å»ºçš„VkBufferçš„æœ€å¤§å¤§å°
 
 
-    //VkPhysicalDeviceMaintenance5PropertiesKHR  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMaintenance5PropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceMaintenance5PropertiesKHR physicalDeviceMaintenance5PropertiesKHR{};
     physicalDeviceMaintenance5PropertiesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_5_PROPERTIES_KHR;
     physicalDeviceMaintenance5PropertiesKHR.pNext = nullptr;
-    physicalDeviceMaintenance5PropertiesKHR.earlyFragmentMultisampleCoverageAfterSampleCounting;//Ö¸Ã÷fragment shading ÒÔ¼° multisample coverage operations ÊÇ·ñÔÚÓĞEarlyFragmentTests execution modeµÄfragment shadersµÄ sample counting Ö®ºóÖ´ĞĞ
-    physicalDeviceMaintenance5PropertiesKHR.earlyFragmentSampleMaskTestBeforeSampleCounting;//Ö¸Ã÷sample mask test operation ÊÇ·ñÔÚÓĞEarlyFragmentTests execution modeµÄfragment shadersµÄ sample counting Ö®Ç°Ö´ĞĞ
-    physicalDeviceMaintenance5PropertiesKHR.depthStencilSwizzleOneSupport;//Ö¸Ã÷ÓĞVK_COMPONENT_SWIZZLE_ONE µÄdepth/stencil texturing operationsÊÇ·ñÓĞ¶¨ÒåĞĞÎª
-    physicalDeviceMaintenance5PropertiesKHR.polygonModePointSize;//Ö¸Ã÷ÓĞVK_POLYGON_MODE_POINTµÄpoligonsµÄ¹âÕ¤»¯µÄpoint sizeÊÇ·ñÓÉ PointSize ¿ØÖÆ
-    physicalDeviceMaintenance5PropertiesKHR.nonStrictSinglePixelWideLinesUseParallelogram;//Ö¸Ã÷Ïß¿íÎª1.0µÄ non-strict line ÊÇ·ñÊ¹ÓÃBresenham Ëã·¨ÒÔÆ½ĞĞËÄ±ßĞÎµÄ·½Ê½½øĞĞ¹âÕ¤»¯
-    physicalDeviceMaintenance5PropertiesKHR.nonStrictWideLinesUseParallelogram;//Ö¸Ã÷Ïß¿í´óÓÚ1.0µÄ non-strict line ÊÇ·ñÊ¹ÓÃBresenham Ëã·¨ÒÔÆ½ĞĞËÄ±ßĞÎµÄ·½Ê½½øĞĞ¹âÕ¤»¯
+    physicalDeviceMaintenance5PropertiesKHR.earlyFragmentMultisampleCoverageAfterSampleCounting;//æŒ‡æ˜fragment shading ä»¥åŠ multisample coverage operations æ˜¯å¦åœ¨æœ‰EarlyFragmentTests execution modeçš„fragment shadersçš„ sample counting ä¹‹åæ‰§è¡Œ
+    physicalDeviceMaintenance5PropertiesKHR.earlyFragmentSampleMaskTestBeforeSampleCounting;//æŒ‡æ˜sample mask test operation æ˜¯å¦åœ¨æœ‰EarlyFragmentTests execution modeçš„fragment shadersçš„ sample counting ä¹‹å‰æ‰§è¡Œ
+    physicalDeviceMaintenance5PropertiesKHR.depthStencilSwizzleOneSupport;//æŒ‡æ˜æœ‰VK_COMPONENT_SWIZZLE_ONE çš„depth/stencil texturing operationsæ˜¯å¦æœ‰å®šä¹‰è¡Œä¸º
+    physicalDeviceMaintenance5PropertiesKHR.polygonModePointSize;//æŒ‡æ˜æœ‰VK_POLYGON_MODE_POINTçš„poligonsçš„å…‰æ …åŒ–çš„point sizeæ˜¯å¦ç”± PointSize æ§åˆ¶
+    physicalDeviceMaintenance5PropertiesKHR.nonStrictSinglePixelWideLinesUseParallelogram;//æŒ‡æ˜çº¿å®½ä¸º1.0çš„ non-strict line æ˜¯å¦ä½¿ç”¨Bresenham ç®—æ³•ä»¥å¹³è¡Œå››è¾¹å½¢çš„æ–¹å¼è¿›è¡Œå…‰æ …åŒ–
+    physicalDeviceMaintenance5PropertiesKHR.nonStrictWideLinesUseParallelogram;//æŒ‡æ˜çº¿å®½å¤§äº1.0çš„ non-strict line æ˜¯å¦ä½¿ç”¨Bresenham ç®—æ³•ä»¥å¹³è¡Œå››è¾¹å½¢çš„æ–¹å¼è¿›è¡Œå…‰æ …åŒ–
 
 
-    //VkPhysicalDeviceMaintenance6PropertiesKHR  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMaintenance6PropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceMaintenance6PropertiesKHR physicalDeviceMaintenance6PropertiesKHR{};
-    physicalDeviceMaintenance6PropertiesKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Ã»ÓĞ¶¨ÒåÕâÀï¶¨ÒåÎª·Ç·¨Öµ
+    physicalDeviceMaintenance6PropertiesKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
     physicalDeviceMaintenance6PropertiesKHR.pNext = nullptr;
-    physicalDeviceMaintenance6PropertiesKHR.blockTexelViewCompatibleMultipleLayers;//Ö¸Ã÷ÊÇ·ñÖ§³Ö´´½¨Ò»¸öº¬ VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT ÇÒsubresourceRangeµÄlayerCount´óÓÚ1µÄimage view
-    physicalDeviceMaintenance6PropertiesKHR.maxCombinedImageSamplerDescriptorCount;//Ö¸Ã÷Ö§³Ö¿ÉÒÔÓÃÀ´·ÃÎÊÈÎºÎĞèÒªÒ»¸öY¡äCBCR conversion µÄ¸ñÊ½µÄcombined image samplerµÄ×î´óÊıÁ¿
-    physicalDeviceMaintenance6PropertiesKHR.fragmentShadingRateClampCombinerInputs;//Ö¸Ã÷ÊÇ·ñÏŞÖÆÊäÈëÎª combiner operations ¼ûp2696
+    physicalDeviceMaintenance6PropertiesKHR.blockTexelViewCompatibleMultipleLayers;//æŒ‡æ˜æ˜¯å¦æ”¯æŒåˆ›å»ºä¸€ä¸ªå« VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT ä¸”subresourceRangeçš„layerCountå¤§äº1çš„image view
+    physicalDeviceMaintenance6PropertiesKHR.maxCombinedImageSamplerDescriptorCount;//æŒ‡æ˜æ”¯æŒå¯ä»¥ç”¨æ¥è®¿é—®ä»»ä½•éœ€è¦ä¸€ä¸ªYâ€²CBCR conversion çš„æ ¼å¼çš„combined image samplerçš„æœ€å¤§æ•°é‡
+    physicalDeviceMaintenance6PropertiesKHR.fragmentShadingRateClampCombinerInputs;//æŒ‡æ˜æ˜¯å¦é™åˆ¶è¾“å…¥ä¸º combiner operations è§p2696
 
 
-    //VkPhysicalDeviceMeshShaderPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMeshShaderPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceMeshShaderPropertiesNV physicalDeviceMeshShaderPropertiesNV{};
     physicalDeviceMeshShaderPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV;
     physicalDeviceMeshShaderPropertiesNV.pNext = nullptr;
-    physicalDeviceMeshShaderPropertiesNV.maxDrawMeshTasksCount;//Îª¿ÉÒÔ±»Ò»¸ödraw mesh tasks command ´¥·¢µÄlocal workgroups µÄ×î´óÊıÁ¿
-    physicalDeviceMeshShaderPropertiesNV.maxTaskWorkGroupInvocations;//ÎªÒ»¸ölocal workgroup ¿ÉÒÔ´¥·¢µÄtask shaderµ÷ÓÃµÄ×î´ó×ÜÊı£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3941
-    physicalDeviceMeshShaderPropertiesNV.maxTaskWorkGroupSize[3];//Îª local task workgroupµÄÎ¬¶ÈµÄ×î´ó´óĞ¡£¬·Ö±ğ¶ÔÓÚX£¬Y£¬ZÎ¬¶È£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3941
-    physicalDeviceMeshShaderPropertiesNV.maxTaskTotalMemorySize;//Îªtask shader ¿ÉÓÃÓÚshared ÒÔ¼°output memory°ó¶¨µÄ×î´ó×Ö½Ú´óĞ¡
-    physicalDeviceMeshShaderPropertiesNV.maxTaskOutputCount;//ÎªÒ»¸ötask shader workgroup ¿ÉÒÔ·¢ÉäµÄoutput tasksµÄ×î´óÊıÁ¿
-    physicalDeviceMeshShaderPropertiesNV.maxMeshWorkGroupInvocations;//ÎªÒ»¸ölocal workgroup ¿ÉÒÔ´¥·¢µÄmesh shaderµ÷ÓÃµÄ×î´ó×ÜÊı£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3941
-    physicalDeviceMeshShaderPropertiesNV.maxMeshWorkGroupSize[3];//Îª local mesh workgroupµÄÎ¬¶ÈµÄ×î´ó´óĞ¡£¬·Ö±ğ¶ÔÓÚX£¬Y£¬ZÎ¬¶È£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3941
-    physicalDeviceMeshShaderPropertiesNV.maxMeshTotalMemorySize;//Îªmesh shader ¿ÉÓÃÓÚshared ÒÔ¼°output memory°ó¶¨µÄ×î´ó×Ö½Ú´óĞ¡
-    physicalDeviceMeshShaderPropertiesNV.maxMeshOutputVertices;//Îªmesh shader Êä³ö¿ÉÒÔ´æ´¢µÄ¶¥µãµÄ×î´óÊıÁ¿
-    physicalDeviceMeshShaderPropertiesNV.maxMeshOutputPrimitives;//Îªmesh shader Êä³ö¿ÉÒÔ´æ´¢µÄÍ¼ÔªµÄ×î´óÊıÁ¿
-    physicalDeviceMeshShaderPropertiesNV.maxMeshMultiviewViewCount;//Îªmesh shader ¿ÉÒÔÊ¹ÓÃµÄmultiview viewsµÄ×î´óÊıÁ¿
-    physicalDeviceMeshShaderPropertiesNV.meshOutputPerVertexGranularity;//Îªmesh vertex outputs·ÖÅäµÄÁ£¶È£¬¿ÉÓÃÓÚmesh shader¼ÆËãÊ¹ÓÃµÄÄÚ´æ¿Õ¼ä£¬Ğ¡ÓÚmaxMeshTotalMemorySize
-    physicalDeviceMeshShaderPropertiesNV.meshOutputPerPrimitiveGranularity;//Îªper-primitive mesh outputs·ÖÅäµÄÁ£¶È£¬¿ÉÓÃÓÚmesh shader¼ÆËãÊ¹ÓÃµÄÄÚ´æ¿Õ¼ä£¬Ğ¡ÓÚmaxMeshTotalMemorySize
+    physicalDeviceMeshShaderPropertiesNV.maxDrawMeshTasksCount;//ä¸ºå¯ä»¥è¢«ä¸€ä¸ªdraw mesh tasks command è§¦å‘çš„local workgroups çš„æœ€å¤§æ•°é‡
+    physicalDeviceMeshShaderPropertiesNV.maxTaskWorkGroupInvocations;//ä¸ºä¸€ä¸ªlocal workgroup å¯ä»¥è§¦å‘çš„task shaderè°ƒç”¨çš„æœ€å¤§æ€»æ•°ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3941
+    physicalDeviceMeshShaderPropertiesNV.maxTaskWorkGroupSize[3];//ä¸º local task workgroupçš„ç»´åº¦çš„æœ€å¤§å¤§å°ï¼Œåˆ†åˆ«å¯¹äºXï¼ŒYï¼ŒZç»´åº¦ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3941
+    physicalDeviceMeshShaderPropertiesNV.maxTaskTotalMemorySize;//ä¸ºtask shader å¯ç”¨äºshared ä»¥åŠoutput memoryç»‘å®šçš„æœ€å¤§å­—èŠ‚å¤§å°
+    physicalDeviceMeshShaderPropertiesNV.maxTaskOutputCount;//ä¸ºä¸€ä¸ªtask shader workgroup å¯ä»¥å‘å°„çš„output tasksçš„æœ€å¤§æ•°é‡
+    physicalDeviceMeshShaderPropertiesNV.maxMeshWorkGroupInvocations;//ä¸ºä¸€ä¸ªlocal workgroup å¯ä»¥è§¦å‘çš„mesh shaderè°ƒç”¨çš„æœ€å¤§æ€»æ•°ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3941
+    physicalDeviceMeshShaderPropertiesNV.maxMeshWorkGroupSize[3];//ä¸º local mesh workgroupçš„ç»´åº¦çš„æœ€å¤§å¤§å°ï¼Œåˆ†åˆ«å¯¹äºXï¼ŒYï¼ŒZç»´åº¦ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3941
+    physicalDeviceMeshShaderPropertiesNV.maxMeshTotalMemorySize;//ä¸ºmesh shader å¯ç”¨äºshared ä»¥åŠoutput memoryç»‘å®šçš„æœ€å¤§å­—èŠ‚å¤§å°
+    physicalDeviceMeshShaderPropertiesNV.maxMeshOutputVertices;//ä¸ºmesh shader è¾“å‡ºå¯ä»¥å­˜å‚¨çš„é¡¶ç‚¹çš„æœ€å¤§æ•°é‡
+    physicalDeviceMeshShaderPropertiesNV.maxMeshOutputPrimitives;//ä¸ºmesh shader è¾“å‡ºå¯ä»¥å­˜å‚¨çš„å›¾å…ƒçš„æœ€å¤§æ•°é‡
+    physicalDeviceMeshShaderPropertiesNV.maxMeshMultiviewViewCount;//ä¸ºmesh shader å¯ä»¥ä½¿ç”¨çš„multiview viewsçš„æœ€å¤§æ•°é‡
+    physicalDeviceMeshShaderPropertiesNV.meshOutputPerVertexGranularity;//ä¸ºmesh vertex outputsåˆ†é…çš„ç²’åº¦ï¼Œå¯ç”¨äºmesh shaderè®¡ç®—ä½¿ç”¨çš„å†…å­˜ç©ºé—´ï¼Œå°äºmaxMeshTotalMemorySize
+    physicalDeviceMeshShaderPropertiesNV.meshOutputPerPrimitiveGranularity;//ä¸ºper-primitive mesh outputsåˆ†é…çš„ç²’åº¦ï¼Œå¯ç”¨äºmesh shaderè®¡ç®—ä½¿ç”¨çš„å†…å­˜ç©ºé—´ï¼Œå°äºmaxMeshTotalMemorySize
 
 
-    //VkPhysicalDeviceMeshShaderPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMeshShaderPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceMeshShaderPropertiesEXT physicalDeviceMeshShaderPropertiesEXT{};
     physicalDeviceMeshShaderPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT;
     physicalDeviceMeshShaderPropertiesEXT.pNext = nullptr;
-    physicalDeviceMeshShaderPropertiesEXT.maxTaskWorkGroupTotalCount;//Îª¿ÉÒÔ±»Ò»¸ömesh draw tasks command ´¥·¢µÄlocal workgroups ×ÜÊıµÄ×î´óÊıÁ¿
-    physicalDeviceMeshShaderPropertiesEXT.maxTaskWorkGroupCount[3];//Îª¿ÉÒÔ±»Ò»¸ömesh draw tasks command ´¥·¢µÄlocal workgroups µÄ×î´óÊıÁ¿£¬·Ö±ğ¶ÔÓÚÎ¬¶ÈX£¬Y£¬Z£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3943
-    physicalDeviceMeshShaderPropertiesEXT.maxTaskWorkGroupInvocations;//ÎªÒ»¸ölocal workgroup ¿ÉÒÔ´¥·¢µÄtask shaderµ÷ÓÃµÄ×î´ó×ÜÊı£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3943
-    physicalDeviceMeshShaderPropertiesEXT.maxTaskWorkGroupSize[3];//Îª local task workgroupµÄÎ¬¶ÈµÄ×î´ó´óĞ¡£¬·Ö±ğ¶ÔÓÚX£¬Y£¬ZÎ¬¶È£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3943
-    physicalDeviceMeshShaderPropertiesEXT.maxTaskPayloadSize;//Îªtask shader stageÖĞshader moduleÖĞÒÔ TaskPayloadWorkgroupEXT storage classÉùÃ÷µÄ±äÁ¿¿ÉÓÃµÄ×ÜµÄ×î´ó´æ´¢×Ö½Ú¿Õ¼ä
-    physicalDeviceMeshShaderPropertiesEXT.maxTaskSharedMemorySize;//Îªtask shader stageÖĞshader moduleÖĞÒÔ Workgroup storage classÉùÃ÷µÄ±äÁ¿¿ÉÓÃµÄ×ÜµÄ×î´ó´æ´¢×Ö½Ú¿Õ¼ä
-    physicalDeviceMeshShaderPropertiesEXT.maxTaskPayloadAndSharedMemorySize;//Îªtask shader stageÖĞshader moduleÖĞÒÔTaskPayloadWorkgroupEXT »òÕß Workgroup storage classÉùÃ÷µÄ±äÁ¿¿ÉÓÃµÄ×ÜµÄ×î´ó´æ´¢×Ö½Ú¿Õ¼ä
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshWorkGroupTotalCount;//ÎªÒ»¸ötask shader workgroup ¿ÉÒÔ·¢ÉäµÄ local output tasksµÄ×î´óÊıÁ¿
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshWorkGroupCount[3];//ÎªÒ»¸ötask shader workgroup ¿ÉÒÔ·¢ÉäµÄ local output tasksÃ¿¸öÎ¬¶ÈµÄ×î´óÊıÁ¿£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3944
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshWorkGroupInvocations;//ÎªÒ»¸ölocal workgroup ¿ÉÒÔ´¥·¢µÄmesh shaderµ÷ÓÃµÄ×î´ó×ÜÊı£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3944
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshWorkGroupSize[3];//Îª local mesh workgroupµÄÎ¬¶ÈµÄ×î´ó´óĞ¡£¬·Ö±ğ¶ÔÓÚX£¬Y£¬ZÎ¬¶È£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3944
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshSharedMemorySize;//Îªmesh shader stageÖĞshader moduleÖĞÒÔ Workgroup storage classÉùÃ÷µÄ±äÁ¿¿ÉÓÃµÄ×ÜµÄ×î´ó´æ´¢×Ö½Ú¿Õ¼ä
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshPayloadAndSharedMemorySize;//Îªmesh shader stageÖĞshader moduleÖĞÒÔTaskPayloadWorkgroupEXT »òÕß Workgroup storage classÉùÃ÷µÄ±äÁ¿¿ÉÓÃµÄ×ÜµÄ×î´ó´æ´¢×Ö½Ú¿Õ¼ä
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputMemorySize;//Îªmesh shader stageÖĞshader moduleÖĞÊä³ö±äÁ¿¿ÉÓÃµÄ×ÜµÄ×î´ó´æ´¢×Ö½Ú¿Õ¼ä
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshPayloadAndOutputMemorySize;//Îªmesh shader stageÖĞshader moduleÖĞÒÔ TaskPayloadWorkgroupEXT storage classÉùÃ÷µÄ±äÁ¿»òÕßÊä³ö±äÁ¿¿ÉÓÃµÄ×ÜµÄ×î´ó´æ´¢×Ö½Ú¿Õ¼ä
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputComponents;//Îªmesh shader stage ÖĞÊä³ö±äÁ¿µÄ×î´ó·ÖÁ¿Êı
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputVertices;//ÎªÒ»¸ömesh shader workgroup ¿ÉÒÔ·¢ÉäµÄ¶¥µãµÄ×î´óÊıÁ¿
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputPrimitives;//ÎªÒ»¸ömesh shader workgroup ¿ÉÒÔ·¢ÉäµÄÍ¼ÔªµÄ×î´óÊıÁ¿
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputLayers;//ÎªÒ»¸ömesh shader workgroup ¿ÉÒÔÊä³öµÄlayerË÷ÒıµÄ×î´óÖµ¼Ó1
-    physicalDeviceMeshShaderPropertiesEXT.maxMeshMultiviewViewCount;//Îªmesh shader ¿ÉÒÔÊ¹ÓÃµÄ viewµÄË÷ÒıµÄ×î´óÖµ¼Ó1
-    physicalDeviceMeshShaderPropertiesEXT.meshOutputPerVertexGranularity;//Îª¶¥µã·ÖÅäµÄÁ£¶È£¬Ğ¡ÓÚµÈÓÚmaxMeshOutputMemorySize£¬ÆäËû¾ßÌåĞÅÏ¢¼ûp3945
-    physicalDeviceMeshShaderPropertiesEXT.meshOutputPerPrimitiveGranularity;//ÎªÍ¼Ôª·ÖÅäµÄÁ£¶ÈĞ¡ÓÚµÈÓÚmaxMeshOutputMemorySize£¬ÆäËû¾ßÌåĞÅÏ¢¼ûp3945
-    physicalDeviceMeshShaderPropertiesEXT.maxPreferredTaskWorkGroupInvocations;//Îª×î¼ÑĞÔÄÜÏÂÊ×Ñ¡µÄÒ»¸öworkgroupÖĞº¬ÓĞµÄµÄtask shader invocationsÊıÁ¿
-    physicalDeviceMeshShaderPropertiesEXT.maxPreferredMeshWorkGroupInvocations;//Îª×î¼ÑĞÔÄÜÏÂÊ×Ñ¡µÄÒ»¸öworkgroupÖĞº¬ÓĞµÄµÄmesh shader invocationsÊıÁ¿
-    physicalDeviceMeshShaderPropertiesEXT.prefersLocalInvocationVertexOutput;//Ö¸Ã÷µ±array Ë÷ÒıÆ¥ÅäLocalInvocationIndexÊ±ÔÚmesh shaderÖĞÏòvertex output arrayĞ´ÈëÊı¾İÊÇ·ñÓĞ×î¼ÑĞÔÄÜ
-    physicalDeviceMeshShaderPropertiesEXT.prefersLocalInvocationPrimitiveOutput;//Ö¸Ã÷µ±array Ë÷ÒıÆ¥ÅäLocalInvocationIndexÊ±ÔÚmesh shaderÖĞÏòprimitive output arrayĞ´ÈëÊı¾İÊÇ·ñÓĞ×î¼ÑĞÔÄÜ
-    physicalDeviceMeshShaderPropertiesEXT.prefersCompactVertexOutput;//Ö¸Ã÷ÊÇ·ñÓ¦¸ÃÔÚmesh shaderµÄ×Ô¶¨Òåcullingºó½ô´Õ¶¥µãÊä³öÒÔÎªÁË¸üºÃµÄĞÔÄÜ±íÏÖ£¬·ñÔò±£³Ö¶¥µãÔ­À´µÄÎ»ÖÃ¿ÉÄÜ¸üºÃ
-    physicalDeviceMeshShaderPropertiesEXT.prefersCompactPrimitiveOutput;//Ö¸Ã÷ÊÇ·ñÓ¦¸ÃÔÚmesh shaderµÄ×Ô¶¨Òåcullingºó½ô´ÕÍ¼ÔªÊä³öÒÔÎªÁË¸üºÃµÄĞÔÄÜ±íÏÖ£¬·ñÔòÊ¹ÓÃCullPrimitiveEXT¿ÉÄÜ¸üºÃ
+    physicalDeviceMeshShaderPropertiesEXT.maxTaskWorkGroupTotalCount;//ä¸ºå¯ä»¥è¢«ä¸€ä¸ªmesh draw tasks command è§¦å‘çš„local workgroups æ€»æ•°çš„æœ€å¤§æ•°é‡
+    physicalDeviceMeshShaderPropertiesEXT.maxTaskWorkGroupCount[3];//ä¸ºå¯ä»¥è¢«ä¸€ä¸ªmesh draw tasks command è§¦å‘çš„local workgroups çš„æœ€å¤§æ•°é‡ï¼Œåˆ†åˆ«å¯¹äºç»´åº¦Xï¼ŒYï¼ŒZï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3943
+    physicalDeviceMeshShaderPropertiesEXT.maxTaskWorkGroupInvocations;//ä¸ºä¸€ä¸ªlocal workgroup å¯ä»¥è§¦å‘çš„task shaderè°ƒç”¨çš„æœ€å¤§æ€»æ•°ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3943
+    physicalDeviceMeshShaderPropertiesEXT.maxTaskWorkGroupSize[3];//ä¸º local task workgroupçš„ç»´åº¦çš„æœ€å¤§å¤§å°ï¼Œåˆ†åˆ«å¯¹äºXï¼ŒYï¼ŒZç»´åº¦ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3943
+    physicalDeviceMeshShaderPropertiesEXT.maxTaskPayloadSize;//ä¸ºtask shader stageä¸­shader moduleä¸­ä»¥ TaskPayloadWorkgroupEXT storage classå£°æ˜çš„å˜é‡å¯ç”¨çš„æ€»çš„æœ€å¤§å­˜å‚¨å­—èŠ‚ç©ºé—´
+    physicalDeviceMeshShaderPropertiesEXT.maxTaskSharedMemorySize;//ä¸ºtask shader stageä¸­shader moduleä¸­ä»¥ Workgroup storage classå£°æ˜çš„å˜é‡å¯ç”¨çš„æ€»çš„æœ€å¤§å­˜å‚¨å­—èŠ‚ç©ºé—´
+    physicalDeviceMeshShaderPropertiesEXT.maxTaskPayloadAndSharedMemorySize;//ä¸ºtask shader stageä¸­shader moduleä¸­ä»¥TaskPayloadWorkgroupEXT æˆ–è€… Workgroup storage classå£°æ˜çš„å˜é‡å¯ç”¨çš„æ€»çš„æœ€å¤§å­˜å‚¨å­—èŠ‚ç©ºé—´
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshWorkGroupTotalCount;//ä¸ºä¸€ä¸ªtask shader workgroup å¯ä»¥å‘å°„çš„ local output tasksçš„æœ€å¤§æ•°é‡
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshWorkGroupCount[3];//ä¸ºä¸€ä¸ªtask shader workgroup å¯ä»¥å‘å°„çš„ local output tasksæ¯ä¸ªç»´åº¦çš„æœ€å¤§æ•°é‡ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3944
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshWorkGroupInvocations;//ä¸ºä¸€ä¸ªlocal workgroup å¯ä»¥è§¦å‘çš„mesh shaderè°ƒç”¨çš„æœ€å¤§æ€»æ•°ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3944
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshWorkGroupSize[3];//ä¸º local mesh workgroupçš„ç»´åº¦çš„æœ€å¤§å¤§å°ï¼Œåˆ†åˆ«å¯¹äºXï¼ŒYï¼ŒZç»´åº¦ï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3944
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshSharedMemorySize;//ä¸ºmesh shader stageä¸­shader moduleä¸­ä»¥ Workgroup storage classå£°æ˜çš„å˜é‡å¯ç”¨çš„æ€»çš„æœ€å¤§å­˜å‚¨å­—èŠ‚ç©ºé—´
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshPayloadAndSharedMemorySize;//ä¸ºmesh shader stageä¸­shader moduleä¸­ä»¥TaskPayloadWorkgroupEXT æˆ–è€… Workgroup storage classå£°æ˜çš„å˜é‡å¯ç”¨çš„æ€»çš„æœ€å¤§å­˜å‚¨å­—èŠ‚ç©ºé—´
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputMemorySize;//ä¸ºmesh shader stageä¸­shader moduleä¸­è¾“å‡ºå˜é‡å¯ç”¨çš„æ€»çš„æœ€å¤§å­˜å‚¨å­—èŠ‚ç©ºé—´
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshPayloadAndOutputMemorySize;//ä¸ºmesh shader stageä¸­shader moduleä¸­ä»¥ TaskPayloadWorkgroupEXT storage classå£°æ˜çš„å˜é‡æˆ–è€…è¾“å‡ºå˜é‡å¯ç”¨çš„æ€»çš„æœ€å¤§å­˜å‚¨å­—èŠ‚ç©ºé—´
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputComponents;//ä¸ºmesh shader stage ä¸­è¾“å‡ºå˜é‡çš„æœ€å¤§åˆ†é‡æ•°
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputVertices;//ä¸ºä¸€ä¸ªmesh shader workgroup å¯ä»¥å‘å°„çš„é¡¶ç‚¹çš„æœ€å¤§æ•°é‡
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputPrimitives;//ä¸ºä¸€ä¸ªmesh shader workgroup å¯ä»¥å‘å°„çš„å›¾å…ƒçš„æœ€å¤§æ•°é‡
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshOutputLayers;//ä¸ºä¸€ä¸ªmesh shader workgroup å¯ä»¥è¾“å‡ºçš„layerç´¢å¼•çš„æœ€å¤§å€¼åŠ 1
+    physicalDeviceMeshShaderPropertiesEXT.maxMeshMultiviewViewCount;//ä¸ºmesh shader å¯ä»¥ä½¿ç”¨çš„ viewçš„ç´¢å¼•çš„æœ€å¤§å€¼åŠ 1
+    physicalDeviceMeshShaderPropertiesEXT.meshOutputPerVertexGranularity;//ä¸ºé¡¶ç‚¹åˆ†é…çš„ç²’åº¦ï¼Œå°äºç­‰äºmaxMeshOutputMemorySizeï¼Œå…¶ä»–å…·ä½“ä¿¡æ¯è§p3945
+    physicalDeviceMeshShaderPropertiesEXT.meshOutputPerPrimitiveGranularity;//ä¸ºå›¾å…ƒåˆ†é…çš„ç²’åº¦å°äºç­‰äºmaxMeshOutputMemorySizeï¼Œå…¶ä»–å…·ä½“ä¿¡æ¯è§p3945
+    physicalDeviceMeshShaderPropertiesEXT.maxPreferredTaskWorkGroupInvocations;//ä¸ºæœ€ä½³æ€§èƒ½ä¸‹é¦–é€‰çš„ä¸€ä¸ªworkgroupä¸­å«æœ‰çš„çš„task shader invocationsæ•°é‡
+    physicalDeviceMeshShaderPropertiesEXT.maxPreferredMeshWorkGroupInvocations;//ä¸ºæœ€ä½³æ€§èƒ½ä¸‹é¦–é€‰çš„ä¸€ä¸ªworkgroupä¸­å«æœ‰çš„çš„mesh shader invocationsæ•°é‡
+    physicalDeviceMeshShaderPropertiesEXT.prefersLocalInvocationVertexOutput;//æŒ‡æ˜å½“array ç´¢å¼•åŒ¹é…LocalInvocationIndexæ—¶åœ¨mesh shaderä¸­å‘vertex output arrayå†™å…¥æ•°æ®æ˜¯å¦æœ‰æœ€ä½³æ€§èƒ½
+    physicalDeviceMeshShaderPropertiesEXT.prefersLocalInvocationPrimitiveOutput;//æŒ‡æ˜å½“array ç´¢å¼•åŒ¹é…LocalInvocationIndexæ—¶åœ¨mesh shaderä¸­å‘primitive output arrayå†™å…¥æ•°æ®æ˜¯å¦æœ‰æœ€ä½³æ€§èƒ½
+    physicalDeviceMeshShaderPropertiesEXT.prefersCompactVertexOutput;//æŒ‡æ˜æ˜¯å¦åº”è¯¥åœ¨mesh shaderçš„è‡ªå®šä¹‰cullingåç´§å‡‘é¡¶ç‚¹è¾“å‡ºä»¥ä¸ºäº†æ›´å¥½çš„æ€§èƒ½è¡¨ç°ï¼Œå¦åˆ™ä¿æŒé¡¶ç‚¹åŸæ¥çš„ä½ç½®å¯èƒ½æ›´å¥½
+    physicalDeviceMeshShaderPropertiesEXT.prefersCompactPrimitiveOutput;//æŒ‡æ˜æ˜¯å¦åº”è¯¥åœ¨mesh shaderçš„è‡ªå®šä¹‰cullingåç´§å‡‘å›¾å…ƒè¾“å‡ºä»¥ä¸ºäº†æ›´å¥½çš„æ€§èƒ½è¡¨ç°ï¼Œå¦åˆ™ä½¿ç”¨CullPrimitiveEXTå¯èƒ½æ›´å¥½
 
 
-    //VkPhysicalDeviceDescriptorIndexingProperties £¬µÈ¼ÛÓÚVkPhysicalDeviceDescriptorIndexingPropertiesEXT £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceDescriptorIndexingProperties ï¼Œç­‰ä»·äºVkPhysicalDeviceDescriptorIndexingPropertiesEXT ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceDescriptorIndexingProperties physicalDeviceDescriptorIndexingProperties{};
     physicalDeviceDescriptorIndexingProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES;
     physicalDeviceDescriptorIndexingProperties.pNext = nullptr;
-    physicalDeviceDescriptorIndexingProperties.maxUpdateAfterBindDescriptorsInAllPools;//Ö¸Ã÷ËùÓĞº¬VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT´´½¨µÄdescriptor poolÖĞËùÄÜ°üº¬µÄËùÓĞÀàĞÍµÄdescriptors×ÜÊıµÄ×î´óÊıÁ¿
-    physicalDeviceDescriptorIndexingProperties.shaderUniformBufferArrayNonUniformIndexingNative;//Ö¸Ã÷ÊÇ·ñuniform buffer descriptors Ö§³Önonuniform indexing£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3947
-    physicalDeviceDescriptorIndexingProperties.shaderSampledImageArrayNonUniformIndexingNative;//Ö¸Ã÷ÊÇ·ñsampler ÒÔ¼° image descriptors Ö§³Önonuniform indexing£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3947
-    physicalDeviceDescriptorIndexingProperties.shaderStorageBufferArrayNonUniformIndexingNative;//Ö¸Ã÷ÊÇ·ñstorage buffer descriptors Ö§³Önonuniform indexing£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3947
-    physicalDeviceDescriptorIndexingProperties.shaderStorageImageArrayNonUniformIndexingNative;//Ö¸Ã÷ÊÇ·ñstorage image descriptors Ö§³Önonuniform indexing£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3947
-    physicalDeviceDescriptorIndexingProperties.shaderInputAttachmentArrayNonUniformIndexingNative;//Ö¸Ã÷ÊÇ·ñinput attachment descriptors Ö§³Önonuniform indexing£¬ÆäËûÏêÏ¸ĞÅÏ¢¼ûp3947
-    physicalDeviceDescriptorIndexingProperties.robustBufferAccessUpdateAfterBind;//Ö¸Ã÷ÊÇ·ñ robustBufferAccess¿ÉÒÔºÍ descriptorBindingUniformBufferUpdateAfterBind, descriptorBindingStorageBufferUpdateAfterBind, descriptorBindingUniformTexelBufferUpdateAfterBind, ÒÔ¼° / »òÕß descriptorBindingStorageTexelBufferUpdateAfterBind Í¬Ê±¿ªÆô
-    physicalDeviceDescriptorIndexingProperties.quadDivergentImplicitLod;//µ±ÓÃÓÚÖ¸ÁîµÄimage ÒÔ¼°/»òÕß sampler¶ÔÏóÔÚquadÄÚ²»Ò»ÖÂÊ±£¬ÓÃÓÚÍ¼Ïñ²Ù×÷µÄÒşÊ½LOD¼ÆËãÊÇ·ñÓĞÃ÷È·¶¨ÒåµÄ½á¹û
-    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindSamplers;//ÀàËÆÓÚmaxPerStageDescriptorSamplers£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindUniformBuffers;//ÀàËÆÓÚmaxPerStageDescriptorUniformBuffers£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindStorageBuffers;//ÀàËÆÓÚmaxPerStageDescriptorStorageBuffers£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindSampledImages;//ÀàËÆÓÚmaxPerStageDescriptorSampledImages£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindStorageImages;//ÀàËÆÓÚmaxPerStageDescriptorStorageImages£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindInputAttachments;//ÀàËÆÓÚmaxPerStageDescriptorInputAttachments£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxPerStageUpdateAfterBindResources;//ÀàËÆÓÚmaxPerStageResources£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindSamplers;//ÀàËÆÓÚmaxDescriptorSetSamplers£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindUniformBuffers;//ÀàËÆÓÚmaxDescriptorSetUniformBuffers£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindUniformBuffersDynamic;//ÀàËÆÓÚmaxDescriptorSetUniformBuffersDynamic£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ,ÆäËûĞÅÏ¢¼ûp3948
-    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindStorageBuffers;//ÀàËÆÓÚmaxDescriptorSetStorageBuffers£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindStorageBuffersDynamic;//ÀàËÆÓÚmaxDescriptorSetStorageBuffersDynamic£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ,ÆäËûĞÅÏ¢¼ûp3948
-    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindSampledImages;//ÀàËÆÓÚmaxDescriptorSetSampledImages£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindStorageImages;//ÀàËÆÓÚmaxDescriptorSetStorageImages£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindInputAttachments;//ÀàËÆÓÚmaxDescriptorSetInputAttachments£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
+    physicalDeviceDescriptorIndexingProperties.maxUpdateAfterBindDescriptorsInAllPools;//æŒ‡æ˜æ‰€æœ‰å«VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BITåˆ›å»ºçš„descriptor poolä¸­æ‰€èƒ½åŒ…å«çš„æ‰€æœ‰ç±»å‹çš„descriptorsæ€»æ•°çš„æœ€å¤§æ•°é‡
+    physicalDeviceDescriptorIndexingProperties.shaderUniformBufferArrayNonUniformIndexingNative;//æŒ‡æ˜æ˜¯å¦uniform buffer descriptors æ”¯æŒnonuniform indexingï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3947
+    physicalDeviceDescriptorIndexingProperties.shaderSampledImageArrayNonUniformIndexingNative;//æŒ‡æ˜æ˜¯å¦sampler ä»¥åŠ image descriptors æ”¯æŒnonuniform indexingï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3947
+    physicalDeviceDescriptorIndexingProperties.shaderStorageBufferArrayNonUniformIndexingNative;//æŒ‡æ˜æ˜¯å¦storage buffer descriptors æ”¯æŒnonuniform indexingï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3947
+    physicalDeviceDescriptorIndexingProperties.shaderStorageImageArrayNonUniformIndexingNative;//æŒ‡æ˜æ˜¯å¦storage image descriptors æ”¯æŒnonuniform indexingï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3947
+    physicalDeviceDescriptorIndexingProperties.shaderInputAttachmentArrayNonUniformIndexingNative;//æŒ‡æ˜æ˜¯å¦input attachment descriptors æ”¯æŒnonuniform indexingï¼Œå…¶ä»–è¯¦ç»†ä¿¡æ¯è§p3947
+    physicalDeviceDescriptorIndexingProperties.robustBufferAccessUpdateAfterBind;//æŒ‡æ˜æ˜¯å¦ robustBufferAccesså¯ä»¥å’Œ descriptorBindingUniformBufferUpdateAfterBind, descriptorBindingStorageBufferUpdateAfterBind, descriptorBindingUniformTexelBufferUpdateAfterBind, ä»¥åŠ / æˆ–è€… descriptorBindingStorageTexelBufferUpdateAfterBind åŒæ—¶å¼€å¯
+    physicalDeviceDescriptorIndexingProperties.quadDivergentImplicitLod;//å½“ç”¨äºæŒ‡ä»¤çš„image ä»¥åŠ/æˆ–è€… samplerå¯¹è±¡åœ¨quadå†…ä¸ä¸€è‡´æ—¶ï¼Œç”¨äºå›¾åƒæ“ä½œçš„éšå¼LODè®¡ç®—æ˜¯å¦æœ‰æ˜ç¡®å®šä¹‰çš„ç»“æœ
+    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindSamplers;//ç±»ä¼¼äºmaxPerStageDescriptorSamplersï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindUniformBuffers;//ç±»ä¼¼äºmaxPerStageDescriptorUniformBuffersï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindStorageBuffers;//ç±»ä¼¼äºmaxPerStageDescriptorStorageBuffersï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindSampledImages;//ç±»ä¼¼äºmaxPerStageDescriptorSampledImagesï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindStorageImages;//ç±»ä¼¼äºmaxPerStageDescriptorStorageImagesï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxPerStageDescriptorUpdateAfterBindInputAttachments;//ç±»ä¼¼äºmaxPerStageDescriptorInputAttachmentsï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxPerStageUpdateAfterBindResources;//ç±»ä¼¼äºmaxPerStageResourcesï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindSamplers;//ç±»ä¼¼äºmaxDescriptorSetSamplersï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindUniformBuffers;//ç±»ä¼¼äºmaxDescriptorSetUniformBuffersï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindUniformBuffersDynamic;//ç±»ä¼¼äºmaxDescriptorSetUniformBuffersDynamicï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡,å…¶ä»–ä¿¡æ¯è§p3948
+    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindStorageBuffers;//ç±»ä¼¼äºmaxDescriptorSetStorageBuffersï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindStorageBuffersDynamic;//ç±»ä¼¼äºmaxDescriptorSetStorageBuffersDynamicï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡,å…¶ä»–ä¿¡æ¯è§p3948
+    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindSampledImages;//ç±»ä¼¼äºmaxDescriptorSetSampledImagesï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindStorageImages;//ç±»ä¼¼äºmaxDescriptorSetStorageImagesï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceDescriptorIndexingProperties.maxDescriptorSetUpdateAfterBindInputAttachments;//ç±»ä¼¼äºmaxDescriptorSetInputAttachmentsï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
 
 
-    //VkPhysicalDeviceInlineUniformBlockProperties £¬µÈ¼ÛÓÚVkPhysicalDeviceInlineUniformBlockPropertiesEXT £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceInlineUniformBlockProperties ï¼Œç­‰ä»·äºVkPhysicalDeviceInlineUniformBlockPropertiesEXT ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceInlineUniformBlockProperties physicalDeviceInlineUniformBlockProperties{};
     physicalDeviceInlineUniformBlockProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES;
     physicalDeviceInlineUniformBlockProperties.pNext = nullptr;
-    physicalDeviceInlineUniformBlockProperties.maxInlineUniformBlockSize;//Ò»¸ö inline uniform block °ó¶¨µÄ×î´ó×Ö½ÚÊı
-    physicalDeviceInlineUniformBlockProperties.maxPerStageDescriptorInlineUniformBlocks;//ÎªÒ»¸öpipeline layoutÖĞÒ»¸öshader stage¿ÉÒÔ·ÃÎÊµÄ inline uniform block °ó¶¨µÄ×î´ó×Ö½ÚÊı£¬ÆäËûÃèÊö¼ûp3949
-    physicalDeviceInlineUniformBlockProperties.maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks;//ÀàËÆÓÚmaxPerStageDescriptorInlineUniformBlocks£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceInlineUniformBlockProperties.maxDescriptorSetInlineUniformBlocks;//ÔÚ¿çËùÓĞ¹ÜµÀ×ÅÉ«Æ÷½×¶ÎºÍÃèÊö·û¼¯±àºÅµÄ¹ÜµÀ²¼¾ÖÖĞ£¬¿ÉÒÔ°üº¬ÔÚÃèÊö·û°ó¶¨ÖĞµÄinline uniform block bindingsµÄ×î´óÊıÁ¿£¬ÆäËûÃèÊö¼ûp3949
-    physicalDeviceInlineUniformBlockProperties.maxDescriptorSetUpdateAfterBindInlineUniformBlocks;//ÀàËÆÓÚmaxDescriptorSetInlineUniformBlocks£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
+    physicalDeviceInlineUniformBlockProperties.maxInlineUniformBlockSize;//ä¸€ä¸ª inline uniform block ç»‘å®šçš„æœ€å¤§å­—èŠ‚æ•°
+    physicalDeviceInlineUniformBlockProperties.maxPerStageDescriptorInlineUniformBlocks;//ä¸ºä¸€ä¸ªpipeline layoutä¸­ä¸€ä¸ªshader stageå¯ä»¥è®¿é—®çš„ inline uniform block ç»‘å®šçš„æœ€å¤§å­—èŠ‚æ•°ï¼Œå…¶ä»–æè¿°è§p3949
+    physicalDeviceInlineUniformBlockProperties.maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks;//ç±»ä¼¼äºmaxPerStageDescriptorInlineUniformBlocksï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceInlineUniformBlockProperties.maxDescriptorSetInlineUniformBlocks;//åœ¨è·¨æ‰€æœ‰ç®¡é“ç€è‰²å™¨é˜¶æ®µå’Œæè¿°ç¬¦é›†ç¼–å·çš„ç®¡é“å¸ƒå±€ä¸­ï¼Œå¯ä»¥åŒ…å«åœ¨æè¿°ç¬¦ç»‘å®šä¸­çš„inline uniform block bindingsçš„æœ€å¤§æ•°é‡ï¼Œå…¶ä»–æè¿°è§p3949
+    physicalDeviceInlineUniformBlockProperties.maxDescriptorSetUpdateAfterBindInlineUniformBlocks;//ç±»ä¼¼äºmaxDescriptorSetInlineUniformBlocksï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
 
 
-    //VkPhysicalDeviceConservativeRasterizationPropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceConservativeRasterizationPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceConservativeRasterizationPropertiesEXT physicalDeviceConservativeRasterizationPropertiesEXT{};
     physicalDeviceConservativeRasterizationPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONSERVATIVE_RASTERIZATION_PROPERTIES_EXT;
     physicalDeviceConservativeRasterizationPropertiesEXT.pNext = nullptr;
-    physicalDeviceConservativeRasterizationPropertiesEXT.primitiveOverestimationSize;//ÔÚconservative rasterization overestimation modeÖĞÉú³ÉµÄÍ¼ÔªµÄ±ß½çµÄpixelsµÄ´óĞ¡ÊÇ·ñÔö¼ÓÁË£¬ÆäËüÃèÊö¼ûp3950
-    physicalDeviceConservativeRasterizationPropertiesEXT.maxExtraPrimitiveOverestimationSize;//Îªpipeline stateÖĞÖ§³ÖµÄextra overestimationµÄpixelsµÄ×î´ó´óĞ¡
-    physicalDeviceConservativeRasterizationPropertiesEXT.extraPrimitiveOverestimationSizeGranularity;//Îªpipeline stateÖĞ¿ÉÒÔÖ¸¶¨ÔÚ0.0 µ½ maxExtraPrimitiveOverestimationSize·¶Î§ÄÚextra overestimationµÄÁ£¶È£¬ÆäËüÃèÊö¼ûp3950
-    physicalDeviceConservativeRasterizationPropertiesEXT.primitiveUnderestimation;//Ö¸Ã÷ÊÇ·ñ³ıÁËÖ§³ÖVK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT Íâ¶îÍâÖ§³ÖVK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT conservative rasterization mode
-    physicalDeviceConservativeRasterizationPropertiesEXT.conservativePointAndLineRasterization;//Ö¸Ã÷ÊÇ·ñÖ§³Ö¶Ô point £¬ line primitives ÒÔ¼° triangle primitivesµÄ conservative rasterization£¬·ñÔòÖ»Ö§³Ö¶ÔÈı½ÇĞÎÍ¼ÔªµÄ
-    physicalDeviceConservativeRasterizationPropertiesEXT.degenerateTrianglesRasterized;//ÎªVK_FALSE£¬Ôò½«°ÉÁãÇøÓòÈı½ÇĞÎÍ¼ÔªÌŞ³ı²¢»¯Îª¶¨µãÕ¤¸ñ»¯ÏñËØÍø¸ñ¡£Èç¹ûÎªVK_TRUE£¬Ôò²»ÌŞ³ıÕâĞ©Í¼Ôª£¬²¢ÇÒÊ¹ÓÃÆäfragmentÊ¹ÓÃprovoking¶¥µãÊôĞÔºÍÉî¶ÈÖµ
-    physicalDeviceConservativeRasterizationPropertiesEXT.degenerateLinesRasterized;//ÎªVK_FALSE£¬Ôò½«°ÉÁã³¤¶ÈÏßÍ¼ÔªÌŞ³ı²¢»¯Îª¶¨µãÕ¤¸ñ»¯ÏñËØÍø¸ñ¡£Èç¹ûÎªVK_TRUE£¬Ôò²»ÌŞ³ıÕâĞ©Í¼Ôª£¬²¢ÇÒÊ¹ÓÃÆäfragmentÊ¹ÓÃprovoking¶¥µãÊôĞÔºÍÉî¶ÈÖµ
-    physicalDeviceConservativeRasterizationPropertiesEXT.fullyCoveredFragmentShaderInputVariable;//Èç¹ûÎªVK_TRUE£¬ÔòÖ§³ÖSPIR-VÄÚÖÃ±äÁ¿fragment shader input variable FullyCoveredEXT£¬Ö¸¶¨ÊÇ·ñ¿ªÆôconservative rasterizationÇÒfragment ÇøÓòÊÇ·ñ±»Í¼ÔªÍêÈ«¸²¸Ç
-    physicalDeviceConservativeRasterizationPropertiesEXT.conservativeRasterizationPostDepthCoverage;//Èç¹ûÎªVK_TRUE£¬ÔòÖ¸Ã÷Ö§³Ö¿ªÆôconservative rasterizationÊ±Í¬Ê±¿ªÆôPostDepthCoverage execution mode
+    physicalDeviceConservativeRasterizationPropertiesEXT.primitiveOverestimationSize;//åœ¨conservative rasterization overestimation modeä¸­ç”Ÿæˆçš„å›¾å…ƒçš„è¾¹ç•Œçš„pixelsçš„å¤§å°æ˜¯å¦å¢åŠ äº†ï¼Œå…¶å®ƒæè¿°è§p3950
+    physicalDeviceConservativeRasterizationPropertiesEXT.maxExtraPrimitiveOverestimationSize;//ä¸ºpipeline stateä¸­æ”¯æŒçš„extra overestimationçš„pixelsçš„æœ€å¤§å¤§å°
+    physicalDeviceConservativeRasterizationPropertiesEXT.extraPrimitiveOverestimationSizeGranularity;//ä¸ºpipeline stateä¸­å¯ä»¥æŒ‡å®šåœ¨0.0 åˆ° maxExtraPrimitiveOverestimationSizeèŒƒå›´å†…extra overestimationçš„ç²’åº¦ï¼Œå…¶å®ƒæè¿°è§p3950
+    physicalDeviceConservativeRasterizationPropertiesEXT.primitiveUnderestimation;//æŒ‡æ˜æ˜¯å¦é™¤äº†æ”¯æŒVK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT å¤–é¢å¤–æ”¯æŒVK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT conservative rasterization mode
+    physicalDeviceConservativeRasterizationPropertiesEXT.conservativePointAndLineRasterization;//æŒ‡æ˜æ˜¯å¦æ”¯æŒå¯¹ point ï¼Œ line primitives ä»¥åŠ triangle primitivesçš„ conservative rasterizationï¼Œå¦åˆ™åªæ”¯æŒå¯¹ä¸‰è§’å½¢å›¾å…ƒçš„
+    physicalDeviceConservativeRasterizationPropertiesEXT.degenerateTrianglesRasterized;//ä¸ºVK_FALSEï¼Œåˆ™å°†å§é›¶åŒºåŸŸä¸‰è§’å½¢å›¾å…ƒå‰”é™¤å¹¶åŒ–ä¸ºå®šç‚¹æ …æ ¼åŒ–åƒç´ ç½‘æ ¼ã€‚å¦‚æœä¸ºVK_TRUEï¼Œåˆ™ä¸å‰”é™¤è¿™äº›å›¾å…ƒï¼Œå¹¶ä¸”ä½¿ç”¨å…¶fragmentä½¿ç”¨provokingé¡¶ç‚¹å±æ€§å’Œæ·±åº¦å€¼
+    physicalDeviceConservativeRasterizationPropertiesEXT.degenerateLinesRasterized;//ä¸ºVK_FALSEï¼Œåˆ™å°†å§é›¶é•¿åº¦çº¿å›¾å…ƒå‰”é™¤å¹¶åŒ–ä¸ºå®šç‚¹æ …æ ¼åŒ–åƒç´ ç½‘æ ¼ã€‚å¦‚æœä¸ºVK_TRUEï¼Œåˆ™ä¸å‰”é™¤è¿™äº›å›¾å…ƒï¼Œå¹¶ä¸”ä½¿ç”¨å…¶fragmentä½¿ç”¨provokingé¡¶ç‚¹å±æ€§å’Œæ·±åº¦å€¼
+    physicalDeviceConservativeRasterizationPropertiesEXT.fullyCoveredFragmentShaderInputVariable;//å¦‚æœä¸ºVK_TRUEï¼Œåˆ™æ”¯æŒSPIR-Vå†…ç½®å˜é‡fragment shader input variable FullyCoveredEXTï¼ŒæŒ‡å®šæ˜¯å¦å¼€å¯conservative rasterizationä¸”fragment åŒºåŸŸæ˜¯å¦è¢«å›¾å…ƒå®Œå…¨è¦†ç›–
+    physicalDeviceConservativeRasterizationPropertiesEXT.conservativeRasterizationPostDepthCoverage;//å¦‚æœä¸ºVK_TRUEï¼Œåˆ™æŒ‡æ˜æ”¯æŒå¼€å¯conservative rasterizationæ—¶åŒæ—¶å¼€å¯PostDepthCoverage execution mode
 
 
-    //VkPhysicalDeviceFragmentDensityMapPropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceFragmentDensityMapPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceFragmentDensityMapPropertiesEXT physicalDeviceFragmentDensityMapPropertiesEXT{};
     physicalDeviceFragmentDensityMapPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT;
     physicalDeviceFragmentDensityMapPropertiesEXT.pNext = nullptr;
-    physicalDeviceFragmentDensityMapPropertiesEXT.minFragmentDensityTexelSize;//Ö¸Ã÷×îĞ¡ fragment density texel size
-    physicalDeviceFragmentDensityMapPropertiesEXT.maxFragmentDensityTexelSize;//Ö¸Ã÷×î´ó fragment density texel size
-    physicalDeviceFragmentDensityMapPropertiesEXT.fragmentDensityInvocations;//Ö¸Ã÷¶ÔÃ¿¸ö¸²¸ÇµÄ²ÉÑùµã¿ÉÄÜ»áµ÷ÓÃ¶îÍâµÄfragment shader
+    physicalDeviceFragmentDensityMapPropertiesEXT.minFragmentDensityTexelSize;//æŒ‡æ˜æœ€å° fragment density texel size
+    physicalDeviceFragmentDensityMapPropertiesEXT.maxFragmentDensityTexelSize;//æŒ‡æ˜æœ€å¤§ fragment density texel size
+    physicalDeviceFragmentDensityMapPropertiesEXT.fragmentDensityInvocations;//æŒ‡æ˜å¯¹æ¯ä¸ªè¦†ç›–çš„é‡‡æ ·ç‚¹å¯èƒ½ä¼šè°ƒç”¨é¢å¤–çš„fragment shader
 
 
-    //VkPhysicalDeviceFragmentDensityMap2PropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceFragmentDensityMap2PropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceFragmentDensityMap2PropertiesEXT physicalDeviceFragmentDensityMap2PropertiesEXT{};
     physicalDeviceFragmentDensityMap2PropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_2_PROPERTIES_EXT;
     physicalDeviceFragmentDensityMap2PropertiesEXT.pNext = nullptr;
-    physicalDeviceFragmentDensityMap2PropertiesEXT.subsampledLoads;//Ö¸Ã÷¶Ôsubsampled attachmentsÒÔ¼ÓÔØ²Ù×÷½øĞĞimageÊı¾İ¶ÁÈ¡ÊÇÊÇ·ñ»áÖØĞÂ²ÉÑùµÄrender passµÄfragment density
-    physicalDeviceFragmentDensityMap2PropertiesEXT.subsampledCoarseReconstructionEarlyAccess;//Ö¸Ã÷ÔÚfragment shaderÖĞÒÔÓÃ°üº¬VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT´´½¨µÄsamplers¶ÔimageÊı¾İ½øĞĞ¶ÁÈ¡Ê±»áÔÚVK_PIPELINE_STAGE_VERTEX_SHADER_BIT½×¶Î´¥·¢¶îÍâµÄ¶ÁÈ¡
-    physicalDeviceFragmentDensityMap2PropertiesEXT.maxSubsampledArrayLayers;//ÎªÖ§³ÖÓÃÓÚsubsampled samplersµÄVkImageViewµÄarray layerµÄ×î´óÊıÁ¿
-    physicalDeviceFragmentDensityMap2PropertiesEXT.maxDescriptorSetSubsampledSamplers;//Îª¿ÉÒÔ°üº¬ÔÚÒ»¸ö VkPipelineLayoutÖĞµÄsubsampled samplersµÄ×î´óÊıÁ¿
+    physicalDeviceFragmentDensityMap2PropertiesEXT.subsampledLoads;//æŒ‡æ˜å¯¹subsampled attachmentsä»¥åŠ è½½æ“ä½œè¿›è¡Œimageæ•°æ®è¯»å–æ˜¯æ˜¯å¦ä¼šé‡æ–°é‡‡æ ·çš„render passçš„fragment density
+    physicalDeviceFragmentDensityMap2PropertiesEXT.subsampledCoarseReconstructionEarlyAccess;//æŒ‡æ˜åœ¨fragment shaderä¸­ä»¥ç”¨åŒ…å«VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXTåˆ›å»ºçš„samplerså¯¹imageæ•°æ®è¿›è¡Œè¯»å–æ—¶ä¼šåœ¨VK_PIPELINE_STAGE_VERTEX_SHADER_BITé˜¶æ®µè§¦å‘é¢å¤–çš„è¯»å–
+    physicalDeviceFragmentDensityMap2PropertiesEXT.maxSubsampledArrayLayers;//ä¸ºæ”¯æŒç”¨äºsubsampled samplersçš„VkImageViewçš„array layerçš„æœ€å¤§æ•°é‡
+    physicalDeviceFragmentDensityMap2PropertiesEXT.maxDescriptorSetSubsampledSamplers;//ä¸ºå¯ä»¥åŒ…å«åœ¨ä¸€ä¸ª VkPipelineLayoutä¸­çš„subsampled samplersçš„æœ€å¤§æ•°é‡
 
 
-    //VkPhysicalDeviceFragmentDensityMapOffsetPropertiesQCOM  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceFragmentDensityMapOffsetPropertiesQCOM  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceFragmentDensityMapOffsetPropertiesQCOM physicalDeviceFragmentDensityMapOffsetPropertiesQCOM{};
     physicalDeviceFragmentDensityMapOffsetPropertiesQCOM.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_PROPERTIES_QCOM;
     physicalDeviceFragmentDensityMapOffsetPropertiesQCOM.pNext = nullptr;
-    physicalDeviceFragmentDensityMapOffsetPropertiesQCOM.fragmentDensityOffsetGranularity;//Ö¸Ã÷ fragment density offsetsµÄÁ£¶È
+    physicalDeviceFragmentDensityMapOffsetPropertiesQCOM.fragmentDensityOffsetGranularity;//æŒ‡æ˜ fragment density offsetsçš„ç²’åº¦
 
 
-    //VkPhysicalDeviceShaderCorePropertiesAMD  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceShaderCorePropertiesAMD  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceShaderCorePropertiesAMD physicalDeviceShaderCorePropertiesAMD{};
     physicalDeviceShaderCorePropertiesAMD.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD;
     physicalDeviceShaderCorePropertiesAMD.pNext = nullptr;
-    physicalDeviceShaderCorePropertiesAMD.shaderEngineCount;//ÎªÔÚphysical deviceÖĞµÄshader coreÖĞÕÒµ½µÄshader engineµÄÊıÁ¿
-    physicalDeviceShaderCorePropertiesAMD.shaderArraysPerEngineCount;//Ö¸Ã÷shader engineÖĞ shader arraysµÄÊıÁ¿£¬ÆäËûÃèÊö¼ûp3954
-    physicalDeviceShaderCorePropertiesAMD.computeUnitsPerShaderArray;//Ö¸Ã÷Ò»¸öshader arrayÖĞcompute unitsµÄÊıÁ¿£¬ÆäËûÃèÊö¼ûp3954
-    physicalDeviceShaderCorePropertiesAMD.simdPerComputeUnit;//Ö¸Ã÷Ò»¸öcompute unitÖĞSIMDµÄÊıÁ¿£¬Ò»¸öSIMDÔÚÒ»¸öÊ±¿ÌÖ»ÄÜ³ıÁËÒ»ÌõÖ¸Áî
+    physicalDeviceShaderCorePropertiesAMD.shaderEngineCount;//ä¸ºåœ¨physical deviceä¸­çš„shader coreä¸­æ‰¾åˆ°çš„shader engineçš„æ•°é‡
+    physicalDeviceShaderCorePropertiesAMD.shaderArraysPerEngineCount;//æŒ‡æ˜shader engineä¸­ shader arraysçš„æ•°é‡ï¼Œå…¶ä»–æè¿°è§p3954
+    physicalDeviceShaderCorePropertiesAMD.computeUnitsPerShaderArray;//æŒ‡æ˜ä¸€ä¸ªshader arrayä¸­compute unitsçš„æ•°é‡ï¼Œå…¶ä»–æè¿°è§p3954
+    physicalDeviceShaderCorePropertiesAMD.simdPerComputeUnit;//æŒ‡æ˜ä¸€ä¸ªcompute unitä¸­SIMDçš„æ•°é‡ï¼Œä¸€ä¸ªSIMDåœ¨ä¸€ä¸ªæ—¶åˆ»åªèƒ½é™¤äº†ä¸€æ¡æŒ‡ä»¤
     physicalDeviceShaderCorePropertiesAMD.wavefrontsPerSimd;//
-    physicalDeviceShaderCorePropertiesAMD.wavefrontSize;//ÎªÒ»¸ösubgroupµÄ×î´ó´óĞ¡
-    physicalDeviceShaderCorePropertiesAMD.sgprsPerSimd;//Ö¸Ã÷Ã¿¸öSIMDÖĞ±êÁ¿Í¨ÓÃ¼Ä´æÆ÷ SGPRµÄÊıÁ¿
-    physicalDeviceShaderCorePropertiesAMD.minSgprAllocation;//Ö¸Ã÷·ÖÅä¸øwaveµÄ±êÁ¿Í¨ÓÃ¼Ä´æÆ÷ SGPRµÄ×îĞ¡ÊıÁ¿
-    physicalDeviceShaderCorePropertiesAMD.maxSgprAllocation;//Ö¸Ã÷·ÖÅä¸øwaveµÄ±êÁ¿Í¨ÓÃ¼Ä´æÆ÷ SGPRµÄ×î´óÊıÁ¿
-    physicalDeviceShaderCorePropertiesAMD.sgprAllocationGranularity;//Ö¸Ã÷·ÖÅä¸øwaveµÄ±êÁ¿Í¨ÓÃ¼Ä´æÆ÷ SGPRµÄ·ÖÅäÁ£¶È
-    physicalDeviceShaderCorePropertiesAMD.vgprsPerSimd;//Ö¸Ã÷Ã¿¸öSIMDÖĞÏòÁ¿Í¨ÓÃ¼Ä´æÆ÷ VGPRµÄÊıÁ¿
-    physicalDeviceShaderCorePropertiesAMD.minVgprAllocation;//Ö¸Ã÷·ÖÅä¸øwaveµÄÏòÁ¿Í¨ÓÃ¼Ä´æÆ÷ VGPRµÄ×îĞ¡ÊıÁ¿
-    physicalDeviceShaderCorePropertiesAMD.maxVgprAllocation;//Ö¸Ã÷·ÖÅä¸øwaveµÄÏòÁ¿Í¨ÓÃ¼Ä´æÆ÷ VGPRµÄ×î´óÊıÁ¿
-    physicalDeviceShaderCorePropertiesAMD.vgprAllocationGranularity;//Ö¸Ã÷·ÖÅä¸øwaveµÄÏòÁ¿Í¨ÓÃ¼Ä´æÆ÷ VGPRµÄ·ÖÅäÁ£¶È
+    physicalDeviceShaderCorePropertiesAMD.wavefrontSize;//ä¸ºä¸€ä¸ªsubgroupçš„æœ€å¤§å¤§å°
+    physicalDeviceShaderCorePropertiesAMD.sgprsPerSimd;//æŒ‡æ˜æ¯ä¸ªSIMDä¸­æ ‡é‡é€šç”¨å¯„å­˜å™¨ SGPRçš„æ•°é‡
+    physicalDeviceShaderCorePropertiesAMD.minSgprAllocation;//æŒ‡æ˜åˆ†é…ç»™waveçš„æ ‡é‡é€šç”¨å¯„å­˜å™¨ SGPRçš„æœ€å°æ•°é‡
+    physicalDeviceShaderCorePropertiesAMD.maxSgprAllocation;//æŒ‡æ˜åˆ†é…ç»™waveçš„æ ‡é‡é€šç”¨å¯„å­˜å™¨ SGPRçš„æœ€å¤§æ•°é‡
+    physicalDeviceShaderCorePropertiesAMD.sgprAllocationGranularity;//æŒ‡æ˜åˆ†é…ç»™waveçš„æ ‡é‡é€šç”¨å¯„å­˜å™¨ SGPRçš„åˆ†é…ç²’åº¦
+    physicalDeviceShaderCorePropertiesAMD.vgprsPerSimd;//æŒ‡æ˜æ¯ä¸ªSIMDä¸­å‘é‡é€šç”¨å¯„å­˜å™¨ VGPRçš„æ•°é‡
+    physicalDeviceShaderCorePropertiesAMD.minVgprAllocation;//æŒ‡æ˜åˆ†é…ç»™waveçš„å‘é‡é€šç”¨å¯„å­˜å™¨ VGPRçš„æœ€å°æ•°é‡
+    physicalDeviceShaderCorePropertiesAMD.maxVgprAllocation;//æŒ‡æ˜åˆ†é…ç»™waveçš„å‘é‡é€šç”¨å¯„å­˜å™¨ VGPRçš„æœ€å¤§æ•°é‡
+    physicalDeviceShaderCorePropertiesAMD.vgprAllocationGranularity;//æŒ‡æ˜åˆ†é…ç»™waveçš„å‘é‡é€šç”¨å¯„å­˜å™¨ VGPRçš„åˆ†é…ç²’åº¦
 
 
-    //VkPhysicalDeviceShaderCoreProperties2AMD  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceShaderCoreProperties2AMD  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceShaderCoreProperties2AMD physicalDeviceShaderCoreProperties2AMD{};
     physicalDeviceShaderCoreProperties2AMD.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_2_AMD;
     physicalDeviceShaderCoreProperties2AMD.pNext = nullptr;
-    physicalDeviceShaderCoreProperties2AMD.shaderCoreFeatures;//VkShaderCorePropertiesFlagBitsAMD ×éºÏÖµÎ»ÑÚÂëÖ¸Ã÷shader coreÖ§³ÖµÄÒ»×éÌØĞÔ
-    physicalDeviceShaderCoreProperties2AMD.activeComputeUnitCount;//Ö¸Ã÷ÒÑ¾­ÆôÓÃµÄ compute unitsµÄÊıÁ¿
+    physicalDeviceShaderCoreProperties2AMD.shaderCoreFeatures;//VkShaderCorePropertiesFlagBitsAMD ç»„åˆå€¼ä½æ©ç æŒ‡æ˜shader coreæ”¯æŒçš„ä¸€ç»„ç‰¹æ€§
+    physicalDeviceShaderCoreProperties2AMD.activeComputeUnitCount;//æŒ‡æ˜å·²ç»å¯ç”¨çš„ compute unitsçš„æ•°é‡
 
 
-    //VkPhysicalDeviceDepthStencilResolveProperties  £¬µÈ¼ÛÓÚVkPhysicalDeviceDepthStencilResolvePropertiesKHR £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceDepthStencilResolveProperties  ï¼Œç­‰ä»·äºVkPhysicalDeviceDepthStencilResolvePropertiesKHR ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceDepthStencilResolveProperties physicalDeviceDepthStencilResolveProperties{};
     physicalDeviceDepthStencilResolveProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_STENCIL_RESOLVE_PROPERTIES;
     physicalDeviceDepthStencilResolveProperties.pNext = nullptr;
-    physicalDeviceDepthStencilResolveProperties.supportedDepthResolveModes;//VkResolveModeFlagBits ×éºÏÖµÎ»ÑÚÂëÖ¸Ã÷Ö§³ÖµÄdepth resolve modes£¬ÆäËûĞÅÏ¢¼ûp3956
-    physicalDeviceDepthStencilResolveProperties.supportedStencilResolveModes;//VkResolveModeFlagBits ×éºÏÖµÎ»ÑÚÂëÖ¸Ã÷Ö§³ÖµÄstencil resolve modes£¬ÆäËûĞÅÏ¢¼ûp3956
-    physicalDeviceDepthStencilResolveProperties.independentResolveNone;//Ö¸Ã÷ÊÇ·ñÖ§³Ö depth ÒÔ¼° stencil resolve modes Îª²»Í¬µÄÖµ£¬ÆäÖĞÒ»¸öÎªVK_RESOLVE_MODE_NONE
-    physicalDeviceDepthStencilResolveProperties.independentResolve;//Ö¸Ã÷ÊÇ·ñÖ§³Ö¶ÔÖ§³ÖµÄdepth ÒÔ¼° stencil resolve modesµÄÈÎÒâ×éºÏ
+    physicalDeviceDepthStencilResolveProperties.supportedDepthResolveModes;//VkResolveModeFlagBits ç»„åˆå€¼ä½æ©ç æŒ‡æ˜æ”¯æŒçš„depth resolve modesï¼Œå…¶ä»–ä¿¡æ¯è§p3956
+    physicalDeviceDepthStencilResolveProperties.supportedStencilResolveModes;//VkResolveModeFlagBits ç»„åˆå€¼ä½æ©ç æŒ‡æ˜æ”¯æŒçš„stencil resolve modesï¼Œå…¶ä»–ä¿¡æ¯è§p3956
+    physicalDeviceDepthStencilResolveProperties.independentResolveNone;//æŒ‡æ˜æ˜¯å¦æ”¯æŒ depth ä»¥åŠ stencil resolve modes ä¸ºä¸åŒçš„å€¼ï¼Œå…¶ä¸­ä¸€ä¸ªä¸ºVK_RESOLVE_MODE_NONE
+    physicalDeviceDepthStencilResolveProperties.independentResolve;//æŒ‡æ˜æ˜¯å¦æ”¯æŒå¯¹æ”¯æŒçš„depth ä»¥åŠ stencil resolve modesçš„ä»»æ„ç»„åˆ
 
 
-    //VkPhysicalDevicePerformanceQueryPropertiesKHR  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDevicePerformanceQueryPropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDevicePerformanceQueryPropertiesKHR physicalDevicePerformanceQueryPropertiesKHR{};
     physicalDevicePerformanceQueryPropertiesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_QUERY_PROPERTIES_KHR;
     physicalDevicePerformanceQueryPropertiesKHR.pNext = nullptr;
-    physicalDevicePerformanceQueryPropertiesKHR.allowCommandBufferQueryCopies;//Ö¸Ã÷ÊÇ·ñperformance query pools¿ÉÒÔÓÃÓÚ vkCmdCopyQueryPoolResults
+    physicalDevicePerformanceQueryPropertiesKHR.allowCommandBufferQueryCopies;//æŒ‡æ˜æ˜¯å¦performance query poolså¯ä»¥ç”¨äº vkCmdCopyQueryPoolResults
 
 
-    //VkPhysicalDeviceShadingRateImagePropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceShadingRateImagePropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceShadingRateImagePropertiesNV physicalDeviceShadingRateImagePropertiesNV{};
     physicalDeviceShadingRateImagePropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV;
     physicalDeviceShadingRateImagePropertiesNV.pNext = nullptr;
-    physicalDeviceShadingRateImagePropertiesNV.shadingRateTexelSize;//Ö¸Ã÷shading rate imageÖĞÃ¿¸ötexel¶ÔÓ¦µÄframebufferÖĞÇøÓòµÄwidthÒÔ¼°height
-    physicalDeviceShadingRateImagePropertiesNV.shadingRatePaletteSize;//Ö¸Ã÷shading rate imageÖ§³ÖµÄpaletteÊµÌåµÄ×î´óÊıÁ¿
-    physicalDeviceShadingRateImagePropertiesNV.shadingRateMaxCoarseSamples;//Ö¸Ã÷Ò»¸öfragmentÖĞÄÜ°üº¬µÄ²ÉÑùµãµÄ×î´óÊıÁ¿£¬ÆäËûÃèÊö¼ûp3958
+    physicalDeviceShadingRateImagePropertiesNV.shadingRateTexelSize;//æŒ‡æ˜shading rate imageä¸­æ¯ä¸ªtexelå¯¹åº”çš„framebufferä¸­åŒºåŸŸçš„widthä»¥åŠheight
+    physicalDeviceShadingRateImagePropertiesNV.shadingRatePaletteSize;//æŒ‡æ˜shading rate imageæ”¯æŒçš„paletteå®ä½“çš„æœ€å¤§æ•°é‡
+    physicalDeviceShadingRateImagePropertiesNV.shadingRateMaxCoarseSamples;//æŒ‡æ˜ä¸€ä¸ªfragmentä¸­èƒ½åŒ…å«çš„é‡‡æ ·ç‚¹çš„æœ€å¤§æ•°é‡ï¼Œå…¶ä»–æè¿°è§p3958
 
 
-    //VkPhysicalDeviceMemoryDecompressionPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMemoryDecompressionPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceMemoryDecompressionPropertiesNV physicalDeviceMemoryDecompressionPropertiesNV{};
     physicalDeviceMemoryDecompressionPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_PROPERTIES_NV;
     physicalDeviceMemoryDecompressionPropertiesNV.pNext = nullptr;
-    physicalDeviceMemoryDecompressionPropertiesNV.decompressionMethods;// VkMemoryDecompressionMethodFlagBitsNV ×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷Ö§³ÖµÄÄÚ´æ½âÑ¹·½·¨
-    physicalDeviceMemoryDecompressionPropertiesNV.maxDecompressionIndirectCount;//Ö¸Ã÷Ö§³ÖµÄ vkCmdDecompressMemoryIndirectCountNV ÃüÁîÖĞcountBufferÖĞ°üº¬µÄcount ÖµµÄ×î´óÖµ
+    physicalDeviceMemoryDecompressionPropertiesNV.decompressionMethods;// VkMemoryDecompressionMethodFlagBitsNV ç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜æ”¯æŒçš„å†…å­˜è§£å‹æ–¹æ³•
+    physicalDeviceMemoryDecompressionPropertiesNV.maxDecompressionIndirectCount;//æŒ‡æ˜æ”¯æŒçš„ vkCmdDecompressMemoryIndirectCountNV å‘½ä»¤ä¸­countBufferä¸­åŒ…å«çš„count å€¼çš„æœ€å¤§å€¼
 
 
-    //VkPhysicalDeviceMemoryDecompressionPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceMemoryDecompressionPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceTransformFeedbackPropertiesEXT physicalDeviceTransformFeedbackPropertiesEXT{};
     physicalDeviceTransformFeedbackPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT;
     physicalDeviceTransformFeedbackPropertiesEXT.pNext = nullptr;
-    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackStreams;//Ö¸Ã÷¿ÉÒÔ´ÓÉêÃ÷ÁË GeometryStreamsÄÜÁ¦µÄgeometry shaders Êä³öµÄvertex streams µÄ×î´óÊıÁ¿£¬ÆäËûÃèÊö¼ûp3959
-    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBuffers;//Ö¸Ã÷¿ÉÒÔÓÃÀ´²¶»ñ last pre-rasterization shader stage µÄÊä³ö µÄtransform feedback buffers µÄ×î´óÊıÁ¿
-    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBufferSize;//Ö¸Ã÷ vkCmdBindTransformFeedbackBuffersEXTÖĞ¿ÉÒÔ°ó¶¨µÄÒ»¸ötransform feedback bufferµÄ×î´ó´óĞ¡
-    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackStreamDataSize;//Ö¸Ã÷¿ÉÒÔ²¶»ñµÄ¹ØÁªµ½Ò»¸övertex streamµÄÒ»¸ö»ò¶à transform feedback buffersÖĞ¶¥µãÊı¾İ×ÜÊıµÄ×î´ó×Ö½Ú´óĞ¡
-    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBufferDataSize;//Ö¸Ã÷Ö¸¶¨ transform feedback buffersÖĞ¿ÉÒÔ²¶»ñµÄ¶¥µãÊı¾İµÄ×î´ó×Ö½ÚÁ¿
-    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBufferDataStride;//ÎªbufferÖĞÃ¿¸ö²¶»ñµÄ¶¥µãÊı¾İÖ®¼äµÄÖ±½Ó²½³¤
-    physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackQueries;//Ö¸Ã÷ÊÇ·ñÖ§³ÖVK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT query type
-    physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackStreamsLinesTriangles;//Ö¸Ã÷µ±Ò»¸ö»òÕß¶à¸ö vertex stream Êä³öÊ±£¬ÊÇ·ñÖ§³Ögeometry shader OpExecutionMode³ıÁËÖ§³ÖOutputPoints Ö®ÍâÒ²Ö§³ÖOutputLineStrip ÒÔ¼° OutputTriangleStrip
-    physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackRasterizationStreamSelect;//Ö¸Ã÷ÊÇ·ñÖ§³ÖGeometryStreams SPIR-V capabilityÇÒ¿ÉÒÔÓÃVkPipelineRasterizationStateStreamCreateInfoEXT À´¸üĞÂÓÃÓÚ¹âÕ¤»¯µÄ vertex stream output
-    physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackDraw;//Ö¸Ã÷ÊÇ·ñÖ§³ÖÊ¹ÓÃvkCmdDrawIndirectByteCountEXT
+    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackStreams;//æŒ‡æ˜å¯ä»¥ä»ç”³æ˜äº† GeometryStreamsèƒ½åŠ›çš„geometry shaders è¾“å‡ºçš„vertex streams çš„æœ€å¤§æ•°é‡ï¼Œå…¶ä»–æè¿°è§p3959
+    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBuffers;//æŒ‡æ˜å¯ä»¥ç”¨æ¥æ•è· last pre-rasterization shader stage çš„è¾“å‡º çš„transform feedback buffers çš„æœ€å¤§æ•°é‡
+    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBufferSize;//æŒ‡æ˜ vkCmdBindTransformFeedbackBuffersEXTä¸­å¯ä»¥ç»‘å®šçš„ä¸€ä¸ªtransform feedback bufferçš„æœ€å¤§å¤§å°
+    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackStreamDataSize;//æŒ‡æ˜å¯ä»¥æ•è·çš„å…³è”åˆ°ä¸€ä¸ªvertex streamçš„ä¸€ä¸ªæˆ–å¤š transform feedback buffersä¸­é¡¶ç‚¹æ•°æ®æ€»æ•°çš„æœ€å¤§å­—èŠ‚å¤§å°
+    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBufferDataSize;//æŒ‡æ˜æŒ‡å®š transform feedback buffersä¸­å¯ä»¥æ•è·çš„é¡¶ç‚¹æ•°æ®çš„æœ€å¤§å­—èŠ‚é‡
+    physicalDeviceTransformFeedbackPropertiesEXT.maxTransformFeedbackBufferDataStride;//ä¸ºbufferä¸­æ¯ä¸ªæ•è·çš„é¡¶ç‚¹æ•°æ®ä¹‹é—´çš„ç›´æ¥æ­¥é•¿
+    physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackQueries;//æŒ‡æ˜æ˜¯å¦æ”¯æŒVK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT query type
+    physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackStreamsLinesTriangles;//æŒ‡æ˜å½“ä¸€ä¸ªæˆ–è€…å¤šä¸ª vertex stream è¾“å‡ºæ—¶ï¼Œæ˜¯å¦æ”¯æŒgeometry shader OpExecutionModeé™¤äº†æ”¯æŒOutputPoints ä¹‹å¤–ä¹Ÿæ”¯æŒOutputLineStrip ä»¥åŠ OutputTriangleStrip
+    physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackRasterizationStreamSelect;//æŒ‡æ˜æ˜¯å¦æ”¯æŒGeometryStreams SPIR-V capabilityä¸”å¯ä»¥ç”¨VkPipelineRasterizationStateStreamCreateInfoEXT æ¥æ›´æ–°ç”¨äºå…‰æ …åŒ–çš„ vertex stream output
+    physicalDeviceTransformFeedbackPropertiesEXT.transformFeedbackDraw;//æŒ‡æ˜æ˜¯å¦æ”¯æŒä½¿ç”¨vkCmdDrawIndirectByteCountEXT
 
 
-    //VkPhysicalDeviceCopyMemoryIndirectPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceCopyMemoryIndirectPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceCopyMemoryIndirectPropertiesNV physicalDeviceCopyMemoryIndirectPropertiesNV{};
     physicalDeviceCopyMemoryIndirectPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_PROPERTIES_NV;
     physicalDeviceCopyMemoryIndirectPropertiesNV.pNext = nullptr;
-    physicalDeviceCopyMemoryIndirectPropertiesNV.supportedQueues;// VkQueueFlagBits ×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷ indirect copy commandsÖ§³ÖµÄ¶ÓÁĞ
+    physicalDeviceCopyMemoryIndirectPropertiesNV.supportedQueues;// VkQueueFlagBits ç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜ indirect copy commandsæ”¯æŒçš„é˜Ÿåˆ—
 
 
-    //VkPhysicalDeviceRayTracingPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceRayTracingPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceRayTracingPropertiesNV physicalDeviceRayTracingPropertiesNV{};
     physicalDeviceRayTracingPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV;
     physicalDeviceRayTracingPropertiesNV.pNext = nullptr;
-    physicalDeviceRayTracingPropertiesNV.shaderGroupHandleSize;//Ö¸Ã÷shader headerµÄ×Ö½Ú´óĞ¡
-    physicalDeviceRayTracingPropertiesNV.maxRecursionDepth;//Ö¸Ã÷trace commandÖĞÔÊĞíµÄ×î´óµİ¹éÉî¶È
-    physicalDeviceRayTracingPropertiesNV.maxShaderGroupStride;//Îªshader binding tableÖĞshader groupsÖ®¼äµÄ×î´ó×Ö½Ú²½³¤
-    physicalDeviceRayTracingPropertiesNV.shaderGroupBaseAlignment;//Îªshader binding tableµÄ»ù±¾ÄÚ´æ¶ÔÆëÒªÇó
-    physicalDeviceRayTracingPropertiesNV.maxGeometryCount;//Îª bottom level acceleration strcutureÖĞgeometryµÄ×î´óÊıÁ¿
-    physicalDeviceRayTracingPropertiesNV.maxInstanceCount;//Îª top level acceleration strcutureÖĞinstanceµÄ×î´óÊıÁ¿
-    physicalDeviceRayTracingPropertiesNV.maxTriangleCount;//Îª bottom level acceleration strcutureÖĞËùÓĞgeometryÖĞÈı½ÇĞÎµÄ×î´óÊıÁ¿
-    physicalDeviceRayTracingPropertiesNV.maxDescriptorSetAccelerationStructures;//Îª descriptor setÖĞ¿ÉÒÔº¬ÓĞµÄacceleration strcuture descriptorsµÄ×î´óÊıÁ¿
+    physicalDeviceRayTracingPropertiesNV.shaderGroupHandleSize;//æŒ‡æ˜shader headerçš„å­—èŠ‚å¤§å°
+    physicalDeviceRayTracingPropertiesNV.maxRecursionDepth;//æŒ‡æ˜trace commandä¸­å…è®¸çš„æœ€å¤§é€’å½’æ·±åº¦
+    physicalDeviceRayTracingPropertiesNV.maxShaderGroupStride;//ä¸ºshader binding tableä¸­shader groupsä¹‹é—´çš„æœ€å¤§å­—èŠ‚æ­¥é•¿
+    physicalDeviceRayTracingPropertiesNV.shaderGroupBaseAlignment;//ä¸ºshader binding tableçš„åŸºæœ¬å†…å­˜å¯¹é½è¦æ±‚
+    physicalDeviceRayTracingPropertiesNV.maxGeometryCount;//ä¸º bottom level acceleration strcutureä¸­geometryçš„æœ€å¤§æ•°é‡
+    physicalDeviceRayTracingPropertiesNV.maxInstanceCount;//ä¸º top level acceleration strcutureä¸­instanceçš„æœ€å¤§æ•°é‡
+    physicalDeviceRayTracingPropertiesNV.maxTriangleCount;//ä¸º bottom level acceleration strcutureä¸­æ‰€æœ‰geometryä¸­ä¸‰è§’å½¢çš„æœ€å¤§æ•°é‡
+    physicalDeviceRayTracingPropertiesNV.maxDescriptorSetAccelerationStructures;//ä¸º descriptor setä¸­å¯ä»¥å«æœ‰çš„acceleration strcuture descriptorsçš„æœ€å¤§æ•°é‡
 
 
-    //VkPhysicalDeviceAccelerationStructurePropertiesKHR  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceAccelerationStructurePropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceAccelerationStructurePropertiesKHR physicalDeviceAccelerationStructurePropertiesKHR{};
     physicalDeviceAccelerationStructurePropertiesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR;
     physicalDeviceAccelerationStructurePropertiesKHR.pNext = nullptr;
-    physicalDeviceAccelerationStructurePropertiesKHR.maxGeometryCount;//Îª bottom level acceleration strcutureÖĞgeometryµÄ×î´óÊıÁ¿
-    physicalDeviceAccelerationStructurePropertiesKHR.maxInstanceCount;//Îª top level acceleration strcutureÖĞinstanceµÄ×î´óÊıÁ¿
-    physicalDeviceAccelerationStructurePropertiesKHR.maxPrimitiveCount;//Îª bottom level acceleration strcutureÖĞËùÓĞgeometryÖĞAABB»òÕßÈı½ÇĞÎµÄ×î´óÊıÁ¿
-    physicalDeviceAccelerationStructurePropertiesKHR.maxPerStageDescriptorAccelerationStructures;//ÎªÒ»¸öpipeline layoutÖĞµÄÒ»¸öshader stage¿ÉÒÔ·ÃÎÊµÄacceleration structure bindingµÄ×î´óÊıÁ¿£¬ÆäËûÃèÊö¼ûp3962
-    physicalDeviceAccelerationStructurePropertiesKHR.maxPerStageDescriptorUpdateAfterBindAccelerationStructures;// ÀàËÆÓÚmaxPerStageDescriptorAccelerationStructures£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceAccelerationStructurePropertiesKHR.maxDescriptorSetAccelerationStructures;//ÎªËùÓĞpipeline shader stages ÒÔ¼° descriptor set ±àºÅÖĞ£¬ Ò»¸öpipeline layoutÖĞµÄÒ»¸ö descriptor bindingsÖĞÄÜº¬ÓĞµÄacceleration structure descriptorsµÄ×î´óÊıÁ¿£¬ÆäËûĞÅÏ¢¼ûp3963
-    physicalDeviceAccelerationStructurePropertiesKHR.maxDescriptorSetUpdateAfterBindAccelerationStructures;// ÀàËÆÓÚmaxDescriptorSetAccelerationStructures£¬Ö»²»¹ıdescriptorsµÄÍ³¼Æ´ÓÒÔ´´½¨º¬ÓĞ»òÕß²»º¬ÓĞVK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT µÄdescriptor setsÖĞÍ³¼Æ
-    physicalDeviceAccelerationStructurePropertiesKHR.minAccelerationStructureScratchOffsetAlignment;//Îª´«µİ¸øÒ»¸öacceleration structure build commandµÄscratchÊı¾İµÄ×îĞ¡×Ö½Ú¶ÔÆë£¬±ØĞëÎª2µÄÖ¸Êı
+    physicalDeviceAccelerationStructurePropertiesKHR.maxGeometryCount;//ä¸º bottom level acceleration strcutureä¸­geometryçš„æœ€å¤§æ•°é‡
+    physicalDeviceAccelerationStructurePropertiesKHR.maxInstanceCount;//ä¸º top level acceleration strcutureä¸­instanceçš„æœ€å¤§æ•°é‡
+    physicalDeviceAccelerationStructurePropertiesKHR.maxPrimitiveCount;//ä¸º bottom level acceleration strcutureä¸­æ‰€æœ‰geometryä¸­AABBæˆ–è€…ä¸‰è§’å½¢çš„æœ€å¤§æ•°é‡
+    physicalDeviceAccelerationStructurePropertiesKHR.maxPerStageDescriptorAccelerationStructures;//ä¸ºä¸€ä¸ªpipeline layoutä¸­çš„ä¸€ä¸ªshader stageå¯ä»¥è®¿é—®çš„acceleration structure bindingçš„æœ€å¤§æ•°é‡ï¼Œå…¶ä»–æè¿°è§p3962
+    physicalDeviceAccelerationStructurePropertiesKHR.maxPerStageDescriptorUpdateAfterBindAccelerationStructures;// ç±»ä¼¼äºmaxPerStageDescriptorAccelerationStructuresï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceAccelerationStructurePropertiesKHR.maxDescriptorSetAccelerationStructures;//ä¸ºæ‰€æœ‰pipeline shader stages ä»¥åŠ descriptor set ç¼–å·ä¸­ï¼Œ ä¸€ä¸ªpipeline layoutä¸­çš„ä¸€ä¸ª descriptor bindingsä¸­èƒ½å«æœ‰çš„acceleration structure descriptorsçš„æœ€å¤§æ•°é‡ï¼Œå…¶ä»–ä¿¡æ¯è§p3963
+    physicalDeviceAccelerationStructurePropertiesKHR.maxDescriptorSetUpdateAfterBindAccelerationStructures;// ç±»ä¼¼äºmaxDescriptorSetAccelerationStructuresï¼Œåªä¸è¿‡descriptorsçš„ç»Ÿè®¡ä»ä»¥åˆ›å»ºå«æœ‰æˆ–è€…ä¸å«æœ‰VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT çš„descriptor setsä¸­ç»Ÿè®¡
+    physicalDeviceAccelerationStructurePropertiesKHR.minAccelerationStructureScratchOffsetAlignment;//ä¸ºä¼ é€’ç»™ä¸€ä¸ªacceleration structure build commandçš„scratchæ•°æ®çš„æœ€å°å­—èŠ‚å¯¹é½ï¼Œå¿…é¡»ä¸º2çš„æŒ‡æ•°
 
 
-    //VkPhysicalDeviceRayTracingPipelinePropertiesKHR  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceRayTracingPipelinePropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceRayTracingPipelinePropertiesKHR physicalDeviceRayTracingPipelinePropertiesKHR{};
     physicalDeviceRayTracingPipelinePropertiesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
     physicalDeviceRayTracingPipelinePropertiesKHR.pNext = nullptr;
-    physicalDeviceRayTracingPipelinePropertiesKHR.shaderGroupHandleSize;//Ö¸Ã÷shader headerµÄ×Ö½Ú´óĞ¡
-    physicalDeviceRayTracingPipelinePropertiesKHR.maxRayRecursionDepth;//Ö¸Ã÷trace commandÖĞÔÊĞíµÄ×î´óµİ¹éÉî¶È
-    physicalDeviceRayTracingPipelinePropertiesKHR.maxShaderGroupStride;//Îªshader binding tableÖĞshader groupsÖ®¼äµÄ×î´ó×Ö½Ú²½³¤
-    physicalDeviceRayTracingPipelinePropertiesKHR.shaderGroupBaseAlignment;//Îªshader binding tableµÄ»ù±¾ÄÚ´æ¶ÔÆëÒªÇó
-    physicalDeviceRayTracingPipelinePropertiesKHR.shaderGroupHandleCaptureReplaySize;//Îª shader group handles ×ö²¶»ñºÍ»Ø·ÅµÄĞÅÏ¢ĞèÒªµÄ×Ö½ÚÊı
-	physicalDeviceRayTracingPipelinePropertiesKHR.maxRayDispatchInvocationCount;//Îªµ¥¸ö vkCmdTraceRaysIndirectKHR »òÕß vkCmdTraceRaysKHRµ÷ÓÃÖĞ¿ÉÒÔ°üº¬µÄray generation shader invocationsµÄ×î´óÊıÁ¿
-    physicalDeviceRayTracingPipelinePropertiesKHR.shaderGroupHandleAlignment;//Îªshader binding table ÖĞÃ¿¸öÊµÌåĞèÒªµÄ×Ö½Ú¶ÔÆëÒªÇó£¬Îª2µÄÖ¸Êı
-    physicalDeviceRayTracingPipelinePropertiesKHR.maxRayHitAttributeSize;//Îªray attribute structureµÄ×î´ó×Ö½ÚÊı
+    physicalDeviceRayTracingPipelinePropertiesKHR.shaderGroupHandleSize;//æŒ‡æ˜shader headerçš„å­—èŠ‚å¤§å°
+    physicalDeviceRayTracingPipelinePropertiesKHR.maxRayRecursionDepth;//æŒ‡æ˜trace commandä¸­å…è®¸çš„æœ€å¤§é€’å½’æ·±åº¦
+    physicalDeviceRayTracingPipelinePropertiesKHR.maxShaderGroupStride;//ä¸ºshader binding tableä¸­shader groupsä¹‹é—´çš„æœ€å¤§å­—èŠ‚æ­¥é•¿
+    physicalDeviceRayTracingPipelinePropertiesKHR.shaderGroupBaseAlignment;//ä¸ºshader binding tableçš„åŸºæœ¬å†…å­˜å¯¹é½è¦æ±‚
+    physicalDeviceRayTracingPipelinePropertiesKHR.shaderGroupHandleCaptureReplaySize;//ä¸º shader group handles åšæ•è·å’Œå›æ”¾çš„ä¿¡æ¯éœ€è¦çš„å­—èŠ‚æ•°
+	physicalDeviceRayTracingPipelinePropertiesKHR.maxRayDispatchInvocationCount;//ä¸ºå•ä¸ª vkCmdTraceRaysIndirectKHR æˆ–è€… vkCmdTraceRaysKHRè°ƒç”¨ä¸­å¯ä»¥åŒ…å«çš„ray generation shader invocationsçš„æœ€å¤§æ•°é‡
+    physicalDeviceRayTracingPipelinePropertiesKHR.shaderGroupHandleAlignment;//ä¸ºshader binding table ä¸­æ¯ä¸ªå®ä½“éœ€è¦çš„å­—èŠ‚å¯¹é½è¦æ±‚ï¼Œä¸º2çš„æŒ‡æ•°
+    physicalDeviceRayTracingPipelinePropertiesKHR.maxRayHitAttributeSize;//ä¸ºray attribute structureçš„æœ€å¤§å­—èŠ‚æ•°
 
 
-    //VkPhysicalDeviceCooperativeMatrixPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceCooperativeMatrixPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceCooperativeMatrixPropertiesNV physicalDeviceCooperativeMatrixPropertiesNV{};
     physicalDeviceCooperativeMatrixPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_PROPERTIES_NV;
     physicalDeviceCooperativeMatrixPropertiesNV.pNext = nullptr;
-    physicalDeviceCooperativeMatrixPropertiesNV.cooperativeMatrixSupportedStages;// VkShaderStageFlagBits ×éºÏÖµ£¬ÃèÊöcooperative matrix instructionsÖ§³ÖµÄshader stages
+    physicalDeviceCooperativeMatrixPropertiesNV.cooperativeMatrixSupportedStages;// VkShaderStageFlagBits ç»„åˆå€¼ï¼Œæè¿°cooperative matrix instructionsæ”¯æŒçš„shader stages
 
 
-    //VkPhysicalDeviceCooperativeMatrixPropertiesKHR  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceCooperativeMatrixPropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceCooperativeMatrixPropertiesKHR physicalDeviceCooperativeMatrixPropertiesHKR{};
-    physicalDeviceCooperativeMatrixPropertiesHKR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Ã»ÓĞ¶¨ÒåÕâÀï¶¨ÒåÎª·Ç·¨Öµ
+    physicalDeviceCooperativeMatrixPropertiesHKR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
     physicalDeviceCooperativeMatrixPropertiesHKR.pNext = nullptr;
-    physicalDeviceCooperativeMatrixPropertiesHKR.cooperativeMatrixSupportedStages;// VkShaderStageFlagBits ×éºÏÖµ£¬ÃèÊöcooperative matrix instructionsÖ§³ÖµÄshader stages
+    physicalDeviceCooperativeMatrixPropertiesHKR.cooperativeMatrixSupportedStages;// VkShaderStageFlagBits ç»„åˆå€¼ï¼Œæè¿°cooperative matrix instructionsæ”¯æŒçš„shader stages
 
-    //VkPhysicalDeviceShaderSMBuiltinsPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceShaderSMBuiltinsPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceShaderSMBuiltinsPropertiesNV physicalDeviceShaderSMBuiltinsPropertiesNV{};
     physicalDeviceShaderSMBuiltinsPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SM_BUILTINS_PROPERTIES_NV;
     physicalDeviceShaderSMBuiltinsPropertiesNV.pNext = nullptr;
-    physicalDeviceShaderSMBuiltinsPropertiesNV.shaderSMCount;// deviceÉÏµÄSMµÄÊıÁ¿
-	physicalDeviceShaderSMBuiltinsPropertiesNV.shaderWarpsPerSM;//ÎªÒ»¸öSMÖĞÍ¬Ê±ÔËĞĞµÄwarpµÄÊıÁ¿
+    physicalDeviceShaderSMBuiltinsPropertiesNV.shaderSMCount;// deviceä¸Šçš„SMçš„æ•°é‡
+	physicalDeviceShaderSMBuiltinsPropertiesNV.shaderWarpsPerSM;//ä¸ºä¸€ä¸ªSMä¸­åŒæ—¶è¿è¡Œçš„warpçš„æ•°é‡
 
 
-    //VkPhysicalDeviceTexelBufferAlignmentProperties £¬µÈ¼ÛÓÚVkPhysicalDeviceTexelBufferAlignmentPropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceTexelBufferAlignmentProperties ï¼Œç­‰ä»·äºVkPhysicalDeviceTexelBufferAlignmentPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceTexelBufferAlignmentProperties physicalDeviceTexelBufferAlignmentProperties{};
     physicalDeviceTexelBufferAlignmentProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES;
     physicalDeviceTexelBufferAlignmentProperties.pNext = nullptr;
-	physicalDeviceTexelBufferAlignmentProperties.storageTexelBufferOffsetAlignmentBytes;//Îª×ãÒÔÂú×ãÈÎºÎformatµÄstorage texel bufferµÄ×Ö½Ú¶ÔÆëÒªÇó£¬Îª2µÄÖ¸Êı
-	physicalDeviceTexelBufferAlignmentProperties.storageTexelBufferOffsetSingleTexelAlignment;//Îª×ãÒÔÂú×ãÈÎºÎformatµÄstorage texel bufferµÄµ¥¸ötexelµÄ¶ÔÆëÒªÇó£¬Îª2µÄÖ¸Êı
-	physicalDeviceTexelBufferAlignmentProperties.uniformTexelBufferOffsetAlignmentBytes;//Îª×ãÒÔÂú×ãÈÎºÎformatµÄuniform texel bufferµÄ×Ö½Ú¶ÔÆëÒªÇó£¬Îª2µÄÖ¸Êı
-	physicalDeviceTexelBufferAlignmentProperties.uniformTexelBufferOffsetSingleTexelAlignment;//Îª×ãÒÔÂú×ãÈÎºÎformatµÄuniform texel bufferµÄµ¥¸ötexelµÄ¶ÔÆëÒªÇó£¬Îª2µÄÖ¸Êı
+	physicalDeviceTexelBufferAlignmentProperties.storageTexelBufferOffsetAlignmentBytes;//ä¸ºè¶³ä»¥æ»¡è¶³ä»»ä½•formatçš„storage texel bufferçš„å­—èŠ‚å¯¹é½è¦æ±‚ï¼Œä¸º2çš„æŒ‡æ•°
+	physicalDeviceTexelBufferAlignmentProperties.storageTexelBufferOffsetSingleTexelAlignment;//ä¸ºè¶³ä»¥æ»¡è¶³ä»»ä½•formatçš„storage texel bufferçš„å•ä¸ªtexelçš„å¯¹é½è¦æ±‚ï¼Œä¸º2çš„æŒ‡æ•°
+	physicalDeviceTexelBufferAlignmentProperties.uniformTexelBufferOffsetAlignmentBytes;//ä¸ºè¶³ä»¥æ»¡è¶³ä»»ä½•formatçš„uniform texel bufferçš„å­—èŠ‚å¯¹é½è¦æ±‚ï¼Œä¸º2çš„æŒ‡æ•°
+	physicalDeviceTexelBufferAlignmentProperties.uniformTexelBufferOffsetSingleTexelAlignment;//ä¸ºè¶³ä»¥æ»¡è¶³ä»»ä½•formatçš„uniform texel bufferçš„å•ä¸ªtexelçš„å¯¹é½è¦æ±‚ï¼Œä¸º2çš„æŒ‡æ•°
 
 
-    //VkPhysicalDeviceTimelineSemaphoreProperties £¬µÈ¼ÛÓÚVkPhysicalDeviceTimelineSemaphorePropertiesKHR  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceTimelineSemaphoreProperties ï¼Œç­‰ä»·äºVkPhysicalDeviceTimelineSemaphorePropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceTimelineSemaphoreProperties physicalDeviceTimelineSemaphoreProperties{};
     physicalDeviceTimelineSemaphoreProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_PROPERTIES;
     physicalDeviceTimelineSemaphoreProperties.pNext = nullptr;
-    physicalDeviceTimelineSemaphoreProperties.maxTimelineSemaphoreValueDifference;//Îªtimeline semaphoreµÄµ±Ç°ÖµºÍÈÎºÎ¹ÒÆğµÄsemaphoreµÈ´ıÒÔ¼°´¥·¢µÄÖµÖ®¼ä²îÖµµÄ×î´óÖµ
+    physicalDeviceTimelineSemaphoreProperties.maxTimelineSemaphoreValueDifference;//ä¸ºtimeline semaphoreçš„å½“å‰å€¼å’Œä»»ä½•æŒ‚èµ·çš„semaphoreç­‰å¾…ä»¥åŠè§¦å‘çš„å€¼ä¹‹é—´å·®å€¼çš„æœ€å¤§å€¼
 
 
-    //VkPhysicalDeviceLineRasterizationPropertiesKHR £¬µÈ¼ÛÓÚVkPhysicalDeviceLineRasterizationPropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceLineRasterizationPropertiesKHR ï¼Œç­‰ä»·äºVkPhysicalDeviceLineRasterizationPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceLineRasterizationPropertiesKHR physicalDeviceLineRasterizationPropertiesKHR{};
-	physicalDeviceLineRasterizationPropertiesKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Ã»ÓĞ¶¨ÒåÕâÀï¶¨ÒåÎª·Ç·¨Öµ
+	physicalDeviceLineRasterizationPropertiesKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
     physicalDeviceLineRasterizationPropertiesKHR.pNext = nullptr;
-	physicalDeviceLineRasterizationPropertiesKHR.lineSubPixelPrecisionBits;//Îªline rasterizationµÄframebuffer ×ø±êÖĞxf£¬yfµÄ subpixel¾«¶ÈµÄÎ»Êı£¬Îª2µÄÖ¸Êı
+	physicalDeviceLineRasterizationPropertiesKHR.lineSubPixelPrecisionBits;//ä¸ºline rasterizationçš„framebuffer åæ ‡ä¸­xfï¼Œyfçš„ subpixelç²¾åº¦çš„ä½æ•°ï¼Œä¸º2çš„æŒ‡æ•°
 
 
-    //VkPhysicalDeviceRobustness2PropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceRobustness2PropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceRobustness2PropertiesEXT physicalDeviceRobustness2PropertiesEXT{};
     physicalDeviceRobustness2PropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_PROPERTIES_EXT;
     physicalDeviceRobustness2PropertiesEXT.pNext = nullptr;
-    physicalDeviceRobustness2PropertiesEXT.robustStorageBufferAccessSizeAlignment;//Îªµ±¿ªÆôrobustBufferAccess2 ÌØĞÔÇÒÊ¹ÓÃbounds-checkingÊÇstorage buffer descriptorÉáÈëµÄ·¶Î§µÄ×Ö½ÚÊı£¬±ØĞëÎª1»ò4
-    physicalDeviceRobustness2PropertiesEXT.robustUniformBufferAccessSizeAlignment;//Îªµ±¿ªÆôrobustBufferAccess2 ÌØĞÔÇÒÊ¹ÓÃbounds-checkingÊÇuniform buffer descriptorÉáÈëµÄ·¶Î§µÄ×Ö½ÚÊı£¬±ØĞëÎª [1, 256]·¶Î§ÄÚµÄ2µÄÖ¸Êı
+    physicalDeviceRobustness2PropertiesEXT.robustStorageBufferAccessSizeAlignment;//ä¸ºå½“å¼€å¯robustBufferAccess2 ç‰¹æ€§ä¸”ä½¿ç”¨bounds-checkingæ˜¯storage buffer descriptorèˆå…¥çš„èŒƒå›´çš„å­—èŠ‚æ•°ï¼Œå¿…é¡»ä¸º1æˆ–4
+    physicalDeviceRobustness2PropertiesEXT.robustUniformBufferAccessSizeAlignment;//ä¸ºå½“å¼€å¯robustBufferAccess2 ç‰¹æ€§ä¸”ä½¿ç”¨bounds-checkingæ˜¯uniform buffer descriptorèˆå…¥çš„èŒƒå›´çš„å­—èŠ‚æ•°ï¼Œå¿…é¡»ä¸º [1, 256]èŒƒå›´å†…çš„2çš„æŒ‡æ•°
 
 
-    //VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV physicalDeviceDeviceGeneratedCommandsPropertiesNV{};
     physicalDeviceDeviceGeneratedCommandsPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_PROPERTIES_NV;
     physicalDeviceDeviceGeneratedCommandsPropertiesNV.pNext = nullptr;
-    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxGraphicsShaderGroupCount;//ÎªVkGraphicsPipelineShaderGroupsCreateInfoNV ÖĞshader groupsµÄ×î´óÊıÁ¿
-    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectSequenceCount;//ÎªVkGeneratedCommandsInfoNV ÒÔ¼°VkGeneratedCommandsMemoryRequirementsInfoNV ÖĞĞòÁĞµÄ×î´óÊıÁ¿
-    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectCommandsTokenCount;//ÎªVkIndirectCommandsLayoutCreateInfoNV ÖĞtokens µÄ×î´óÊıÁ¿
-    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectCommandsStreamCount;//ÎªVkIndirectCommandsLayoutCreateInfoNV ÖĞstreams µÄ×î´óÊıÁ¿
-    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectCommandsTokenOffset;//Îª VkIndirectCommandsLayoutTokenNV ÖĞoffset µÄ×î´óÖµ
-    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectCommandsStreamStride;//ÎªVkIndirectCommandsLayoutCreateInfoNV ÖĞstream stride µÄ×î´óÊıÁ¿
-	physicalDeviceDeviceGeneratedCommandsPropertiesNV.minSequencesCountBufferOffsetAlignment;//Îª VkGeneratedCommandsInfoNV ÖĞÄÚ´æµØÖ·¿ÉÒÔÊ¹ÓÃµÄ×îĞ¡×Ö½Ú¶ÔÆë
-    physicalDeviceDeviceGeneratedCommandsPropertiesNV.minSequencesIndexBufferOffsetAlignment;//Îª  VkGeneratedCommandsInfoNV ÖĞÄÚ´æµØÖ·¿ÉÒÔÊ¹ÓÃµÄ×îĞ¡×Ö½Ú¶ÔÆë
-    physicalDeviceDeviceGeneratedCommandsPropertiesNV.minIndirectCommandsBufferOffsetAlignment;//Îª  VkIndirectCommandsStreamNV ÖĞÄÚ´æµØÖ·ÒÔ¼°VkGeneratedCommandsInfoNV ÖĞÔ¤´¦Àíbuffer¿ÉÒÔÊ¹ÓÃµÄ×îĞ¡×Ö½Ú¶ÔÆë
+    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxGraphicsShaderGroupCount;//ä¸ºVkGraphicsPipelineShaderGroupsCreateInfoNV ä¸­shader groupsçš„æœ€å¤§æ•°é‡
+    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectSequenceCount;//ä¸ºVkGeneratedCommandsInfoNV ä»¥åŠVkGeneratedCommandsMemoryRequirementsInfoNV ä¸­åºåˆ—çš„æœ€å¤§æ•°é‡
+    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectCommandsTokenCount;//ä¸ºVkIndirectCommandsLayoutCreateInfoNV ä¸­tokens çš„æœ€å¤§æ•°é‡
+    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectCommandsStreamCount;//ä¸ºVkIndirectCommandsLayoutCreateInfoNV ä¸­streams çš„æœ€å¤§æ•°é‡
+    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectCommandsTokenOffset;//ä¸º VkIndirectCommandsLayoutTokenNV ä¸­offset çš„æœ€å¤§å€¼
+    physicalDeviceDeviceGeneratedCommandsPropertiesNV.maxIndirectCommandsStreamStride;//ä¸ºVkIndirectCommandsLayoutCreateInfoNV ä¸­stream stride çš„æœ€å¤§æ•°é‡
+	physicalDeviceDeviceGeneratedCommandsPropertiesNV.minSequencesCountBufferOffsetAlignment;//ä¸º VkGeneratedCommandsInfoNV ä¸­å†…å­˜åœ°å€å¯ä»¥ä½¿ç”¨çš„æœ€å°å­—èŠ‚å¯¹é½
+    physicalDeviceDeviceGeneratedCommandsPropertiesNV.minSequencesIndexBufferOffsetAlignment;//ä¸º  VkGeneratedCommandsInfoNV ä¸­å†…å­˜åœ°å€å¯ä»¥ä½¿ç”¨çš„æœ€å°å­—èŠ‚å¯¹é½
+    physicalDeviceDeviceGeneratedCommandsPropertiesNV.minIndirectCommandsBufferOffsetAlignment;//ä¸º  VkIndirectCommandsStreamNV ä¸­å†…å­˜åœ°å€ä»¥åŠVkGeneratedCommandsInfoNV ä¸­é¢„å¤„ç†bufferå¯ä»¥ä½¿ç”¨çš„æœ€å°å­—èŠ‚å¯¹é½
 
 
-    //VkPhysicalDevicePortabilitySubsetPropertiesKHR  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDevicePortabilitySubsetPropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDevicePortabilitySubsetPropertiesKHR physicalDevicePortabilitySubsetPropertiesKHR{};
-    physicalDevicePortabilitySubsetPropertiesKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//Ã»ÓĞ¶¨ÒåÕâÀï¶¨ÒåÎª·Ç·¨Öµ
+    physicalDevicePortabilitySubsetPropertiesKHR.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
     physicalDevicePortabilitySubsetPropertiesKHR.pNext = nullptr;
-	physicalDevicePortabilitySubsetPropertiesKHR.minVertexInputBindingStrideAlignment;//Îªvertex input binding strideµÄ×îĞ¡×Ö½Ú¶ÔÆëÒªÇó£¬Îª2µÄÖ¸Êı
+	physicalDevicePortabilitySubsetPropertiesKHR.minVertexInputBindingStrideAlignment;//ä¸ºvertex input binding strideçš„æœ€å°å­—èŠ‚å¯¹é½è¦æ±‚ï¼Œä¸º2çš„æŒ‡æ•°
 
 
-    //VkPhysicalDeviceFragmentShadingRatePropertiesKHR  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceFragmentShadingRatePropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceFragmentShadingRatePropertiesKHR physicalDeviceFragmentShadingRatePropertiesKHR{};
     physicalDeviceFragmentShadingRatePropertiesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_PROPERTIES_KHR;
     physicalDeviceFragmentShadingRatePropertiesKHR.pNext = nullptr;
-	physicalDeviceFragmentShadingRatePropertiesKHR.minFragmentShadingRateAttachmentTexelSize;//Ö¸Ã÷fragment shading rate attachmentÃ¿¸ötexel ¶ÔÓ¦µÄframebuffer ÇøÓòµÄwidthÒÔ¼°heightµÄ×îĞ¡Öµ£¬ÆäËûÃèÊö¼ûp3971
-    physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentShadingRateAttachmentTexelSize;//Ö¸Ã÷fragment shading rate attachmentÃ¿¸ötexel ¶ÔÓ¦µÄframebuffer ÇøÓòµÄwidthÒÔ¼°heightµÄ×î´óÖµ£¬ÆäËûÃèÊö¼ûp3971
-	physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentShadingRateAttachmentTexelSizeAspectRatio;//Ö¸Ã÷fragment shading rate attachmentÃ¿¸ötexel ¶ÔÓ¦µÄframebuffer ÇøÓòµÄwidthÒÔ¼°heightµÄ±ÈÖµµÄ×î´óÖµ£¬ÆäËûÃèÊö¼ûp3971
-    physicalDeviceFragmentShadingRatePropertiesKHR.primitiveFragmentShadingRateWithMultipleViewports;//Ö¸Ã÷ÊÇ·ñ primitive fragment shading rate ¿ÉÒÔºÍmultiple viewports Ò»ÆğÊ¹ÓÃ£¬ÆäËûÃèÊö¼ûp3972
-    physicalDeviceFragmentShadingRatePropertiesKHR.layeredShadingRateAttachments;//Ö¸Ã÷Ò»¸ö shading rate attachment image view¿ÉÒÔº¬¶à¸ölayer´´½¨£¬ÆäËûÃèÊö¼ûp3972
-    physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateNonTrivialCombinerOps;//Ö¸Ã÷³ıVK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR »òÕßVK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR Ö®ÍâµÄVkFragmentShadingRateCombinerOpKHR Ã¶¾ÙÖµÊÇ·ñ¿ÉÒÔÊ¹ÓÃ
-	physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentSize;//Ö¸Ã÷Ò»¸öfragmentÖ§³ÖµÄwidthºÍheightµÄ×î´óÖµ£¬ÆäËûÃèÊö¼ûp3972
-    physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentSizeAspectRatio;//Ö¸Ã÷Ò»¸öfragmentÖ§³ÖµÄwidthºÍheight±ÈÖµµÄ×î´óÖµ£¬ÆäËûÃèÊö¼ûp3972
-	physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentShadingRateCoverageSamples;//Ö¸Ã÷Ò»¸öfragmentµÄcoverage samplesµÄ×î´óÊıÁ¿£¬ÆäËûÃèÊö¼ûp3972
-    physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentShadingRateRasterizationSamples;// VkSampleCountFlagBits ×éºÏÖµÎ»ÑÚÂë£¬Ö¸Ã÷µ±Ò»¸öfragment°üº¬¶à¸öpixelsÊ±Ö§³ÖµÄ sample rateµÄ×î´óÖµ
-	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithShaderDepthStencilWrites;//Ö¸Ã÷ÊÇ·ñÖ§³ÖÔÚfragment shaderÖĞ¶Ômulti-pixel fragmentÍ¨¹ı FragDepth »òÕß FragStencilRefEXTĞ´ÈëÉî¶ÈÒÔ¼°stencilÖµ£¬ÆäËûÃèÊö¼ûp3973
-    physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithSampleMask;//Ö¸Ã÷ÊÇ·ñÖ§³Ö¶Ô multi-pixel fragmentsÉèÖÃ VkPipelineMultisampleStateCreateInfo::pSampleMask ÖĞÓĞĞ§Î»Îª0£¬ÆäËûÃèÊö¼ûp3973
-	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithShaderSampleMask;//Ö¸Ã÷ÊÇ·ñÖ§³Ö¶ÁĞ´multi-pixel fragmentµÄSampleMask £¬ÆäËûÃèÊö¼ûp3973
-	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithConservativeRasterization;//Ö¸Ã÷¶Ô multi-pixel fragmentsÊÇ·ñÖ§³Öconservative rasterization £¬ÆäËûÃèÊö¼ûp3973
-    physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithFragmentShaderInterlock;//Ö¸Ã÷¶Ô multi-pixel fragmentsÊÇ·ñÖ§³Ö fragment shader interlock £¬ÆäËûÃèÊö¼ûp3973
-	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithCustomSampleLocations;//Ö¸Ã÷¶Ô multi-pixel fragmentsÊÇ·ñÖ§³Ö custom sample locations £¬ÆäËûÃèÊö¼ûp3973
-	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateStrictMultiplyCombiner;//Ö¸Ã÷VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_KHR ÊÇ·ñ¾«È·µÄÖ´ĞĞ³Ë·¨²Ù×÷£¬ÆäËûÃèÊö¼ûp3974
+	physicalDeviceFragmentShadingRatePropertiesKHR.minFragmentShadingRateAttachmentTexelSize;//æŒ‡æ˜fragment shading rate attachmentæ¯ä¸ªtexel å¯¹åº”çš„framebuffer åŒºåŸŸçš„widthä»¥åŠheightçš„æœ€å°å€¼ï¼Œå…¶ä»–æè¿°è§p3971
+    physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentShadingRateAttachmentTexelSize;//æŒ‡æ˜fragment shading rate attachmentæ¯ä¸ªtexel å¯¹åº”çš„framebuffer åŒºåŸŸçš„widthä»¥åŠheightçš„æœ€å¤§å€¼ï¼Œå…¶ä»–æè¿°è§p3971
+	physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentShadingRateAttachmentTexelSizeAspectRatio;//æŒ‡æ˜fragment shading rate attachmentæ¯ä¸ªtexel å¯¹åº”çš„framebuffer åŒºåŸŸçš„widthä»¥åŠheightçš„æ¯”å€¼çš„æœ€å¤§å€¼ï¼Œå…¶ä»–æè¿°è§p3971
+    physicalDeviceFragmentShadingRatePropertiesKHR.primitiveFragmentShadingRateWithMultipleViewports;//æŒ‡æ˜æ˜¯å¦ primitive fragment shading rate å¯ä»¥å’Œmultiple viewports ä¸€èµ·ä½¿ç”¨ï¼Œå…¶ä»–æè¿°è§p3972
+    physicalDeviceFragmentShadingRatePropertiesKHR.layeredShadingRateAttachments;//æŒ‡æ˜ä¸€ä¸ª shading rate attachment image viewå¯ä»¥å«å¤šä¸ªlayeråˆ›å»ºï¼Œå…¶ä»–æè¿°è§p3972
+    physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateNonTrivialCombinerOps;//æŒ‡æ˜é™¤VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR æˆ–è€…VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR ä¹‹å¤–çš„VkFragmentShadingRateCombinerOpKHR æšä¸¾å€¼æ˜¯å¦å¯ä»¥ä½¿ç”¨
+	physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentSize;//æŒ‡æ˜ä¸€ä¸ªfragmentæ”¯æŒçš„widthå’Œheightçš„æœ€å¤§å€¼ï¼Œå…¶ä»–æè¿°è§p3972
+    physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentSizeAspectRatio;//æŒ‡æ˜ä¸€ä¸ªfragmentæ”¯æŒçš„widthå’Œheightæ¯”å€¼çš„æœ€å¤§å€¼ï¼Œå…¶ä»–æè¿°è§p3972
+	physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentShadingRateCoverageSamples;//æŒ‡æ˜ä¸€ä¸ªfragmentçš„coverage samplesçš„æœ€å¤§æ•°é‡ï¼Œå…¶ä»–æè¿°è§p3972
+    physicalDeviceFragmentShadingRatePropertiesKHR.maxFragmentShadingRateRasterizationSamples;// VkSampleCountFlagBits ç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜å½“ä¸€ä¸ªfragmentåŒ…å«å¤šä¸ªpixelsæ—¶æ”¯æŒçš„ sample rateçš„æœ€å¤§å€¼
+	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithShaderDepthStencilWrites;//æŒ‡æ˜æ˜¯å¦æ”¯æŒåœ¨fragment shaderä¸­å¯¹multi-pixel fragmenté€šè¿‡ FragDepth æˆ–è€… FragStencilRefEXTå†™å…¥æ·±åº¦ä»¥åŠstencilå€¼ï¼Œå…¶ä»–æè¿°è§p3973
+    physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithSampleMask;//æŒ‡æ˜æ˜¯å¦æ”¯æŒå¯¹ multi-pixel fragmentsè®¾ç½® VkPipelineMultisampleStateCreateInfo::pSampleMask ä¸­æœ‰æ•ˆä½ä¸º0ï¼Œå…¶ä»–æè¿°è§p3973
+	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithShaderSampleMask;//æŒ‡æ˜æ˜¯å¦æ”¯æŒè¯»å†™multi-pixel fragmentçš„SampleMask ï¼Œå…¶ä»–æè¿°è§p3973
+	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithConservativeRasterization;//æŒ‡æ˜å¯¹ multi-pixel fragmentsæ˜¯å¦æ”¯æŒconservative rasterization ï¼Œå…¶ä»–æè¿°è§p3973
+    physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithFragmentShaderInterlock;//æŒ‡æ˜å¯¹ multi-pixel fragmentsæ˜¯å¦æ”¯æŒ fragment shader interlock ï¼Œå…¶ä»–æè¿°è§p3973
+	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateWithCustomSampleLocations;//æŒ‡æ˜å¯¹ multi-pixel fragmentsæ˜¯å¦æ”¯æŒ custom sample locations ï¼Œå…¶ä»–æè¿°è§p3973
+	physicalDeviceFragmentShadingRatePropertiesKHR.fragmentShadingRateStrictMultiplyCombiner;//æŒ‡æ˜VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_KHR æ˜¯å¦ç²¾ç¡®çš„æ‰§è¡Œä¹˜æ³•æ“ä½œï¼Œå…¶ä»–æè¿°è§p3974
 
 
-    //VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV physicalDeviceFragmentShadingRateEnumsPropertiesNV{};
     physicalDeviceFragmentShadingRateEnumsPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_PROPERTIES_NV;
     physicalDeviceFragmentShadingRateEnumsPropertiesNV.pNext = nullptr;
-	physicalDeviceFragmentShadingRateEnumsPropertiesNV.maxFragmentShadingRateInvocationCount;//Ò»¸ö VkSampleCountFlagBits ÖµÖ¸Ã÷pipeline£¬primitive, ÒÔ¼° attachment fragment shading ratesÖĞÒ»¸öfragmentÄÜ¹»µ÷ÓÃµÄfragment shaderµÄ×î´ó´ÎÊı£¬ÆäËûÃèÊö¼ûp3975
+	physicalDeviceFragmentShadingRateEnumsPropertiesNV.maxFragmentShadingRateInvocationCount;//ä¸€ä¸ª VkSampleCountFlagBits å€¼æŒ‡æ˜pipelineï¼Œprimitive, ä»¥åŠ attachment fragment shading ratesä¸­ä¸€ä¸ªfragmentèƒ½å¤Ÿè°ƒç”¨çš„fragment shaderçš„æœ€å¤§æ¬¡æ•°ï¼Œå…¶ä»–æè¿°è§p3975
 
 
-    //VkPhysicalDeviceCustomBorderColorPropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceCustomBorderColorPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceCustomBorderColorPropertiesEXT physicalDeviceCustomBorderColorPropertiesEXT{};
     physicalDeviceCustomBorderColorPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_BORDER_COLOR_PROPERTIES_EXT;
     physicalDeviceCustomBorderColorPropertiesEXT.pNext = nullptr;
-	physicalDeviceCustomBorderColorPropertiesEXT.maxCustomBorderColorSamplers;//Îª¿ÉÒÔÍ¬Ê±´æÔÚÔÚdeviceÉÏµÄº¬custom border colorµÄ samplersµÄ×î´óÊıÁ¿
+	physicalDeviceCustomBorderColorPropertiesEXT.maxCustomBorderColorSamplers;//ä¸ºå¯ä»¥åŒæ—¶å­˜åœ¨åœ¨deviceä¸Šçš„å«custom border colorçš„ samplersçš„æœ€å¤§æ•°é‡
 
 
-    //VkPhysicalDeviceProvokingVertexPropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceProvokingVertexPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceProvokingVertexPropertiesEXT physicalDeviceProvokingVertexPropertiesEXT{};
     physicalDeviceProvokingVertexPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROVOKING_VERTEX_PROPERTIES_EXT;
     physicalDeviceProvokingVertexPropertiesEXT.pNext = nullptr;
-    physicalDeviceProvokingVertexPropertiesEXT.provokingVertexModePerPipeline;//Ö¸Ã÷ÊÇ·ñgraphics pipelineÔÚÏàÍ¬render passÊµÀıÖĞÊ¹ÓÃ²»Í¬µÄprovoking vertex modes
-    physicalDeviceProvokingVertexPropertiesEXT.transformFeedbackPreservesTriangleFanProvokingVertex;//Ö¸Ã÷µ±Ğ´Èëtriangle fanÍ¼Ôª¶¥µãµ½transform feedbackÊÇ·ñ¿ÉÒÔ±£Áôprovoking vertex order
+    physicalDeviceProvokingVertexPropertiesEXT.provokingVertexModePerPipeline;//æŒ‡æ˜æ˜¯å¦graphics pipelineåœ¨ç›¸åŒrender passå®ä¾‹ä¸­ä½¿ç”¨ä¸åŒçš„provoking vertex modes
+    physicalDeviceProvokingVertexPropertiesEXT.transformFeedbackPreservesTriangleFanProvokingVertex;//æŒ‡æ˜å½“å†™å…¥triangle fanå›¾å…ƒé¡¶ç‚¹åˆ°transform feedbackæ˜¯å¦å¯ä»¥ä¿ç•™provoking vertex order
 
 
-    //VkPhysicalDeviceDescriptorBufferPropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceDescriptorBufferPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceDescriptorBufferPropertiesEXT physicalDeviceDescriptorBufferPropertiesEXT{};
     physicalDeviceDescriptorBufferPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_PROPERTIES_EXT;
     physicalDeviceDescriptorBufferPropertiesEXT.pNext = nullptr;
-    physicalDeviceDescriptorBufferPropertiesEXT.combinedImageSamplerDescriptorSingleArray;//±íÊ¾ÊµÏÖ²»ĞèÒª½«VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERÃèÊö·ûÊı×é×÷ÎªÍ¼ÏñÃèÊö·ûÊı×éĞ´ÈëÃèÊö·û»º³åÇø£¬½ô½Ó×ÅÊÇ²ÉÑùÆ÷ÃèÊö·ûÊı×é
-    physicalDeviceDescriptorBufferPropertiesEXT.bufferlessPushDescriptors;//Ö¸Ã÷µ±Ê¹ÓÃpush descriptors Ê±²»ĞèÒª°ó¶¨Ò»¸öÒÔ VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT ´´½¨µÄbuffer
-    physicalDeviceDescriptorBufferPropertiesEXT.allowSamplerImageViewPostSubmitCreation;//Ö¸Ã÷¶ÔÒÔ¹ØÁªµ½ command buffer Ìá½»µÄÓÃÓÚ»ñÈ¡descriptorÊı¾İ´´½¨µÄ VkSampler »òÕß VkImageView²»×öÏŞÖÆ
-    physicalDeviceDescriptorBufferPropertiesEXT.descriptorBufferOffsetAlignment;//Ö¸Ã÷µ±ÉèÖÃµ½descriptor bufferÖĞĞèÒªµÄÆ«ÒÆµÄ×Ö½Ú¶ÔÆë
-    physicalDeviceDescriptorBufferPropertiesEXT.maxDescriptorBufferBindings;//Ö¸Ã÷¿ÉÒÔ°ó¶¨µÄdescriptor buffers ºÍembedded immutable sampler setsµÄ×ÜÊıµÄ×î´óÊıÁ¿
-    physicalDeviceDescriptorBufferPropertiesEXT.maxResourceDescriptorBufferBindings;//Ö¸Ã÷¿ÉÒÔ°ó¶¨µÄresource descriptor buffers µÄ×î´óÊıÁ¿
-    physicalDeviceDescriptorBufferPropertiesEXT.maxSamplerDescriptorBufferBindings;//Ö¸Ã÷¿ÉÒÔ°ó¶¨µÄsampler descriptor buffers µÄ×î´óÊıÁ¿
-	physicalDeviceDescriptorBufferPropertiesEXT.maxEmbeddedImmutableSamplerBindings;//Ö¸Ã÷¿ÉÒÔ°ó¶¨µÄembedded immutable sampler sets µÄ×î´óÊıÁ¿
-	physicalDeviceDescriptorBufferPropertiesEXT.maxEmbeddedImmutableSamplers;//Ö¸Ã÷¿ÉÒÔÍ¬Ê±´æÔÚÔÚdeviceÉÏµÄÒÔVK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT´´½¨µÄdescriptor set layoutsÒÔ¼°´Ó¸Ãlayout ´´½¨µÄpipelineÖĞ²»ÖØ¸´µÄimmutable samplers×ÜÊıµÄ×î´óÊıÁ¿
-    physicalDeviceDescriptorBufferPropertiesEXT.bufferCaptureReplayDescriptorDataSize;//Ö¸Ã÷ÓÃbuffers²¶»ñºÍ»Ø·Åopaque dataµÄ×î´ó×Ö½ÚÊı´óĞ¡
-	physicalDeviceDescriptorBufferPropertiesEXT.imageCaptureReplayDescriptorDataSize;//Ö¸Ã÷ÓÃimages²¶»ñºÍ»Ø·Åopaque dataµÄ×î´ó×Ö½ÚÊı´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.imageViewCaptureReplayDescriptorDataSize;//Ö¸Ã÷ÓÃimage views²¶»ñºÍ»Ø·Åopaque dataµÄ×î´ó×Ö½ÚÊı´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.samplerCaptureReplayDescriptorDataSize;//Ö¸Ã÷ÓÃsamplers²¶»ñºÍ»Ø·Åopaque dataµÄ×î´ó×Ö½ÚÊı´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.accelerationStructureCaptureReplayDescriptorDataSize;//Ö¸Ã÷ÓÃacceleration structures²¶»ñºÍ»Ø·Åopaque dataµÄ×î´ó×Ö½ÚÊı´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.samplerDescriptorSize;//Ö¸Ã÷ VK_DESCRIPTOR_TYPE_SAMPLER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-	physicalDeviceDescriptorBufferPropertiesEXT.combinedImageSamplerDescriptorSize;//Ö¸Ã÷ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-	physicalDeviceDescriptorBufferPropertiesEXT.sampledImageDescriptorSize;//Ö¸Ã÷ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.storageImageDescriptorSize;//Ö¸Ã÷ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-	physicalDeviceDescriptorBufferPropertiesEXT.uniformTexelBufferDescriptorSize;//Ö¸Ã÷Èç¹û robustBufferAccessÌØĞÔ ²»¿ªÆôÊ± VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-	physicalDeviceDescriptorBufferPropertiesEXT.robustUniformTexelBufferDescriptorSize;//Ö¸Ã÷Èç¹û robustBufferAccess ÌØĞÔ¿ªÆôÊ± VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-	physicalDeviceDescriptorBufferPropertiesEXT.storageTexelBufferDescriptorSize;//Ö¸Ã÷Èç¹û robustBufferAccessÌØĞÔ ²»¿ªÆôÊ± VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-	physicalDeviceDescriptorBufferPropertiesEXT.robustStorageTexelBufferDescriptorSize;//Ö¸Ã÷Èç¹û robustBufferAccess ÌØĞÔ¿ªÆôÊ± VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-	physicalDeviceDescriptorBufferPropertiesEXT.uniformBufferDescriptorSize;//Ö¸Ã÷ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.robustUniformBufferDescriptorSize;//Ö¸Ã÷Èç¹û robustBufferAccess ÌØĞÔ¿ªÆôÊ± VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.storageBufferDescriptorSize;//Ö¸Ã÷ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.robustStorageBufferDescriptorSize;//Ö¸Ã÷Èç¹û robustBufferAccess ÌØĞÔ¿ªÆôÊ± VK_DESCRIPTOR_TYPE_STORAGE_BUFFER ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.inputAttachmentDescriptorSize;//Ö¸Ã÷ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.accelerationStructureDescriptorSize;//Ö¸Ã÷ VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR »òÕß VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV ÀàĞÍdescriptorµÄ×Ö½Ú´óĞ¡
-    physicalDeviceDescriptorBufferPropertiesEXT.maxSamplerDescriptorBufferRange;//ÎªÒ»¸öshader¿ÉÒÔ·ÃÎÊµÄsampler descriptor buffer bindingµÄµØÖ·µÄ×î´ó×Ö½Ú·¶Î§
-	physicalDeviceDescriptorBufferPropertiesEXT.maxResourceDescriptorBufferRange;//ÎªÒ»¸öshader¿ÉÒÔ·ÃÎÊµÄresource descriptor buffer bindingµÄµØÖ·µÄ×î´ó×Ö½Ú·¶Î§
-	physicalDeviceDescriptorBufferPropertiesEXT.samplerDescriptorBufferAddressSpaceSize;//ÎªÒÔVK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT´´½¨µÄdescriptor buffersµÄ¿É·ÃÎÊµØÖ·¿Õ¼äµÄ×î´ó×Ö½ÚÊı
-    physicalDeviceDescriptorBufferPropertiesEXT.resourceDescriptorBufferAddressSpaceSize;//ÎªÒÔVK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT´´½¨µÄdescriptor buffersµÄ¿É·ÃÎÊµØÖ·¿Õ¼äµÄ×î´ó×Ö½ÚÊı
-    physicalDeviceDescriptorBufferPropertiesEXT.descriptorBufferAddressSpaceSize;//ÎªÍ¬Ê±ÒÔ VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXTºÍ VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT´´½¨µÄdescriptor buffersµÄ¿É·ÃÎÊµØÖ·¿Õ¼äµÄ×î´ó×Ö½ÚÊı
+    physicalDeviceDescriptorBufferPropertiesEXT.combinedImageSamplerDescriptorSingleArray;//è¡¨ç¤ºå®ç°ä¸éœ€è¦å°†VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERæè¿°ç¬¦æ•°ç»„ä½œä¸ºå›¾åƒæè¿°ç¬¦æ•°ç»„å†™å…¥æè¿°ç¬¦ç¼“å†²åŒºï¼Œç´§æ¥ç€æ˜¯é‡‡æ ·å™¨æè¿°ç¬¦æ•°ç»„
+    physicalDeviceDescriptorBufferPropertiesEXT.bufferlessPushDescriptors;//æŒ‡æ˜å½“ä½¿ç”¨push descriptors æ—¶ä¸éœ€è¦ç»‘å®šä¸€ä¸ªä»¥ VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT åˆ›å»ºçš„buffer
+    physicalDeviceDescriptorBufferPropertiesEXT.allowSamplerImageViewPostSubmitCreation;//æŒ‡æ˜å¯¹ä»¥å…³è”åˆ° command buffer æäº¤çš„ç”¨äºè·å–descriptoræ•°æ®åˆ›å»ºçš„ VkSampler æˆ–è€… VkImageViewä¸åšé™åˆ¶
+    physicalDeviceDescriptorBufferPropertiesEXT.descriptorBufferOffsetAlignment;//æŒ‡æ˜å½“è®¾ç½®åˆ°descriptor bufferä¸­éœ€è¦çš„åç§»çš„å­—èŠ‚å¯¹é½
+    physicalDeviceDescriptorBufferPropertiesEXT.maxDescriptorBufferBindings;//æŒ‡æ˜å¯ä»¥ç»‘å®šçš„descriptor buffers å’Œembedded immutable sampler setsçš„æ€»æ•°çš„æœ€å¤§æ•°é‡
+    physicalDeviceDescriptorBufferPropertiesEXT.maxResourceDescriptorBufferBindings;//æŒ‡æ˜å¯ä»¥ç»‘å®šçš„resource descriptor buffers çš„æœ€å¤§æ•°é‡
+    physicalDeviceDescriptorBufferPropertiesEXT.maxSamplerDescriptorBufferBindings;//æŒ‡æ˜å¯ä»¥ç»‘å®šçš„sampler descriptor buffers çš„æœ€å¤§æ•°é‡
+	physicalDeviceDescriptorBufferPropertiesEXT.maxEmbeddedImmutableSamplerBindings;//æŒ‡æ˜å¯ä»¥ç»‘å®šçš„embedded immutable sampler sets çš„æœ€å¤§æ•°é‡
+	physicalDeviceDescriptorBufferPropertiesEXT.maxEmbeddedImmutableSamplers;//æŒ‡æ˜å¯ä»¥åŒæ—¶å­˜åœ¨åœ¨deviceä¸Šçš„ä»¥VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXTåˆ›å»ºçš„descriptor set layoutsä»¥åŠä»è¯¥layout åˆ›å»ºçš„pipelineä¸­ä¸é‡å¤çš„immutable samplersæ€»æ•°çš„æœ€å¤§æ•°é‡
+    physicalDeviceDescriptorBufferPropertiesEXT.bufferCaptureReplayDescriptorDataSize;//æŒ‡æ˜ç”¨buffersæ•è·å’Œå›æ”¾opaque dataçš„æœ€å¤§å­—èŠ‚æ•°å¤§å°
+	physicalDeviceDescriptorBufferPropertiesEXT.imageCaptureReplayDescriptorDataSize;//æŒ‡æ˜ç”¨imagesæ•è·å’Œå›æ”¾opaque dataçš„æœ€å¤§å­—èŠ‚æ•°å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.imageViewCaptureReplayDescriptorDataSize;//æŒ‡æ˜ç”¨image viewsæ•è·å’Œå›æ”¾opaque dataçš„æœ€å¤§å­—èŠ‚æ•°å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.samplerCaptureReplayDescriptorDataSize;//æŒ‡æ˜ç”¨samplersæ•è·å’Œå›æ”¾opaque dataçš„æœ€å¤§å­—èŠ‚æ•°å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.accelerationStructureCaptureReplayDescriptorDataSize;//æŒ‡æ˜ç”¨acceleration structuresæ•è·å’Œå›æ”¾opaque dataçš„æœ€å¤§å­—èŠ‚æ•°å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.samplerDescriptorSize;//æŒ‡æ˜ VK_DESCRIPTOR_TYPE_SAMPLER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+	physicalDeviceDescriptorBufferPropertiesEXT.combinedImageSamplerDescriptorSize;//æŒ‡æ˜ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+	physicalDeviceDescriptorBufferPropertiesEXT.sampledImageDescriptorSize;//æŒ‡æ˜ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.storageImageDescriptorSize;//æŒ‡æ˜ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+	physicalDeviceDescriptorBufferPropertiesEXT.uniformTexelBufferDescriptorSize;//æŒ‡æ˜å¦‚æœ robustBufferAccessç‰¹æ€§ ä¸å¼€å¯æ—¶ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+	physicalDeviceDescriptorBufferPropertiesEXT.robustUniformTexelBufferDescriptorSize;//æŒ‡æ˜å¦‚æœ robustBufferAccess ç‰¹æ€§å¼€å¯æ—¶ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+	physicalDeviceDescriptorBufferPropertiesEXT.storageTexelBufferDescriptorSize;//æŒ‡æ˜å¦‚æœ robustBufferAccessç‰¹æ€§ ä¸å¼€å¯æ—¶ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+	physicalDeviceDescriptorBufferPropertiesEXT.robustStorageTexelBufferDescriptorSize;//æŒ‡æ˜å¦‚æœ robustBufferAccess ç‰¹æ€§å¼€å¯æ—¶ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+	physicalDeviceDescriptorBufferPropertiesEXT.uniformBufferDescriptorSize;//æŒ‡æ˜ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.robustUniformBufferDescriptorSize;//æŒ‡æ˜å¦‚æœ robustBufferAccess ç‰¹æ€§å¼€å¯æ—¶ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.storageBufferDescriptorSize;//æŒ‡æ˜ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.robustStorageBufferDescriptorSize;//æŒ‡æ˜å¦‚æœ robustBufferAccess ç‰¹æ€§å¼€å¯æ—¶ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.inputAttachmentDescriptorSize;//æŒ‡æ˜ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.accelerationStructureDescriptorSize;//æŒ‡æ˜ VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR æˆ–è€… VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV ç±»å‹descriptorçš„å­—èŠ‚å¤§å°
+    physicalDeviceDescriptorBufferPropertiesEXT.maxSamplerDescriptorBufferRange;//ä¸ºä¸€ä¸ªshaderå¯ä»¥è®¿é—®çš„sampler descriptor buffer bindingçš„åœ°å€çš„æœ€å¤§å­—èŠ‚èŒƒå›´
+	physicalDeviceDescriptorBufferPropertiesEXT.maxResourceDescriptorBufferRange;//ä¸ºä¸€ä¸ªshaderå¯ä»¥è®¿é—®çš„resource descriptor buffer bindingçš„åœ°å€çš„æœ€å¤§å­—èŠ‚èŒƒå›´
+	physicalDeviceDescriptorBufferPropertiesEXT.samplerDescriptorBufferAddressSpaceSize;//ä¸ºä»¥VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»ºçš„descriptor buffersçš„å¯è®¿é—®åœ°å€ç©ºé—´çš„æœ€å¤§å­—èŠ‚æ•°
+    physicalDeviceDescriptorBufferPropertiesEXT.resourceDescriptorBufferAddressSpaceSize;//ä¸ºä»¥VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»ºçš„descriptor buffersçš„å¯è®¿é—®åœ°å€ç©ºé—´çš„æœ€å¤§å­—èŠ‚æ•°
+    physicalDeviceDescriptorBufferPropertiesEXT.descriptorBufferAddressSpaceSize;//ä¸ºåŒæ—¶ä»¥ VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXTå’Œ VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXTåˆ›å»ºçš„descriptor buffersçš„å¯è®¿é—®åœ°å€ç©ºé—´çš„æœ€å¤§å­—èŠ‚æ•°
 
 
-    //VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT  £¬¿ÉÒÔ°üº¬ÔÚVkPhysicalDeviceProperties2.pNextÖĞ
+    //VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­
     VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT physicalDeviceDescriptorBufferDensityMapPropertiesEXT{};
     physicalDeviceDescriptorBufferDensityMapPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_DENSITY_MAP_PROPERTIES_EXT;
     physicalDeviceDescriptorBufferDensityMapPropertiesEXT.pNext = nullptr;
-	physicalDeviceDescriptorBufferDensityMapPropertiesEXT.combinedImageSamplerDensityMapDescriptorSize;//ÎªÒÔVK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERÀàĞÍÇÒÉèÖÃÓĞVK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT ´´½¨µÄdescriptor µÄ×Ö½Ú´óĞ¡
+	physicalDeviceDescriptorBufferDensityMapPropertiesEXT.combinedImageSamplerDensityMapDescriptorSize;//ä¸ºä»¥VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLERç±»å‹ä¸”è®¾ç½®æœ‰VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT åˆ›å»ºçš„descriptor çš„å­—èŠ‚å¤§å°
+
+
+    //VkPhysicalDeviceHostImageCopyPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ ,å…¶ä»–ä¿¡æ¯è§p3980
+    VkPhysicalDeviceHostImageCopyPropertiesEXT physicalDeviceHostImageCopyPropertiesEXT{};
+    physicalDeviceHostImageCopyPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_IMAGE_COPY_PROPERTIES_EXT;
+    physicalDeviceHostImageCopyPropertiesEXT.pNext = nullptr;
+    physicalDeviceHostImageCopyPropertiesEXT.copySrcLayoutCount;//ä¸ºæ‹·è´ä»å¯ç”¨çš„imageçš„host copyæ“ä½œæœ‰æ•ˆçš„image layoutçš„ä¸ªæ•°
+    physicalDeviceHostImageCopyPropertiesEXT.pCopySrcLayouts;//ä¸ºVkImageLayout æ•°ç»„æŒ‡é’ˆï¼Œåˆ—ä¸¾ä»å¯ç”¨imageçš„host copyæ“ä½œå¯ç”¨çš„image layout
+    physicalDeviceHostImageCopyPropertiesEXT.copyDstLayoutCount;//ä¸ºæ‹·è´åˆ°å¯ç”¨çš„imageçš„host copyæ“ä½œæœ‰æ•ˆçš„image layoutçš„ä¸ªæ•°
+    physicalDeviceHostImageCopyPropertiesEXT.pCopyDstLayouts;//ä¸ºVkImageLayout æ•°ç»„æŒ‡é’ˆï¼Œåˆ—ä¸¾åˆ°å¯ç”¨imageçš„host copyæ“ä½œå¯ç”¨çš„image layout
+    physicalDeviceHostImageCopyPropertiesEXT.optimalTilingLayoutUUID[VK_UUID_SIZE];//ä¸ºå¯¹ä»¥VK_IMAGE_TILING_OPTIMAL åˆ›å»ºçš„imageçš„ swizzle layoutçš„é€šç”¨çš„å”¯ä¸€çš„æ ‡è¯†ç¬¦
+    physicalDeviceHostImageCopyPropertiesEXT.identicalMemoryTypeRequirements;//æŒ‡æ˜ VkImageCreateInfo::usageä¸­çš„VK_IMAGE_USAGE_HOST_TRANSFER_BIT_EXT ä¸ä¼šå½±å“imageçš„å†…å­˜ç±»å‹éœ€æ±‚
+
+
+    //VkPhysicalDeviceSubpassShadingPropertiesHUAWEI  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceSubpassShadingPropertiesHUAWEI physicalDeviceSubpassShadingPropertiesHUAWEI{};
+    physicalDeviceSubpassShadingPropertiesHUAWEI.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_SHADING_PROPERTIES_HUAWEI;
+    physicalDeviceSubpassShadingPropertiesHUAWEI.pNext = nullptr;
+    physicalDeviceSubpassShadingPropertiesHUAWEI.maxSubpassShadingWorkgroupSizeAspectRatio;//ä¸ºsubpass shading shader workgroup å¤§å°çš„widthå’Œheightçš„æ¯”å€¼çš„æœ€å¤§å€¼ï¼Œå…¶ä»–æè¿°è§p3981
+
+
+    //VkPhysicalDeviceMultiDrawPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceMultiDrawPropertiesEXT physicalDeviceMultiDrawPropertiesEXT{};
+    physicalDeviceMultiDrawPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_PROPERTIES_EXT;
+    physicalDeviceMultiDrawPropertiesEXT.pNext = nullptr;
+    physicalDeviceMultiDrawPropertiesEXT.maxMultiDrawCount;//æŒ‡æ˜å¯ä»¥æ‰“åŒ…åœ¨å•ä¸ªmultidraw å‘½ä»¤ä¸­çš„ draw callsçš„æœ€å¤§æ•°é‡
+
+
+    //VkPhysicalDeviceNestedCommandBufferPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceNestedCommandBufferPropertiesEXT physicalDeviceNestedCommandBufferPropertiesEXT{};
+    physicalDeviceNestedCommandBufferPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_PROPERTIES_EXT;
+    physicalDeviceNestedCommandBufferPropertiesEXT.pNext = nullptr;
+    physicalDeviceNestedCommandBufferPropertiesEXT.maxCommandBufferNestingLevel;//æŒ‡æ˜ Secondary Command Buffers ä¸­vkCmdExecuteCommandså‘½ä»¤çš„æœ€å¤§åµŒå¥—ç­‰çº§ï¼Œå¦‚æœä¸º UINT32_MAXåˆ™æ„å‘³ç€æ— é™åˆ¶
+
+
+    //VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT physicalDeviceGraphicsPipelineLibraryPropertiesEXT{};
+    physicalDeviceGraphicsPipelineLibraryPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_PROPERTIES_EXT;
+    physicalDeviceGraphicsPipelineLibraryPropertiesEXT.pNext = nullptr;
+    physicalDeviceGraphicsPipelineLibraryPropertiesEXT.graphicsPipelineLibraryFastLinking;//æŒ‡æ˜æ˜¯å¦æ”¯æŒgraphics pipelines çš„å¿«é€Ÿé“¾æ¥ï¼Œå…¶ä»–æè¿°è§p3983
+    physicalDeviceGraphicsPipelineLibraryPropertiesEXT.graphicsPipelineLibraryIndependentInterpolationDecoration;//æŒ‡æ˜å½“ä½¿ç”¨ graphics pipeline librariesæ—¶ï¼Œ last vertex processing stage å’Œ fragment shaderçš„NoPerspective ä»¥åŠ Flat interpolation decorationsæ˜¯å¦éœ€è¦åŒ¹é…ï¼Œå…¶ä»–æè¿°è§p3983
+
+
+    //VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR physicalDeviceFragmentShaderBarycentricPropertiesKHR{};
+    physicalDeviceFragmentShaderBarycentricPropertiesKHR.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_PROPERTIES_KHR;
+    physicalDeviceFragmentShaderBarycentricPropertiesKHR.pNext = nullptr;
+    physicalDeviceFragmentShaderBarycentricPropertiesKHR.triStripVertexOrderIndependentOfProvokingVertex;//æŒ‡æ˜æ˜¯å¦å¿½ç•¥å½“provoking vertex mode ä¸ºVK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXTæ—¶ï¼Œå®šä¹‰åœ¨ last vertex tableçš„é¡¶ç‚¹é¡ºåºï¼Œ ä½¿ç”¨ç”±VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT å®šä¹‰çš„é¡¶ç‚¹é¡ºåº
+
+
+    //VkPhysicalDeviceShaderModuleIdentifierPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceShaderModuleIdentifierPropertiesEXT physicalDeviceShaderModuleIdentifierPropertiesEXT{};
+    physicalDeviceShaderModuleIdentifierPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MODULE_IDENTIFIER_PROPERTIES_EXT;
+    physicalDeviceShaderModuleIdentifierPropertiesEXT.pNext = nullptr;
+    physicalDeviceShaderModuleIdentifierPropertiesEXT.shaderModuleIdentifierAlgorithmUUID[VK_UUID_SIZE];//æ¯ä¸ªå…ƒç´ æ˜¯å”¯ä¸€çš„å€¼ï¼Œè¡¨ç¤ºç”¨äºè®¡ç®— vkGetShaderModuleIdentifierEXT ä»¥åŠ vkGetShaderModuleCreateInfoIdentifierEXTä¸­æ ‡è¯†ç¬¦çš„ç®—æ³•
+
+
+    //VkPhysicalDevicePipelineRobustnessPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDevicePipelineRobustnessPropertiesEXT physicalDevicePipelineRobustnessPropertiesEXT{};
+    physicalDevicePipelineRobustnessPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_ROBUSTNESS_PROPERTIES_EXT;
+    physicalDevicePipelineRobustnessPropertiesEXT.pNext = nullptr;
+    physicalDevicePipelineRobustnessPropertiesEXT.defaultRobustnessStorageBuffers;//æŒ‡æ˜å½“æ²¡æœ‰robustness ç‰¹æ€§å¼€å¯æ—¶è®¿é—®storage buffers æ—¶è¶…å‡ºè¾¹ç•Œæ—¶çš„è¡Œä¸º
+    physicalDevicePipelineRobustnessPropertiesEXT.defaultRobustnessUniformBuffers;//æŒ‡æ˜å½“æ²¡æœ‰robustness ç‰¹æ€§å¼€å¯æ—¶è®¿é—®uniform buffers æ—¶è¶…å‡ºè¾¹ç•Œæ—¶çš„è¡Œä¸º
+    physicalDevicePipelineRobustnessPropertiesEXT.defaultRobustnessVertexInputs;//æŒ‡æ˜å½“æ²¡æœ‰robustness ç‰¹æ€§å¼€å¯æ—¶è®¿é—®vertex input attributes æ—¶è¶…å‡ºè¾¹ç•Œæ—¶çš„è¡Œä¸º
+    physicalDevicePipelineRobustnessPropertiesEXT.defaultRobustnessImages;//æŒ‡æ˜å½“æ²¡æœ‰robustness ç‰¹æ€§å¼€å¯æ—¶è®¿é—®image æ—¶è¶…å‡ºè¾¹ç•Œæ—¶çš„è¡Œä¸º
+
+
+    //VkPhysicalDeviceExtendedDynamicState3PropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceExtendedDynamicState3PropertiesEXT physicalDeviceExtendedDynamicState3PropertiesEXT{};
+    physicalDeviceExtendedDynamicState3PropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_3_PROPERTIES_EXT;
+    physicalDeviceExtendedDynamicState3PropertiesEXT.pNext = nullptr;
+    physicalDeviceExtendedDynamicState3PropertiesEXT.dynamicPrimitiveTopologyUnrestricted;//æŒ‡æ˜æ˜¯å¦å…è®¸vkCmdSetPrimitiveTopology ä½¿ç”¨ä¸€ä¸ªå’Œå½“å‰active graphics pipeline æŒ‡å®šçš„ä¸åŒçš„ primitive topology
+
+
+    //VkPhysicalDeviceOpticalFlowPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceOpticalFlowPropertiesNV physicalDeviceOpticalFlowPropertiesNV{};
+    physicalDeviceOpticalFlowPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPTICAL_FLOW_PROPERTIES_NV;
+    physicalDeviceOpticalFlowPropertiesNV.pNext = nullptr;
+    physicalDeviceOpticalFlowPropertiesNV.supportedOutputGridSizes;//ä¸ºæ”¯æŒçš„å¯ä»¥åœ¨ VkOpticalFlowSessionCreateInfoNV::outputGridSizeä¸­æŒ‡å®šçš„VkOpticalFlowGridSizeFlagsNV
+    physicalDeviceOpticalFlowPropertiesNV.supportedHintGridSizes;//ä¸ºæ”¯æŒçš„å¯ä»¥åœ¨ VkOpticalFlowSessionCreateInfoNV::hintGridSizeä¸­æŒ‡å®šçš„VkOpticalFlowGridSizeFlagsNV
+    physicalDeviceOpticalFlowPropertiesNV.hintSupported;//æŒ‡æ˜optical flow session ä¸­æ˜¯å¦å¯ä»¥ä½¿ç”¨ hint flow vector map
+    physicalDeviceOpticalFlowPropertiesNV.costSupported;//æŒ‡æ˜optical flow session ä¸­æ˜¯å¦æ”¯æŒcost map generation
+    physicalDeviceOpticalFlowPropertiesNV.bidirectionalFlowSupported;//æŒ‡æ˜optical flow session ä¸­æ˜¯å¦æ”¯æŒbi-directional flow generation
+    physicalDeviceOpticalFlowPropertiesNV.globalFlowSupported;//æŒ‡æ˜optical flow session ä¸­æ˜¯å¦æ”¯æŒglobal flow vector map generation
+    physicalDeviceOpticalFlowPropertiesNV.minWidth;//æŒ‡æ˜optical flow session ä¸­å¯ä»¥ä½¿ç”¨çš„imageåŸºäºpixelsçš„æœ€å°width
+    physicalDeviceOpticalFlowPropertiesNV.minHeight;//æŒ‡æ˜optical flow session ä¸­å¯ä»¥ä½¿ç”¨çš„imageåŸºäºpixelsçš„æœ€å°height
+    physicalDeviceOpticalFlowPropertiesNV.maxWidth;//æŒ‡æ˜optical flow session ä¸­å¯ä»¥ä½¿ç”¨çš„imageåŸºäºpixelsçš„æœ€å¤§width
+    physicalDeviceOpticalFlowPropertiesNV.maxHeight;//æŒ‡æ˜optical flow session ä¸­å¯ä»¥ä½¿ç”¨çš„imageåŸºäºpixelsçš„æœ€å¤§height
+    physicalDeviceOpticalFlowPropertiesNV.maxNumRegionsOfInterest;//æŒ‡æ˜optical flow sessionä¸­å¯ä»¥ä½¿ç”¨çš„interest åŒºåŸŸçš„æœ€å¤§æ•°é‡ï¼Œå¦‚æœä¸º0ï¼Œåˆ™è¡¨ç¤ºä¸æ”¯æŒinterest åŒºåŸŸ
+
+
+    //VkPhysicalDeviceOpacityMicromapPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceOpacityMicromapPropertiesEXT physicalDeviceOpacityMicromapPropertiesEXT{};
+    physicalDeviceOpacityMicromapPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPACITY_MICROMAP_PROPERTIES_EXT;
+    physicalDeviceOpacityMicromapPropertiesEXT.pNext = nullptr;
+    physicalDeviceOpacityMicromapPropertiesEXT.maxOpacity2StateSubdivisionLevel;//æŒ‡æ˜å½“formatä¸ºVK_OPACITY_MICROMAP_FORMAT_2_STATE_EXT æ—¶subdivisionLevel å…è®¸çš„æœ€å¤§å€¼
+    physicalDeviceOpacityMicromapPropertiesEXT.maxOpacity4StateSubdivisionLevel;//æŒ‡æ˜å½“formatä¸ºVK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT æ—¶subdivisionLevel å…è®¸çš„æœ€å¤§å€¼
+
+
+    //VkPhysicalDeviceDisplacementMicromapPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceDisplacementMicromapPropertiesNV physicalDeviceDisplacementMicromapPropertiesNV{};
+    physicalDeviceDisplacementMicromapPropertiesNV.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
+    physicalDeviceDisplacementMicromapPropertiesNV.pNext = nullptr;
+    physicalDeviceDisplacementMicromapPropertiesNV.maxDisplacementMicromapSubdivisionLevel;//ä¸ºå¯¹displacement micromapsï¼ŒsubdivisionLevel å…è®¸çš„æœ€å¤§å€¼
+
+
+    //VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM physicalDeviceShaderCoreBuiltinsPropertiesARM{};
+    physicalDeviceShaderCoreBuiltinsPropertiesARM.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_PROPERTIES_ARM;
+    physicalDeviceShaderCoreBuiltinsPropertiesARM.pNext = nullptr;
+    physicalDeviceShaderCoreBuiltinsPropertiesARM.shaderCoreMask;//è¯¥å€¼çš„æ¯ä¸ªbitä»£è¡¨ä¸€ä¸ªshader coreï¼Œè¯¥shader coreçš„IDå°±ä¸ºè¯¥bitçš„ä½ç½®
+    physicalDeviceShaderCoreBuiltinsPropertiesARM.shaderCoreCount;//ä¸ºdeviceä¸­shader coreçš„æ•°é‡
+    physicalDeviceShaderCoreBuiltinsPropertiesARM.shaderWarpsPerCore;//ä¸ºä¸€ä¸ªshader coreä¸­å¯ä»¥åŒæ—¶æ‰§è¡Œçš„warpçš„æ•°é‡
+
+
+    //VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV physicalDeviceRayTracingInvocationReorderPropertiesNV{};
+    physicalDeviceRayTracingInvocationReorderPropertiesNV.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_PROPERTIES_NV;
+    physicalDeviceRayTracingInvocationReorderPropertiesNV.pNext = nullptr;
+    physicalDeviceRayTracingInvocationReorderPropertiesNV.rayTracingInvocationReorderReorderingHint;/*ä¸€ä¸ªVkRayTracingInvocationReorderModeNVå€¼ï¼Œæç¤ºæ˜¯å¦åœ¨é‡æ’åºå‘½ä»¤ä¸­è¿›è¡Œé‡æ’åº
+    VkRayTracingInvocationReorderModeNV:
+    VK_RAY_TRACING_INVOCATION_REORDER_MODE_NONE_NV : æŒ‡æ˜å®ç°å¾ˆå¯èƒ½åœ¨é‡æ’åºå‘½ä»¤ä¸­ä¸è¿›è¡Œé‡æ’åº
+    VK_RAY_TRACING_INVOCATION_REORDER_MODE_REORDER_NV : æŒ‡æ˜å®ç°å¾ˆå¯èƒ½åœ¨é‡æ’åºå‘½ä»¤ä¸­è¿›è¡Œé‡æ’åº  
+    */
+
+
+    //VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI physicalDeviceClusterCullingShaderPropertiesHUAWEI{};
+    physicalDeviceClusterCullingShaderPropertiesHUAWEI.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_PROPERTIES_HUAWEI;
+    physicalDeviceClusterCullingShaderPropertiesHUAWEI.pNext = nullptr;
+    physicalDeviceClusterCullingShaderPropertiesHUAWEI.maxWorkGroupCount[3];//ä¸ºå•ä¸ªå‘½ä»¤å¯ä»¥å¼€å§‹çš„local workgroupsçš„æœ€å¤§æ•°é‡ï¼Œåˆ†åˆ«å¯¹åº”Xï¼ŒYï¼ŒZä¸‰ä¸ªç»´åº¦ï¼Œå…¶ä»–æè¿°è§p3991
+    physicalDeviceClusterCullingShaderPropertiesHUAWEI.maxWorkGroupSize[3];//ä¸ºlocal workgroupçš„æœ€å¤§å¤§å°ï¼Œåˆ†åˆ«å¯¹åº”Xï¼ŒYï¼ŒZä¸‰ä¸ªç»´åº¦ï¼Œå…¶ä»–æè¿°è§p3991
+    physicalDeviceClusterCullingShaderPropertiesHUAWEI.maxOutputClusterCount;//ä¸ºä¸€ä¸ªcluster culling shader workgroupå¯ä»¥å‘å°„çš„è¾“å‡º clusterçš„æœ€å¤§æ•°é‡
+    physicalDeviceClusterCullingShaderPropertiesHUAWEI.indirectBufferOffsetAlignment;//æŒ‡æ˜cluster drawing command bufferçš„strideçš„å­—èŠ‚å¯¹é½
+
+
+    //VkPhysicalDeviceShaderCorePropertiesARM  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceShaderCorePropertiesARM physicalDeviceShaderCorePropertiesARM{};
+    physicalDeviceShaderCorePropertiesARM.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD;
+    physicalDeviceShaderCorePropertiesARM.pNext = nullptr;
+    physicalDeviceShaderCorePropertiesARM.pixelRate;//æŒ‡æ˜æ¯ä¸ªshader coreçš„æ¯ä¸ªæ—¶é’Ÿè¾“å‡ºçš„pixelsçš„æœ€å¤§æ•°é‡
+    physicalDeviceShaderCorePropertiesARM.texelRate;//æŒ‡æ˜æ¯ä¸ªshader coreçš„æ¯ä¸ªæ—¶é’Ÿè¾“å‡ºçš„texelsçš„æœ€å¤§æ•°é‡
+    physicalDeviceShaderCorePropertiesARM.fmaRate;//æŒ‡æ˜æ¯ä¸ªshader coreçš„æ¯ä¸ªæ—¶é’Ÿå•ç²¾åº¦ fused multiply-add operationsæ•°é‡çš„æœ€å¤§å€¼
+
+
+    //VkPhysicalDeviceShaderObjectPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceShaderObjectPropertiesEXT physicalDeviceShaderObjectPropertiesEXT{};
+    physicalDeviceShaderObjectPropertiesEXT.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_PROPERTIES_EXT;
+    physicalDeviceShaderObjectPropertiesEXT.pNext = nullptr;
+    physicalDeviceShaderObjectPropertiesEXT.shaderBinaryUUID[VK_UUID_SIZE];//æ¯ä¸ªå…ƒç´ ä¸ºä¸€ä¸ªå”¯ä¸€çš„å€¼ï¼Œè¡¨ç¤ºä¸€ä¸ªå®ç°ï¼Œè¿™äº›å®ç°å’Œåˆ«çš„å®ç°çš„shader äºŒè¿›åˆ¶æ–‡ä»¶ä¿è¯å…¼å®¹
+    physicalDeviceShaderObjectPropertiesEXT.shaderBinaryVersion;//ä¸ºä¸€ä¸ªè¡¨ç¤ºå…¼å®¹åç»­å’Œç›¸åŒshaderBinaryUUIDä¸­å®ç°çš„åŒºåˆ«çš„å¢åŠ çš„å€¼
+
+
+    //VkPhysicalDeviceShaderEnqueuePropertiesAMDX  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceShaderEnqueuePropertiesAMDX physicalDeviceShaderEnqueuePropertiesAMDX{};
+    physicalDeviceShaderEnqueuePropertiesAMDX.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
+    physicalDeviceShaderEnqueuePropertiesAMDX.pNext = nullptr;
+    physicalDeviceShaderEnqueuePropertiesAMDX.maxExecutionGraphDepth;//ä¸ºgraphä¸­nodeé“¾æ¥çš„æœ€å¤§æ·±åº¦
+    physicalDeviceShaderEnqueuePropertiesAMDX.maxExecutionGraphShaderOutputNodes;//æŒ‡æ˜ä¸€ä¸ªshader å¯ä»¥æ´¾å‘çš„å”¯ä¸€èŠ‚ç‚¹çš„æœ€å¤§ä¸ªæ•°
+    physicalDeviceShaderEnqueuePropertiesAMDX.maxExecutionGraphShaderPayloadSize;//ä¸ºshaderä¸­payloadï¼ˆNodeSharesPayloadLimitsWithAMDXï¼‰å£°æ˜çš„æ€»æ•°çš„æœ€å¤§å­—èŠ‚å¤§å°
+    physicalDeviceShaderEnqueuePropertiesAMDX.maxExecutionGraphShaderPayloadCount;//ä¸ºä¸€ä¸ªworkgroupä¸­å¯ä»¥åˆå§‹åŒ–çš„è¾“å‡ºpayloadçš„æœ€å¤§æ•°é‡
+    physicalDeviceShaderEnqueuePropertiesAMDX.executionGraphDispatchAddressAlignment;//ä¸ºgraph dispatch commandsä½¿ç”¨çš„non-scratch VkDeviceAddresså‚æ•°çš„å­—èŠ‚å¯¹é½
 
 
 
+    //VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV physicalDeviceExtendedSparseAddressSpacePropertiesNV{};
+    physicalDeviceExtendedSparseAddressSpacePropertiesNV.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
+    physicalDeviceExtendedSparseAddressSpacePropertiesNV.pNext = nullptr;
+    physicalDeviceExtendedSparseAddressSpacePropertiesNV.extendedSparseAddressSpaceSize;//ä¸º extendedSparseAddressSpaceå¼€å¯æ—¶ï¼Œæ‰€ç”¨ç”¨é€”çš„sparse memory resourcesçš„å¯è®¿é—®çš„å­—èŠ‚åœ°å€ç©ºé—´æ€»å’Œçš„æœ€å¤§å¤§å°ï¼Œå…¶ä»–æè¿°è§p3994
+    physicalDeviceExtendedSparseAddressSpacePropertiesNV.extendedSparseImageUsageFlags;// VkImageUsageFlagBitsç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜å¯èƒ½ä½¿ç”¨å…¨é‡ extendedSparseAddressSpaceSize ç©ºé—´
+    physicalDeviceExtendedSparseAddressSpacePropertiesNV.extendedSparseBufferUsageFlags;// VkBufferUsageFlagBitsç»„åˆå€¼ä½æ©ç ï¼ŒæŒ‡æ˜å¯èƒ½ä½¿ç”¨å…¨é‡ extendedSparseAddressSpaceSize ç©ºé—´
+
+
+    //VkPhysicalDeviceCudaKernelLaunchPropertiesNV  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceCudaKernelLaunchPropertiesNV physicalDeviceCudaKernelLaunchPropertiesNV{};
+    physicalDeviceCudaKernelLaunchPropertiesNV.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
+    physicalDeviceCudaKernelLaunchPropertiesNV.pNext = nullptr;
+    physicalDeviceCudaKernelLaunchPropertiesNV.computeCapabilityMinor;//ä¸ºcompute codeçš„æœ€å°ç‰ˆæœ¬å·
+    physicalDeviceCudaKernelLaunchPropertiesNV.computeCapabilityMajor;//ä¸ºcompute codeçš„æœ€å¤§ç‰ˆæœ¬å·
+
+
+    //VkPhysicalDeviceExternalFormatResolvePropertiesANDROID  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceExternalFormatResolvePropertiesANDROID physicalDeviceExternalFormatResolvePropertiesANDROID{};
+    physicalDeviceExternalFormatResolvePropertiesANDROID.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
+    physicalDeviceExternalFormatResolvePropertiesANDROID.pNext = nullptr;
+    physicalDeviceExternalFormatResolvePropertiesANDROID.nullColorAttachmentWithExternalFormatResolve;//æŒ‡æ˜æ‰§è¡Œ external format resolvesæ—¶æ˜¯å¦ä¸èƒ½æœ‰color attachment image
+    physicalDeviceExternalFormatResolvePropertiesANDROID.externalFormatResolveChromaOffsetX;//ä¸€ä¸ªVkChromaLocation å€¼æŒ‡æ˜ä½¿ç”¨Xè½´è®¿é—®ä¸€ä¸ªä½œä¸ºresolve attachmentçš„ external format imageï¼Œå…¶ä»–æè¿°è§p3995
+    physicalDeviceExternalFormatResolvePropertiesANDROID.externalFormatResolveChromaOffsetY;//ä¸€ä¸ªVkChromaLocation å€¼æŒ‡æ˜ä½¿ç”¨Yè½´è®¿é—®ä¸€ä¸ªä½œä¸ºresolve attachmentçš„ external format imageï¼Œå…¶ä»–æè¿°è§p3995
+
+
+    //VkPhysicalDeviceRenderPassStripedPropertiesARM  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceRenderPassStripedPropertiesARM physicalDeviceRenderPassStripedPropertiesARM{};
+    physicalDeviceRenderPassStripedPropertiesARM.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
+    physicalDeviceRenderPassStripedPropertiesARM.pNext = nullptr;
+    physicalDeviceRenderPassStripedPropertiesARM.renderPassStripeGranularity;//striped render pass åŒºåŸŸæ”¯æŒçš„æœ€å°ç²’åº¦
+    physicalDeviceRenderPassStripedPropertiesARM.maxRenderPassStripes;//ä¸º striped rendering ä¸­æ”¯æŒçš„stripesçš„æœ€å¤§æ•°é‡
+
+
+    //VkPhysicalDeviceMapMemoryPlacedPropertiesEXT  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceMapMemoryPlacedPropertiesEXT physicalDeviceMapMemoryPlacedPropertiesEXT{};
+    physicalDeviceMapMemoryPlacedPropertiesEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
+    physicalDeviceMapMemoryPlacedPropertiesEXT.pNext = nullptr;
+    physicalDeviceMapMemoryPlacedPropertiesEXT.minPlacedMemoryMapAlignment;//æŒ‡æ˜ä½¿ç”¨ placed memory mappingæ—¶å†…å­˜å¯¹è±¡çš„åç§»å€¼ä»¥åŠè™šæ‹Ÿåœ°å€èŒƒæ–‡çš„æœ€å°å¯¹é½
+
+
+    //VkPhysicalDeviceImageAlignmentControlPropertiesMESA  ï¼Œå¯ä»¥åŒ…å«åœ¨VkPhysicalDeviceProperties2.pNextä¸­ 
+    VkPhysicalDeviceImageAlignmentControlPropertiesMESA physicalDeviceImageAlignmentControlPropertiesMESA{};
+    physicalDeviceImageAlignmentControlPropertiesMESA.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//æ²¡æœ‰å®šä¹‰è¿™é‡Œå®šä¹‰ä¸ºéæ³•å€¼
+    physicalDeviceImageAlignmentControlPropertiesMESA.pNext = nullptr;
+    physicalDeviceImageAlignmentControlPropertiesMESA.supportedImageAlignmentMask;//ä¸ºå½“ä½¿ç”¨ VK_IMAGE_TILING_OPTIMALçš„æ—¶å€™physical deviceæ½œåœ¨æ”¯æŒçš„image å¯¹é½çš„æŒ‰ä½æˆ–çš„å€¼
+
+
+    //Limit Requirements   è§p3998
+    {
+        /*
+        ä¸€ä¸ªè¡¨æè¿°vulkanå®ç°çš„æœ€å°å€¼/æœ€å¤§å€¼é™åˆ¶ä»¥åŠå…¶ç±»å‹å’Œå…¶ç›¸å…³çš„ç‰¹æ€§,è¡¨éƒ¨åˆ†ç¤ºä¾‹å¦‚ä¸‹ï¼Œè¯¦ç»†ä¿¡æ¯æŸ¥è¡¨p3998:
+        Table 64. Required Limit Types
+        Type                                 Limit                                         Feature
+        uint32_t                            maxImageDimension1D                               -
+        ...                                  ...                                             ...
+        */
+    }
+
+
+    //Additional Multisampling Capabilities  è§p4024
+    {
+        //æŸ¥è¯¢é¢å¤–çš„multisampling capabilities
+        VkMultisamplePropertiesEXT multisamplePropertiesEXT{};
+        multisamplePropertiesEXT.sType = VK_STRUCTURE_TYPE_MULTISAMPLE_PROPERTIES_EXT;
+        multisamplePropertiesEXT.pNext = nullptr;
+        multisamplePropertiesEXT.maxSampleLocationGridSize = VkExtent2D{ .width = 1,.height = 1 };//è¿”å›å€¼ï¼ŒæŒ‡æ˜é‡‡æ ·ç‚¹ä½ç½®å¯ä»¥å˜åŒ–çš„pixel grid çš„æœ€å°å¤§å°
+        vkGetPhysicalDeviceMultisamplePropertiesEXT(physicalDevice, VK_SAMPLE_COUNT_2_BIT, &multisamplePropertiesEXT);
+
+    }
+
+
+    //Profile Limits  è§p4025
+    {
+        //Roadmap 2022 è§p4025
+        /*
+        å®ç°æ”¯æŒ Roadmap 2022 profileçš„éœ€è¦æ»¡è¶³é¢å¤–limitéœ€æ±‚ï¼Œè¿™äº›éœ€æ±‚åˆ—ä¸¾åœ¨p4025è¡¨ä¸­:
+
+        */
+
+        //Roadmap 2024 è§p4026
+        /*
+        å®ç°æ”¯æŒ Roadmap 2024 profileçš„éœ€è¦æ»¡è¶³é¢å¤–limitéœ€æ±‚ï¼Œè¿™äº›éœ€æ±‚åˆ—ä¸¾åœ¨p402è¡¨ä¸­:
+        
+        */
+    }
 
 
 }
 
 void LimitsAndFormatsTest::FormatsTest()
 {
+    
+    //å„ä¸ªå®ç°æ”¯æŒçš„imageå’Œbufferçš„formatå¯èƒ½ä¸åŒï¼Œä½†æ˜¯è‡³å°‘ä¼šä¿è¯ä¸€ä¸ªæœ€å°çš„formatï¼ˆVkFormatï¼‰é›†ï¼Œé¢å¤–çš„formatå¯ä»¥é€šè¿‡ vkGetPhysicalDeviceFormatPropertiesæŸ¥è¯¢
+    
+    //Format Definition å‚è§p4027
+    {
+        VkFormat format = VK_FORMAT_A1B5G5R5_UNORM_PACK16_KHR;
+        /*
+        VkFormat:
+        VK_FORMAT_UNDEFINED : æŒ‡å®šformatæ²¡æœ‰æŒ‡æ˜
+        VK_FORMAT_R4G4_UNORM_PACK8 : æŒ‡å®šä¸€ä¸ª2åˆ†é‡ï¼Œæ€»å…±æ‰“åŒ…ä¸º8bitæ— ç¬¦å·å½’ä¸€åŒ–çš„foramtï¼ŒRåˆ†é‡ä¸º4-7bitï¼ŒGåˆ†é‡ä¸º0-3bit
+        VK_FORMAT_R4G4B4A4_UNORM_PACK16 : æŒ‡å®šä¸€ä¸ª4åˆ†é‡ï¼Œæ€»å…±æ‰“åŒ…ä¸º16bitæ— ç¬¦å·å½’ä¸€åŒ–çš„foramtï¼ŒRåˆ†é‡ä¸º12-15bitï¼ŒGåˆ†é‡ä¸º8-11bitï¼ŒBåˆ†é‡ä¸º4-7bitï¼ŒAåˆ†é‡ä¸º0-3bit
+        VK_FORMAT_B4G4R4A4_UNORM_PACK16 : æŒ‡å®šä¸€ä¸ª4åˆ†é‡ï¼Œæ€»å…±æ‰“åŒ…ä¸º16bitæ— ç¬¦å·å½’ä¸€åŒ–çš„foramtï¼ŒBåˆ†é‡ä¸º12-15bitï¼ŒGåˆ†é‡ä¸º8-11bitï¼ŒRåˆ†é‡ä¸º4-7bitï¼ŒAåˆ†é‡ä¸º0-3bit
+        VK_FORMAT_A4R4G4B4_UNORM_PACK16 : æŒ‡å®šä¸€ä¸ª4åˆ†é‡ï¼Œæ€»å…±æ‰“åŒ…ä¸º16bitæ— ç¬¦å·å½’ä¸€åŒ–çš„foramtï¼ŒAåˆ†é‡ä¸º12-15bitï¼ŒRåˆ†é‡ä¸º8-11bitï¼ŒGåˆ†é‡ä¸º4-7bitï¼ŒBåˆ†é‡ä¸º0-3bit
+        VK_FORMAT_A4B4G4R4_UNORM_PACK16 : æŒ‡å®šä¸€ä¸ª4åˆ†é‡ï¼Œæ€»å…±æ‰“åŒ…ä¸º16bitæ— ç¬¦å·å½’ä¸€åŒ–çš„foramtï¼ŒAåˆ†é‡ä¸º12-15bitï¼ŒBåˆ†é‡ä¸º8-11bitï¼ŒGåˆ†é‡ä¸º4-7bitï¼ŒRåˆ†é‡ä¸º0-3bit
+        VK_FORMAT_R5G6B5_UNORM_PACK16 : æŒ‡å®š a three-component, 16-bit packed unsigned normalized
+format that has a 5-bit R component in bits 11..15, a 6-bit G component in bits 5..10, and a 5-bit B
+component in bits 0..4.
+        VK_FORMAT_B5G6R5_UNORM_PACK16 : æŒ‡å®š a three-component, 16-bit packed unsigned normalized
+format that has a 5-bit B component in bits 11..15, a 6-bit G component in bits 5..10, and a 5-bit R
+component in bits 0..4.
+        VK_FORMAT_R5G5B5A1_UNORM_PACK16 : æŒ‡å®š a four-component, 16-bit packed unsigned
+normalized format that has a 5-bit R component in bits 11..15, a 5-bit G component in bits 6..10,
+a 5-bit B component in bits 1..5, and a 1-bit A component in bit 0.
+        VK_FORMAT_B5G5R5A1_UNORM_PACK16 : æŒ‡å®š a four-component, 16-bit packed unsigned
+normalized format that has a 5-bit B component in bits 11..15, a 5-bit G component in bits 6..10,
+a 5-bit R component in bits 1..5, and a 1-bit A component in bit 0.
+        VK_FORMAT_A1R5G5B5_UNORM_PACK16 : æŒ‡å®š a four-component, 16-bit packed unsigned
+normalized format that has a 1-bit A component in bit 15, a 5-bit R component in bits 10..14, a 5-
+bit G component in bits 5..9, and a 5-bit B component in bits 0..4.
+        VK_FORMAT_A1B5G5R5_UNORM_PACK16_KHR : æŒ‡å®š a four-component, 16-bit packed unsigned
+normalized format that has a 1-bit A component in bit 15, a 5-bit B component in bits 10..14, a 5-
+bit G component in bits 5..9, and a 5-bit R component in bits 0..4.
+        VK_FORMAT_A8_UNORM_KHR : æŒ‡å®š a one-component, 8-bit unsigned normalized format that has a
+single 8-bit A component.
+        VK_FORMAT_R8_UNORM : æŒ‡å®š a one-component, 8-bit unsigned normalized format that has a
+single 8-bit R component.
+        VK_FORMAT_R8_SNORM : æŒ‡å®š a one-component, 8-bit signed normalized format that has a single
+8-bit R component.
+        VK_FORMAT_R8_USCALED : æŒ‡å®š a one-component, 8-bit unsigned scaled integer format that has a
+single 8-bit R component.
+        VK_FORMAT_R8_SSCALED : æŒ‡å®š a one-component, 8-bit signed scaled integer format that has a
+single 8-bit R component.
+        VK_FORMAT_R8_UINT : æŒ‡å®š a one-component, 8-bit unsigned integer format that has a single 8-
+bit R component.
+        VK_FORMAT_R8_SINT : æŒ‡å®š a one-component, 8-bit signed integer format that has a single 8-bit
+R component.
+        VK_FORMAT_R8_SRGB : æŒ‡å®š a one-component, 8-bit unsigned normalized format that has a
+single 8-bit R component stored with sRGB nonlinear encoding.
+        VK_FORMAT_R8G8_UNORM : æŒ‡å®š a two-component, 16-bit unsigned normalized format that has an
+8-bit R component in byte 0, and an 8-bit G component in byte 1.
+        VK_FORMAT_R8G8_SNORM : æŒ‡å®š a two-component, 16-bit signed normalized format that has an 8-
+bit R component in byte 0, and an 8-bit G component in byte 1.
+        VK_FORMAT_R8G8_USCALED : æŒ‡å®š a two-component, 16-bit unsigned scaled integer format that
+has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
+        VK_FORMAT_R8G8_SSCALED : æŒ‡å®š a two-component, 16-bit signed scaled integer format that has
+an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
+        VK_FORMAT_R8G8_UINT : æŒ‡å®š a two-component, 16-bit unsigned integer format that has an 8-bit
+R component in byte 0, and an 8-bit G component in byte 1.
+        VK_FORMAT_R8G8_SINT : æŒ‡å®š a two-component, 16-bit signed integer format that has an 8-bit R
+component in byte 0, and an 8-bit G component in byte 1.
+        VK_FORMAT_R8G8_SRGB : æŒ‡å®š a two-component, 16-bit unsigned normalized format that has an
+8-bit R component stored with sRGB nonlinear encoding in byte 0, and an 8-bit G component
+stored with sRGB nonlinear encoding in byte 1.
+        VK_FORMAT_R8G8B8_UNORM : æŒ‡å®š a three-component, 24-bit unsigned normalized format that
+has an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in
+byte 2.
+        VK_FORMAT_R8G8B8_SNORM : æŒ‡å®š a three-component, 24-bit signed normalized format that has
+an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in
+byte 2.
+        VK_FORMAT_R8G8B8_USCALED : æŒ‡å®š a three-component, 24-bit unsigned scaled format that has an
+8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+        VK_FORMAT_R8G8B8_SSCALED : æŒ‡å®š a three-component, 24-bit signed scaled format that has an 8-
+bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+        VK_FORMAT_R8G8B8_UINT : æŒ‡å®š a three-component, 24-bit unsigned integer format that has an
+8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+        VK_FORMAT_R8G8B8_SINT : æŒ‡å®š a three-component, 24-bit signed integer format that has an 8-
+bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
+        VK_FORMAT_R8G8B8_SRGB : æŒ‡å®š a three-component, 24-bit unsigned normalized format that has
+an 8-bit R component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component
+stored with sRGB nonlinear encoding in byte 1, and an 8-bit B component stored with sRGB
+nonlinear encoding in byte 2.
+        VK_FORMAT_B8G8R8_UNORM : æŒ‡å®š a three-component, 24-bit unsigned normalized format that
+has an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in
+byte 2.
+        VK_FORMAT_B8G8R8_SNORM : æŒ‡å®š a three-component, 24-bit signed normalized format that has
+an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in
+byte 2.
+        VK_FORMAT_B8G8R8_USCALED : æŒ‡å®š a three-component, 24-bit unsigned scaled format that has an
+8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+        VK_FORMAT_B8G8R8_SSCALED : æŒ‡å®š a three-component, 24-bit signed scaled format that has an 8-
+bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+        VK_FORMAT_B8G8R8_UINT : æŒ‡å®š a three-component, 24-bit unsigned integer format that has an
+8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+        VK_FORMAT_B8G8R8_SINT : æŒ‡å®š a three-component, 24-bit signed integer format that has an 8-
+bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
+        VK_FORMAT_B8G8R8_SRGB : æŒ‡å®š a three-component, 24-bit unsigned normalized format that has
+an 8-bit B component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component
+stored with sRGB nonlinear encoding in byte 1, and an 8-bit R component stored with sRGB
+nonlinear encoding in byte 2.
+        VK_FORMAT_R8G8B8A8_UNORM : æŒ‡å®š a four-component, 32-bit unsigned normalized format that
+has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte
+2, and an 8-bit A component in byte 3.
+        VK_FORMAT_R8G8B8A8_SNORM : æŒ‡å®š a four-component, 32-bit signed normalized format that has
+an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2,
+and an 8-bit A component in byte 3.
+        VK_FORMAT_R8G8B8A8_USCALED : æŒ‡å®š a four-component, 32-bit unsigned scaled format that has
+an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2,
+and an 8-bit A component in byte 3.
+        VK_FORMAT_R8G8B8A8_SSCALED : æŒ‡å®š a four-component, 32-bit signed scaled format that has an
+8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and
+an 8-bit A component in byte 3.
+        VK_FORMAT_R8G8B8A8_UINT : æŒ‡å®š a four-component, 32-bit unsigned integer format that has an
+8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and
+an 8-bit A component in byte 3.
+        VK_FORMAT_R8G8B8A8_SINT : æŒ‡å®š a four-component, 32-bit signed integer format that has an 8-
+bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and
+an 8-bit A component in byte 3.
+4038
+        VK_FORMAT_R8G8B8A8_SRGB : æŒ‡å®š a four-component, 32-bit unsigned normalized format that
+has an 8-bit R component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component
+stored with sRGB nonlinear encoding in byte 1, an 8-bit B component stored with sRGB
+nonlinear encoding in byte 2, and an 8-bit A component in byte 3.
+        VK_FORMAT_B8G8R8A8_UNORM : æŒ‡å®š a four-component, 32-bit unsigned normalized format that
+has an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte
+2, and an 8-bit A component in byte 3.
+        VK_FORMAT_B8G8R8A8_SNORM : æŒ‡å®š a four-component, 32-bit signed normalized format that has
+an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2,
+and an 8-bit A component in byte 3.
+        VK_FORMAT_B8G8R8A8_USCALED : æŒ‡å®š a four-component, 32-bit unsigned scaled format that has
+an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2,
+and an 8-bit A component in byte 3.
+        VK_FORMAT_B8G8R8A8_SSCALED : æŒ‡å®š a four-component, 32-bit signed scaled format that has an
+8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and
+an 8-bit A component in byte 3.
+        VK_FORMAT_B8G8R8A8_UINT : æŒ‡å®š a four-component, 32-bit unsigned integer format that has an
+8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and
+an 8-bit A component in byte 3.
+        VK_FORMAT_B8G8R8A8_SINT : æŒ‡å®š a four-component, 32-bit signed integer format that has an 8-
+bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and
+an 8-bit A component in byte 3.
+        VK_FORMAT_B8G8R8A8_SRGB : æŒ‡å®š a four-component, 32-bit unsigned normalized format that
+has an 8-bit B component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component
+stored with sRGB nonlinear encoding in byte 1, an 8-bit R component stored with sRGB
+nonlinear encoding in byte 2, and an 8-bit A component in byte 3.
+        VK_FORMAT_A8B8G8R8_UNORM_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned
+normalized format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits
+16..23, an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
+        VK_FORMAT_A8B8G8R8_SNORM_PACK32 : æŒ‡å®š a four-component, 32-bit packed signed normalized
+format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit
+G component in bits 8..15, and an 8-bit R component in bits 0..7.
+        VK_FORMAT_A8B8G8R8_USCALED_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned scaled
+integer format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23,
+an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
+        VK_FORMAT_A8B8G8R8_SSCALED_PACK32 : æŒ‡å®š a four-component, 32-bit packed signed scaled
+integer format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23,
+an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
+        VK_FORMAT_A8B8G8R8_UINT_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned integer
+format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit
+G component in bits 8..15, and an 8-bit R component in bits 0..7.
+        VK_FORMAT_A8B8G8R8_SINT_PACK32 : æŒ‡å®š a four-component, 32-bit packed signed integer format
+that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit G
+4039
+component in bits 8..15, and an 8-bit R component in bits 0..7.
+        VK_FORMAT_A8B8G8R8_SRGB_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned normalized
+format that has an 8-bit A component in bits 24..31, an 8-bit B component stored with sRGB
+nonlinear encoding in bits 16..23, an 8-bit G component stored with sRGB nonlinear encoding in
+bits 8..15, and an 8-bit R component stored with sRGB nonlinear encoding in bits 0..7.
+        VK_FORMAT_A2R10G10B10_UNORM_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned
+normalized format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits
+20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+        VK_FORMAT_A2R10G10B10_SNORM_PACK32 : æŒ‡å®š a four-component, 32-bit packed signed
+normalized format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits
+20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+        VK_FORMAT_A2R10G10B10_USCALED_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned
+scaled integer format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits
+20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+        VK_FORMAT_A2R10G10B10_SSCALED_PACK32 : æŒ‡å®š a four-component, 32-bit packed signed scaled
+integer format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a
+10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+        VK_FORMAT_A2R10G10B10_UINT_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned integer
+format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G
+component in bits 10..19, and a 10-bit B component in bits 0..9.
+        VK_FORMAT_A2R10G10B10_SINT_PACK32 : æŒ‡å®š a four-component, 32-bit packed signed integer
+format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G
+component in bits 10..19, and a 10-bit B component in bits 0..9.
+        VK_FORMAT_A2B10G10R10_UNORM_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned
+normalized format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits
+20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+        VK_FORMAT_A2B10G10R10_SNORM_PACK32 : æŒ‡å®š a four-component, 32-bit packed signed
+normalized format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits
+20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+        VK_FORMAT_A2B10G10R10_USCALED_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned
+scaled integer format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits
+20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+        VK_FORMAT_A2B10G10R10_SSCALED_PACK32 : æŒ‡å®š a four-component, 32-bit packed signed scaled
+integer format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a
+10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+        VK_FORMAT_A2B10G10R10_UINT_PACK32 : æŒ‡å®š a four-component, 32-bit packed unsigned integer
+format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G
+component in bits 10..19, and a 10-bit R component in bits 0..9.
+        VK_FORMAT_A2B10G10R10_SINT_PACK32 : æŒ‡å®š a four-component, 32-bit packed signed integer
+format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G
+component in bits 10..19, and a 10-bit R component in bits 0..9.
+        VK_FORMAT_R16_UNORM : æŒ‡å®š a one-component, 16-bit unsigned normalized format that has a
+4040
+single 16-bit R component.
+        VK_FORMAT_R16_SNORM : æŒ‡å®š a one-component, 16-bit signed normalized format that has a
+single 16-bit R component.
+        VK_FORMAT_R16_USCALED : æŒ‡å®š a one-component, 16-bit unsigned scaled integer format that has
+a single 16-bit R component.
+        VK_FORMAT_R16_SSCALED : æŒ‡å®š a one-component, 16-bit signed scaled integer format that has a
+single 16-bit R component.
+        VK_FORMAT_R16_UINT : æŒ‡å®š a one-component, 16-bit unsigned integer format that has a single
+16-bit R component.
+        VK_FORMAT_R16_SINT : æŒ‡å®š a one-component, 16-bit signed integer format that has a single 16-
+bit R component.
+        VK_FORMAT_R16_SFLOAT : æŒ‡å®š a one-component, 16-bit signed floating-point format that has a
+single 16-bit R component.
+        VK_FORMAT_R16G16_UNORM : æŒ‡å®š a two-component, 32-bit unsigned normalized format that has
+a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+        VK_FORMAT_R16G16_SNORM : æŒ‡å®š a two-component, 32-bit signed normalized format that has a
+16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+        VK_FORMAT_R16G16_USCALED : æŒ‡å®š a two-component, 32-bit unsigned scaled integer format that
+has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+        VK_FORMAT_R16G16_SSCALED : æŒ‡å®š a two-component, 32-bit signed scaled integer format that
+has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+        VK_FORMAT_R16G16_UINT : æŒ‡å®š a two-component, 32-bit unsigned integer format that has a 16-
+bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+        VK_FORMAT_R16G16_SINT : æŒ‡å®š a two-component, 32-bit signed integer format that has a 16-bit
+R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+        VK_FORMAT_R16G16_SFLOAT : æŒ‡å®š a two-component, 32-bit signed floating-point format that has
+a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+        VK_FORMAT_R16G16B16_UNORM : æŒ‡å®š a three-component, 48-bit unsigned normalized format that
+has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
+component in bytes 4..5.
+        VK_FORMAT_R16G16B16_SNORM : æŒ‡å®š a three-component, 48-bit signed normalized format that
+has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
+component in bytes 4..5.
+        VK_FORMAT_R16G16B16_USCALED : æŒ‡å®š a three-component, 48-bit unsigned scaled integer format
+that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
+component in bytes 4..5.
+        VK_FORMAT_R16G16B16_SSCALED : æŒ‡å®š a three-component, 48-bit signed scaled integer format
+that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
+component in bytes 4..5.
+        VK_FORMAT_R16G16B16_UINT : æŒ‡å®š a three-component, 48-bit unsigned integer format that has a
+16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in
+4041
+bytes 4..5.
+        VK_FORMAT_R16G16B16_SINT : æŒ‡å®š a three-component, 48-bit signed integer format that has a
+16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in
+bytes 4..5.
+        VK_FORMAT_R16G16B16_SFLOAT : æŒ‡å®š a three-component, 48-bit signed floating-point format that
+has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
+component in bytes 4..5.
+        VK_FORMAT_R16G16B16A16_UNORM : æŒ‡å®š a four-component, 64-bit unsigned normalized format
+that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B
+component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+        VK_FORMAT_R16G16B16A16_SNORM : æŒ‡å®š a four-component, 64-bit signed normalized format that
+has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component
+in bytes 4..5, and a 16-bit A component in bytes 6..7.
+        VK_FORMAT_R16G16B16A16_USCALED : æŒ‡å®š a four-component, 64-bit unsigned scaled integer
+format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B
+component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+        VK_FORMAT_R16G16B16A16_SSCALED : æŒ‡å®š a four-component, 64-bit signed scaled integer format
+that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B
+component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+        VK_FORMAT_R16G16B16A16_UINT : æŒ‡å®š a four-component, 64-bit unsigned integer format that has
+a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in
+bytes 4..5, and a 16-bit A component in bytes 6..7.
+        VK_FORMAT_R16G16B16A16_SINT : æŒ‡å®š a four-component, 64-bit signed integer format that has a
+16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in
+bytes 4..5, and a 16-bit A component in bytes 6..7.
+        VK_FORMAT_R16G16B16A16_SFLOAT : æŒ‡å®š a four-component, 64-bit signed floating-point format
+that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B
+component in bytes 4..5, and a 16-bit A component in bytes 6..7.
+        VK_FORMAT_R32_UINT : æŒ‡å®š a one-component, 32-bit unsigned integer format that has a single
+32-bit R component.
+        VK_FORMAT_R32_SINT : æŒ‡å®š a one-component, 32-bit signed integer format that has a single 32-
+bit R component.
+        VK_FORMAT_R32_SFLOAT : æŒ‡å®š a one-component, 32-bit signed floating-point format that has a
+single 32-bit R component.
+        VK_FORMAT_R32G32_UINT : æŒ‡å®š a two-component, 64-bit unsigned integer format that has a 32-
+bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
+        VK_FORMAT_R32G32_SINT : æŒ‡å®š a two-component, 64-bit signed integer format that has a 32-bit
+R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
+        VK_FORMAT_R32G32_SFLOAT : æŒ‡å®š a two-component, 64-bit signed floating-point format that has
+a 32-bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
+        VK_FORMAT_R32G32B32_UINT : æŒ‡å®š a three-component, 96-bit unsigned integer format that has a
+4042
+32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B component in
+bytes 8..11.
+        VK_FORMAT_R32G32B32_SINT : æŒ‡å®š a three-component, 96-bit signed integer format that has a
+32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B component in
+bytes 8..11.
+        VK_FORMAT_R32G32B32_SFLOAT : æŒ‡å®š a three-component, 96-bit signed floating-point format that
+has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B
+component in bytes 8..11.
+        VK_FORMAT_R32G32B32A32_UINT : æŒ‡å®š a four-component, 128-bit unsigned integer format that
+has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component
+in bytes 8..11, and a 32-bit A component in bytes 12..15.
+        VK_FORMAT_R32G32B32A32_SINT : æŒ‡å®š a four-component, 128-bit signed integer format that has
+a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in
+bytes 8..11, and a 32-bit A component in bytes 12..15.
+        VK_FORMAT_R32G32B32A32_SFLOAT : æŒ‡å®š a four-component, 128-bit signed floating-point format
+that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B
+component in bytes 8..11, and a 32-bit A component in bytes 12..15.
+        VK_FORMAT_R64_UINT : æŒ‡å®š a one-component, 64-bit unsigned integer format that has a single
+64-bit R component.
+        VK_FORMAT_R64_SINT : æŒ‡å®š a one-component, 64-bit signed integer format that has a single 64-
+bit R component.
+        VK_FORMAT_R64_SFLOAT : æŒ‡å®š a one-component, 64-bit signed floating-point format that has a
+single 64-bit R component.
+        VK_FORMAT_R64G64_UINT : æŒ‡å®š a two-component, 128-bit unsigned integer format that has a 64-
+bit R component in bytes 0..7, and a 64-bit G component in bytes 8..15.
+        VK_FORMAT_R64G64_SINT : æŒ‡å®š a two-component, 128-bit signed integer format that has a 64-bit
+R component in bytes 0..7, and a 64-bit G component in bytes 8..15.
+        VK_FORMAT_R64G64_SFLOAT : æŒ‡å®š a two-component, 128-bit signed floating-point format that
+has a 64-bit R component in bytes 0..7, and a 64-bit G component in bytes 8..15.
+        VK_FORMAT_R64G64B64_UINT : æŒ‡å®š a three-component, 192-bit unsigned integer format that has
+a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, and a 64-bit B component
+in bytes 16..23.
+        VK_FORMAT_R64G64B64_SINT : æŒ‡å®š a three-component, 192-bit signed integer format that has a
+64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, and a 64-bit B component
+in bytes 16..23.
+        VK_FORMAT_R64G64B64_SFLOAT : æŒ‡å®š a three-component, 192-bit signed floating-point format
+that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, and a 64-bit B
+component in bytes 16..23.
+        VK_FORMAT_R64G64B64A64_UINT : æŒ‡å®š a four-component, 256-bit unsigned integer format that
+has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, a 64-bit B component
+in bytes 16..23, and a 64-bit A component in bytes 24..31.
+4043
+        VK_FORMAT_R64G64B64A64_SINT : æŒ‡å®š a four-component, 256-bit signed integer format that has
+a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, a 64-bit B component in
+bytes 16..23, and a 64-bit A component in bytes 24..31.
+        VK_FORMAT_R64G64B64A64_SFLOAT : æŒ‡å®š a four-component, 256-bit signed floating-point format
+that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, a 64-bit B
+component in bytes 16..23, and a 64-bit A component in bytes 24..31.
+        VK_FORMAT_B10G11R11_UFLOAT_PACK32 : æŒ‡å®š a three-component, 32-bit packed unsigned
+floating-point format that has a 10-bit B component in bits 22..31, an 11-bit G component in bits
+11..21, an 11-bit R component in bits 0..10. See Unsigned 10-Bit Floating-Point Numbers and
+Unsigned 11-Bit Floating-Point Numbers.
+        VK_FORMAT_E5B9G9R9_UFLOAT_PACK32 : æŒ‡å®š a three-component, 32-bit packed unsigned floatingï¿¾point format that has a 5-bit shared exponent in bits 27..31, a 9-bit B component mantissa in bits
+18..26, a 9-bit G component mantissa in bits 9..17, and a 9-bit R component mantissa in bits 0..8.
+        VK_FORMAT_D16_UNORM : æŒ‡å®š a one-component, 16-bit unsigned normalized format that has a
+single 16-bit depth component.
+        VK_FORMAT_X8_D24_UNORM_PACK32 : æŒ‡å®š a two-component, 32-bit format that has 24 unsigned
+normalized bits in the depth component and, optionally, 8 bits that are unused.
+        VK_FORMAT_D32_SFLOAT : æŒ‡å®š a one-component, 32-bit signed floating-point format that has 32
+bits in the depth component.
+        VK_FORMAT_S8_UINT : æŒ‡å®š a one-component, 8-bit unsigned integer format that has 8 bits in the
+stencil component.
+        VK_FORMAT_D16_UNORM_S8_UINT : æŒ‡å®š a two-component, 24-bit format that has 16 unsigned
+normalized bits in the depth component and 8 unsigned integer bits in the stencil component.
+        VK_FORMAT_D24_UNORM_S8_UINT : æŒ‡å®š a two-component, 32-bit packed format that has 8
+unsigned integer bits in the stencil component, and 24 unsigned normalized bits in the depth
+component.
+        VK_FORMAT_D32_SFLOAT_S8_UINT : æŒ‡å®š a two-component format that has 32 signed float bits in
+the depth component and 8 unsigned integer bits in the stencil component. There are
+optionally 24 bits that are unused.
+        VK_FORMAT_BC1_RGB_UNORM_BLOCK : æŒ‡å®š a three-component, block-compressed format where
+each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGB texel
+data. This format has no alpha and is considered opaque.
+        VK_FORMAT_BC1_RGB_SRGB_BLOCK : æŒ‡å®š a three-component, block-compressed format where
+each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGB texel
+data with sRGB nonlinear encoding. This format has no alpha and is considered opaque.
+        VK_FORMAT_BC1_RGBA_UNORM_BLOCK : æŒ‡å®š a four-component, block-compressed format where
+each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGB texel
+data, and provides 1 bit of alpha.
+        VK_FORMAT_BC1_RGBA_SRGB_BLOCK : æŒ‡å®š a four-component, block-compressed format where
+each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGB texel
+data with sRGB nonlinear encoding, and provides 1 bit of alpha.
+        VK_FORMAT_BC2_UNORM_BLOCK : æŒ‡å®š a four-component, block-compressed format where each
+4044
+128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGBA texel data
+with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values.
+        VK_FORMAT_BC2_SRGB_BLOCK : æŒ‡å®š a four-component, block-compressed format where each
+128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGBA texel data
+with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values with sRGB
+nonlinear encoding.
+        VK_FORMAT_BC3_UNORM_BLOCK : æŒ‡å®š a four-component, block-compressed format where each
+128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGBA texel data
+with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values.
+        VK_FORMAT_BC3_SRGB_BLOCK : æŒ‡å®š a four-component, block-compressed format where each
+128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGBA texel data
+with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values with sRGB
+nonlinear encoding.
+        VK_FORMAT_BC4_UNORM_BLOCK : æŒ‡å®š a one-component, block-compressed format where each 64-
+bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized red texel data.
+        VK_FORMAT_BC4_SNORM_BLOCK : æŒ‡å®š a one-component, block-compressed format where each 64-
+bit compressed texel block encodes a 4Ã—4 rectangle of signed normalized red texel data.
+        VK_FORMAT_BC5_UNORM_BLOCK : æŒ‡å®š a two-component, block-compressed format where each
+128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RG texel data
+with the first 64 bits encoding red values followed by 64 bits encoding green values.
+        VK_FORMAT_BC5_SNORM_BLOCK : æŒ‡å®š a two-component, block-compressed format where each
+128-bit compressed texel block encodes a 4Ã—4 rectangle of signed normalized RG texel data with
+the first 64 bits encoding red values followed by 64 bits encoding green values.
+        VK_FORMAT_BC6H_UFLOAT_BLOCK : æŒ‡å®š a three-component, block-compressed format where each
+128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned floating-point RGB texel
+data.
+        VK_FORMAT_BC6H_SFLOAT_BLOCK : æŒ‡å®š a three-component, block-compressed format where each
+128-bit compressed texel block encodes a 4Ã—4 rectangle of signed floating-point RGB texel data.
+        VK_FORMAT_BC7_UNORM_BLOCK : æŒ‡å®š a four-component, block-compressed format where each
+128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGBA texel
+data.
+        VK_FORMAT_BC7_SRGB_BLOCK : æŒ‡å®š a four-component, block-compressed format where each
+128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGBA texel data
+with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK : æŒ‡å®š a three-component, ETC2 compressed format
+where each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGB
+texel data. This format has no alpha and is considered opaque.
+        VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK : æŒ‡å®š a three-component, ETC2 compressed format where
+each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGB texel
+data with sRGB nonlinear encoding. This format has no alpha and is considered opaque.
+        VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK : æŒ‡å®š a four-component, ETC2 compressed format
+where each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGB
+4045
+texel data, and provides 1 bit of alpha.
+        VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK : æŒ‡å®š a four-component, ETC2 compressed format
+where each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGB
+texel data with sRGB nonlinear encoding, and provides 1 bit of alpha.
+        VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK : æŒ‡å®š a four-component, ETC2 compressed format
+where each 128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized
+RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB
+values.
+        VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK : æŒ‡å®š a four-component, ETC2 compressed format
+where each 128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized
+RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB
+values with sRGB nonlinear encoding applied.
+        VK_FORMAT_EAC_R11_UNORM_BLOCK : æŒ‡å®š a one-component, ETC2 compressed format where each
+64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized red texel data.
+        VK_FORMAT_EAC_R11_SNORM_BLOCK : æŒ‡å®š a one-component, ETC2 compressed format where each
+64-bit compressed texel block encodes a 4Ã—4 rectangle of signed normalized red texel data.
+        VK_FORMAT_EAC_R11G11_UNORM_BLOCK : æŒ‡å®š a two-component, ETC2 compressed format where
+each 128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RG texel
+data with the first 64 bits encoding red values followed by 64 bits encoding green values.
+        VK_FORMAT_EAC_R11G11_SNORM_BLOCK : æŒ‡å®š a two-component, ETC2 compressed format where
+each 128-bit compressed texel block encodes a 4Ã—4 rectangle of signed normalized RG texel data
+with the first 64 bits encoding red values followed by 64 bits encoding green values.
+        VK_FORMAT_ASTC_4x4_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGBA texel
+data.
+        VK_FORMAT_ASTC_4x4_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized RGBA texel
+data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 4Ã—4 rectangle of signed floating-point RGBA texel
+data.
+        VK_FORMAT_ASTC_5x4_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 5Ã—4 rectangle of unsigned normalized RGBA texel
+data.
+        VK_FORMAT_ASTC_5x4_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 5Ã—4 rectangle of unsigned normalized RGBA texel
+data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_5x4_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 5Ã—4 rectangle of signed floating-point RGBA texel
+data.
+        VK_FORMAT_ASTC_5x5_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 5Ã—5 rectangle of unsigned normalized RGBA texel
+4046
+data.
+        VK_FORMAT_ASTC_5x5_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 5Ã—5 rectangle of unsigned normalized RGBA texel
+data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_5x5_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 5Ã—5 rectangle of signed floating-point RGBA texel
+data.
+        VK_FORMAT_ASTC_6x5_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 6Ã—5 rectangle of unsigned normalized RGBA texel
+data.
+        VK_FORMAT_ASTC_6x5_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 6Ã—5 rectangle of unsigned normalized RGBA texel
+data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_6x5_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 6Ã—5 rectangle of signed floating-point RGBA texel
+data.
+        VK_FORMAT_ASTC_6x6_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 6Ã—6 rectangle of unsigned normalized RGBA texel
+data.
+        VK_FORMAT_ASTC_6x6_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 6Ã—6 rectangle of unsigned normalized RGBA texel
+data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_6x6_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 6Ã—6 rectangle of signed floating-point RGBA texel
+data.
+        VK_FORMAT_ASTC_8x5_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes an 8Ã—5 rectangle of unsigned normalized RGBA
+texel data.
+        VK_FORMAT_ASTC_8x5_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes an 8Ã—5 rectangle of unsigned normalized RGBA
+texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_8x5_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 8Ã—5 rectangle of signed floating-point RGBA texel
+data.
+        VK_FORMAT_ASTC_8x6_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes an 8Ã—6 rectangle of unsigned normalized RGBA
+texel data.
+        VK_FORMAT_ASTC_8x6_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes an 8Ã—6 rectangle of unsigned normalized RGBA
+texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_8x6_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 8Ã—6 rectangle of signed floating-point RGBA texel
+4047
+data.
+        VK_FORMAT_ASTC_8x8_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes an 8Ã—8 rectangle of unsigned normalized RGBA
+texel data.
+        VK_FORMAT_ASTC_8x8_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes an 8Ã—8 rectangle of unsigned normalized RGBA
+texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_8x8_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 8Ã—8 rectangle of signed floating-point RGBA texel
+data.
+        VK_FORMAT_ASTC_10x5_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—5 rectangle of unsigned normalized RGBA
+texel data.
+        VK_FORMAT_ASTC_10x5_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—5 rectangle of unsigned normalized RGBA
+texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_10x5_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—5 rectangle of signed floating-point RGBA
+texel data.
+        VK_FORMAT_ASTC_10x6_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—6 rectangle of unsigned normalized RGBA
+texel data.
+        VK_FORMAT_ASTC_10x6_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—6 rectangle of unsigned normalized RGBA
+texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_10x6_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—6 rectangle of signed floating-point RGBA
+texel data.
+        VK_FORMAT_ASTC_10x8_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—8 rectangle of unsigned normalized RGBA
+texel data.
+        VK_FORMAT_ASTC_10x8_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—8 rectangle of unsigned normalized RGBA
+texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_10x8_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—8 rectangle of signed floating-point RGBA
+texel data.
+        VK_FORMAT_ASTC_10x10_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—10 rectangle of unsigned normalized RGBA
+texel data.
+        VK_FORMAT_ASTC_10x10_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—10 rectangle of unsigned normalized RGBA
+4048
+texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 10Ã—10 rectangle of signed floating-point RGBA
+texel data.
+        VK_FORMAT_ASTC_12x10_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 12Ã—10 rectangle of unsigned normalized RGBA
+texel data.
+        VK_FORMAT_ASTC_12x10_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 12Ã—10 rectangle of unsigned normalized RGBA
+texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 12Ã—10 rectangle of signed floating-point RGBA
+texel data.
+        VK_FORMAT_ASTC_12x12_UNORM_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 12Ã—12 rectangle of unsigned normalized RGBA
+texel data.
+        VK_FORMAT_ASTC_12x12_SRGB_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 12Ã—12 rectangle of unsigned normalized RGBA
+texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK : æŒ‡å®š a four-component, ASTC compressed format where
+each 128-bit compressed texel block encodes a 12Ã—12 rectangle of signed floating-point RGBA
+texel data.
+        VK_FORMAT_G8B8G8R8_422_UNORM : æŒ‡å®š a four-component, 32-bit format containing a pair of G
+components, an R component, and a B component, collectively encoding a 2Ã—1 rectangle of
+unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and
+R values shared across both G values and thus recorded at half the horizontal resolution of the
+image. This format has an 8-bit G component for the even i coordinate in byte 0, an 8-bit B
+component in byte 1, an 8-bit G component for the odd i coordinate in byte 2, and an 8-bit R
+component in byte 3. This format only supports images with a width that is a multiple of two.
+For the purposes of the constraints on copy extents, this format is treated as a compressed
+format with a 2Ã—1 compressed texel block.
+        VK_FORMAT_B8G8R8G8_422_UNORM : æŒ‡å®š a four-component, 32-bit format containing a pair of G
+components, an R component, and a B component, collectively encoding a 2Ã—1 rectangle of
+unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and
+R values shared across both G values and thus recorded at half the horizontal resolution of the
+image. This format has an 8-bit B component in byte 0, an 8-bit G component for the even i
+coordinate in byte 1, an 8-bit R component in byte 2, and an 8-bit G component for the odd i
+coordinate in byte 3. This format only supports images with a width that is a multiple of two.
+For the purposes of the constraints on copy extents, this format is treated as a compressed
+format with a 2Ã—1 compressed texel block.
+        VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM : æŒ‡å®š an unsigned normalized multi-planar format that
+has an 8-bit G component in plane 0, an 8-bit B component in plane 1, and an 8-bit R component
+in plane 2. The horizontal and vertical dimensions of the R and B planes are halved relative to
+the image dimensions, and each R and B component is shared with the G components for which
+4049
+ and . The location of each plane when this image is in linear
+layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and
+VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and
+height that is a multiple of two.
+        VK_FORMAT_G8_B8R8_2PLANE_420_UNORM : æŒ‡å®š an unsigned normalized multi-planar format that
+has an 8-bit G component in plane 0, and a two-component, 16-bit BR plane 1 consisting of an 8-
+bit B component in byte 0 and an 8-bit R component in byte 1. The horizontal and vertical
+dimensions of the BR plane are halved relative to the image dimensions, and each R and B value
+is shared with the G components for which and . The location
+of each plane when this image is in linear layout can be determined via
+vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and
+VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width
+and height that is a multiple of two.
+        VK_FORMAT_G8_B8_R8_3PLANE_422_UNORM : æŒ‡å®š an unsigned normalized multi-planar format that
+has an 8-bit G component in plane 0, an 8-bit B component in plane 1, and an 8-bit R component
+in plane 2. The horizontal dimension of the R and B plane is halved relative to the image
+dimensions, and each R and B value is shared with the G components for which
+. The location of each plane when this image is in linear layout can be
+determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
+plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R
+plane. This format only supports images with a width that is a multiple of two.
+        VK_FORMAT_G8_B8R8_2PLANE_422_UNORM : æŒ‡å®š an unsigned normalized multi-planar format that
+has an 8-bit G component in plane 0, and a two-component, 16-bit BR plane 1 consisting of an 8-
+bit B component in byte 0 and an 8-bit R component in byte 1. The horizontal dimension of the
+BR plane is halved relative to the image dimensions, and each R and B value is shared with the
+G components for which . The location of each plane when this image is in
+linear layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+This format only supports images with a width that is a multiple of two.
+        VK_FORMAT_G8_B8_R8_3PLANE_444_UNORM : æŒ‡å®š an unsigned normalized multi-planar format that
+has an 8-bit G component in plane 0, an 8-bit B component in plane 1, and an 8-bit R component
+in plane 2. Each plane has the same dimensions and each R, G and B component contributes to a
+single texel. The location of each plane when this image is in linear layout can be determined
+via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane,
+VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
+        VK_FORMAT_R10X6_UNORM_PACK16 : æŒ‡å®š a one-component, 16-bit unsigned normalized format
+that has a single 10-bit R component in the top 10 bits of a 16-bit word, with the bottom 6 bits
+unused.
+        VK_FORMAT_R10X6G10X6_UNORM_2PACK16 : æŒ‡å®š a two-component, 32-bit unsigned normalized
+format that has a 10-bit R component in the top 10 bits of the word in bytes 0..1, and a 10-bit G
+component in the top 10 bits of the word in bytes 2..3, with the bottom 6 bits of each word
+unused.
+        VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16 : æŒ‡å®š a four-component, 64-bit unsigned
+normalized format that has a 10-bit R component in the top 10 bits of the word in bytes 0..1, a
+4050
+10-bit G component in the top 10 bits of the word in bytes 2..3, a 10-bit B component in the top
+10 bits of the word in bytes 4..5, and a 10-bit A component in the top 10 bits of the word in bytes
+6..7, with the bottom 6 bits of each word unused.
+        VK_FORMAT_G10X6B10X6G10X6R10X6_422_UNORM_4PACK16 : æŒ‡å®š a four-component, 64-bit format
+containing a pair of G components, an R component, and a B component, collectively encoding a
+2Ã—1 rectangle of unsigned normalized RGB texel data. One G value is present at each i
+coordinate, with the B and R values shared across both G values and thus recorded at half the
+horizontal resolution of the image. This format has a 10-bit G component for the even i
+coordinate in the top 10 bits of the word in bytes 0..1, a 10-bit B component in the top 10 bits of
+the word in bytes 2..3, a 10-bit G component for the odd i coordinate in the top 10 bits of the
+word in bytes 4..5, and a 10-bit R component in the top 10 bits of the word in bytes 6..7, with the
+bottom 6 bits of each word unused. This format only supports images with a width that is a
+multiple of two. For the purposes of the constraints on copy extents, this format is treated as a
+compressed format with a 2Ã—1 compressed texel block.
+        VK_FORMAT_B10X6G10X6R10X6G10X6_422_UNORM_4PACK16 : æŒ‡å®š a four-component, 64-bit format
+containing a pair of G components, an R component, and a B component, collectively encoding a
+2Ã—1 rectangle of unsigned normalized RGB texel data. One G value is present at each i
+coordinate, with the B and R values shared across both G values and thus recorded at half the
+horizontal resolution of the image. This format has a 10-bit B component in the top 10 bits of the
+word in bytes 0..1, a 10-bit G component for the even i coordinate in the top 10 bits of the word
+in bytes 2..3, a 10-bit R component in the top 10 bits of the word in bytes 4..5, and a 10-bit G
+component for the odd i coordinate in the top 10 bits of the word in bytes 6..7, with the bottom 6
+bits of each word unused. This format only supports images with a width that is a multiple of
+two. For the purposes of the constraints on copy extents, this format is treated as a compressed
+format with a 2Ã—1 compressed texel block.
+        VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, a
+10-bit B component in the top 10 bits of each 16-bit word of plane 1, and a 10-bit R component in
+the top 10 bits of each 16-bit word of plane 2, with the bottom 6 bits of each word unused. The
+horizontal and vertical dimensions of the R and B planes are halved relative to the image
+dimensions, and each R and B component is shared with the G components for which
+ and . The location of each plane when this image is in linear
+layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and
+VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and
+height that is a multiple of two.
+        VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0,
+and a two-component, 32-bit BR plane 1 consisting of a 10-bit B component in the top 10 bits of
+the word in bytes 0..1, and a 10-bit R component in the top 10 bits of the word in bytes 2..3, with
+the bottom 6 bits of each word unused. The horizontal and vertical dimensions of the BR plane
+are halved relative to the image dimensions, and each R and B value is shared with the G
+components for which and . The location of each plane when
+this image is in linear layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+This format only supports images with a width and height that is a multiple of two.
+4051
+        VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, a
+10-bit B component in the top 10 bits of each 16-bit word of plane 1, and a 10-bit R component in
+the top 10 bits of each 16-bit word of plane 2, with the bottom 6 bits of each word unused. The
+horizontal dimension of the R and B plane is halved relative to the image dimensions, and each
+R and B value is shared with the G components for which . The location of each
+plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout,
+using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane,
+and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width
+that is a multiple of two.
+        VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0,
+and a two-component, 32-bit BR plane 1 consisting of a 10-bit B component in the top 10 bits of
+the word in bytes 0..1, and a 10-bit R component in the top 10 bits of the word in bytes 2..3, with
+the bottom 6 bits of each word unused. The horizontal dimension of the BR plane is halved
+relative to the image dimensions, and each R and B value is shared with the G components for
+which . The location of each plane when this image is in linear layout can be
+determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
+plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with
+a width that is a multiple of two.
+        VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, a
+10-bit B component in the top 10 bits of each 16-bit word of plane 1, and a 10-bit R component in
+the top 10 bits of each 16-bit word of plane 2, with the bottom 6 bits of each word unused. Each
+plane has the same dimensions and each R, G and B component contributes to a single texel.
+The location of each plane when this image is in linear layout can be determined via
+vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane,
+VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
+        VK_FORMAT_R12X4_UNORM_PACK16 : æŒ‡å®š a one-component, 16-bit unsigned normalized format
+that has a single 12-bit R component in the top 12 bits of a 16-bit word, with the bottom 4 bits
+unused.
+        VK_FORMAT_R12X4G12X4_UNORM_2PACK16 : æŒ‡å®š a two-component, 32-bit unsigned normalized
+format that has a 12-bit R component in the top 12 bits of the word in bytes 0..1, and a 12-bit G
+component in the top 12 bits of the word in bytes 2..3, with the bottom 4 bits of each word
+unused.
+        VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16 : æŒ‡å®š a four-component, 64-bit unsigned
+normalized format that has a 12-bit R component in the top 12 bits of the word in bytes 0..1, a
+12-bit G component in the top 12 bits of the word in bytes 2..3, a 12-bit B component in the top
+12 bits of the word in bytes 4..5, and a 12-bit A component in the top 12 bits of the word in bytes
+6..7, with the bottom 4 bits of each word unused.
+        VK_FORMAT_G12X4B12X4G12X4R12X4_422_UNORM_4PACK16 : æŒ‡å®š a four-component, 64-bit format
+containing a pair of G components, an R component, and a B component, collectively encoding a
+2Ã—1 rectangle of unsigned normalized RGB texel data. One G value is present at each i
+coordinate, with the B and R values shared across both G values and thus recorded at half the
+horizontal resolution of the image. This format has a 12-bit G component for the even i
+4052
+coordinate in the top 12 bits of the word in bytes 0..1, a 12-bit B component in the top 12 bits of
+the word in bytes 2..3, a 12-bit G component for the odd i coordinate in the top 12 bits of the
+word in bytes 4..5, and a 12-bit R component in the top 12 bits of the word in bytes 6..7, with the
+bottom 4 bits of each word unused. This format only supports images with a width that is a
+multiple of two. For the purposes of the constraints on copy extents, this format is treated as a
+compressed format with a 2Ã—1 compressed texel block.
+        VK_FORMAT_B12X4G12X4R12X4G12X4_422_UNORM_4PACK16 : æŒ‡å®š a four-component, 64-bit format
+containing a pair of G components, an R component, and a B component, collectively encoding a
+2Ã—1 rectangle of unsigned normalized RGB texel data. One G value is present at each i
+coordinate, with the B and R values shared across both G values and thus recorded at half the
+horizontal resolution of the image. This format has a 12-bit B component in the top 12 bits of the
+word in bytes 0..1, a 12-bit G component for the even i coordinate in the top 12 bits of the word
+in bytes 2..3, a 12-bit R component in the top 12 bits of the word in bytes 4..5, and a 12-bit G
+component for the odd i coordinate in the top 12 bits of the word in bytes 6..7, with the bottom 4
+bits of each word unused. This format only supports images with a width that is a multiple of
+two. For the purposes of the constraints on copy extents, this format is treated as a compressed
+format with a 2Ã—1 compressed texel block.
+        VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, a
+12-bit B component in the top 12 bits of each 16-bit word of plane 1, and a 12-bit R component in
+the top 12 bits of each 16-bit word of plane 2, with the bottom 4 bits of each word unused. The
+horizontal and vertical dimensions of the R and B planes are halved relative to the image
+dimensions, and each R and B component is shared with the G components for which
+ and . The location of each plane when this image is in linear
+layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and
+VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and
+height that is a multiple of two.
+        VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0,
+and a two-component, 32-bit BR plane 1 consisting of a 12-bit B component in the top 12 bits of
+the word in bytes 0..1, and a 12-bit R component in the top 12 bits of the word in bytes 2..3, with
+the bottom 4 bits of each word unused. The horizontal and vertical dimensions of the BR plane
+are halved relative to the image dimensions, and each R and B value is shared with the G
+components for which and . The location of each plane when
+this image is in linear layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+This format only supports images with a width and height that is a multiple of two.
+        VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, a
+12-bit B component in the top 12 bits of each 16-bit word of plane 1, and a 12-bit R component in
+the top 12 bits of each 16-bit word of plane 2, with the bottom 4 bits of each word unused. The
+horizontal dimension of the R and B plane is halved relative to the image dimensions, and each
+R and B value is shared with the G components for which . The location of each
+plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout,
+using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane,
+4053
+and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width
+that is a multiple of two.
+        VK_FORMAT_G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0,
+and a two-component, 32-bit BR plane 1 consisting of a 12-bit B component in the top 12 bits of
+the word in bytes 0..1, and a 12-bit R component in the top 12 bits of the word in bytes 2..3, with
+the bottom 4 bits of each word unused. The horizontal dimension of the BR plane is halved
+relative to the image dimensions, and each R and B value is shared with the G components for
+which . The location of each plane when this image is in linear layout can be
+determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
+plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with
+a width that is a multiple of two.
+        VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, a
+12-bit B component in the top 12 bits of each 16-bit word of plane 1, and a 12-bit R component in
+the top 12 bits of each 16-bit word of plane 2, with the bottom 4 bits of each word unused. Each
+plane has the same dimensions and each R, G and B component contributes to a single texel.
+The location of each plane when this image is in linear layout can be determined via
+vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane,
+VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
+        VK_FORMAT_G16B16G16R16_422_UNORM : æŒ‡å®š a four-component, 64-bit format containing a pair of
+G components, an R component, and a B component, collectively encoding a 2Ã—1 rectangle of
+unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and
+R values shared across both G values and thus recorded at half the horizontal resolution of the
+image. This format has a 16-bit G component for the even i coordinate in the word in bytes 0..1,
+a 16-bit B component in the word in bytes 2..3, a 16-bit G component for the odd i coordinate in
+the word in bytes 4..5, and a 16-bit R component in the word in bytes 6..7. This format only
+supports images with a width that is a multiple of two. For the purposes of the constraints on
+copy extents, this format is treated as a compressed format with a 2Ã—1 compressed texel block.
+        VK_FORMAT_B16G16R16G16_422_UNORM : æŒ‡å®š a four-component, 64-bit format containing a pair of
+G components, an R component, and a B component, collectively encoding a 2Ã—1 rectangle of
+unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and
+R values shared across both G values and thus recorded at half the horizontal resolution of the
+image. This format has a 16-bit B component in the word in bytes 0..1, a 16-bit G component for
+the even i coordinate in the word in bytes 2..3, a 16-bit R component in the word in bytes 4..5,
+and a 16-bit G component for the odd i coordinate in the word in bytes 6..7. This format only
+supports images with a width that is a multiple of two. For the purposes of the constraints on
+copy extents, this format is treated as a compressed format with a 2Ã—1 compressed texel block.
+        VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM : æŒ‡å®š an unsigned normalized multi-planar format
+that has a 16-bit G component in each 16-bit word of plane 0, a 16-bit B component in each 16-
+bit word of plane 1, and a 16-bit R component in each 16-bit word of plane 2. The horizontal and
+vertical dimensions of the R and B planes are halved relative to the image dimensions, and each
+R and B component is shared with the G components for which and
+. The location of each plane when this image is in linear layout can be
+determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
+plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R
+4054
+plane. This format only supports images with a width and height that is a multiple of two.
+        VK_FORMAT_G16_B16R16_2PLANE_420_UNORM : æŒ‡å®š an unsigned normalized multi-planar format
+that has a 16-bit G component in each 16-bit word of plane 0, and a two-component, 32-bit BR
+plane 1 consisting of a 16-bit B component in the word in bytes 0..1, and a 16-bit R component in
+the word in bytes 2..3. The horizontal and vertical dimensions of the BR plane are halved
+relative to the image dimensions, and each R and B value is shared with the G components for
+which and . The location of each plane when this image is in
+linear layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+This format only supports images with a width and height that is a multiple of two.
+        VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM : æŒ‡å®š an unsigned normalized multi-planar format
+that has a 16-bit G component in each 16-bit word of plane 0, a 16-bit B component in each 16-
+bit word of plane 1, and a 16-bit R component in each 16-bit word of plane 2. The horizontal
+dimension of the R and B plane is halved relative to the image dimensions, and each R and B
+value is shared with the G components for which . The location of each plane
+when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and
+VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width that
+is a multiple of two.
+        VK_FORMAT_G16_B16R16_2PLANE_422_UNORM : æŒ‡å®š an unsigned normalized multi-planar format
+that has a 16-bit G component in each 16-bit word of plane 0, and a two-component, 32-bit BR
+plane 1 consisting of a 16-bit B component in the word in bytes 0..1, and a 16-bit R component in
+the word in bytes 2..3. The horizontal dimension of the BR plane is halved relative to the image
+dimensions, and each R and B value is shared with the G components for which
+. The location of each plane when this image is in linear layout can be
+determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
+plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with
+a width that is a multiple of two.
+        VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM : æŒ‡å®š an unsigned normalized multi-planar format
+that has a 16-bit G component in each 16-bit word of plane 0, a 16-bit B component in each 16-
+bit word of plane 1, and a 16-bit R component in each 16-bit word of plane 2. Each plane has the
+same dimensions and each R, G and B component contributes to a single texel. The location of
+each plane when this image is in linear layout can be determined via
+vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane,
+VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
+        VK_FORMAT_G8_B8R8_2PLANE_444_UNORM : æŒ‡å®š an unsigned normalized multi-planar format that
+has an 8-bit G component in plane 0, and a two-component, 16-bit BR plane 1 consisting of an 8-
+bit B component in byte 0 and an 8-bit R component in byte 1. Both planes have the same
+dimensions and each R, G and B component contributes to a single texel. The location of each
+plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout,
+using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR
+plane.
+        VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0,
+and a two-component, 32-bit BR plane 1 consisting of a 10-bit B component in the top 10 bits of
+4055
+the word in bytes 0..1, and a 10-bit R component in the top 10 bits of the word in bytes 2..3, the
+bottom 6 bits of each word unused. Both planes have the same dimensions and each R, G and B
+component contributes to a single texel. The location of each plane when this image is in linear
+layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+        VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16 : æŒ‡å®š an unsigned normalized multiï¿¾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0,
+and a two-component, 32-bit BR plane 1 consisting of a 12-bit B component in the top 12 bits of
+the word in bytes 0..1, and a 12-bit R component in the top 12 bits of the word in bytes 2..3, the
+bottom 4 bits of each word unused. Both planes have the same dimensions and each R, G and B
+component contributes to a single texel. The location of each plane when this image is in linear
+layout can be determined via vkGetImageSubresourceLayout, using
+VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+        VK_FORMAT_G16_B16R16_2PLANE_444_UNORM : æŒ‡å®š an unsigned normalized multi-planar format
+that has a 16-bit G component in each 16-bit word of plane 0, and a two-component, 32-bit BR
+plane 1 consisting of a 16-bit B component in the word in bytes 0..1, and a 16-bit R component in
+the word in bytes 2..3. Both planes have the same dimensions and each R, G and B component
+contributes to a single texel. The location of each plane when this image is in linear layout can
+be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
+plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
+        VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG : æŒ‡å®š a four-component, PVRTC compressed format
+where each 64-bit compressed texel block encodes an 8Ã—4 rectangle of unsigned normalized
+RGBA texel data.
+        VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG : æŒ‡å®š a four-component, PVRTC compressed format
+where each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized
+RGBA texel data.
+        VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG : æŒ‡å®š a four-component, PVRTC compressed format
+where each 64-bit compressed texel block encodes an 8Ã—4 rectangle of unsigned normalized
+RGBA texel data.
+        VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG : æŒ‡å®š a four-component, PVRTC compressed format
+where each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized
+RGBA texel data.
+        VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG : æŒ‡å®š a four-component, PVRTC compressed format
+where each 64-bit compressed texel block encodes an 8Ã—4 rectangle of unsigned normalized
+RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG : æŒ‡å®š a four-component, PVRTC compressed format
+where each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized
+RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG : æŒ‡å®š a four-component, PVRTC compressed format
+where each 64-bit compressed texel block encodes an 8Ã—4 rectangle of unsigned normalized
+RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+        VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG : æŒ‡å®š a four-component, PVRTC compressed format
+where each 64-bit compressed texel block encodes a 4Ã—4 rectangle of unsigned normalized
+RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
+4056
+        VK_FORMAT_R16G16_SFIXED5_NV : æŒ‡å®š a two-component, 16-bit signed fixed-point format with
+linear encoding. The components are signed twoâ€™s-complement integers where the most
+significant bit : æŒ‡å®š the sign bit, the next 10 bits specify the integer value, and the last 5 bits
+represent the fractional value. The signed 16-bit values can be converted to floats in the range [-
+1024,1023.96875] by dividing the value by 32 (25
+)
+        
+        
+        */
+    }
+
+
+
+
+
 }
 
 

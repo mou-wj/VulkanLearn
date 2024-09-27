@@ -1298,14 +1298,145 @@ void LimitsAndFormatsTest::FormatsTest()
 
         // Compatible Formats of Planes of Multi-Planar Formats  参见p4057
         {
+            /*
+            multi-planar formats中单独的plane的大小兼容于单个plane的 color formats，如果他们的texel block占据的bit数相同，同时也兼容那些含有相同block extent的formats
+
+            multi-planar formats中单独的plane兼容的format列举有一个表，见p4057 - p4060
+
+            Table 66. Plane Format Compatibility Table
+
+            */
 
         }
+
+        //Multi-planar Format Image Aspect  参见p4060
+        {
+            /*
+            指明如何使用 VkImageAspectFlagBits 选择一个plane:
+            VK_IMAGE_ASPECT_PLANE_0_BIT : 选择plane 0
+            VK_IMAGE_ASPECT_PLANE_1_BIT : 选择plane 1
+            VK_IMAGE_ASPECT_PLANE_2_BIT : 选择plane 2
+            */
+        }
+
+
+        //Packed Formats  参见p4060
+        {
+            /*
+            当访问buffer内存中顶点属性或者texel数据时为了字节对齐的目的，这些数据格式会被认为是打包的--即，属性或者texel数据的分量会被打包到8,16,32bit等数据的bit域中
+
+            这些formats格式主要为 : VK_FORMAT_****PACK**  ,具体列举的格式见p4060 - p4062
+            */
+        }
+
+
+        //Identification of Formats  参见p4062
+        {
+            /*
+            一个VkFormat枚举如何去表示的，其形式主要为: VK_FORMAT_{component-format|compression-scheme}_{numeric-format}
+
+            其中
+            1.component-format 主要表示分量以及其占据大小，R，G，B，A为颜色的四通道，D，S对应depth以及stencil分量，X表示未使用,例如R8,X4...
+
+            2.numeric-format 主要为UNORM ，SNORM，UINT，USCALED， SSCALED，SINT，UFLOAT，SFLOAT，SRGB以及SFIXED5，具体如何解释见p4063 表Table 67. Interpretation of Numeric Format  ，和PACK后缀相关的描述见p4063
+
+            3.compression-scheme则表示压缩方案，有BC，ETC2，EAC，ASTC，具体如何解释见p4063 表Table 68. Interpretation of Compression Scheme  ，和_422,_$20等相关的描述见p4064
+            */
+
+        }
+
+
+        //Representation and Texel Block Size  参见p4064
+        {
+            /*
+            Color formats必须能够通过其枚举名字直观的表示其在内存中的存储形式。
+
+            每个format都有一个texel block size，即对非压缩的格式，为一个可寻址的texel元素的大小，例如R32G32B32A32格式的texel block size为16字节，如果为压缩的格式，则为一个压缩块的大小，例如BC1格式的texel block size为8字节。
+
+            每个format的表示，从左到有右，分别对应内存地址的低地址到高地址，例如R32G32B32A32格式的表示为RGBA，即R在低地址，A在高地址。这些format的在内存中的对应字节、比特的存储情况见表Table 69. Byte mappings for non-packed/compressed color formats  p4064 - p4067
+            */
+
+
+        }
+
+        //Depth/Stencil Formats  参见p4067
+
+
+        //Format Compatibility Classes  参见p4067
+        {
+            /*
+            非压缩的color formats如果两者都是或者不是alpha格式，且每个texel block占据的bit数相同，则这两个formats兼容
+
+            压缩格式是否兼容两者的 uncompressed pixels 的 numeric format 是否相同
+
+            depth/stencil format只和自己本身兼容
+
+            以上描述的兼容的formats的表格见 表Table 73. Compatible Formats   ，p4068 - p4079
+
+            含有相同 texel block size的color format被认为是大小兼容的（只要两者都含alpha或者不含），其他描述见p4079
+
+            */
+
+
+        }
+
+
+
+
+
 
     }
 
 
 
+    //Format Properties  参见p4080
+    {
+        //查询支持的format 的format features
+        VkFormatProperties formatProperties{};
+        vkGetPhysicalDeviceFormatProperties(physicalDevice, VK_FORMAT_R8G8_UINT, &formatProperties);//假设返回了正确的结果
+        formatProperties.linearTilingFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;// VkFormatFeatureFlagBits 组合值位掩码，指明以tiling 为 VK_IMAGE_TILING_LINEAR 创建的image的format的format features
+        formatProperties.optimalTilingFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;/* VkFormatFeatureFlagBits 组合值位掩码，指明以tiling 为 VK_IMAGE_TILING_OPTIMAL 创建的image的format的format features
+        VkFormatFeatureFlagBits:
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT : 指明一个image view可以被采样 
+        VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT : 指明一个image view可以作为一个 storage image
+        VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT : 指明一个image view可以作为一个支持atomic operations的 storage image
+        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT : 指明一个image view可以作为一个framebuffer color attachment以及一个input attachment
+        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT : 指明一个image view可以作为一个支持blending的framebuffer color attachment
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT : 指明一个image view可以作为一个framebuffer depth/stencil attachment以及一个input attachment
+        VK_FORMAT_FEATURE_BLIT_SRC_BIT : 指明一个image view可以作为vkCmdBlitImage2 以及 vkCmdBlitImage命令的一个srcImage
+        VK_FORMAT_FEATURE_BLIT_DST_BIT : 指明一个image view可以作为vkCmdBlitImage2 以及 vkCmdBlitImage命令的一个dstImage
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT : 指明如果也设置了VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT，则一个image view可以用来采样且以magFilter 或者minFilter设置为VK_FILTER_LINEAR 或者mipmapMode 设置为VK_SAMPLER_MIPMAP_MODE_LINEAR，
+              如果VK_FORMAT_FEATURE_BLIT_SRC_BIT 也设置了，则image view可以作为vkCmdBlitImage2 以及 vkCmdBlitImage命令的srcImage其以filter 为VK_FILTER_LINEAR，只要支持VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT 或者 VK_FORMAT_FEATURE_BLIT_SRC_BIT 则该设置必须支持，详细描述见p4083
+        
+        VK_FORMAT_FEATURE_TRANSFER_SRC_BIT : 指明一个image view可以作为copy commands的source image。如果application apiVersion 为Vulkan 1.0 且不支持VK_KHR_maintenance1，则该设置隐式支持，即使该设置为0
+        VK_FORMAT_FEATURE_TRANSFER_DST_BIT : 指明一个image view可以作为copy commands的destination image。如果application apiVersion 为Vulkan 1.0 且不支持VK_KHR_maintenance1，则该设置隐式支持，即使该设置为0
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT : 指明VkImage 可以作为一个有min或者max VkSamplerReductionMode的iamge进行采样，如果支持VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT，则该设置必须支持
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT : 指明VkImage 可以被一个有magFilter或者 minFilter设置为VK_FILTER_CUBIC_EXT的采样器进行采样，或者作为filter设为VK_FILTER_CUBIC_EXT的blit commands的source image，如果支持VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT，则该设置必须支持
+        VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT : 指明应用可以定义一个使用该format做为source的sampler Y′CBCR conversion，以该format创建的image可以和VkSamplerYcbcrConversionCreateInfo的xChromaOffset 以及/或者 yChromaOffset 成员设置为VK_CHROMA_LOCATION_MIDPOINT 一起使用，否则xChromaOffset 以及 yChromaOffset两者只能为VK_CHROMA_LOCATION_COSITED_EVEN，如果format不包含chroma downsampling（即不是420或者422format）但实现又支持该format的sampler Y′CBCR conversion，则实现必须设置VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT
+        VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT : 指明应用可以定义一个使用该format做为source的sampler Y′CBCR conversion，以该format创建的image可以和VkSamplerYcbcrConversionCreateInfo的xChromaOffset 以及/或者 yChromaOffset 成员设置为VK_CHROMA_LOCATION_COSITED_EVEN 一起使用，否则xChromaOffset 以及 yChromaOffset两者只能为VK_CHROMA_LOCATION_MIDPOINT，如果VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT 和 VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT都没有设置，则不能定义一个使用该format做为source的sampler Y′CBCR conversion
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT : 指明应用可以定义一个使用该format做为source的以chromaFilter 设置为VK_FILTER_LINEAR 的sampler Y′CBCR conversion
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT : 指明该format可以含有不同的chroma, min, and mag filters
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT : 指明重建是显示的，见Chroma Reconstruction p1489,如果该设置为设置则重建默认是隐式的
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT : 指明重建可以通过VkSamplerYcbcrConversionCreateInfo::forceExplicitReconstruction设置为VK_TRUE强制设置为显式的，如果支持VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT 则该设置必须支持
+        VK_FORMAT_FEATURE_DISJOINT_BIT : 指明一个multi-planar image 可以在创建的时候设置VK_IMAGE_CREATE_DISJOINT_BIT 位，对于单plane格式，该设置必须不设置
+        VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT : 指明一个image view可以用作一个fragment density map attachment
+        VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR : 指明一个image view可以用作一个fragment shading rate attachment，不能为不是UINT的format设置，不能为buffer的format设置
+        VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR : 指明一个image view可以在video decode operations中用作decode output picture
+        VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR : 指明一个image view可以在video decode operations中用作output reconstructed pictur 或者input reference picture
+        VK_FORMAT_FEATURE_VIDEO_ENCODE_INPUT_BIT_KHR : 指明一个image view可以在video encode operations中用作encode input picture
+        VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR : 指明一个image view可以在video encode operations中用作output reconstructed pictur 或者input reference picture
+        -------------------------以下为对buffer的format features的描述--------------------------------------
+        VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT : 指明该format可以用于创建一个绑定到一个VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER descriptor的buffer view
+        VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT : 指明该format可以用于创建一个绑定到一个VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER descriptor的buffer view
+        VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT : 指明该format的VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER descritptor 支持atomic operations
+        VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT : 指明该format可以用作vertex buffer format(VkVertexInputAttributeDescription::format)
+        VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR : 指明该format可以用作acceleration structure的vertex buffer format(VkAccelerationStructureGeometryTrianglesDataKHR::format)，该format也可在做host端加速结构构建时作为host端内存中的vertex format    
+        */
+        formatProperties.bufferFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;//VkFormatFeatureFlagBits 组合值位掩码，指明buffer的format支持的format features
 
+
+
+    }
 
 }
 

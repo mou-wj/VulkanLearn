@@ -1048,903 +1048,259 @@ void LimitsAndFormatsTest::FormatsTest()
         VK_FORMAT_B4G4R4A4_UNORM_PACK16 : 指定一个4分量，总共打包为16bit无符号归一化的foramt，B分量为12-15bit，G分量为8-11bit，R分量为4-7bit，A分量为0-3bit
         VK_FORMAT_A4R4G4B4_UNORM_PACK16 : 指定一个4分量，总共打包为16bit无符号归一化的foramt，A分量为12-15bit，R分量为8-11bit，G分量为4-7bit，B分量为0-3bit
         VK_FORMAT_A4B4G4R4_UNORM_PACK16 : 指定一个4分量，总共打包为16bit无符号归一化的foramt，A分量为12-15bit，B分量为8-11bit，G分量为4-7bit，R分量为0-3bit
-        VK_FORMAT_R5G6B5_UNORM_PACK16 : 指定 a three-component, 16-bit packed unsigned normalized
-format that has a 5-bit R component in bits 11..15, a 6-bit G component in bits 5..10, and a 5-bit B
-component in bits 0..4.
-        VK_FORMAT_B5G6R5_UNORM_PACK16 : 指定 a three-component, 16-bit packed unsigned normalized
-format that has a 5-bit B component in bits 11..15, a 6-bit G component in bits 5..10, and a 5-bit R
-component in bits 0..4.
-        VK_FORMAT_R5G5B5A1_UNORM_PACK16 : 指定 a four-component, 16-bit packed unsigned
-normalized format that has a 5-bit R component in bits 11..15, a 5-bit G component in bits 6..10,
-a 5-bit B component in bits 1..5, and a 1-bit A component in bit 0.
-        VK_FORMAT_B5G5R5A1_UNORM_PACK16 : 指定 a four-component, 16-bit packed unsigned
-normalized format that has a 5-bit B component in bits 11..15, a 5-bit G component in bits 6..10,
-a 5-bit R component in bits 1..5, and a 1-bit A component in bit 0.
-        VK_FORMAT_A1R5G5B5_UNORM_PACK16 : 指定 a four-component, 16-bit packed unsigned
-normalized format that has a 1-bit A component in bit 15, a 5-bit R component in bits 10..14, a 5-
-bit G component in bits 5..9, and a 5-bit B component in bits 0..4.
-        VK_FORMAT_A1B5G5R5_UNORM_PACK16_KHR : 指定 a four-component, 16-bit packed unsigned
-normalized format that has a 1-bit A component in bit 15, a 5-bit B component in bits 10..14, a 5-
-bit G component in bits 5..9, and a 5-bit R component in bits 0..4.
-        VK_FORMAT_A8_UNORM_KHR : 指定 a one-component, 8-bit unsigned normalized format that has a
-single 8-bit A component.
-        VK_FORMAT_R8_UNORM : 指定 a one-component, 8-bit unsigned normalized format that has a
-single 8-bit R component.
-        VK_FORMAT_R8_SNORM : 指定 a one-component, 8-bit signed normalized format that has a single
-8-bit R component.
-        VK_FORMAT_R8_USCALED : 指定 a one-component, 8-bit unsigned scaled integer format that has a
-single 8-bit R component.
-        VK_FORMAT_R8_SSCALED : 指定 a one-component, 8-bit signed scaled integer format that has a
-single 8-bit R component.
-        VK_FORMAT_R8_UINT : 指定 a one-component, 8-bit unsigned integer format that has a single 8-
-bit R component.
-        VK_FORMAT_R8_SINT : 指定 a one-component, 8-bit signed integer format that has a single 8-bit
-R component.
-        VK_FORMAT_R8_SRGB : 指定 a one-component, 8-bit unsigned normalized format that has a
-single 8-bit R component stored with sRGB nonlinear encoding.
-        VK_FORMAT_R8G8_UNORM : 指定 a two-component, 16-bit unsigned normalized format that has an
-8-bit R component in byte 0, and an 8-bit G component in byte 1.
-        VK_FORMAT_R8G8_SNORM : 指定 a two-component, 16-bit signed normalized format that has an 8-
-bit R component in byte 0, and an 8-bit G component in byte 1.
-        VK_FORMAT_R8G8_USCALED : 指定 a two-component, 16-bit unsigned scaled integer format that
-has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
-        VK_FORMAT_R8G8_SSCALED : 指定 a two-component, 16-bit signed scaled integer format that has
-an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
-        VK_FORMAT_R8G8_UINT : 指定 a two-component, 16-bit unsigned integer format that has an 8-bit
-R component in byte 0, and an 8-bit G component in byte 1.
-        VK_FORMAT_R8G8_SINT : 指定 a two-component, 16-bit signed integer format that has an 8-bit R
-component in byte 0, and an 8-bit G component in byte 1.
-        VK_FORMAT_R8G8_SRGB : 指定 a two-component, 16-bit unsigned normalized format that has an
-8-bit R component stored with sRGB nonlinear encoding in byte 0, and an 8-bit G component
-stored with sRGB nonlinear encoding in byte 1.
-        VK_FORMAT_R8G8B8_UNORM : 指定 a three-component, 24-bit unsigned normalized format that
-has an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in
-byte 2.
-        VK_FORMAT_R8G8B8_SNORM : 指定 a three-component, 24-bit signed normalized format that has
-an 8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in
-byte 2.
-        VK_FORMAT_R8G8B8_USCALED : 指定 a three-component, 24-bit unsigned scaled format that has an
-8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
-        VK_FORMAT_R8G8B8_SSCALED : 指定 a three-component, 24-bit signed scaled format that has an 8-
-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
-        VK_FORMAT_R8G8B8_UINT : 指定 a three-component, 24-bit unsigned integer format that has an
-8-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
-        VK_FORMAT_R8G8B8_SINT : 指定 a three-component, 24-bit signed integer format that has an 8-
-bit R component in byte 0, an 8-bit G component in byte 1, and an 8-bit B component in byte 2.
-        VK_FORMAT_R8G8B8_SRGB : 指定 a three-component, 24-bit unsigned normalized format that has
-an 8-bit R component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component
-stored with sRGB nonlinear encoding in byte 1, and an 8-bit B component stored with sRGB
-nonlinear encoding in byte 2.
-        VK_FORMAT_B8G8R8_UNORM : 指定 a three-component, 24-bit unsigned normalized format that
-has an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in
-byte 2.
-        VK_FORMAT_B8G8R8_SNORM : 指定 a three-component, 24-bit signed normalized format that has
-an 8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in
-byte 2.
-        VK_FORMAT_B8G8R8_USCALED : 指定 a three-component, 24-bit unsigned scaled format that has an
-8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
-        VK_FORMAT_B8G8R8_SSCALED : 指定 a three-component, 24-bit signed scaled format that has an 8-
-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
-        VK_FORMAT_B8G8R8_UINT : 指定 a three-component, 24-bit unsigned integer format that has an
-8-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
-        VK_FORMAT_B8G8R8_SINT : 指定 a three-component, 24-bit signed integer format that has an 8-
-bit B component in byte 0, an 8-bit G component in byte 1, and an 8-bit R component in byte 2.
-        VK_FORMAT_B8G8R8_SRGB : 指定 a three-component, 24-bit unsigned normalized format that has
-an 8-bit B component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component
-stored with sRGB nonlinear encoding in byte 1, and an 8-bit R component stored with sRGB
-nonlinear encoding in byte 2.
-        VK_FORMAT_R8G8B8A8_UNORM : 指定 a four-component, 32-bit unsigned normalized format that
-has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte
-2, and an 8-bit A component in byte 3.
-        VK_FORMAT_R8G8B8A8_SNORM : 指定 a four-component, 32-bit signed normalized format that has
-an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2,
-and an 8-bit A component in byte 3.
-        VK_FORMAT_R8G8B8A8_USCALED : 指定 a four-component, 32-bit unsigned scaled format that has
-an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2,
-and an 8-bit A component in byte 3.
-        VK_FORMAT_R8G8B8A8_SSCALED : 指定 a four-component, 32-bit signed scaled format that has an
-8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and
-an 8-bit A component in byte 3.
-        VK_FORMAT_R8G8B8A8_UINT : 指定 a four-component, 32-bit unsigned integer format that has an
-8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and
-an 8-bit A component in byte 3.
-        VK_FORMAT_R8G8B8A8_SINT : 指定 a four-component, 32-bit signed integer format that has an 8-
-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and
-an 8-bit A component in byte 3.
-4038
-        VK_FORMAT_R8G8B8A8_SRGB : 指定 a four-component, 32-bit unsigned normalized format that
-has an 8-bit R component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component
-stored with sRGB nonlinear encoding in byte 1, an 8-bit B component stored with sRGB
-nonlinear encoding in byte 2, and an 8-bit A component in byte 3.
-        VK_FORMAT_B8G8R8A8_UNORM : 指定 a four-component, 32-bit unsigned normalized format that
-has an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte
-2, and an 8-bit A component in byte 3.
-        VK_FORMAT_B8G8R8A8_SNORM : 指定 a four-component, 32-bit signed normalized format that has
-an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2,
-and an 8-bit A component in byte 3.
-        VK_FORMAT_B8G8R8A8_USCALED : 指定 a four-component, 32-bit unsigned scaled format that has
-an 8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2,
-and an 8-bit A component in byte 3.
-        VK_FORMAT_B8G8R8A8_SSCALED : 指定 a four-component, 32-bit signed scaled format that has an
-8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and
-an 8-bit A component in byte 3.
-        VK_FORMAT_B8G8R8A8_UINT : 指定 a four-component, 32-bit unsigned integer format that has an
-8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and
-an 8-bit A component in byte 3.
-        VK_FORMAT_B8G8R8A8_SINT : 指定 a four-component, 32-bit signed integer format that has an 8-
-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R component in byte 2, and
-an 8-bit A component in byte 3.
-        VK_FORMAT_B8G8R8A8_SRGB : 指定 a four-component, 32-bit unsigned normalized format that
-has an 8-bit B component stored with sRGB nonlinear encoding in byte 0, an 8-bit G component
-stored with sRGB nonlinear encoding in byte 1, an 8-bit R component stored with sRGB
-nonlinear encoding in byte 2, and an 8-bit A component in byte 3.
-        VK_FORMAT_A8B8G8R8_UNORM_PACK32 : 指定 a four-component, 32-bit packed unsigned
-normalized format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits
-16..23, an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
-        VK_FORMAT_A8B8G8R8_SNORM_PACK32 : 指定 a four-component, 32-bit packed signed normalized
-format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit
-G component in bits 8..15, and an 8-bit R component in bits 0..7.
-        VK_FORMAT_A8B8G8R8_USCALED_PACK32 : 指定 a four-component, 32-bit packed unsigned scaled
-integer format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23,
-an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
-        VK_FORMAT_A8B8G8R8_SSCALED_PACK32 : 指定 a four-component, 32-bit packed signed scaled
-integer format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23,
-an 8-bit G component in bits 8..15, and an 8-bit R component in bits 0..7.
-        VK_FORMAT_A8B8G8R8_UINT_PACK32 : 指定 a four-component, 32-bit packed unsigned integer
-format that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit
-G component in bits 8..15, and an 8-bit R component in bits 0..7.
-        VK_FORMAT_A8B8G8R8_SINT_PACK32 : 指定 a four-component, 32-bit packed signed integer format
-that has an 8-bit A component in bits 24..31, an 8-bit B component in bits 16..23, an 8-bit G
-4039
-component in bits 8..15, and an 8-bit R component in bits 0..7.
-        VK_FORMAT_A8B8G8R8_SRGB_PACK32 : 指定 a four-component, 32-bit packed unsigned normalized
-format that has an 8-bit A component in bits 24..31, an 8-bit B component stored with sRGB
-nonlinear encoding in bits 16..23, an 8-bit G component stored with sRGB nonlinear encoding in
-bits 8..15, and an 8-bit R component stored with sRGB nonlinear encoding in bits 0..7.
-        VK_FORMAT_A2R10G10B10_UNORM_PACK32 : 指定 a four-component, 32-bit packed unsigned
-normalized format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits
-20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
-        VK_FORMAT_A2R10G10B10_SNORM_PACK32 : 指定 a four-component, 32-bit packed signed
-normalized format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits
-20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
-        VK_FORMAT_A2R10G10B10_USCALED_PACK32 : 指定 a four-component, 32-bit packed unsigned
-scaled integer format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits
-20..29, a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
-        VK_FORMAT_A2R10G10B10_SSCALED_PACK32 : 指定 a four-component, 32-bit packed signed scaled
-integer format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a
-10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
-        VK_FORMAT_A2R10G10B10_UINT_PACK32 : 指定 a four-component, 32-bit packed unsigned integer
-format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G
-component in bits 10..19, and a 10-bit B component in bits 0..9.
-        VK_FORMAT_A2R10G10B10_SINT_PACK32 : 指定 a four-component, 32-bit packed signed integer
-format that has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 10-bit G
-component in bits 10..19, and a 10-bit B component in bits 0..9.
-        VK_FORMAT_A2B10G10R10_UNORM_PACK32 : 指定 a four-component, 32-bit packed unsigned
-normalized format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits
-20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
-        VK_FORMAT_A2B10G10R10_SNORM_PACK32 : 指定 a four-component, 32-bit packed signed
-normalized format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits
-20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
-        VK_FORMAT_A2B10G10R10_USCALED_PACK32 : 指定 a four-component, 32-bit packed unsigned
-scaled integer format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits
-20..29, a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
-        VK_FORMAT_A2B10G10R10_SSCALED_PACK32 : 指定 a four-component, 32-bit packed signed scaled
-integer format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a
-10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
-        VK_FORMAT_A2B10G10R10_UINT_PACK32 : 指定 a four-component, 32-bit packed unsigned integer
-format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G
-component in bits 10..19, and a 10-bit R component in bits 0..9.
-        VK_FORMAT_A2B10G10R10_SINT_PACK32 : 指定 a four-component, 32-bit packed signed integer
-format that has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a 10-bit G
-component in bits 10..19, and a 10-bit R component in bits 0..9.
-        VK_FORMAT_R16_UNORM : 指定 a one-component, 16-bit unsigned normalized format that has a
-4040
-single 16-bit R component.
-        VK_FORMAT_R16_SNORM : 指定 a one-component, 16-bit signed normalized format that has a
-single 16-bit R component.
-        VK_FORMAT_R16_USCALED : 指定 a one-component, 16-bit unsigned scaled integer format that has
-a single 16-bit R component.
-        VK_FORMAT_R16_SSCALED : 指定 a one-component, 16-bit signed scaled integer format that has a
-single 16-bit R component.
-        VK_FORMAT_R16_UINT : 指定 a one-component, 16-bit unsigned integer format that has a single
-16-bit R component.
-        VK_FORMAT_R16_SINT : 指定 a one-component, 16-bit signed integer format that has a single 16-
-bit R component.
-        VK_FORMAT_R16_SFLOAT : 指定 a one-component, 16-bit signed floating-point format that has a
-single 16-bit R component.
-        VK_FORMAT_R16G16_UNORM : 指定 a two-component, 32-bit unsigned normalized format that has
-a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
-        VK_FORMAT_R16G16_SNORM : 指定 a two-component, 32-bit signed normalized format that has a
-16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
-        VK_FORMAT_R16G16_USCALED : 指定 a two-component, 32-bit unsigned scaled integer format that
-has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
-        VK_FORMAT_R16G16_SSCALED : 指定 a two-component, 32-bit signed scaled integer format that
-has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
-        VK_FORMAT_R16G16_UINT : 指定 a two-component, 32-bit unsigned integer format that has a 16-
-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
-        VK_FORMAT_R16G16_SINT : 指定 a two-component, 32-bit signed integer format that has a 16-bit
-R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
-        VK_FORMAT_R16G16_SFLOAT : 指定 a two-component, 32-bit signed floating-point format that has
-a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
-        VK_FORMAT_R16G16B16_UNORM : 指定 a three-component, 48-bit unsigned normalized format that
-has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
-component in bytes 4..5.
-        VK_FORMAT_R16G16B16_SNORM : 指定 a three-component, 48-bit signed normalized format that
-has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
-component in bytes 4..5.
-        VK_FORMAT_R16G16B16_USCALED : 指定 a three-component, 48-bit unsigned scaled integer format
-that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
-component in bytes 4..5.
-        VK_FORMAT_R16G16B16_SSCALED : 指定 a three-component, 48-bit signed scaled integer format
-that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
-component in bytes 4..5.
-        VK_FORMAT_R16G16B16_UINT : 指定 a three-component, 48-bit unsigned integer format that has a
-16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in
-4041
-bytes 4..5.
-        VK_FORMAT_R16G16B16_SINT : 指定 a three-component, 48-bit signed integer format that has a
-16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B component in
-bytes 4..5.
-        VK_FORMAT_R16G16B16_SFLOAT : 指定 a three-component, 48-bit signed floating-point format that
-has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, and a 16-bit B
-component in bytes 4..5.
-        VK_FORMAT_R16G16B16A16_UNORM : 指定 a four-component, 64-bit unsigned normalized format
-that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B
-component in bytes 4..5, and a 16-bit A component in bytes 6..7.
-        VK_FORMAT_R16G16B16A16_SNORM : 指定 a four-component, 64-bit signed normalized format that
-has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component
-in bytes 4..5, and a 16-bit A component in bytes 6..7.
-        VK_FORMAT_R16G16B16A16_USCALED : 指定 a four-component, 64-bit unsigned scaled integer
-format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B
-component in bytes 4..5, and a 16-bit A component in bytes 6..7.
-        VK_FORMAT_R16G16B16A16_SSCALED : 指定 a four-component, 64-bit signed scaled integer format
-that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B
-component in bytes 4..5, and a 16-bit A component in bytes 6..7.
-        VK_FORMAT_R16G16B16A16_UINT : 指定 a four-component, 64-bit unsigned integer format that has
-a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in
-bytes 4..5, and a 16-bit A component in bytes 6..7.
-        VK_FORMAT_R16G16B16A16_SINT : 指定 a four-component, 64-bit signed integer format that has a
-16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in
-bytes 4..5, and a 16-bit A component in bytes 6..7.
-        VK_FORMAT_R16G16B16A16_SFLOAT : 指定 a four-component, 64-bit signed floating-point format
-that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B
-component in bytes 4..5, and a 16-bit A component in bytes 6..7.
-        VK_FORMAT_R32_UINT : 指定 a one-component, 32-bit unsigned integer format that has a single
-32-bit R component.
-        VK_FORMAT_R32_SINT : 指定 a one-component, 32-bit signed integer format that has a single 32-
-bit R component.
-        VK_FORMAT_R32_SFLOAT : 指定 a one-component, 32-bit signed floating-point format that has a
-single 32-bit R component.
-        VK_FORMAT_R32G32_UINT : 指定 a two-component, 64-bit unsigned integer format that has a 32-
-bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
-        VK_FORMAT_R32G32_SINT : 指定 a two-component, 64-bit signed integer format that has a 32-bit
-R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
-        VK_FORMAT_R32G32_SFLOAT : 指定 a two-component, 64-bit signed floating-point format that has
-a 32-bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
-        VK_FORMAT_R32G32B32_UINT : 指定 a three-component, 96-bit unsigned integer format that has a
-4042
-32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B component in
-bytes 8..11.
-        VK_FORMAT_R32G32B32_SINT : 指定 a three-component, 96-bit signed integer format that has a
-32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B component in
-bytes 8..11.
-        VK_FORMAT_R32G32B32_SFLOAT : 指定 a three-component, 96-bit signed floating-point format that
-has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B
-component in bytes 8..11.
-        VK_FORMAT_R32G32B32A32_UINT : 指定 a four-component, 128-bit unsigned integer format that
-has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component
-in bytes 8..11, and a 32-bit A component in bytes 12..15.
-        VK_FORMAT_R32G32B32A32_SINT : 指定 a four-component, 128-bit signed integer format that has
-a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in
-bytes 8..11, and a 32-bit A component in bytes 12..15.
-        VK_FORMAT_R32G32B32A32_SFLOAT : 指定 a four-component, 128-bit signed floating-point format
-that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B
-component in bytes 8..11, and a 32-bit A component in bytes 12..15.
-        VK_FORMAT_R64_UINT : 指定 a one-component, 64-bit unsigned integer format that has a single
-64-bit R component.
-        VK_FORMAT_R64_SINT : 指定 a one-component, 64-bit signed integer format that has a single 64-
-bit R component.
-        VK_FORMAT_R64_SFLOAT : 指定 a one-component, 64-bit signed floating-point format that has a
-single 64-bit R component.
-        VK_FORMAT_R64G64_UINT : 指定 a two-component, 128-bit unsigned integer format that has a 64-
-bit R component in bytes 0..7, and a 64-bit G component in bytes 8..15.
-        VK_FORMAT_R64G64_SINT : 指定 a two-component, 128-bit signed integer format that has a 64-bit
-R component in bytes 0..7, and a 64-bit G component in bytes 8..15.
-        VK_FORMAT_R64G64_SFLOAT : 指定 a two-component, 128-bit signed floating-point format that
-has a 64-bit R component in bytes 0..7, and a 64-bit G component in bytes 8..15.
-        VK_FORMAT_R64G64B64_UINT : 指定 a three-component, 192-bit unsigned integer format that has
-a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, and a 64-bit B component
-in bytes 16..23.
-        VK_FORMAT_R64G64B64_SINT : 指定 a three-component, 192-bit signed integer format that has a
-64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, and a 64-bit B component
-in bytes 16..23.
-        VK_FORMAT_R64G64B64_SFLOAT : 指定 a three-component, 192-bit signed floating-point format
-that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, and a 64-bit B
-component in bytes 16..23.
-        VK_FORMAT_R64G64B64A64_UINT : 指定 a four-component, 256-bit unsigned integer format that
-has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, a 64-bit B component
-in bytes 16..23, and a 64-bit A component in bytes 24..31.
-4043
-        VK_FORMAT_R64G64B64A64_SINT : 指定 a four-component, 256-bit signed integer format that has
-a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, a 64-bit B component in
-bytes 16..23, and a 64-bit A component in bytes 24..31.
-        VK_FORMAT_R64G64B64A64_SFLOAT : 指定 a four-component, 256-bit signed floating-point format
-that has a 64-bit R component in bytes 0..7, a 64-bit G component in bytes 8..15, a 64-bit B
-component in bytes 16..23, and a 64-bit A component in bytes 24..31.
-        VK_FORMAT_B10G11R11_UFLOAT_PACK32 : 指定 a three-component, 32-bit packed unsigned
-floating-point format that has a 10-bit B component in bits 22..31, an 11-bit G component in bits
-11..21, an 11-bit R component in bits 0..10. See Unsigned 10-Bit Floating-Point Numbers and
-Unsigned 11-Bit Floating-Point Numbers.
-        VK_FORMAT_E5B9G9R9_UFLOAT_PACK32 : 指定 a three-component, 32-bit packed unsigned floating￾point format that has a 5-bit shared exponent in bits 27..31, a 9-bit B component mantissa in bits
-18..26, a 9-bit G component mantissa in bits 9..17, and a 9-bit R component mantissa in bits 0..8.
-        VK_FORMAT_D16_UNORM : 指定 a one-component, 16-bit unsigned normalized format that has a
-single 16-bit depth component.
-        VK_FORMAT_X8_D24_UNORM_PACK32 : 指定 a two-component, 32-bit format that has 24 unsigned
-normalized bits in the depth component and, optionally, 8 bits that are unused.
-        VK_FORMAT_D32_SFLOAT : 指定 a one-component, 32-bit signed floating-point format that has 32
-bits in the depth component.
-        VK_FORMAT_S8_UINT : 指定 a one-component, 8-bit unsigned integer format that has 8 bits in the
-stencil component.
-        VK_FORMAT_D16_UNORM_S8_UINT : 指定 a two-component, 24-bit format that has 16 unsigned
-normalized bits in the depth component and 8 unsigned integer bits in the stencil component.
-        VK_FORMAT_D24_UNORM_S8_UINT : 指定 a two-component, 32-bit packed format that has 8
-unsigned integer bits in the stencil component, and 24 unsigned normalized bits in the depth
-component.
-        VK_FORMAT_D32_SFLOAT_S8_UINT : 指定 a two-component format that has 32 signed float bits in
-the depth component and 8 unsigned integer bits in the stencil component. There are
-optionally 24 bits that are unused.
-        VK_FORMAT_BC1_RGB_UNORM_BLOCK : 指定 a three-component, block-compressed format where
-each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel
-data. This format has no alpha and is considered opaque.
-        VK_FORMAT_BC1_RGB_SRGB_BLOCK : 指定 a three-component, block-compressed format where
-each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel
-data with sRGB nonlinear encoding. This format has no alpha and is considered opaque.
-        VK_FORMAT_BC1_RGBA_UNORM_BLOCK : 指定 a four-component, block-compressed format where
-each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel
-data, and provides 1 bit of alpha.
-        VK_FORMAT_BC1_RGBA_SRGB_BLOCK : 指定 a four-component, block-compressed format where
-each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel
-data with sRGB nonlinear encoding, and provides 1 bit of alpha.
-        VK_FORMAT_BC2_UNORM_BLOCK : 指定 a four-component, block-compressed format where each
-4044
-128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data
-with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values.
-        VK_FORMAT_BC2_SRGB_BLOCK : 指定 a four-component, block-compressed format where each
-128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data
-with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values with sRGB
-nonlinear encoding.
-        VK_FORMAT_BC3_UNORM_BLOCK : 指定 a four-component, block-compressed format where each
-128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data
-with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values.
-        VK_FORMAT_BC3_SRGB_BLOCK : 指定 a four-component, block-compressed format where each
-128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data
-with the first 64 bits encoding alpha values followed by 64 bits encoding RGB values with sRGB
-nonlinear encoding.
-        VK_FORMAT_BC4_UNORM_BLOCK : 指定 a one-component, block-compressed format where each 64-
-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized red texel data.
-        VK_FORMAT_BC4_SNORM_BLOCK : 指定 a one-component, block-compressed format where each 64-
-bit compressed texel block encodes a 4×4 rectangle of signed normalized red texel data.
-        VK_FORMAT_BC5_UNORM_BLOCK : 指定 a two-component, block-compressed format where each
-128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RG texel data
-with the first 64 bits encoding red values followed by 64 bits encoding green values.
-        VK_FORMAT_BC5_SNORM_BLOCK : 指定 a two-component, block-compressed format where each
-128-bit compressed texel block encodes a 4×4 rectangle of signed normalized RG texel data with
-the first 64 bits encoding red values followed by 64 bits encoding green values.
-        VK_FORMAT_BC6H_UFLOAT_BLOCK : 指定 a three-component, block-compressed format where each
-128-bit compressed texel block encodes a 4×4 rectangle of unsigned floating-point RGB texel
-data.
-        VK_FORMAT_BC6H_SFLOAT_BLOCK : 指定 a three-component, block-compressed format where each
-128-bit compressed texel block encodes a 4×4 rectangle of signed floating-point RGB texel data.
-        VK_FORMAT_BC7_UNORM_BLOCK : 指定 a four-component, block-compressed format where each
-128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel
-data.
-        VK_FORMAT_BC7_SRGB_BLOCK : 指定 a four-component, block-compressed format where each
-128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel data
-with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK : 指定 a three-component, ETC2 compressed format
-where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB
-texel data. This format has no alpha and is considered opaque.
-        VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK : 指定 a three-component, ETC2 compressed format where
-each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB texel
-data with sRGB nonlinear encoding. This format has no alpha and is considered opaque.
-        VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK : 指定 a four-component, ETC2 compressed format
-where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB
-4045
-texel data, and provides 1 bit of alpha.
-        VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK : 指定 a four-component, ETC2 compressed format
-where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGB
-texel data with sRGB nonlinear encoding, and provides 1 bit of alpha.
-        VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK : 指定 a four-component, ETC2 compressed format
-where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized
-RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB
-values.
-        VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK : 指定 a four-component, ETC2 compressed format
-where each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized
-RGBA texel data with the first 64 bits encoding alpha values followed by 64 bits encoding RGB
-values with sRGB nonlinear encoding applied.
-        VK_FORMAT_EAC_R11_UNORM_BLOCK : 指定 a one-component, ETC2 compressed format where each
-64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized red texel data.
-        VK_FORMAT_EAC_R11_SNORM_BLOCK : 指定 a one-component, ETC2 compressed format where each
-64-bit compressed texel block encodes a 4×4 rectangle of signed normalized red texel data.
-        VK_FORMAT_EAC_R11G11_UNORM_BLOCK : 指定 a two-component, ETC2 compressed format where
-each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RG texel
-data with the first 64 bits encoding red values followed by 64 bits encoding green values.
-        VK_FORMAT_EAC_R11G11_SNORM_BLOCK : 指定 a two-component, ETC2 compressed format where
-each 128-bit compressed texel block encodes a 4×4 rectangle of signed normalized RG texel data
-with the first 64 bits encoding red values followed by 64 bits encoding green values.
-        VK_FORMAT_ASTC_4x4_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel
-data.
-        VK_FORMAT_ASTC_4x4_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized RGBA texel
-data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 4×4 rectangle of signed floating-point RGBA texel
-data.
-        VK_FORMAT_ASTC_5x4_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 5×4 rectangle of unsigned normalized RGBA texel
-data.
-        VK_FORMAT_ASTC_5x4_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 5×4 rectangle of unsigned normalized RGBA texel
-data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_5x4_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 5×4 rectangle of signed floating-point RGBA texel
-data.
-        VK_FORMAT_ASTC_5x5_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 5×5 rectangle of unsigned normalized RGBA texel
-4046
-data.
-        VK_FORMAT_ASTC_5x5_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 5×5 rectangle of unsigned normalized RGBA texel
-data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_5x5_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 5×5 rectangle of signed floating-point RGBA texel
-data.
-        VK_FORMAT_ASTC_6x5_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 6×5 rectangle of unsigned normalized RGBA texel
-data.
-        VK_FORMAT_ASTC_6x5_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 6×5 rectangle of unsigned normalized RGBA texel
-data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_6x5_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 6×5 rectangle of signed floating-point RGBA texel
-data.
-        VK_FORMAT_ASTC_6x6_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 6×6 rectangle of unsigned normalized RGBA texel
-data.
-        VK_FORMAT_ASTC_6x6_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 6×6 rectangle of unsigned normalized RGBA texel
-data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_6x6_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 6×6 rectangle of signed floating-point RGBA texel
-data.
-        VK_FORMAT_ASTC_8x5_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes an 8×5 rectangle of unsigned normalized RGBA
-texel data.
-        VK_FORMAT_ASTC_8x5_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes an 8×5 rectangle of unsigned normalized RGBA
-texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_8x5_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 8×5 rectangle of signed floating-point RGBA texel
-data.
-        VK_FORMAT_ASTC_8x6_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes an 8×6 rectangle of unsigned normalized RGBA
-texel data.
-        VK_FORMAT_ASTC_8x6_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes an 8×6 rectangle of unsigned normalized RGBA
-texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_8x6_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 8×6 rectangle of signed floating-point RGBA texel
-4047
-data.
-        VK_FORMAT_ASTC_8x8_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes an 8×8 rectangle of unsigned normalized RGBA
-texel data.
-        VK_FORMAT_ASTC_8x8_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes an 8×8 rectangle of unsigned normalized RGBA
-texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_8x8_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 8×8 rectangle of signed floating-point RGBA texel
-data.
-        VK_FORMAT_ASTC_10x5_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×5 rectangle of unsigned normalized RGBA
-texel data.
-        VK_FORMAT_ASTC_10x5_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×5 rectangle of unsigned normalized RGBA
-texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_10x5_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×5 rectangle of signed floating-point RGBA
-texel data.
-        VK_FORMAT_ASTC_10x6_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×6 rectangle of unsigned normalized RGBA
-texel data.
-        VK_FORMAT_ASTC_10x6_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×6 rectangle of unsigned normalized RGBA
-texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_10x6_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×6 rectangle of signed floating-point RGBA
-texel data.
-        VK_FORMAT_ASTC_10x8_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×8 rectangle of unsigned normalized RGBA
-texel data.
-        VK_FORMAT_ASTC_10x8_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×8 rectangle of unsigned normalized RGBA
-texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_10x8_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×8 rectangle of signed floating-point RGBA
-texel data.
-        VK_FORMAT_ASTC_10x10_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×10 rectangle of unsigned normalized RGBA
-texel data.
-        VK_FORMAT_ASTC_10x10_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×10 rectangle of unsigned normalized RGBA
-4048
-texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 10×10 rectangle of signed floating-point RGBA
-texel data.
-        VK_FORMAT_ASTC_12x10_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 12×10 rectangle of unsigned normalized RGBA
-texel data.
-        VK_FORMAT_ASTC_12x10_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 12×10 rectangle of unsigned normalized RGBA
-texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 12×10 rectangle of signed floating-point RGBA
-texel data.
-        VK_FORMAT_ASTC_12x12_UNORM_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 12×12 rectangle of unsigned normalized RGBA
-texel data.
-        VK_FORMAT_ASTC_12x12_SRGB_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 12×12 rectangle of unsigned normalized RGBA
-texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK : 指定 a four-component, ASTC compressed format where
-each 128-bit compressed texel block encodes a 12×12 rectangle of signed floating-point RGBA
-texel data.
-        VK_FORMAT_G8B8G8R8_422_UNORM : 指定 a four-component, 32-bit format containing a pair of G
-components, an R component, and a B component, collectively encoding a 2×1 rectangle of
-unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and
-R values shared across both G values and thus recorded at half the horizontal resolution of the
-image. This format has an 8-bit G component for the even i coordinate in byte 0, an 8-bit B
-component in byte 1, an 8-bit G component for the odd i coordinate in byte 2, and an 8-bit R
-component in byte 3. This format only supports images with a width that is a multiple of two.
-For the purposes of the constraints on copy extents, this format is treated as a compressed
-format with a 2×1 compressed texel block.
-        VK_FORMAT_B8G8R8G8_422_UNORM : 指定 a four-component, 32-bit format containing a pair of G
-components, an R component, and a B component, collectively encoding a 2×1 rectangle of
-unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and
-R values shared across both G values and thus recorded at half the horizontal resolution of the
-image. This format has an 8-bit B component in byte 0, an 8-bit G component for the even i
-coordinate in byte 1, an 8-bit R component in byte 2, and an 8-bit G component for the odd i
-coordinate in byte 3. This format only supports images with a width that is a multiple of two.
-For the purposes of the constraints on copy extents, this format is treated as a compressed
-format with a 2×1 compressed texel block.
-        VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM : 指定 an unsigned normalized multi-planar format that
-has an 8-bit G component in plane 0, an 8-bit B component in plane 1, and an 8-bit R component
-in plane 2. The horizontal and vertical dimensions of the R and B planes are halved relative to
-the image dimensions, and each R and B component is shared with the G components for which
-4049
- and . The location of each plane when this image is in linear
-layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and
-VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and
-height that is a multiple of two.
-        VK_FORMAT_G8_B8R8_2PLANE_420_UNORM : 指定 an unsigned normalized multi-planar format that
-has an 8-bit G component in plane 0, and a two-component, 16-bit BR plane 1 consisting of an 8-
-bit B component in byte 0 and an 8-bit R component in byte 1. The horizontal and vertical
-dimensions of the BR plane are halved relative to the image dimensions, and each R and B value
-is shared with the G components for which and . The location
-of each plane when this image is in linear layout can be determined via
-vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and
-VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with a width
-and height that is a multiple of two.
-        VK_FORMAT_G8_B8_R8_3PLANE_422_UNORM : 指定 an unsigned normalized multi-planar format that
-has an 8-bit G component in plane 0, an 8-bit B component in plane 1, and an 8-bit R component
-in plane 2. The horizontal dimension of the R and B plane is halved relative to the image
-dimensions, and each R and B value is shared with the G components for which
-. The location of each plane when this image is in linear layout can be
-determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
-plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R
-plane. This format only supports images with a width that is a multiple of two.
-        VK_FORMAT_G8_B8R8_2PLANE_422_UNORM : 指定 an unsigned normalized multi-planar format that
-has an 8-bit G component in plane 0, and a two-component, 16-bit BR plane 1 consisting of an 8-
-bit B component in byte 0 and an 8-bit R component in byte 1. The horizontal dimension of the
-BR plane is halved relative to the image dimensions, and each R and B value is shared with the
-G components for which . The location of each plane when this image is in
-linear layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
-This format only supports images with a width that is a multiple of two.
-        VK_FORMAT_G8_B8_R8_3PLANE_444_UNORM : 指定 an unsigned normalized multi-planar format that
-has an 8-bit G component in plane 0, an 8-bit B component in plane 1, and an 8-bit R component
-in plane 2. Each plane has the same dimensions and each R, G and B component contributes to a
-single texel. The location of each plane when this image is in linear layout can be determined
-via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane,
-VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
-        VK_FORMAT_R10X6_UNORM_PACK16 : 指定 a one-component, 16-bit unsigned normalized format
-that has a single 10-bit R component in the top 10 bits of a 16-bit word, with the bottom 6 bits
-unused.
-        VK_FORMAT_R10X6G10X6_UNORM_2PACK16 : 指定 a two-component, 32-bit unsigned normalized
-format that has a 10-bit R component in the top 10 bits of the word in bytes 0..1, and a 10-bit G
-component in the top 10 bits of the word in bytes 2..3, with the bottom 6 bits of each word
-unused.
-        VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16 : 指定 a four-component, 64-bit unsigned
-normalized format that has a 10-bit R component in the top 10 bits of the word in bytes 0..1, a
-4050
-10-bit G component in the top 10 bits of the word in bytes 2..3, a 10-bit B component in the top
-10 bits of the word in bytes 4..5, and a 10-bit A component in the top 10 bits of the word in bytes
-6..7, with the bottom 6 bits of each word unused.
-        VK_FORMAT_G10X6B10X6G10X6R10X6_422_UNORM_4PACK16 : 指定 a four-component, 64-bit format
-containing a pair of G components, an R component, and a B component, collectively encoding a
-2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i
-coordinate, with the B and R values shared across both G values and thus recorded at half the
-horizontal resolution of the image. This format has a 10-bit G component for the even i
-coordinate in the top 10 bits of the word in bytes 0..1, a 10-bit B component in the top 10 bits of
-the word in bytes 2..3, a 10-bit G component for the odd i coordinate in the top 10 bits of the
-word in bytes 4..5, and a 10-bit R component in the top 10 bits of the word in bytes 6..7, with the
-bottom 6 bits of each word unused. This format only supports images with a width that is a
-multiple of two. For the purposes of the constraints on copy extents, this format is treated as a
-compressed format with a 2×1 compressed texel block.
-        VK_FORMAT_B10X6G10X6R10X6G10X6_422_UNORM_4PACK16 : 指定 a four-component, 64-bit format
-containing a pair of G components, an R component, and a B component, collectively encoding a
-2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i
-coordinate, with the B and R values shared across both G values and thus recorded at half the
-horizontal resolution of the image. This format has a 10-bit B component in the top 10 bits of the
-word in bytes 0..1, a 10-bit G component for the even i coordinate in the top 10 bits of the word
-in bytes 2..3, a 10-bit R component in the top 10 bits of the word in bytes 4..5, and a 10-bit G
-component for the odd i coordinate in the top 10 bits of the word in bytes 6..7, with the bottom 6
-bits of each word unused. This format only supports images with a width that is a multiple of
-two. For the purposes of the constraints on copy extents, this format is treated as a compressed
-format with a 2×1 compressed texel block.
-        VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, a
-10-bit B component in the top 10 bits of each 16-bit word of plane 1, and a 10-bit R component in
-the top 10 bits of each 16-bit word of plane 2, with the bottom 6 bits of each word unused. The
-horizontal and vertical dimensions of the R and B planes are halved relative to the image
-dimensions, and each R and B component is shared with the G components for which
- and . The location of each plane when this image is in linear
-layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and
-VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and
-height that is a multiple of two.
-        VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0,
-and a two-component, 32-bit BR plane 1 consisting of a 10-bit B component in the top 10 bits of
-the word in bytes 0..1, and a 10-bit R component in the top 10 bits of the word in bytes 2..3, with
-the bottom 6 bits of each word unused. The horizontal and vertical dimensions of the BR plane
-are halved relative to the image dimensions, and each R and B value is shared with the G
-components for which and . The location of each plane when
-this image is in linear layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
-This format only supports images with a width and height that is a multiple of two.
-4051
-        VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, a
-10-bit B component in the top 10 bits of each 16-bit word of plane 1, and a 10-bit R component in
-the top 10 bits of each 16-bit word of plane 2, with the bottom 6 bits of each word unused. The
-horizontal dimension of the R and B plane is halved relative to the image dimensions, and each
-R and B value is shared with the G components for which . The location of each
-plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout,
-using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane,
-and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width
-that is a multiple of two.
-        VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0,
-and a two-component, 32-bit BR plane 1 consisting of a 10-bit B component in the top 10 bits of
-the word in bytes 0..1, and a 10-bit R component in the top 10 bits of the word in bytes 2..3, with
-the bottom 6 bits of each word unused. The horizontal dimension of the BR plane is halved
-relative to the image dimensions, and each R and B value is shared with the G components for
-which . The location of each plane when this image is in linear layout can be
-determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
-plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with
-a width that is a multiple of two.
-        VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0, a
-10-bit B component in the top 10 bits of each 16-bit word of plane 1, and a 10-bit R component in
-the top 10 bits of each 16-bit word of plane 2, with the bottom 6 bits of each word unused. Each
-plane has the same dimensions and each R, G and B component contributes to a single texel.
-The location of each plane when this image is in linear layout can be determined via
-vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane,
-VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
-        VK_FORMAT_R12X4_UNORM_PACK16 : 指定 a one-component, 16-bit unsigned normalized format
-that has a single 12-bit R component in the top 12 bits of a 16-bit word, with the bottom 4 bits
-unused.
-        VK_FORMAT_R12X4G12X4_UNORM_2PACK16 : 指定 a two-component, 32-bit unsigned normalized
-format that has a 12-bit R component in the top 12 bits of the word in bytes 0..1, and a 12-bit G
-component in the top 12 bits of the word in bytes 2..3, with the bottom 4 bits of each word
-unused.
-        VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16 : 指定 a four-component, 64-bit unsigned
-normalized format that has a 12-bit R component in the top 12 bits of the word in bytes 0..1, a
-12-bit G component in the top 12 bits of the word in bytes 2..3, a 12-bit B component in the top
-12 bits of the word in bytes 4..5, and a 12-bit A component in the top 12 bits of the word in bytes
-6..7, with the bottom 4 bits of each word unused.
-        VK_FORMAT_G12X4B12X4G12X4R12X4_422_UNORM_4PACK16 : 指定 a four-component, 64-bit format
-containing a pair of G components, an R component, and a B component, collectively encoding a
-2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i
-coordinate, with the B and R values shared across both G values and thus recorded at half the
-horizontal resolution of the image. This format has a 12-bit G component for the even i
-4052
-coordinate in the top 12 bits of the word in bytes 0..1, a 12-bit B component in the top 12 bits of
-the word in bytes 2..3, a 12-bit G component for the odd i coordinate in the top 12 bits of the
-word in bytes 4..5, and a 12-bit R component in the top 12 bits of the word in bytes 6..7, with the
-bottom 4 bits of each word unused. This format only supports images with a width that is a
-multiple of two. For the purposes of the constraints on copy extents, this format is treated as a
-compressed format with a 2×1 compressed texel block.
-        VK_FORMAT_B12X4G12X4R12X4G12X4_422_UNORM_4PACK16 : 指定 a four-component, 64-bit format
-containing a pair of G components, an R component, and a B component, collectively encoding a
-2×1 rectangle of unsigned normalized RGB texel data. One G value is present at each i
-coordinate, with the B and R values shared across both G values and thus recorded at half the
-horizontal resolution of the image. This format has a 12-bit B component in the top 12 bits of the
-word in bytes 0..1, a 12-bit G component for the even i coordinate in the top 12 bits of the word
-in bytes 2..3, a 12-bit R component in the top 12 bits of the word in bytes 4..5, and a 12-bit G
-component for the odd i coordinate in the top 12 bits of the word in bytes 6..7, with the bottom 4
-bits of each word unused. This format only supports images with a width that is a multiple of
-two. For the purposes of the constraints on copy extents, this format is treated as a compressed
-format with a 2×1 compressed texel block.
-        VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, a
-12-bit B component in the top 12 bits of each 16-bit word of plane 1, and a 12-bit R component in
-the top 12 bits of each 16-bit word of plane 2, with the bottom 4 bits of each word unused. The
-horizontal and vertical dimensions of the R and B planes are halved relative to the image
-dimensions, and each R and B component is shared with the G components for which
- and . The location of each plane when this image is in linear
-layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and
-VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width and
-height that is a multiple of two.
-        VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0,
-and a two-component, 32-bit BR plane 1 consisting of a 12-bit B component in the top 12 bits of
-the word in bytes 0..1, and a 12-bit R component in the top 12 bits of the word in bytes 2..3, with
-the bottom 4 bits of each word unused. The horizontal and vertical dimensions of the BR plane
-are halved relative to the image dimensions, and each R and B value is shared with the G
-components for which and . The location of each plane when
-this image is in linear layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
-This format only supports images with a width and height that is a multiple of two.
-        VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, a
-12-bit B component in the top 12 bits of each 16-bit word of plane 1, and a 12-bit R component in
-the top 12 bits of each 16-bit word of plane 2, with the bottom 4 bits of each word unused. The
-horizontal dimension of the R and B plane is halved relative to the image dimensions, and each
-R and B value is shared with the G components for which . The location of each
-plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout,
-using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane,
-4053
-and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width
-that is a multiple of two.
-        VK_FORMAT_G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0,
-and a two-component, 32-bit BR plane 1 consisting of a 12-bit B component in the top 12 bits of
-the word in bytes 0..1, and a 12-bit R component in the top 12 bits of the word in bytes 2..3, with
-the bottom 4 bits of each word unused. The horizontal dimension of the BR plane is halved
-relative to the image dimensions, and each R and B value is shared with the G components for
-which . The location of each plane when this image is in linear layout can be
-determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
-plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with
-a width that is a multiple of two.
-        VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0, a
-12-bit B component in the top 12 bits of each 16-bit word of plane 1, and a 12-bit R component in
-the top 12 bits of each 16-bit word of plane 2, with the bottom 4 bits of each word unused. Each
-plane has the same dimensions and each R, G and B component contributes to a single texel.
-The location of each plane when this image is in linear layout can be determined via
-vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane,
-VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
-        VK_FORMAT_G16B16G16R16_422_UNORM : 指定 a four-component, 64-bit format containing a pair of
-G components, an R component, and a B component, collectively encoding a 2×1 rectangle of
-unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and
-R values shared across both G values and thus recorded at half the horizontal resolution of the
-image. This format has a 16-bit G component for the even i coordinate in the word in bytes 0..1,
-a 16-bit B component in the word in bytes 2..3, a 16-bit G component for the odd i coordinate in
-the word in bytes 4..5, and a 16-bit R component in the word in bytes 6..7. This format only
-supports images with a width that is a multiple of two. For the purposes of the constraints on
-copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
-        VK_FORMAT_B16G16R16G16_422_UNORM : 指定 a four-component, 64-bit format containing a pair of
-G components, an R component, and a B component, collectively encoding a 2×1 rectangle of
-unsigned normalized RGB texel data. One G value is present at each i coordinate, with the B and
-R values shared across both G values and thus recorded at half the horizontal resolution of the
-image. This format has a 16-bit B component in the word in bytes 0..1, a 16-bit G component for
-the even i coordinate in the word in bytes 2..3, a 16-bit R component in the word in bytes 4..5,
-and a 16-bit G component for the odd i coordinate in the word in bytes 6..7. This format only
-supports images with a width that is a multiple of two. For the purposes of the constraints on
-copy extents, this format is treated as a compressed format with a 2×1 compressed texel block.
-        VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM : 指定 an unsigned normalized multi-planar format
-that has a 16-bit G component in each 16-bit word of plane 0, a 16-bit B component in each 16-
-bit word of plane 1, and a 16-bit R component in each 16-bit word of plane 2. The horizontal and
-vertical dimensions of the R and B planes are halved relative to the image dimensions, and each
-R and B component is shared with the G components for which and
-. The location of each plane when this image is in linear layout can be
-determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
-plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R
-4054
-plane. This format only supports images with a width and height that is a multiple of two.
-        VK_FORMAT_G16_B16R16_2PLANE_420_UNORM : 指定 an unsigned normalized multi-planar format
-that has a 16-bit G component in each 16-bit word of plane 0, and a two-component, 32-bit BR
-plane 1 consisting of a 16-bit B component in the word in bytes 0..1, and a 16-bit R component in
-the word in bytes 2..3. The horizontal and vertical dimensions of the BR plane are halved
-relative to the image dimensions, and each R and B value is shared with the G components for
-which and . The location of each plane when this image is in
-linear layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
-This format only supports images with a width and height that is a multiple of two.
-        VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM : 指定 an unsigned normalized multi-planar format
-that has a 16-bit G component in each 16-bit word of plane 0, a 16-bit B component in each 16-
-bit word of plane 1, and a 16-bit R component in each 16-bit word of plane 2. The horizontal
-dimension of the R and B plane is halved relative to the image dimensions, and each R and B
-value is shared with the G components for which . The location of each plane
-when this image is in linear layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and
-VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane. This format only supports images with a width that
-is a multiple of two.
-        VK_FORMAT_G16_B16R16_2PLANE_422_UNORM : 指定 an unsigned normalized multi-planar format
-that has a 16-bit G component in each 16-bit word of plane 0, and a two-component, 32-bit BR
-plane 1 consisting of a 16-bit B component in the word in bytes 0..1, and a 16-bit R component in
-the word in bytes 2..3. The horizontal dimension of the BR plane is halved relative to the image
-dimensions, and each R and B value is shared with the G components for which
-. The location of each plane when this image is in linear layout can be
-determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
-plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane. This format only supports images with
-a width that is a multiple of two.
-        VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM : 指定 an unsigned normalized multi-planar format
-that has a 16-bit G component in each 16-bit word of plane 0, a 16-bit B component in each 16-
-bit word of plane 1, and a 16-bit R component in each 16-bit word of plane 2. Each plane has the
-same dimensions and each R, G and B component contributes to a single texel. The location of
-each plane when this image is in linear layout can be determined via
-vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane,
-VK_IMAGE_ASPECT_PLANE_1_BIT for the B plane, and VK_IMAGE_ASPECT_PLANE_2_BIT for the R plane.
-        VK_FORMAT_G8_B8R8_2PLANE_444_UNORM : 指定 an unsigned normalized multi-planar format that
-has an 8-bit G component in plane 0, and a two-component, 16-bit BR plane 1 consisting of an 8-
-bit B component in byte 0 and an 8-bit R component in byte 1. Both planes have the same
-dimensions and each R, G and B component contributes to a single texel. The location of each
-plane when this image is in linear layout can be determined via vkGetImageSubresourceLayout,
-using VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR
-plane.
-        VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 10-bit G component in the top 10 bits of each 16-bit word of plane 0,
-and a two-component, 32-bit BR plane 1 consisting of a 10-bit B component in the top 10 bits of
-4055
-the word in bytes 0..1, and a 10-bit R component in the top 10 bits of the word in bytes 2..3, the
-bottom 6 bits of each word unused. Both planes have the same dimensions and each R, G and B
-component contributes to a single texel. The location of each plane when this image is in linear
-layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
-        VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16 : 指定 an unsigned normalized multi￾planar format that has a 12-bit G component in the top 12 bits of each 16-bit word of plane 0,
-and a two-component, 32-bit BR plane 1 consisting of a 12-bit B component in the top 12 bits of
-the word in bytes 0..1, and a 12-bit R component in the top 12 bits of the word in bytes 2..3, the
-bottom 4 bits of each word unused. Both planes have the same dimensions and each R, G and B
-component contributes to a single texel. The location of each plane when this image is in linear
-layout can be determined via vkGetImageSubresourceLayout, using
-VK_IMAGE_ASPECT_PLANE_0_BIT for the G plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
-        VK_FORMAT_G16_B16R16_2PLANE_444_UNORM : 指定 an unsigned normalized multi-planar format
-that has a 16-bit G component in each 16-bit word of plane 0, and a two-component, 32-bit BR
-plane 1 consisting of a 16-bit B component in the word in bytes 0..1, and a 16-bit R component in
-the word in bytes 2..3. Both planes have the same dimensions and each R, G and B component
-contributes to a single texel. The location of each plane when this image is in linear layout can
-be determined via vkGetImageSubresourceLayout, using VK_IMAGE_ASPECT_PLANE_0_BIT for the G
-plane, and VK_IMAGE_ASPECT_PLANE_1_BIT for the BR plane.
-        VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG : 指定 a four-component, PVRTC compressed format
-where each 64-bit compressed texel block encodes an 8×4 rectangle of unsigned normalized
-RGBA texel data.
-        VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG : 指定 a four-component, PVRTC compressed format
-where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized
-RGBA texel data.
-        VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG : 指定 a four-component, PVRTC compressed format
-where each 64-bit compressed texel block encodes an 8×4 rectangle of unsigned normalized
-RGBA texel data.
-        VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG : 指定 a four-component, PVRTC compressed format
-where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized
-RGBA texel data.
-        VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG : 指定 a four-component, PVRTC compressed format
-where each 64-bit compressed texel block encodes an 8×4 rectangle of unsigned normalized
-RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG : 指定 a four-component, PVRTC compressed format
-where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized
-RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG : 指定 a four-component, PVRTC compressed format
-where each 64-bit compressed texel block encodes an 8×4 rectangle of unsigned normalized
-RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
-        VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG : 指定 a four-component, PVRTC compressed format
-where each 64-bit compressed texel block encodes a 4×4 rectangle of unsigned normalized
-RGBA texel data with sRGB nonlinear encoding applied to the RGB components.
-4056
-        VK_FORMAT_R16G16_SFIXED5_NV : 指定 a two-component, 16-bit signed fixed-point format with
-linear encoding. The components are signed two’s-complement integers where the most
-significant bit : 指定 the sign bit, the next 10 bits specify the integer value, and the last 5 bits
-represent the fractional value. The signed 16-bit values can be converted to floats in the range [-
-1024,1023.96875] by dividing the value by 32 (25
-)
-        
-        
+        VK_FORMAT_R5G6B5_UNORM_PACK16 : 指定一个3分量，总共打包为16bit无符号归一化的foramt，R分量为11-15bit，G分量为5-10bit，B分量为0-4bit
+        VK_FORMAT_B5G6R5_UNORM_PACK16 : 指定一个3分量，总共打包为16bit无符号归一化的foramt，B分量为11-15bit，G分量为5-10bit，R分量为0-4bit
+        VK_FORMAT_R5G5B5A1_UNORM_PACK16 : 指定一个4分量，总共打包为16bit无符号归一化的foramt，R分量为11-15bit，G分量为6-10bit，B分量为1-5bit，A分量为0bit
+        VK_FORMAT_B5G5R5A1_UNORM_PACK16 : 指定一个4分量，总共打包为16bit无符号归一化的foramt，B分量为11-15bit，G分量为6-10bit，R分量为1-5bit，A分量为0bit
+        VK_FORMAT_A1R5G5B5_UNORM_PACK16 : 指定一个4分量，总共打包为16bit无符号归一化的foramt，A分量为15bit，R分量为10-14bit，G分量为5-9bit，B分量为0-4bit
+        VK_FORMAT_A1B5G5R5_UNORM_PACK16_KHR : 指定一个4分量，总共打包为16bit无符号归一化的foramt，A分量为15bit，B分量为10-14bit，G分量为5-9bit，R分量为0-4bit
+        VK_FORMAT_A8_UNORM_KHR : 指定一个1分量A，8bit无符号归一化的foramt
+        VK_FORMAT_R8_UNORM : 指定一个1分量R，8bit无符号归一化的foramt
+        VK_FORMAT_R8_SNORM : 指定一个1分量R，8bit有符号归一化的foramt
+        VK_FORMAT_R8_USCALED : 指定一个1分量R，8bit无符号整型提升的foramt
+        VK_FORMAT_R8_SSCALED : 指定一个1分量R，8bit有符号整型提升的foramt
+        VK_FORMAT_R8_UINT : 指定一个1分量R，8bit无符号整型的foramt
+        VK_FORMAT_R8_SINT : 指定一个1分量R，8bit有符号整型的foramt
+        VK_FORMAT_R8_SRGB : 指定一个1分量R，8bit无符号归一化的foramt，以sRGB非线性编码存储
+        VK_FORMAT_R8G8_UNORM : 指定一个2分量，16bit无符号归一化的foramt，8bit的R分量在字节0，8bit的G分量在字节1
+        VK_FORMAT_R8G8_SNORM : 指定一个2分量，16bit有符号归一化的foramt，8bit的R分量在字节0，8bit的G分量在字节1
+        VK_FORMAT_R8G8_USCALED : 指定一个2分量，16bit无符号整型提升的foramt，8bit的R分量在字节0，8bit的G分量在字节1
+        VK_FORMAT_R8G8_SSCALED : 指定一个2分量，16bit有符号整型提升的foramt，8bit的R分量在字节0，8bit的G分量在字节1
+        VK_FORMAT_R8G8_UINT : 指定一个2分量，16bit无符号整型的foramt，8bit的R分量在字节0，8bit的G分量在字节1
+        VK_FORMAT_R8G8_SINT : 指定一个2分量，16bit有符号整型的foramt，8bit的R分量在字节0，8bit的G分量在字节1
+        VK_FORMAT_R8G8_SRGB : 指定一个2分量，16bit无符号归一化的foramt，8bit的R分量在字节0，8bit的G分量在字节1，以sRGB非线性编码存储
+        VK_FORMAT_R8G8B8_UNORM : 指定一个3分量，24bit无符号归一化的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2
+        VK_FORMAT_R8G8B8_SNORM : 指定一个3分量，24bit有符号归一化的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2
+        VK_FORMAT_R8G8B8_USCALED : 指定一个3分量，24bit无符号整型提升的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2
+        VK_FORMAT_R8G8B8_SSCALED : 指定一个3分量，24bit有符号整型提升的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2
+        VK_FORMAT_R8G8B8_UINT : 指定一个3分量，24bit无符号整型的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2
+        VK_FORMAT_R8G8B8_SINT : 指定一个3分量，24bit有符号整型的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2
+        VK_FORMAT_R8G8B8_SRGB : 指定一个3分量，24bit无符号归一化的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2，以sRGB非线性编码存储
+        VK_FORMAT_B8G8R8_UNORM : 指定一个3分量，24bit无符号归一化的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2
+        VK_FORMAT_B8G8R8_SNORM : 指定一个3分量，24bit有符号归一化的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2
+        VK_FORMAT_B8G8R8_USCALED : 指定一个3分量，24bit无符号整型提升的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2
+        VK_FORMAT_B8G8R8_SSCALED : 指定一个3分量，24bit有符号整型提升的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2
+        VK_FORMAT_B8G8R8_UINT : 指定一个3分量，24bit无符号整型的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2
+        VK_FORMAT_B8G8R8_SINT : 指定一个3分量，24bit有符号整型的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2
+        VK_FORMAT_B8G8R8_SRGB : 指定一个3分量，24bit无符号归一化的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2，以sRGB非线性编码存储
+        VK_FORMAT_R8G8B8A8_UNORM : 指定一个4分量，32bit无符号归一化的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_R8G8B8A8_SNORM : 指定一个4分量，32bit有符号归一化的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_R8G8B8A8_USCALED : 指定一个4分量，32bit无符号整型提升的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_R8G8B8A8_SSCALED : 指定一个4分量，32bit有符号整型提升的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_R8G8B8A8_UINT : 指定一个4分量，32bit无符号整型的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_R8G8B8A8_SINT : 指定一个4分量，32bit有符号整型的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_R8G8B8A8_SRGB : 指定一个4分量，32bit无符号归一化的foramt，8bit的R分量在字节0，8bit的G分量在字节1，8bit的B分量在字节2,8bit的A分量在字节3，以sRGB非线性编码存储
+        VK_FORMAT_B8G8R8A8_UNORM : 指定一个4分量，32bit无符号归一化的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_B8G8R8A8_SNORM : 指定一个4分量，32bit有符号归一化的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_B8G8R8A8_USCALED : 指定一个4分量，32bit无符号整型提升的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_B8G8R8A8_SSCALED : 指定一个4分量，32bit有符号整型提升的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_B8G8R8A8_UINT : 指定一个4分量，32bit无符号整型的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_B8G8R8A8_SINT : 指定一个4分量，32bit有符号整型的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2,8bit的A分量在字节3
+        VK_FORMAT_B8G8R8A8_SRGB : 指定一个4分量，32bit无符号归一化的foramt，8bit的B分量在字节0，8bit的G分量在字节1，8bit的R分量在字节2,8bit的A分量在字节3，以sRGB非线性编码存储
+        VK_FORMAT_A8B8G8R8_UNORM_PACK32 : 指定一个4分量，总共打包为32bit无符号归一化的foramt，A分量为24-31bit，B分量为16-23bit，G分量为8-15bit，R分量为0-7bit
+        VK_FORMAT_A8B8G8R8_SNORM_PACK32 : 指定一个4分量，总共打包为32bit有符号归一化的foramt，A分量为24-31bit，B分量为16-23bit，G分量为8-15bit，R分量为0-7bit
+        VK_FORMAT_A8B8G8R8_USCALED_PACK32 : 指定一个4分量，总共打包为32bit无符号整型提升的foramt，A分量为24-31bit，B分量为16-23bit，G分量为8-15bit，R分量为0-7bit
+        VK_FORMAT_A8B8G8R8_SSCALED_PACK32 : 指定一个4分量，总共打包为32bit有符号整型提升的foramt，A分量为24-31bit，B分量为16-23bit，G分量为8-15bit，R分量为0-7bit
+        VK_FORMAT_A8B8G8R8_UINT_PACK32 : 指定一个4分量，总共打包为32bit无符号整型的foramt，A分量为24-31bit，B分量为16-23bit，G分量为8-15bit，R分量为0-7bit
+        VK_FORMAT_A8B8G8R8_SINT_PACK32 : 指定一个4分量，总共打包为32bit有符号整型的foramt，A分量为24-31bit，B分量为16-23bit，G分量为8-15bit，R分量为0-7bit
+        VK_FORMAT_A8B8G8R8_SRGB_PACK32 :  指定一个4分量，总共打包为32bit无符号归一化的foramt，A分量为24-31bit，B分量为16-23bit，G分量为8-15bit，R分量为0-7bit，以sRGB非线性编码存储
+        VK_FORMAT_A2R10G10B10_UNORM_PACK32 : 指定一个4分量，总共打包为32bit无符号归一化的foramt，A分量为30-31bit，R分量为20-29bit，G分量为10-19bit，B分量为0-9bit
+        VK_FORMAT_A2R10G10B10_SNORM_PACK32 : 指定一个4分量，总共打包为32bit有符号归一化的foramt，A分量为30-31bit，R分量为20-29bit，G分量为10-19bit，B分量为0-9bit
+        VK_FORMAT_A2R10G10B10_USCALED_PACK32 : 指定一个4分量，总共打包为32bit无符号整型提升的foramt，A分量为30-31bit，R分量为20-29bit，G分量为10-19bit，B分量为0-9bit
+        VK_FORMAT_A2R10G10B10_SSCALED_PACK32 : 指定一个4分量，总共打包为32bit有符号整型提升的foramt，A分量为30-31bit，R分量为20-29bit，G分量为10-19bit，B分量为0-9bit
+        VK_FORMAT_A2R10G10B10_UINT_PACK32 : 指定一个4分量，总共打包为32bit无符号整数的foramt，A分量为30-31bit，R分量为20-29bit，G分量为10-19bit，B分量为0-9bit
+        VK_FORMAT_A2R10G10B10_SINT_PACK32 : 指定一个4分量，总共打包为32bit有符号整数的foramt，A分量为30-31bit，R分量为20-29bit，G分量为10-19bit，B分量为0-9bit
+        VK_FORMAT_A2B10G10R10_UNORM_PACK32 : 指定一个4分量，总共打包为32bit无符号归一化的foramt，A分量为30-31bit，B分量为20-29bit，G分量为10-19bit，R分量为0-9bit
+        VK_FORMAT_A2B10G10R10_SNORM_PACK32 : 指定一个4分量，总共打包为32bit有符号归一化的foramt，A分量为30-31bit，B分量为20-29bit，G分量为10-19bit，R分量为0-9bit
+        VK_FORMAT_A2B10G10R10_USCALED_PACK32 : 指定一个4分量，总共打包为32bit无符号整型提升的foramt，A分量为30-31bit，B分量为20-29bit，G分量为10-19bit，R分量为0-9bit
+        VK_FORMAT_A2B10G10R10_SSCALED_PACK32 : 指定一个4分量，总共打包为32bit有符号整型提升的foramt，A分量为30-31bit，B分量为20-29bit，G分量为10-19bit，R分量为0-9bit
+        VK_FORMAT_A2B10G10R10_UINT_PACK32 : 指定一个4分量，总共打包为32bit无符号整型的foramt，A分量为30-31bit，B分量为20-29bit，G分量为10-19bit，R分量为0-9bit
+        VK_FORMAT_A2B10G10R10_SINT_PACK32 : 指定一个4分量，总共打包为32bit有符号整型的foramt，A分量为30-31bit，B分量为20-29bit，G分量为10-19bit，R分量为0-9bit
+        VK_FORMAT_R16_UNORM : 指定一个1分量R，16bit无符号归一化的foramt
+        VK_FORMAT_R16_SNORM : 指定一个1分量R，16bit有符号归一化的foramt
+        VK_FORMAT_R16_USCALED : 指定一个1分量R，16bit无符号整型提升的foramt
+        VK_FORMAT_R16_SSCALED : 指定一个1分量R，16bit有符号整型提升的foramt
+        VK_FORMAT_R16_UINT : 指定一个1分量R，16bit无符号整型的foramt
+        VK_FORMAT_R16_SINT : 指定一个1分量R，16bit有符号整型的foramt
+        VK_FORMAT_R16_SFLOAT : 指定一个1分量R，16bit有符号浮点型的foramt
+        VK_FORMAT_R16G16_UNORM : 指定一个2分量，32bit无符号归一化的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3
+        VK_FORMAT_R16G16_SNORM : 指定一个2分量，32bit有符号归一化的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3
+        VK_FORMAT_R16G16_USCALED : 指定一个2分量，32bit无符号整型提升的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3
+        VK_FORMAT_R16G16_SSCALED : 指定一个2分量，32bit有符号整型提升的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3
+        VK_FORMAT_R16G16_UINT : 指定一个2分量，32bit无符号整型的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3
+        VK_FORMAT_R16G16_SINT : 指定一个2分量，32bit有符号整型的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3
+        VK_FORMAT_R16G16_SFLOAT : 指定一个2分量，32bit有符号浮点型的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3
+        VK_FORMAT_R16G16B16_UNORM : 指定一个4分量，48bit无符号归一化的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5
+        VK_FORMAT_R16G16B16_SNORM : 指定一个4分量，48bit有符号归一化的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5
+        VK_FORMAT_R16G16B16_USCALED : 指定一个4分量，48bit无符号整型提升的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5
+        VK_FORMAT_R16G16B16_SSCALED : 指定一个4分量，48bit有符号整型提升的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5
+        VK_FORMAT_R16G16B16_UINT : 指定一个4分量，48bit无符号整型的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5
+        VK_FORMAT_R16G16B16_SINT : 指定一个4分量，48bit有符号整型的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5
+        VK_FORMAT_R16G16B16_SFLOAT : 指定一个4分量，48bit有符号浮点型的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5
+        VK_FORMAT_R16G16B16A16_UNORM : 指定一个4分量，64bit无符号归一化的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5，16bit的A分量在字节6..7
+        VK_FORMAT_R16G16B16A16_SNORM : 指定一个4分量，64bit有符号归一化的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5，16bit的A分量在字节6..7
+        VK_FORMAT_R16G16B16A16_USCALED : 指定一个4分量，64bit无符号整型提升的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5，16bit的A分量在字节6..7
+        VK_FORMAT_R16G16B16A16_SSCALED : 指定一个4分量，64bit有符号整型提升的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5，16bit的A分量在字节6..7
+        VK_FORMAT_R16G16B16A16_UINT : 指定一个4分量，64bit无符号整型的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5，16bit的A分量在字节6..7
+        VK_FORMAT_R16G16B16A16_SINT : 指定一个4分量，64bit有符号整型的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5，16bit的A分量在字节6..7
+        VK_FORMAT_R16G16B16A16_SFLOAT : 指定一个4分量，64bit有符号浮点型的foramt，16bit的R分量在字节0..1，16bit的G分量在字节2..3，16bit的B分量在字节4..5，16bit的A分量在字节6..7
+        VK_FORMAT_R32_UINT :  指定一个1分量R，32bit无符号归一化的foramt
+        VK_FORMAT_R32_SINT :  指定一个1分量R，32bit有符号归一化的foramt
+        VK_FORMAT_R32_SFLOAT : 指定一个1分量R，32bit有符号浮点型的foramt
+        VK_FORMAT_R32G32_UINT : 指定一个2分量，64bit无符号整型的foramt，32bit的R分量在字节0..3，32bit的G分量在字节4..7
+        VK_FORMAT_R32G32_SINT : 指定一个2分量，64bit有符号整型的foramt，32bit的R分量在字节0..3，32bit的G分量在字节4..7
+        VK_FORMAT_R32G32_SFLOAT : 指定一个2分量，64bit有符号浮点型的foramt，32bit的R分量在字节0..3，32bit的G分量在字节4..7
+        VK_FORMAT_R32G32B32_UINT : 指定一个3分量，96bit无符号整型的foramt，32bit的R分量在字节0..3，32bit的G分量在字节4..7，32bit的B分量在字节8..11
+        VK_FORMAT_R32G32B32_SINT : 指定一个3分量，96bit有符号整型的foramt，32bit的R分量在字节0..3，32bit的G分量在字节4..7，32bit的B分量在字节8..11
+        VK_FORMAT_R32G32B32_SFLOAT : 指定一个3分量，96bit有符号浮点型的foramt，32bit的R分量在字节0..3，32bit的G分量在字节4..7，32bit的B分量在字节8..11
+        VK_FORMAT_R32G32B32A32_UINT : 指定一个3分量，128bit无符号整型的foramt，32bit的R分量在字节0..3，32bit的G分量在字节4..7，32bit的B分量在字节8..11，32bit的A分量在字节12..15
+        VK_FORMAT_R32G32B32A32_SINT : 指定一个3分量，128bit有符号整型的foramt，32bit的R分量在字节0..3，32bit的G分量在字节4..7，32bit的B分量在字节8..11，32bit的A分量在字节12..15
+        VK_FORMAT_R32G32B32A32_SFLOAT : 指定一个3分量，128bit有符号浮点型的foramt，32bit的R分量在字节0..3，32bit的G分量在字节4..7，32bit的B分量在字节8..11，32bit的A分量在字节12..15
+        VK_FORMAT_R64_UINT : 指定一个1分量R，64bit无符号整型的foramt
+        VK_FORMAT_R64_SINT : 指定一个1分量R，64bit有符号整型的foramt
+        VK_FORMAT_R64_SFLOAT : 指定一个1分量R，64bit有符号浮点型的foramt
+        VK_FORMAT_R64G64_UINT : 指定一个2分量，128bit无符号整型的foramt，64bit的R分量在字节0..7，64bit的G分量在字节8..15
+        VK_FORMAT_R64G64_SINT : 指定一个2分量，128bit有符号整型的foramt，64bit的R分量在字节0..7，64bit的G分量在字节8..15
+        VK_FORMAT_R64G64_SFLOAT : 指定一个2分量，128bit有符号浮点型的foramt，64bit的R分量在字节0..7，64bit的G分量在字节8..15
+        VK_FORMAT_R64G64B64_UINT : 指定一个3分量，196bit无符号整型的foramt，64bit的R分量在字节0..7，64bit的G分量在字节8..15，64bit的B分量在字节16..23
+        VK_FORMAT_R64G64B64_SINT : 指定一个3分量，196bit有符号整型的foramt，64bit的R分量在字节0..7，64bit的G分量在字节8..15，64bit的B分量在字节16..23
+        VK_FORMAT_R64G64B64_SFLOAT : 指定一个3分量，196bit有符号浮点型的foramt，64bit的R分量在字节0..7，64bit的G分量在字节8..15，64bit的B分量在字节16..23
+        VK_FORMAT_R64G64B64A64_UINT : 指定一个4分量，256bit无符号整型的foramt，64bit的R分量在字节0..7，64bit的G分量在字节8..15，64bit的B分量在字节16..23，64bit的A分量在字节24..31
+        VK_FORMAT_R64G64B64A64_SINT : 指定一个4分量，256bit有符号整型的foramt，64bit的R分量在字节0..7，64bit的G分量在字节8..15，64bit的B分量在字节16..23，64bit的A分量在字节24..31
+        VK_FORMAT_R64G64B64A64_SFLOAT : 指定一个4分量，256bit有符号浮点型的foramt，64bit的R分量在字节0..7，64bit的G分量在字节8..15，64bit的B分量在字节16..23，64bit的A分量在字节24..31
+        VK_FORMAT_B10G11R11_UFLOAT_PACK32 : 指定一个3分量，总共打包为32bit无符号浮点型的foramt，B分量为22-31bit，G分量为11-21bit，B分量为0-10bit
+        VK_FORMAT_E5B9G9R9_UFLOAT_PACK32 : 指定一个3分量，总共打包为32bit无符号浮点型的foramt，共享的指数部分为27..31，B分量底数为18-26bit，G分量底数为9-17bit，B分量底数为0-8bit
+        VK_FORMAT_D16_UNORM : 指定一个只含有一个16bit的depth分量的无符号归一化的format
+        VK_FORMAT_X8_D24_UNORM_PACK32 : 指定一个2分量，32-bit的format，其中24bit为无符号归一化的depth分量，另外8bit是可选作未使用的
+        VK_FORMAT_D32_SFLOAT : 指定一个只含有一个32bit的depth分量的有符号浮点型的format
+        VK_FORMAT_S8_UINT : 指定一个只含有一个8bit的stencil分量的无符号整数的format
+        VK_FORMAT_D16_UNORM_S8_UINT : 指定一个2分量，共24bit的format，其中16bit为depth分量的无符号归一化的format，8bit为stencil分量的无符号整数的format
+        VK_FORMAT_D24_UNORM_S8_UINT : 指定一个2分量，共32bit的format，其中24bit为无符号归一化的depth分量，8bit为stencil分量的无符号整数的format
+        VK_FORMAT_D32_SFLOAT_S8_UINT : 指定一个2分量的format，其中32bit为有符号浮点型的depth分量，8bit为stencil分量的无符号整数的format，有24bit是可选未使用的
+        VK_FORMAT_BC1_RGB_UNORM_BLOCK : 指定一个3分量，block-compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGB texel数据，该format不含A分量，认为是不透明的
+        VK_FORMAT_BC1_RGB_SRGB_BLOCK : 指定一个3分量，block-compressed的format，其中每个64-bit压缩的texel block以 sRGB nonlinear encoding 编码一个为无符号归一化的4×4 矩形的RGB texel数据，该format不含A分量，认为是不透明的
+        VK_FORMAT_BC1_RGBA_UNORM_BLOCK : 指定一个4分量，block-compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGB texel数据，提供1bit的A分量
+        VK_FORMAT_BC1_RGBA_SRGB_BLOCK : 指定一个4分量，block-compressed的format，其中每个64-bit压缩的texel block以 sRGB nonlinear encoding 编码一个为无符号归一化的4×4 矩形的RGB texel数据，提供1bit的A分量
+        VK_FORMAT_BC2_UNORM_BLOCK : 指定一个4分量，block-compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据，最开始的64bit编码A，后64bit编码RGB
+        VK_FORMAT_BC2_SRGB_BLOCK : 指定一个4分量，block-compressed的format，其中每个128-bit压缩的texel block以 sRGB nonlinear encoding 编码一个为无符号归一化的4×4 矩形的RGBA texel数据，最开始的64bit编码A，后64bit编码RGB
+        VK_FORMAT_BC3_UNORM_BLOCK : 指定一个4分量，block-compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据，最开始的64bit编码A，后64bit编码RGB
+        VK_FORMAT_BC3_SRGB_BLOCK : 指定一个4分量，block-compressed的format，其中每个128-bit压缩的texel block以 sRGB nonlinear encoding 编码一个为无符号归一化的4×4 矩形的RGBA texel数据，最开始的64bit编码A，后64bit编码RGB
+        VK_FORMAT_BC4_UNORM_BLOCK :  指定一个1分量，block-compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的R texel数据
+        VK_FORMAT_BC4_SNORM_BLOCK :  指定一个1分量，block-compressed的format，其中每个64-bit压缩的texel block编码一个为有符号归一化的4×4 矩形的R texel数据
+        VK_FORMAT_BC5_UNORM_BLOCK : 指定一个2分量，block-compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RG texel数据，最开始的64bit编码R，后64bit编码G
+        VK_FORMAT_BC5_SNORM_BLOCK : 指定一个2分量，block-compressed的format，其中每个128-bit压缩的texel block编码一个为有符号归一化的4×4 矩形的RG texel数据，最开始的64bit编码R，后64bit编码G
+        VK_FORMAT_BC6H_UFLOAT_BLOCK : 指定一个3分量，block-compressed的format，其中每个128-bit压缩的texel block编码一个为无符号浮点型的4×4 矩形的RGB texel数据
+        VK_FORMAT_BC6H_SFLOAT_BLOCK : 指定一个3分量，block-compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的4×4 矩形的RGB texel数据
+        VK_FORMAT_BC7_UNORM_BLOCK : 指定一个4分量，block-compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据
+        VK_FORMAT_BC7_SRGB_BLOCK : 指定一个4分量，block-compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据,sRGB nonlinear encoding 编码作用到RGB
+        VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK : 指定一个3分量，ETC2 compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGB texel数据，该format不含A分量，认为是不透明的
+        VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK : 指定一个3分量，ETC2 compressed的format，其中每个64-bit压缩的texel block以 sRGB nonlinear encoding 编码一个为无符号归一化的4×4 矩形的RGB texel数据，该format不含A分量，认为是不透明的
+        VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK : 指定一个4分量，ETC2 compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGB texel数据，提供1bit的A分量
+        VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK : 指定一个4分量，ETC2 compressed的format，其中每个64-bit压缩的texel block以 sRGB nonlinear encoding 编码一个为无符号归一化的4×4 矩形的RGB texel数据，提供1bit的A分量
+        VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK : 指定一个4分量，ETC2 compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据，最开始的64bit编码A，后64bit编码RGB
+        VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK : 指定一个4分量，ETC2 compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据，最开始的64bit编码A，后64bit以 sRGB nonlinear encoding 编码RGB
+        VK_FORMAT_EAC_R11_UNORM_BLOCK : 指定一个1分量，ETC2 compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的R texel数据
+        VK_FORMAT_EAC_R11_SNORM_BLOCK : 指定一个1分量，ETC2 compressed的format，其中每个64-bit压缩的texel block编码一个为有符号归一化的4×4 矩形的R texel数据
+        VK_FORMAT_EAC_R11G11_UNORM_BLOCK : 指定一个2分量，ETC2 compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RG texel数据，最开始的64bit编码R，后64bit编码G
+        VK_FORMAT_EAC_R11G11_SNORM_BLOCK : 指定一个2分量，ETC2 compressed的format，其中每个128-bit压缩的texel block编码一个为有符号归一化的4×4 矩形的RG texel数据，最开始的64bit编码R，后64bit编码G
+        VK_FORMAT_ASTC_4x4_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_4x4_SRGB_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的4×4 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_5x4_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的5×4 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_5x4_SRGB_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的5×4 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_5x4_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的5×4 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_5x5_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的5×5 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_5x5_SRGB_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的5×5 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_5x5_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的5×5 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_6x5_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的6×5 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_6x5_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的6×5 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_6x5_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的6×5 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_6x6_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的6×6 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_6x6_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的6×6 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_6x6_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的6×6 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_8x5_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的8×5 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_8x5_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的8×5 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_8x5_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的8×5 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_8x6_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的8×6 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_8x6_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的8×6 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_8x6_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的8×6 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_8x8_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的8×8 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_8x8_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的8×8 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_8x8_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的8×8 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_10x5_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的10×5 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_10x5_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的10×5 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_10x5_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的10×5 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_10x6_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的10×6 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_10x6_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的10×6 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_10x6_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的10×6 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_10x8_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的10×8 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_10x8_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的10×8 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_10x8_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的10×8 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_10x10_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的10×10 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_10x10_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的10×10 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的10×10 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_12x10_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的12×10 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_12x10_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的12×10 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的12×10 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_12x12_UNORM_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的12×12 矩形的RGBA texel数据
+        VK_FORMAT_ASTC_12x12_SRGB_BLOCK :  指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为无符号归一化的12×12 矩形的RGBA texel数据，sRGB nonlinear encoding编码RGB
+        VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK : 指定一个4分量，ASTC compressed的format，其中每个128-bit压缩的texel block编码一个为有符号浮点型的12×12 矩形的RGBA texel数据
+        VK_FORMAT_G8B8G8R8_422_UNORM : 指定一个4分量，32bit的format，包含一对G分量，一个R分量以及一个B分量，编码一个为无符号归一化的2×1矩形的RGB  texel数据。其他详细描述见p4049
+        VK_FORMAT_B8G8R8G8_422_UNORM : 指定一个4分量，32bit的format，包含一对G分量，一个R分量以及一个B分量，编码一个为无符号归一化的2×1矩形的RGB  texel数据。其他详细描述见p4049
+        VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为8bit的G分量，plane 1 为8bit的B分量，plane 2 为8bit的R分量。其他详细描述见p4049
+        VK_FORMAT_G8_B8R8_2PLANE_420_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为8bit的G分量，16bit的BR分量在 plane 1 ，B在字节0，R在字节1。其他详细描述见p4050
+        VK_FORMAT_G8_B8_R8_3PLANE_422_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为8bit的G分量，plane 1 为8bit的B分量，plane 2 为8bit的R分量。其他详细描述见p4050
+        VK_FORMAT_G8_B8R8_2PLANE_422_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为8bit的G分量，16bit的BR分量在 plane 1 ，B在字节0，R在字节1。其他详细描述见p4050
+        VK_FORMAT_G8_B8_R8_3PLANE_444_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为8bit的G分量，plane 1 为8bit的B分量，plane 2 为8bit的R分量。其他详细描述见p4050
+        VK_FORMAT_R10X6_UNORM_PACK16 : 指定1个R分量的无符号归一化format，R分量占据高10bit，低6bit不使用
+        VK_FORMAT_R10X6G10X6_UNORM_2PACK16 : 指定一个2个分量,32bit的无符号归一化format，R分量占据0..1字节的高10bit，G分量占据2..3字节的高10bit，剩余的低6bit不使用
+        VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16 : 指定一个4个分量,64bit的无符号归一化format，R分量占据0..1字节的高10bit，G分量占据2..3字节的高10bit，B分量占据4..5字节的高10bit，A分量占据6..7字节的高10bit，剩余的低6bit不使用
+        VK_FORMAT_G10X6B10X6G10X6R10X6_422_UNORM_4PACK16 : 指定一个4分量，64bit的format，包含一对G分量，一个R分量以及一个B分量，编码一个为无符号归一化的2×1矩形的RGB  texel数据。其他详细描述见p4051
+        VK_FORMAT_B10X6G10X6R10X6G10X6_422_UNORM_4PACK16 : 指定一个4分量，64bit的format，包含一对G分量，一个R分量以及一个B分量，编码一个为无符号归一化的2×1矩形的RGB  texel数据。其他详细描述见p4051
+        VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16 :  指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高10bit，B分量占据plane 1的16bit 字的高10bit，R分量占据plane 2 的16bit 字的高10bit,所有剩余的低6bit不使用。其他详细描述见p4051
+        VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高10bit，BR分量在plane 1，其中B分量占据plane 1字节0..1的16bit 字的高10bit，R分量占据plane 2 字节2..3的16bit 字的高10bit,所有剩余的低6bit不使用。其他详细描述见p4051
+        VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高10bit，B分量占据plane 1的16bit 字的高10bit，R分量占据plane 2 的16bit 字的高10bit,所有剩余的低6bit不使用。其他详细描述见p4052
+        VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高10bit，BR分量在plane 1，其中B分量占据plane 1字节0..1的16bit 字的高10bit，R分量占据plane 2 字节2..3的16bit 字的高10bit,所有剩余的低6bit不使用。其他详细描述见p4052
+        VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高10bit，B分量占据plane 1的16bit 字的高10bit，R分量占据plane 2 的16bit 字的高10bit,所有剩余的低6bit不使用。其他详细描述见p4052
+        VK_FORMAT_R12X4_UNORM_PACK16 : 指定1个R分量的16bit无符号归一化format，R分量占据高12bit，低4bit不使用
+        VK_FORMAT_R12X4G12X4_UNORM_2PACK16 : 指定一个2个分量,32bit的无符号归一化format，R分量占据0..1字节的高12bit，G分量占据2..3字节的高12bit，剩余的低4bit不使用
+        VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16 : 指定一个4个分量,64bit的无符号归一化format，R分量占据0..1字节的高12bit，G分量占据2..3字节的高12bit，B分量占据4..5字节的高12bit，A分量占据6..7字节的高12bit，剩余的低4bit不使用
+        VK_FORMAT_G12X4B12X4G12X4R12X4_422_UNORM_4PACK16 : 指定一个4分量，64bit的format，包含一对G分量，一个R分量以及一个B分量，编码一个为无符号归一化的2×1矩形的RGB  texel数据。其他详细描述见p4052
+        VK_FORMAT_B12X4G12X4R12X4G12X4_422_UNORM_4PACK16 : 指定一个4分量，64bit的format，包含一对G分量，一个R分量以及一个B分量，编码一个为无符号归一化的2×1矩形的RGB  texel数据。其他详细描述见p4053
+        VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高12bit，B分量占据plane 1的16bit 字的高12bit，R分量占据plane 2 的16bit 字的高12bit,所有剩余的低4bit不使用。其他详细描述见p4053
+        VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高12bit，BR分量在plane 1，其中B分量占据plane 1字节0..1的16bit 字的高12bit，R分量占据plane 2 字节2..3的16bit 字的高12bit,所有剩余的低4bit不使用。其他详细描述见p4053
+        VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高12bit，B分量占据plane 1的16bit 字的高10bit，R分量占据plane 2 的16bit 字的高12bit,所有剩余的低4bit不使用。其他详细描述见p4053
+        VK_FORMAT_G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高12bit，BR分量在plane 1，其中B分量占据plane 1字节0..1的16bit 字的高12bit，R分量占据plane 2 字节2..3的16bit 字的高12bit,所有剩余的低4bit不使用。其他详细描述见p4054
+        VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高12bit，B分量占据plane 1的16bit 字的高12bit，R分量占据plane 2 的16bit 字的高12bit,所有剩余的低4bit不使用。其他详细描述见p4054
+        VK_FORMAT_G16B16G16R16_422_UNORM : 指定一个4分量，64bit的format，包含一对G分量，一个R分量以及一个B分量，编码一个为无符号归一化的2×1矩形的RGB  texel数据。其他详细描述见p4054
+        VK_FORMAT_B16G16R16G16_422_UNORM : 指定一个4分量，64bit的format，包含一对G分量，一个R分量以及一个B分量，编码一个为无符号归一化的2×1矩形的RGB  texel数据。其他详细描述见p4054
+        VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为16bit的G分量，plane 1 为16bit的B分量，plane 2 为16bit的R分量。其他详细描述见p4054
+        VK_FORMAT_G16_B16R16_2PLANE_420_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为16bit的G分量，32bit的BR分量在 plane 1 ，B在字节0..1，R在字节2..3。其他详细描述见p4055
+        VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为16bit的G分量，plane 1 为16bit的B分量，plane 2 为16bit的R分量。其他详细描述见p4055
+        VK_FORMAT_G16_B16R16_2PLANE_422_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为16bit的G分量，32bit的BR分量在 plane 1 ，B在字节0..1，R在字节2..3。其他详细描述见p4055
+        VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为16bit的G分量，plane 1 为16bit的B分量，plane 2 为16bit的R分量。其他详细描述见p4055
+        VK_FORMAT_G8_B8R8_2PLANE_444_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为8bit的G分量，16bit的BR分量在 plane 1 ，B在字节0，R在字节1。其他详细描述见p4055
+        VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高10bit，BR分量在32bit的plane 1，其中B分量占据plane 1字节0..1的16bit 字的高10bit，R分量占据plane 2 字节2..3的16bit 字的高10bit,所有剩余的低6bit不使用。其他详细描述见p4055
+        VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16 : 指定一个无符号归一化的multi-planar format，G分量占据plane 0 的16bit 字的高12bit，BR分量在32bit的plane 1，其中B分量占据plane 1字节0..1的16bit 字的高12bit，R分量占据plane 2 字节2..3的16bit 字的高12bit,所有剩余的低4bit不使用。其他详细描述见p4055
+        VK_FORMAT_G16_B16R16_2PLANE_444_UNORM : 指定一个无符号归一化的multi-planar format，plane 0 为16bit的G分量，32bit的BR分量在 plane 1 ，B在字节0..1，R在字节2..3。其他详细描述见p4055
+        VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG : 指定一个4分量，PVRTC compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的8×4 矩形的RGBA texel数据
+        VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG : 指定一个4分量，PVRTC compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据
+        VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG : 指定一个4分量，PVRTC compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的8×4 矩形的RGBA texel数据
+        VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG : 指定一个4分量，PVRTC compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据
+        VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG : 指定一个4分量，PVRTC compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的8×4 矩形的RGBA texel数据,sRGB nonlinear encoding应用到RGB
+        VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG : 指定一个4分量，PVRTC compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据,sRGB nonlinear encoding应用到RGB
+        VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG : 指定一个4分量，PVRTC compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的8×4 矩形的RGBA texel数据,sRGB nonlinear encoding应用到RGB
+        VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG : 指定一个4分量，PVRTC compressed的format，其中每个64-bit压缩的texel block编码一个为无符号归一化的4×4 矩形的RGBA texel数据,sRGB nonlinear encoding应用到RGB
+        VK_FORMAT_R16G16_SFIXED5_NV : 指定一个2分量，每个分量16bit的带线性编码的有符号定点的format。16bit有符号定点数的格式为，最高bit为符号位，然后后10bit位整数位，最后5bit位小数位
+
         */
+
+
+        // Compatible Formats of Planes of Multi-Planar Formats  参见p4057
+        {
+
+        }
+
     }
 
 

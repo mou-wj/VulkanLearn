@@ -1397,6 +1397,7 @@ void LimitsAndFormatsTest::FormatsTest()
         formatProperties.linearTilingFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;// VkFormatFeatureFlagBits 组合值位掩码，指明以tiling 为 VK_IMAGE_TILING_LINEAR 创建的image的format的format features
         formatProperties.optimalTilingFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;/* VkFormatFeatureFlagBits 组合值位掩码，指明以tiling 为 VK_IMAGE_TILING_OPTIMAL 创建的image的format的format features
         VkFormatFeatureFlagBits:
+         -------------------------以下为对image或者image view 或者 sampler Y′CBCR conversion objects的format features的描述--------------------------------------
         VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT : 指明一个image view可以被采样 
         VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT : 指明一个image view可以作为一个 storage image
         VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT : 指明一个image view可以作为一个支持atomic operations的 storage image
@@ -1436,6 +1437,159 @@ void LimitsAndFormatsTest::FormatsTest()
 
 
 
+
+        struct FormatProperties2EXT {
+            VkDrmFormatModifierPropertiesList2EXT drmFormatModifierPropertiesList2EXT{};
+            VkDrmFormatModifierPropertiesListEXT drmFormatModifierPropertiesListEXT{};
+            VkFormatProperties3 formatProperties3{};
+            VkSubpassResolvePerformanceQueryEXT subpassResolvePerformanceQueryEXT{};
+            FormatProperties2EXT() {
+                Init();
+            }
+            void Init() {
+                drmFormatModifierPropertiesList2EXT.sType = VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_2_EXT;
+                drmFormatModifierPropertiesList2EXT.pNext = nullptr;
+                drmFormatModifierPropertiesListEXT.sType = VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT;
+                drmFormatModifierPropertiesListEXT.pNext = nullptr;
+                formatProperties3.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3;
+                formatProperties3.pNext = nullptr;
+                subpassResolvePerformanceQueryEXT.sType = VK_STRUCTURE_TYPE_SUBPASS_RESOLVE_PERFORMANCE_QUERY_EXT;
+                subpassResolvePerformanceQueryEXT.pNext = nullptr;
+
+
+            }
+
+        };
+
+        //查询支持的format的format features
+        VkFormatProperties2 formatProperties2{};//等价于VkFormatProperties2KHR
+        formatProperties2.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+        FormatProperties2EXT formatProperties2EXT{};
+        formatProperties2.pNext = &formatProperties2EXT.drmFormatModifierPropertiesList2EXT;
+        formatProperties2.formatProperties = formatProperties;//返回相关features信息
+
+        //等价于vkGetPhysicalDeviceFormatProperties2KHR
+        vkGetPhysicalDeviceFormatProperties2(physicalDevice, VK_FORMAT_R8G8_UINT, &formatProperties2);//假设返回了正确结果
+
+        //VkFormatProperties2.pNext 中包含VkDrmFormatModifierPropertiesListEXT 获取和format兼容的Linux DRM format modifiers列表
+        VkDrmFormatModifierPropertiesListEXT& drmFormatModifierPropertiesListEXT = formatProperties2EXT.drmFormatModifierPropertiesListEXT;
+        drmFormatModifierPropertiesListEXT.drmFormatModifierCount = 1;//一个inout 参数，指明和format兼容的modifiers的数量
+        VkDrmFormatModifierPropertiesEXT drmFormatModifierPropertiesEXT{};
+        {
+            drmFormatModifierPropertiesEXT.drmFormatModifier = 0;//为 Linux DRM format modifier
+            drmFormatModifierPropertiesEXT.drmFormatModifierPlaneCount = 1;//为以format以及modifier创建的image的内存plane的数量
+			drmFormatModifierPropertiesEXT.drmFormatModifierTilingFeatures = VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT;// VkFormatFeatureFlagBits 组合值位掩码，指明以format以及modifier创建的image支持的format features
+            //其他描述见p4089
+        }
+        drmFormatModifierPropertiesListEXT.pDrmFormatModifierProperties = &drmFormatModifierPropertiesEXT;//为NULL或者一组VkDrmFormatModifierPropertiesEXT数组指针，为NULL指明返回modifiers的个数
+
+
+        //VkFormatProperties2.pNext 中包含VkDrmFormatModifierPropertiesList2EXT 获取和format兼容的Linux DRM format modifiers列表
+        VkDrmFormatModifierPropertiesList2EXT& drmFormatModifierPropertiesList2EXT = formatProperties2EXT.drmFormatModifierPropertiesList2EXT;
+        drmFormatModifierPropertiesList2EXT.drmFormatModifierCount = 1;
+        VkDrmFormatModifierProperties2EXT drmFormatModifierProperties2EXT{};
+        {
+            drmFormatModifierProperties2EXT.drmFormatModifier = 0;//为 Linux DRM format modifier
+            drmFormatModifierProperties2EXT.drmFormatModifierPlaneCount = 1;//为以format以及modifier创建的image的内存plane的数量
+            drmFormatModifierProperties2EXT.drmFormatModifierTilingFeatures = VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT;// VkFormatFeatureFlagBits2 组合值位掩码，指明以format以及modifier创建的image支持的format features
+            //其他描述见p4089
+        }
+		drmFormatModifierPropertiesList2EXT.pDrmFormatModifierProperties = &drmFormatModifierProperties2EXT;//为NULL或者一组VkDrmFormatModifierProperties2EXT数组指针，为NULL指明返回modifiers的个数
+
+
+        //VkFormatProperties2.pNext 中包含VkFormatProperties3 获取拓展的format features
+        VkFormatProperties3& formatProperties3 = formatProperties2EXT.formatProperties3;
+        formatProperties3.linearTilingFeatures = VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT;// VkFormatFeatureFlagBits2 组合值位掩码，指明以tiling 为 VK_IMAGE_TILING_LINEAR 创建的image的format的format features
+        formatProperties3.optimalTilingFeatures = VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT;/* VkFormatFeatureFlagBits2 组合值位掩码，指明以tiling 为 VK_IMAGE_TILING_OPTIMAL 创建的image的format的format features
+        VkFormatFeatureFlagBits2:
+        -------------------------以下为对image或者image view 或者 sampler Y′CBCR conversion objects的format features的描述--------------------------------------
+        VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT : 指明一个image view可以被采样
+        VK_FORMAT_FEATURE_2_STORAGE_IMAGE_BIT : 指明一个image view可以作为一个 storage image
+        VK_FORMAT_FEATURE_2_STORAGE_IMAGE_ATOMIC_BIT : 指明一个image view可以作为一个支持atomic operations的 storage image
+        VK_FORMAT_FEATURE_2_COLOR_ATTACHMENT_BIT : 指明一个image view可以作为一个framebuffer color attachment以及一个input attachment
+        VK_FORMAT_FEATURE_2_COLOR_ATTACHMENT_BLEND_BIT : 指明一个image view可以作为一个支持blending的framebuffer color attachment
+        VK_FORMAT_FEATURE_2_DEPTH_STENCIL_ATTACHMENT_BIT : 指明一个image view可以作为一个framebuffer depth/stencil attachment以及一个input attachment
+        VK_FORMAT_FEATURE_2_BLIT_SRC_BIT : 指明一个image view可以作为vkCmdBlitImage2 以及 vkCmdBlitImage命令的一个srcImage
+        VK_FORMAT_FEATURE_2_BLIT_DST_BIT : 指明一个image view可以作为vkCmdBlitImage2 以及 vkCmdBlitImage命令的一个dstImage
+        VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_FILTER_LINEAR_BIT : 指明如果也设置了VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT，则一个image view可以用来采样且以magFilter 或者minFilter设置为VK_FILTER_LINEAR 或者mipmapMode 设置为VK_SAMPLER_MIPMAP_MODE_LINEAR，
+              如果VK_FORMAT_FEATURE_2_BLIT_SRC_BIT 也设置了，则image view可以作为vkCmdBlitImage2 以及 vkCmdBlitImage命令的srcImage其以filter 为VK_FILTER_LINEAR，只要支持VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT 或者 VK_FORMAT_FEATURE_2_BLIT_SRC_BIT 则该设置必须支持，详细描述见p4096
+
+        VK_FORMAT_FEATURE_2_TRANSFER_SRC_BIT : 指明一个image view可以作为copy commands的source image。如果application apiVersion 为Vulkan 1.0 且不支持VK_KHR_maintenance1，则该设置隐式支持，即使该设置为0
+        VK_FORMAT_FEATURE_2_TRANSFER_DST_BIT : 指明一个image view可以作为copy commands的destination image。如果application apiVersion 为Vulkan 1.0 且不支持VK_KHR_maintenance1，则该设置隐式支持，即使该设置为0
+        VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_FILTER_MINMAX_BIT : 指明VkImage 可以作为一个有min或者max VkSamplerReductionMode的iamge进行采样，如果支持VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT，则该设置必须支持
+        VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_FILTER_CUBIC_BIT : 指明VkImage 可以被一个有magFilter或者 minFilter设置为VK_FILTER_CUBIC_EXT的采样器进行采样，或者作为filter设为VK_FILTER_CUBIC_EXT的blit commands的source image，如果支持VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT，则该设置必须支持
+        VK_FORMAT_FEATURE_2_MIDPOINT_CHROMA_SAMPLES_BIT : 指明应用可以定义一个使用该format做为source的sampler Y′CBCR conversion，以该format创建的image可以和VkSamplerYcbcrConversionCreateInfo的xChromaOffset 以及/或者 yChromaOffset 成员设置为VK_CHROMA_LOCATION_MIDPOINT 一起使用，否则xChromaOffset 以及 yChromaOffset两者只能为VK_CHROMA_LOCATION_COSITED_EVEN，如果format不包含chroma downsampling（即不是420或者422format）但实现又支持该format的sampler Y′CBCR conversion，则实现必须设置VK_FORMAT_FEATURE_2_MIDPOINT_CHROMA_SAMPLES_BIT
+        VK_FORMAT_FEATURE_2_COSITED_CHROMA_SAMPLES_BIT : 指明应用可以定义一个使用该format做为source的sampler Y′CBCR conversion，以该format创建的image可以和VkSamplerYcbcrConversionCreateInfo的xChromaOffset 以及/或者 yChromaOffset 成员设置为VK_CHROMA_LOCATION_COSITED_EVEN 一起使用，否则xChromaOffset 以及 yChromaOffset两者只能为VK_CHROMA_LOCATION_MIDPOINT，如果VK_FORMAT_FEATURE_2_COSITED_CHROMA_SAMPLES_BIT 和 VK_FORMAT_FEATURE_2_MIDPOINT_CHROMA_SAMPLES_BIT都没有设置，则不能定义一个使用该format做为source的sampler Y′CBCR conversion
+        VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT : 指明应用可以定义一个使用该format做为source的以chromaFilter 设置为VK_FILTER_LINEAR 的sampler Y′CBCR conversion
+        VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT : 指明该format可以含有不同的chroma, min, and mag filters
+        VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT : 指明重建是显式的，见Chroma Reconstruction p1489,如果该设置为设置则重建默认是隐式的
+        VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT : 指明重建可以通过VkSamplerYcbcrConversionCreateInfo::forceExplicitReconstruction设置为VK_TRUE强制设置为显式的，如果支持VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT 则该设置必须支持
+        VK_FORMAT_FEATURE_2_DISJOINT_BIT : 指明一个multi-planar image 可以在创建的时候设置VK_IMAGE_CREATE_DISJOINT_BIT 位，对于单plane格式，该设置必须不设置
+        VK_FORMAT_FEATURE_2_FRAGMENT_DENSITY_MAP_BIT_EXT : 指明一个image view可以用作一个fragment density map attachment
+        VK_FORMAT_FEATURE_2_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR : 指明一个image view可以用作一个fragment shading rate attachment，不能为不是UINT的format设置，不能为buffer的format设置
+        VK_FORMAT_FEATURE_2_VIDEO_DECODE_OUTPUT_BIT_KHR : 指明一个image view可以在video decode operations中用作decode output picture
+        VK_FORMAT_FEATURE_2_VIDEO_DECODE_DPB_BIT_KHR : 指明一个image view可以在video decode operations中用作output reconstructed pictur 或者input reference picture
+        VK_FORMAT_FEATURE_2_VIDEO_ENCODE_INPUT_BIT_KHR : 指明一个image view可以在video encode operations中用作encode input picture
+        VK_FORMAT_FEATURE_2_VIDEO_ENCODE_DPB_BIT_KHR : 指明一个image view可以在video encode operations中用作output reconstructed pictur 或者input reference picture
+        VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT : 指明以该format创建的image views或者 buffer views可以用作storage images 或者 storage texel buffers用于不需要指定format的read operations。
+        VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT : 指明以该format创建的image views或者 buffer views可以用作storage images 或者 storage texel buffers用于不需要指定format的write operations。
+        VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_DEPTH_COMPARISON_BIT  : 指明以该format创建的image views可以用作OpImage*Dref* 指令的depth comparison image。
+        VK_FORMAT_FEATURE_2_LINEAR_COLOR_ATTACHMENT_BIT_NV : 指明该format在作为一个renderable Linear Color Attachment中支持，只能设置在color formats的linearTilingFeatures中
+        VK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOM : 指明以该format创建的image views可以用作weight image sampling operations 的weight image input
+        VK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM : 指明该format创建的image views可以在weight image sampling operations 中被采样
+        VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM specifies : 指明该format创建的image views可以在block matching operations 中使用
+        VK_FORMAT_FEATURE_2_BOX_FILTER_SAMPLED_BIT_QCOM : 指明该format创建的image views可以在box filter sampling operations 中被采样
+        VK_FORMAT_FEATURE_2_HOST_IMAGE_TRANSFER_BIT_EXT : 指明一个image可以以VK_IMAGE_USAGE_HOST_TRANSFER_BIT_EXT 创建
+        
+        -------------------------以下为对buffer的format features的描述--------------------------------------
+        VK_FORMAT_FEATURE_2_UNIFORM_TEXEL_BUFFER_BIT : 指明该format可以用于创建一个绑定到一个VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER descriptor的buffer view
+        VK_FORMAT_FEATURE_2_STORAGE_TEXEL_BUFFER_BIT : 指明该format可以用于创建一个绑定到一个VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER descriptor的buffer view
+        VK_FORMAT_FEATURE_2_STORAGE_TEXEL_BUFFER_ATOMIC_BIT : 指明该format的VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER descritptor 支持atomic operations
+        VK_FORMAT_FEATURE_2_VERTEX_BUFFER_BIT : 指明该format可以用作vertex buffer format(VkVertexInputAttributeDescription::format)
+        VK_FORMAT_FEATURE_2_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR : 指明该format可以用作acceleration structure的vertex buffer format(VkAccelerationStructureGeometryTrianglesDataKHR::format)，该format也可在做host端加速结构构建时作为host端内存中的vertex format
+        VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT : 指明以该format创建的buffer views可以用作storage texel buffers 用于不需要指定format的read operations。
+        VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT : 指明以该format创建的buffer views可以用作storage texel buffers 用于不需要指定format的write operations。
+        VK_FORMAT_FEATURE_2_OPTICAL_FLOW_IMAGE_BIT_NV : 指明以该format创建的image views可以用作optical flow operations的 image input 或者 reference
+        VK_FORMAT_FEATURE_2_OPTICAL_FLOW_VECTOR_BIT_NV : 指明以该format创建的image views可以用作optical flow operations的 flow vector output（或者作为hint, output 或者 global flow）
+        VK_FORMAT_FEATURE_2_OPTICAL_FLOW_COST_BIT_NV : 指明以该format创建的image views可以用作optical flow operations的 flow cost output
+
+        */
+        formatProperties3.bufferFeatures = VK_FORMAT_FEATURE_2_BOX_FILTER_SAMPLED_BIT_QCOM;// VkFormatFeatureFlagBits2 组合值位掩码，指明buffer的format支持的format features
+
+
+        //VkFormatProperties2.pNext 中包含VkSubpassResolvePerformanceQueryEXT 查询对该format的attachment 的 subpass resolve operation的性能特点
+        VkSubpassResolvePerformanceQueryEXT& subpassResolvePerformanceQueryEXT = formatProperties2EXT.subpassResolvePerformanceQueryEXT;
+		subpassResolvePerformanceQueryEXT.optimal = VK_TRUE;//是否subpass resolve operation 的执行是否是最优的，其他描述见p4100
+    
+
+        //Potential Format Features  ， 简单描述就是在一些情况下不清楚VkImage的VkImageTiling属性，所以无法直接确定format features，所以该对image的format就提供了potential format features，potential format features定义为那些format features见p4100
+
+
+    }
+
+
+
+    //Required Format Support  参见p4100
+    {
+        /*
+        实现必须对列举的formats至少支持一组format features,这些format features必须对所有VkImageType都支持，且不需要额外的拓展等开启
+
+        列举的formats以及其支持的format features等详情见 p4101 - p41   列举的表格中
+        */
+
+        //Formats Without Shader Storage Format  参见p4119
+        {
+            //对使用一个format为 Unknown, shaderStorageImageReadWithoutFormat 以及 shaderStorageImageWriteWithoutFormat 的 storage image 或者 storage texel buffer的，设备级别的format features只支持一部分formats  ,详情见p4119 - p4121
+        }
+
+        // Depth Comparison Format Support  参见p4121
+        
+        
+        //Format Feature Dependent Usage Flags  参见p4121
+        {
+			//特定的image或者buffer资源的usage flags依赖于format features，详情见p4121 的表格列举的
+
+        }
     }
 
 }

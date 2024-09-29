@@ -1149,6 +1149,11 @@ typedef struct VkPhysicalDeviceImageAlignmentControlPropertiesMESA {
 	uint32_t supportedImageAlignmentMask;
 } VkPhysicalDeviceImageAlignmentControlPropertiesMESA;
 
-
+// Provided by VK_ANDROID_external_memory_android_hardware_buffer
+typedef struct VkAndroidHardwareBufferUsageANDROID {
+	VkStructureType    sType;
+	void* pNext;
+	uint64_t           androidHardwareBufferUsage;
+} VkAndroidHardwareBufferUsageANDROID;
 
 NS_TEST_END

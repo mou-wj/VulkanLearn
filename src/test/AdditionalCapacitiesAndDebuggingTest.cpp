@@ -313,16 +313,73 @@ void AdditionalCapacitiesAndDebuggingTest::AdditionalCapacitiesTest()
 
 	//Optional Fence Capabilities  参见p4158
 	{
+		//fences 可能会导入或导出其payload到外部的句柄，查询fences支持的外部句柄类型
+		VkPhysicalDeviceExternalFenceInfo physicalDeviceExternalFenceInfo{};//等价于VkPhysicalDeviceExternalFenceInfoKHR
+		physicalDeviceExternalFenceInfo.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO;
+		physicalDeviceExternalFenceInfo.pNext = nullptr;
+		physicalDeviceExternalFenceInfo.handleType = VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT;/* VkExternalFenceHandleTypeFlagBits 值，指明要查询属性的external fence handle type
+		VkExternalFenceHandleTypeFlagBits 等价于VkExternalFenceHandleTypeFlagBitsKHR:
+		VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT : 指明一个在vulkan以及其他兼容的APIs之外含有有限有效用法的POSIX file descriptor handle，其他详细描述见p4160
+		VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT : 指明一个在vulkan以及其他兼容的APIs之外含有有限有效用法的NT handle ，其他详细描述见p4160
+		VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT : 指明一个在vulkan以及其他兼容的APIs之外含有有限有效用法的 global share handle，其他详细描述见p4160
+		VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT : 指定一个Linux Sync File 或者 Android Fence object的POSIX file descriptor handle，其他详细描述见p4160
+
+
+		一些 external fence handle types只能在有相同底层physical device 以及或者相同device版本的情况下才能共享，相关的兼容信息参见p4162 Table 93. External fence handle types compatibility
+
+		*/
+
+		VkExternalFenceProperties externalFenceProperties{};//等价于VkExternalFencePropertiesKHR
+		externalFenceProperties.sType = VK_STRUCTURE_TYPE_EXTERNAL_FENCE_PROPERTIES;
+		externalFenceProperties.pNext = nullptr;
+		externalFenceProperties.exportFromImportedHandleTypes = VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT;//VkExternalFenceHandleTypeFlagBits 组合值位掩码，指明handleType 可以从哪些类型的imported handle中导出
+		externalFenceProperties.compatibleHandleTypes = VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT;//VkExternalFenceHandleTypeFlagBits 组合值位掩码，指明以handleType 创建fence的同时还可以指定哪些handle types
+		externalFenceProperties.externalFenceFeatures = VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT;/*VkExternalFenceFeatureFlagBits 组合值位掩码，描述 handleType的特性	
+		VkExternalFenceFeatureFlagBits 等价于VkExternalFenceFeatureFlagBitsKHR :
+		VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT : 指明该类型的句柄可以从Vulkan fence 对象中导出
+		VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT : 指明该类型的句柄可以导入为Vulkan fence 对象
+		*/
+
+
+
+		//等价于vkGetPhysicalDeviceExternalFencePropertiesKHR
+		vkGetPhysicalDeviceExternalFenceProperties(physicalDevice, &physicalDeviceExternalFenceInfo, &externalFenceProperties);
+
 
 	}
 
 
+	//Timestamp Calibration Capabilities  参见p4164
+	{
+		//查询physical device支持的timestamp calibration的一组 time domains
+		uint32_t timeDomainCount = 0;
+		std::vector<VkTimeDomainKHR> timeDomainKHRs{};
+		//等价于vkGetPhysicalDeviceCalibrateableTimeDomainsEXT
+		vkGetPhysicalDeviceCalibrateableTimeDomainsKHR(physicalDevice, &timeDomainCount, nullptr);
+		timeDomainKHRs.resize(timeDomainCount);
+		vkGetPhysicalDeviceCalibrateableTimeDomainsKHR(physicalDevice, &timeDomainCount, timeDomainKHRs.data());
 
+	}
 
 }
 
 void AdditionalCapacitiesAndDebuggingTest::DebuggingTest()
 {
+	/*
+	为了帮助开发人员跟踪应用程序在使用Vulkan时出现的错误，特别是与外部调试器或分析器结合时，可以使用debugging扩展
+	
+	在debugging 信息中， VkObjectType 枚举值可以用来标识对象类型，VkObjectType有那些值以及其对应那些Vulkan句柄的详情见p4166 - p4169
+	*/
+
+	
+	//Debug Utilities  参见p4169
+	{
+
+
+
+
+	}
+
 }
 
 

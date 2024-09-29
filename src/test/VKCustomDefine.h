@@ -1156,4 +1156,14 @@ typedef struct VkAndroidHardwareBufferUsageANDROID {
 	uint64_t           androidHardwareBufferUsage;
 } VkAndroidHardwareBufferUsageANDROID;
 
+struct VkTimeDomainKHR {};//没有定义这里的结构体，这里只是声明了一个空结构体，用来表示VkTimeDomainKHR类型
+
+// Provided by VK_KHR_calibrated_timestamps
+VkResult vkGetPhysicalDeviceCalibrateableTimeDomainsKHR(
+	VkPhysicalDevice physicalDevice,
+	uint32_t* pTimeDomainCount,
+	VkTimeDomainKHR* pTimeDomains) {
+	return VkResult{};
+}
+
 NS_TEST_END

@@ -363,6 +363,63 @@ void AdditionalCapacitiesAndDebuggingTest::AdditionalCapacitiesTest()
 
 }
 
+VkBool32 TestCallBack(
+	VkDebugUtilsMessageSeverityFlagBitsEXT           messageSeverity,//指明触发该回调的 VkDebugUtilsMessageSeverityFlagBitsEXT
+	VkDebugUtilsMessageTypeFlagsEXT                  messageTypes,//指明触发该回调的 VkDebugUtilsMessageTypeFlagBitsEXT
+	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,//为包含所有callback数据的VkDebugUtilsMessengerCallbackDataEXT
+	void* pUserData/*为创建 VkDebugUtilsMessengerEXT时提供的用户定义的数据*/) {//该回调函数内部不能调用任何vulkan函数
+	
+	VkDebugUtilsMessengerCallbackDataEXT debugUtilsMessengerCallbackDataEXT{};
+	debugUtilsMessengerCallbackDataEXT = *pCallbackData;
+	debugUtilsMessengerCallbackDataEXT.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT;
+	VkDeviceAddressBindingCallbackDataEXT deviceAddressBindingCallbackDataEXT{};
+	{
+		//其他描述见p4189
+		deviceAddressBindingCallbackDataEXT.sType = VK_STRUCTURE_TYPE_DEVICE_ADDRESS_BINDING_CALLBACK_DATA_EXT;
+		deviceAddressBindingCallbackDataEXT.pNext = nullptr;
+		deviceAddressBindingCallbackDataEXT.flags = VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT;/*VkDeviceAddressBindingFlagBitsEXT 组合值位掩码，指明触发回调的绑定的事件的额外信息
+		VkDeviceAddressBindingFlagBitsEXT
+		VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT : 指明VkDeviceAddressBindingCallbackDataEXT描述一个还没用通过vulkan命令来对host可见的vulkan对象
+		*/
+		deviceAddressBindingCallbackDataEXT.baseAddress = 0;//指明vulkan 对象所在的虚拟地址空间的开始的GPU-accessible virtual address，也见VkDebugUtilsMessengerCallbackDataEXT.pObjects中指定的
+		deviceAddressBindingCallbackDataEXT.size = 1;//为GPU-accessible virtual address空间的字节大小
+		deviceAddressBindingCallbackDataEXT.bindingType = VK_DEVICE_ADDRESS_BINDING_TYPE_BIND_EXT;/*VkDeviceAddressBindingTypeEXT值，指明触发回调的绑定的事件的类型
+		VkDeviceAddressBindingTypeEXT:
+		VK_DEVICE_ADDRESS_BINDING_TYPE_BIND_EXT : 指定一个新的GPU-accessible virtual address范围被绑定
+		VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT : 指定一个GPU-accessible virtual address范围被解绑
+		*/
+		
+
+	}
+	debugUtilsMessengerCallbackDataEXT.pNext = nullptr;//可能包含一个VkDeviceAddressBindingCallbackDataEXT
+	debugUtilsMessengerCallbackDataEXT.flags = 0;//为0保留未来使用
+	debugUtilsMessengerCallbackDataEXT.pMessageIdName;//为NULL或者 null-terminated UTF-8 string，指明关联到给定message的message ID的标识
+	debugUtilsMessengerCallbackDataEXT.messageIdNumber;//为触发message的ID
+	debugUtilsMessengerCallbackDataEXT.pMessage;//为NULL 如果messageTypes为VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT,或者触发message的详细信息的null-terminated UTF-8 string
+	debugUtilsMessengerCallbackDataEXT.queueLabelCount;// pQueueLabels 中元素个数
+	debugUtilsMessengerCallbackDataEXT.pQueueLabels;//为NULL或者一组在该回调调用时queue中激活的VkDebugUtilsLabelEXT的数组指针
+	debugUtilsMessengerCallbackDataEXT.cmdBufLabelCount;//pCmdBufLabels中元素个数
+	debugUtilsMessengerCallbackDataEXT.pCmdBufLabels;//为NULL或者一组在该回调调用时command buffer中激活的VkDebugUtilsLabelEXT的数组指针
+	debugUtilsMessengerCallbackDataEXT.objectCount;//pObjects 中元素个数
+	debugUtilsMessengerCallbackDataEXT.pObjects;//为关联到检测到的问题的一组VkDebugUtilsObjectNameInfoEXT的指针
+	
+	
+	return VK_FALSE;
+}
+
+VkBool32 ReportCallBack(
+	VkDebugReportFlagsEXT                       flags,//指明触发回调的 VkDebugReportFlagBitsEXT
+	VkDebugReportObjectTypeEXT                  objectType,// VkDebugReportObjectTypeEXT值，指明事件触发时使用的或者创建的对象的类型
+	uint64_t                                    object,//为检测到事件发生时使用或创建的对象，在objectType不为VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT时有效
+	size_t                                      location,//为指明触发事件的(layer, driver, loader)位置，可选参数
+	int32_t                                     messageCode,//是layer-defined的值用于测试回调函数
+	const char* pLayerPrefix,//null-terminated UTF-8 string，为该回调的调用者的名字缩写
+	const char* pMessage,//为触发message的详细信息的null-terminated UTF-8 string
+	void* pUserData/*为创建 VkDebugReportCallbackEXT时提供的用户定义的数据*/) {
+
+	return VK_FALSE;
+}
+
 void AdditionalCapacitiesAndDebuggingTest::DebuggingTest()
 {
 	/*
@@ -374,11 +431,408 @@ void AdditionalCapacitiesAndDebuggingTest::DebuggingTest()
 	
 	//Debug Utilities  参见p4169
 	{
+		//Object Debug Annotation  描述如何将指定的名字或者二进制信息关联到指定的vulkan对象 ， 参见p4169
+		{
+			//Object Naming 参见p4170
+			VkDebugUtilsObjectNameInfoEXT debugUtilsObjectNameInfoEXT{};
+			debugUtilsObjectNameInfoEXT.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+			debugUtilsObjectNameInfoEXT.pNext = nullptr;
+			debugUtilsObjectNameInfoEXT.objectType = VK_OBJECT_TYPE_IMAGE;// VkObjectType值，指明要指定名字的对象的类型
+			debugUtilsObjectNameInfoEXT.objectHandle = (uint64_t)VkImage{/*假设这是一个有效的VkImage*/};//为该对象的句柄
+			debugUtilsObjectNameInfoEXT.pObjectName = "my_image";//为NULL或者null-terminated UTF-8 string，指明应用到该对象的名字
+			/*
+			VkDebugUtilsObjectNameInfoEXT有效用法:
+			1.如果objectType 为VK_OBJECT_TYPE_UNKNOWN，则objectHandle 不能为VK_NULL_HANDLE
+			2.如果objectType 不为VK_OBJECT_TYPE_UNKNOWN，则objectHandle 必须为VK_NULL_HANDLE或者一个objectType指明的类型的vulkan对象的vulkan句柄
+
+			*/
 
 
+			//给一个对象提供一个用户定义的名字
+			vkSetDebugUtilsObjectNameEXT(device, &debugUtilsObjectNameInfoEXT);
+			/*
+			vkSetDebugUtilsObjectNameEXT有效用法:
+			1.pNameInfo->objectType 不能为VK_OBJECT_TYPE_UNKNOWN
+			2.pNameInfo->objectHandle 不能为VK_NULL_HANDLE
+			3.如果pNameInfo->objectHandle 是一个有效的instance-level 对象的句柄，device对应的VkDevice必须来自和pNameInfo->objectHandle相同的VkInstance
+			4.如果pNameInfo->objectHandle 是一个有效的physical-device-level 对象的句柄，device对应的VkDevice 必须从 pNameInfo->objectHandle对应的VkPhysicalDevice上衍生出来
+			5.如果pNameInfo->objectHandle 是一个有效的device-level 对象的句柄，pNameInfo->objectHandle 必须衍生自device对应的VkDevice
+			*/
+
+
+			//Object Data Association  参加p4172
+			VkDebugUtilsObjectTagInfoEXT debugUtilsObjectTagInfoEXT{};
+			debugUtilsObjectTagInfoEXT.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT;
+			debugUtilsObjectTagInfoEXT.pNext = nullptr;
+			debugUtilsObjectTagInfoEXT.objectType = VK_OBJECT_TYPE_IMAGE;// VkObjectType值，指明要指定名字的对象的类型
+			debugUtilsObjectTagInfoEXT.objectHandle = (uint64_t)VkImage{/*假设这是一个有效的VkImage*/ };//为该对象的句柄
+			debugUtilsObjectTagInfoEXT.tagName =  0;//为tag的数字标识符
+			debugUtilsObjectTagInfoEXT.tagSize = 3;//为附加到vulkan对象上的数据的字节数大小
+			debugUtilsObjectTagInfoEXT.pTag = "tag";//为附加到vulkan对象上的数据
+			/*
+			VkDebugUtilsObjectTagInfoEXT有效用法:
+			1.objectType 不能为VK_OBJECT_TYPE_UNKNOWN
+			2.objectHandle必须为一个有效的objectType指明的类型的vulkan对象的vulkan句柄
+			*/
+
+			//给一个对象附加额外的数据
+			vkSetDebugUtilsObjectTagEXT(device, &debugUtilsObjectTagInfoEXT);
+			/*
+			vkSetDebugUtilsObjectTagEXT有效用法:
+			1.如果pTagInfo->objectHandle 是一个有效的instance-level 对象的句柄，device对应的VkDevice必须来自和pNameInfo->objectHandle相同的VkInstance
+			2.如果pTagInfo->objectHandle 是一个有效的physical-device-level 对象的句柄，device对应的VkDevice 必须从 pNameInfo->objectHandle对应的VkPhysicalDevice上衍生出来
+			3.如果pTagInfo->objectHandle 是一个有效的device-level 对象的句柄，pNameInfo->objectHandle 必须衍生自device对应的VkDevice
+			
+			*/
+
+
+		}
+
+
+		//Queue Labels  描述如何注释和成组提交到队列的工作，参见p4174
+		{
+			VkQueue queue{/*假设这是一个有效的VkQueue*/ };
+
+			//queue debug label region可以用来标记哪个queue的哪个位置正在执行
+
+
+			VkDebugUtilsLabelEXT debugUtilsLabelEXT{};
+			debugUtilsLabelEXT.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+			debugUtilsLabelEXT.pNext = nullptr;
+			debugUtilsLabelEXT.pLabelName = "my_label";//null-terminated UTF-8 string，指明label的名字
+			debugUtilsLabelEXT.color/*float[4]*/;//一个可选的关联到label的RGBA颜色值，每个元素范围为0-1
+
+			//开启一个queue debug label region
+			vkQueueBeginDebugUtilsLabelEXT(queue, &debugUtilsLabelEXT);
+
+			//结束一个queue debug label region
+			vkQueueEndDebugUtilsLabelEXT(queue);//该命令调用之前必须有一个配对的vkQueueBeginDebugUtilsLabelEXT
+
+
+			//将一个label插入一个queue
+			vkQueueInsertDebugUtilsLabelEXT(queue, &debugUtilsLabelEXT);
+
+		}
+
+		//Command Buffer Labels  描述如何关联VkCommandBuffer中的场景中的逻辑元素 ,参加p4177
+		{
+			VkCommandBuffer commandBuffer{/*假设这是一个有效的VkCommandBuffer*/ };
+
+			//command buffer debug label可以用来标记哪个command buffer的哪个位置正在执行
+
+			VkDebugUtilsLabelEXT debugUtilsLabelEXT{};
+			debugUtilsLabelEXT.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+			debugUtilsLabelEXT.pNext = nullptr;
+			debugUtilsLabelEXT.pLabelName = "my_label";//null-terminated UTF-8 string，指明label的名字
+			debugUtilsLabelEXT.color/*float[4]*/;//一个可选的关联到label的RGBA颜色值，每个元素范围为0-1
+
+			//定义一个command buffer上debug label region的开始
+			vkCmdBeginDebugUtilsLabelEXT(commandBuffer, &debugUtilsLabelEXT);
+
+			//关闭一个command debug label region
+			vkCmdEndDebugUtilsLabelEXT(commandBuffer);//commandBuffer记录之前必须有一个配对的vkCmdBeginDebugUtilsLabelEXT
+
+			//往command buffer中插入一个debug label
+			vkCmdInsertDebugUtilsLabelEXT(commandBuffer, &debugUtilsLabelEXT);
+
+		}
+
+		//Debug Messengers   描述如何创建一个关联到应用的使用回调函数捕获vulkan不同部分的调试信息的debug messenger ,参见p4181
+		{
+			//vulkan允许应用注册回调函数来获取调试信息，其中这些回调函数的主要调用者为 validation layers，被debug messagers 触发，
+
+			VkDebugUtilsMessengerEXT debugUtilsMessengerEXT{};
+
+			//创建一个触发debug callback的debug messenger
+			VkDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCreateInfoEXT{};
+			debugUtilsMessengerCreateInfoEXT.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+			debugUtilsMessengerCreateInfoEXT.pNext = nullptr;
+			debugUtilsMessengerCreateInfoEXT.flags = 0;//为0保留未来使用
+			debugUtilsMessengerCreateInfoEXT.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;/*VkDebugUtilsMessageSeverityFlagBitsEXT组合值位掩码，指明那种程度的事件会触发回调函数的调用
+			VkDebugUtilsMessageSeverityFlagBitsEXT:
+			VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT : 指明应该捕获能够指明vulkan loaders，layers以及drivers的所有诊断信息的详细输出
+			VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT : 指明表示信息的消息比如当调试应用时可能处理的资源细节
+			VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT : 指明vulkan的使用可能会暴露一个应用bug，这些情况可能不会立即损害程序执行，只是一个警告。
+			VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT : 指明应用遇到一个违反vulkan的有效用法的错误
+
+			*/
+			debugUtilsMessengerCreateInfoEXT.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;/* VkDebugUtilsMessageTypeFlagBitsEXT 组合值位掩码，指明那种类型的事件会触发回调函数的调用
+			VkDebugUtilsMessageTypeFlagBitsEXT:
+			VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT : 指明一些常规事件发生，即non-specification, non-performance event
+			VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT : 指明一些发生在validation 中违反Vulkan specification的可能指明invalid behavior的事件
+			VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT : 指明一个潜在的vulkan的非最优用法，比如当VkAttachmentDescription::loadOp设置为VK_ATTACHMENT_LOAD_OP_CLEAR时调用vkCmdClearColorImage
+			VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT : 指明实现已经修改了关联到vulkan对象的GPU-visible virtual addresses
+			*/
+			debugUtilsMessengerCreateInfoEXT.pfnUserCallback = &TestCallBack;//回调函数的函数地址
+			debugUtilsMessengerCreateInfoEXT.pUserData = "test_userdata";//一个用户定义的传递给回调函数的对应参数的数据
+
+
+
+			//在有些情况下用户希望有意的提交一个debug messager,触发一个回调
+			VkDebugUtilsMessengerCallbackDataEXT debugUtilsMessengerCallbackDataEXT{};//回调函数中已经描述，这里不再复述
+			vkSubmitDebugUtilsMessageEXT(instance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT, VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT, &debugUtilsMessengerCallbackDataEXT);// pCallbackData->pObjects中每个元素的objectType 不能为VK_OBJECT_TYPE_UNKNOWN
+
+
+			//销毁一个debug messager
+			vkDestroyDebugUtilsMessengerEXT(instance, debugUtilsMessengerEXT, nullptr);
+			/*
+			vkDestroyDebugUtilsMessengerEXT有效用法:
+			1.如果创建messager时提供了一个 VkAllocationCallbacks，则这里必须提供一个兼容的
+			2.如果创建messager时没有提供VkAllocationCallbacks，则pAllocator 必须为NULL
+
+			*/
+
+		}
+
+	}
+
+
+
+	//Debug Markers  参见p4193
+	{
+		//Debug markers为debugging 以及 validation layers提供了一种灵活的方式来获取注释和调试信息
+
+		//Object Annotation   描述如何将名字和二进制数据关联到vulkan对象， 参见p4193
+		{
+
+			
+			VkDebugMarkerObjectNameInfoEXT debugMarkerObjectNameInfoEXT{};
+			debugMarkerObjectNameInfoEXT.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
+			debugMarkerObjectNameInfoEXT.pNext = nullptr;
+			debugMarkerObjectNameInfoEXT.objectType = VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT;//  VkDebugReportObjectTypeEXT值，指明要指定名字的对象的类型
+			debugMarkerObjectNameInfoEXT.object = (uint64_t)VkImage{/*假设这是一个有效的VkImage*/ };//为该对象的句柄
+			debugMarkerObjectNameInfoEXT.pObjectName = "my_image";//为NULL或者null-terminated UTF-8 string，指明应用到该对象的名字
+			/*
+			VkDebugMarkerObjectNameInfoEXT有效用法:
+			1.objectType 不能为 VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
+			2.object 不能为VK_NULL_HANDLE
+			3.object必须为一个objectType指明的类型的vulkan对象的vulkan句柄
+			*/
+
+
+			//给一个对象提供一个用户定义的名字
+			vkDebugMarkerSetObjectNameEXT(device, &debugMarkerObjectNameInfoEXT);
+
+
+			VkDebugMarkerObjectTagInfoEXT debugMarkerObjectTagInfoEXT{};
+			debugMarkerObjectTagInfoEXT.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT;
+			debugMarkerObjectTagInfoEXT.pNext = nullptr;
+			debugMarkerObjectTagInfoEXT.objectType = VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT;// VkDebugReportObjectTypeEXT值，指明要指定名字的对象的类型,这里类型枚举值的定义以及对应的vulkan对象句柄详细信息见p4204 - p4207
+			debugMarkerObjectTagInfoEXT.object = (uint64_t)VkImage{/*假设这是一个有效的VkImage*/ };//为该对象的句柄
+			debugMarkerObjectTagInfoEXT.tagName = 0;//为tag的数字标识符
+			debugMarkerObjectTagInfoEXT.tagSize = 3;//为附加到vulkan对象上的数据的字节数大小
+			debugMarkerObjectTagInfoEXT.pTag = "tag";//为附加到vulkan对象上的数据
+			/*
+			VkDebugMarkerObjectTagInfoEXT有效用法:
+			1.objectType 不能为VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
+			2.object不能为VK_NULL_HANDLE
+			3.object必须为一个有效的objectType指明的类型的vulkan对象的vulkan句柄
+			*/
+
+			//给一个对象附加额外的数据
+			vkDebugMarkerSetObjectTagEXT(device, &debugMarkerObjectTagInfoEXT);
+
+		}
+
+
+		//Command Buffer Markers   描述如何关联VkCommandBuffer中的场景中的逻辑元素， 参见p4197
+		{
+			VkCommandBuffer commandBuffer{/*假设这是一个有效的VkCommandBuffer*/ };
+
+			//marker region可以用来标记command buffer中的一组命令的区域
+
+			VkDebugMarkerMarkerInfoEXT debugMarkerMarkerInfoEXT{};
+			debugMarkerMarkerInfoEXT.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
+			debugMarkerMarkerInfoEXT.pNext = nullptr;
+			debugMarkerMarkerInfoEXT.pMarkerName = "my_marker";//null-terminated UTF-8 string，指明marker的名字
+			debugMarkerMarkerInfoEXT.color/*float[4]*/;//一个可选的关联到marker的RGBA颜色值，每个元素范围为0-1
+
+			//定义一个marker region的开始
+			vkCmdDebugMarkerBeginEXT(commandBuffer, &debugMarkerMarkerInfoEXT);
+
+			//关闭一个marker region
+			vkCmdDebugMarkerEndEXT(commandBuffer);//commandBuffer记录之前必须有一个配对的vkCmdDebugMarkerBeginEXT
+
+			//往command buffer中插入一个marker
+			vkCmdDebugMarkerInsertEXT(commandBuffer, &debugMarkerMarkerInfoEXT);
+
+		}
+
+	}
+
+
+	//Debug Report Callbacks  参见p4201
+	{
+		//debug report callbacks能够在感兴趣的事件发生时给出更多的反馈信息
+
+		VkDebugReportCallbackEXT debugReportCallbackEXT{};
+
+		
+		VkDebugReportCallbackCreateInfoEXT debugReportCallbackCreateInfoEXT{};
+		debugReportCallbackCreateInfoEXT.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+		debugReportCallbackCreateInfoEXT.pNext = nullptr;
+		debugReportCallbackCreateInfoEXT.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT;/* VkDebugReportFlagBitsEXT 组合值位掩码，指明哪个事件发生会触发回调
+		VkDebugReportFlagBitsEXT:
+		VK_DEBUG_REPORT_ERROR_BIT_EXT : 指明应用违反了specification中规定的合法使用条件
+		VK_DEBUG_REPORT_WARNING_BIT_EXT : 指明vulkan的使用可能会暴露一个应用bug，这些情况可能不会立即损害程序执行，只是一个警告。
+		VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT : 指明一个潜在的vulkan的非最优用法，比如当VkAttachmentDescription::loadOp设置为VK_ATTACHMENT_LOAD_OP_CLEAR时调用vkCmdClearColorImage
+		VK_DEBUG_REPORT_INFORMATION_BIT_EXT : 指明表示信息的消息比如当调试应用时可能处理的资源细节
+		VK_DEBUG_REPORT_DEBUG_BIT_EXT : 指明来自实现以及layers的诊断信息
+		*/
+		debugReportCallbackCreateInfoEXT.pfnCallback = &ReportCallBack;//指明回调函数
+		debugReportCallbackCreateInfoEXT.pUserData = "my_userdata";//一个用户定义的传递给回调函数的对应参数的数据
+		
+		//注册一个debug report callback
+		vkCreateDebugReportCallbackEXT(instance, &debugReportCallbackCreateInfoEXT, nullptr, &debugReportCallbackEXT);
+
+
+		//往debug stream中注入消息
+		vkDebugReportMessageEXT(instance, VK_DEBUG_REPORT_ERROR_BIT_EXT/*flags*/, VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT/*objectType*/, (uint64_t)VkBuffer {/*假设这是一个有效的VkBuffer*/ }/*object*/,
+			0/*location*/, 0/*messageCode*/, "my_layer"/*pLayerPrefix*/, "test_message"/*pMessage*/);//参数含义可对照ReportCallBack回调函数
+		/*
+		vkDebugReportMessageEXT有效用法:
+		1.object 必须为vulkan 对象句柄或者VK_NULL_HANDLE
+		2.如果objectType 不为VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT 且object不为VK_NULL_HANDLE，则object必须是objectType对应的有效的vulkan对象的vulkan句柄
+
+		*/
+
+		
+		//销毁debug report callbacks
+		vkDestroyDebugReportCallbackEXT(instance, debugReportCallbackEXT, nullptr);
+		/*
+		vkDestroyDebugReportCallbackEXT有效用法:
+		1.如果创建callback时提供了一个 VkAllocationCallbacks，则这里必须提供一个兼容的
+		2.如果创建callback时没有提供VkAllocationCallbacks，则pAllocator 必须为NULL
+		
+		*/
+
+	}
+
+
+	//Device Loss Debugging 参见p4209
+	{
+		//Device Diagnostic Checkpoints  参见p4209
+		{
+			//device的程序执行可以通过以用户定义的device诊断检查点注释指定的命令流来追踪来调试device loss
+
+			VkCommandBuffer commandBuffer{};//假设这是一个有效的VkCommandBuffer
+
+			//在命令流中插入device diagnostic checkpoints
+			uint32_t checkPoint = 0;
+			vkCmdSetCheckpointNV(commandBuffer, &checkPoint);
+
+			//当在device执行遇到device loss错误时，实现会在host执行的一些点返回VK_ERROR_DEVICE_LOST，获取错误发生时最近的 diagnostic checkpoints的信息
+			uint32_t checkPointDataCount2 = 0;
+			std::vector<VkCheckpointData2NV> checkpointData2NVs{};
+			vkGetQueueCheckpointData2NV(VkQueue{/*假设这是一个有效的VkQueue*/ }/*queue*/, & checkPointDataCount2, nullptr);//queue必须处于lost状态
+			checkpointData2NVs.resize(checkPointDataCount2);
+			vkGetQueueCheckpointData2NV(VkQueue{/*假设这是一个有效的VkQueue*/ }, & checkPointDataCount2, checkpointData2NVs.data());//假设正确返回了数据
+			VkCheckpointData2NV &checkpointData2NV = checkpointData2NVs[0];
+			checkpointData2NV.sType = VK_STRUCTURE_TYPE_CHECKPOINT_DATA_2_NV;
+			checkpointData2NV.pNext = nullptr;
+			checkpointData2NV.stage = VK_PIPELINE_STAGE_2_RESOLVE_BIT;//指明一个checkpoint marker 数据引用到的一个pipeline stage
+			uint32_t markerData2 = 0;
+			checkpointData2NV.pCheckpointMarker = &markerData2;//包含在stage上执行的最后一个checkpoint marker的值
+
+
+			//当在device执行遇到device loss错误时，实现会在host执行的一些点返回VK_ERROR_DEVICE_LOST，获取错误发生时最近的 diagnostic checkpoints的信息
+			uint32_t checkPointDataCount = 0;
+			std::vector<VkCheckpointDataNV> checkpointDataNVs{};
+			vkGetQueueCheckpointDataNV(VkQueue{/*假设这是一个有效的VkQueue*/ }/*queue*/, & checkPointDataCount, nullptr);//queue必须处于lost状态
+			checkpointDataNVs.resize(checkPointDataCount);
+			vkGetQueueCheckpointDataNV(VkQueue{/*假设这是一个有效的VkQueue*/ }, & checkPointDataCount, checkpointDataNVs.data());//假设正确返回了数据
+			VkCheckpointDataNV& checkpointDataNV = checkpointDataNVs[0];
+			checkpointDataNV.sType = VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV;
+			checkpointDataNV.pNext = nullptr;
+			checkpointDataNV.stage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;//指明一个checkpoint marker 数据引用到的一个pipeline stage
+			uint32_t markerData = 0;
+			checkpointDataNV.pCheckpointMarker = &markerData;//包含在stage上执行的最后一个checkpoint marker的值
+
+
+		}
+
+
+		//Device Fault Diagnosis  参见p4214
+		{
+			//获取可能造成device loss的错误的诊断信息
+			VkDeviceFaultCountsEXT deviceFaultCountsEXT{};
+			deviceFaultCountsEXT.sType = VK_STRUCTURE_TYPE_DEVICE_FAULT_COUNTS_EXT;
+			deviceFaultCountsEXT.pNext = nullptr;
+			deviceFaultCountsEXT.addressInfoCount = 0;// VkDeviceFaultAddressInfoEXT的数量，描述可能造成页故障的内存访问或者是该故障发生是的active指令的地址
+			deviceFaultCountsEXT.vendorInfoCount = 0;// VkDeviceFaultVendorInfoEXT的数量，描述vendor-specific 故障信息
+			deviceFaultCountsEXT.vendorBinarySize = 0;//为 vendor-specific二进制崩溃转储信息的字节数大小，可能在导入到外部工具时提供额外信息
+
+			VkDeviceFaultInfoEXT deviceFaultInfoEXT{};
+			deviceFaultInfoEXT.sType = VK_STRUCTURE_TYPE_DEVICE_FAULT_INFO_EXT;
+			deviceFaultInfoEXT.pNext = nullptr;
+			deviceFaultInfoEXT.description/*char[VK_MAX_DESCRIPTION_SIZE]*/;//null-terminated UTF-8 string，指明用户可读的故障描述
+			deviceFaultInfoEXT.pAddressInfos = nullptr;//为NULL，或者 VkDeviceFaultAddressInfoEXT数组指针，描述可能造成页故障的内存访问或者是该故障发生是的active指令的地址，如果不为NULL，每个元素描述一个 GPU virtual address空间的绑定区域，该区域包含访问的GPU virtual address或者active指令的指针
+			deviceFaultInfoEXT.pVendorInfos = nullptr;//为NULL，或者 VkDeviceFaultVendorInfoEXT数组指针，描述vendor-specific 故障信息
+			deviceFaultInfoEXT.pVendorBinaryData = nullptr;//为NULL，或者vendorBinarySize个字节的数据的指针，描述vendor-specific二进制崩溃转储信息，其他见p4220 Vendor Binary Crash Dumps
+
+
+			std::vector<VkDeviceFaultAddressInfoEXT> deviceFaultAddressInfoEXTs{};
+			std::vector<VkDeviceFaultVendorInfoEXT> deviceFaultVendorInfoEXTs{};
+			std::vector<char> vendorBinaryData{};
+
+			vkGetDeviceFaultInfoEXT(device, &deviceFaultCountsEXT, &deviceFaultInfoEXT);
+			/*
+			vkGetDeviceFaultInfoEXT有效用法:
+			1.device 必须为lost state
+			2.如果pFaultCounts->addressInfoCount的值不为0，且pFaultInfo->pAddressInfos不为NULL，则pFaultInfo->pAddressInfos 必须一个有pFaultCounts->addressInfoCount个VkDeviceFaultAddressInfoEXT元素的数组指针
+			3.如果pFaultCounts->vendorInfoCount的值不为0，且pFaultInfo->pVendorInfos不为NULL，则pFaultInfo->pVendorInfos 必须一个有pFaultCounts->vendorInfoCount个VkDeviceFaultVendorInfoEXT元素的数组指针
+			4.如果pFaultCounts->vendorBinarySize的值不为0，且pFaultInfo->pVendorBinaryData不为NULL，则pFaultInfo->pVendorBinaryData 必须一个有pFaultCounts->vendorBinarySize个字节元素的数组指针
+			*/
+
+			deviceFaultAddressInfoEXTs.resize(deviceFaultCountsEXT.addressInfoCount);
+			deviceFaultVendorInfoEXTs.resize(deviceFaultCountsEXT.vendorInfoCount);
+			vendorBinaryData.resize(deviceFaultCountsEXT.vendorBinarySize);
+			deviceFaultInfoEXT.pAddressInfos = deviceFaultAddressInfoEXTs.data();
+			deviceFaultInfoEXT.pVendorInfos = deviceFaultVendorInfoEXTs.data();
+			deviceFaultInfoEXT.pVendorBinaryData = vendorBinaryData.data();
+
+			vkGetDeviceFaultInfoEXT(device, &deviceFaultCountsEXT, &deviceFaultInfoEXT);//假设正确返回了数据
+			VkDeviceFaultAddressInfoEXT &deviceFaultAddressInfoEXT = deviceFaultAddressInfoEXTs[0];
+			deviceFaultAddressInfoEXT.addressType = VK_DEVICE_FAULT_ADDRESS_TYPE_WRITE_INVALID_EXT;/*VkDeviceFaultAddressTypeEXT值，为造成页故障的内存访问的操作类型或者active指令和错误之间的联系类型
+			VkDeviceFaultAddressTypeEXT:
+			VK_DEVICE_FAULT_ADDRESS_TYPE_NONE_EXT : 指明VkDeviceFaultAddressInfoEXT不描述一个页故障或者一个指令地址
+			VK_DEVICE_FAULT_ADDRESS_TYPE_READ_INVALID_EXT : 指明VkDeviceFaultAddressInfoEXT描述一个被非法读操作触发的页故障
+			VK_DEVICE_FAULT_ADDRESS_TYPE_WRITE_INVALID_EXT : 指明VkDeviceFaultAddressInfoEXT描述一个被非法写操作触发的页故障
+			VK_DEVICE_FAULT_ADDRESS_TYPE_EXECUTE_INVALID_EXT : 描述一个有尝试执行non-executable memory触发的页故障
+			VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_UNKNOWN_EXT : 在故障发生时指定一个指令指针，指明该指令可能和故障有关
+			VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_INVALID_EXT : 指定一个有非法指令错误的指令指针
+			VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_FAULT_EXT : 指定一个和故障有关的指令指针
+			
+			*/
+			deviceFaultAddressInfoEXT.reportedAddress = 0;//为device记录的GPU virtual address
+			deviceFaultAddressInfoEXT.addressPrecision = 0;//为2的指数，指明device可以记录的地址的精度，和reportedAddress可以共同决定一个有效的地址范围
+
+
+			VkDeviceFaultVendorInfoEXT& deviceFaultVendorInfoEXT = deviceFaultVendorInfoEXTs[0];
+			deviceFaultVendorInfoEXT.description[VK_MAX_DESCRIPTION_SIZE];//包含null-terminated UTF-8 string，描述用户可读的故障信息
+			deviceFaultVendorInfoEXT.vendorFaultCode;//为该故障的vendor-specific 故障码
+			deviceFaultVendorInfoEXT.vendorFaultData;//为关联到该故障的vendor-specific 故障数据
+
+			//vendor-specific binary crash dump数据的格式对各个vendor可能不尽相同，所以为了区分并正确处理这些数据，写入到VkDeviceFaultInfoEXT::pVendorBinaryData的最开始的字节必须包含一个头信息，格式为
+			VkDeviceFaultVendorBinaryHeaderVersionOneEXT deviceFaultVendorBinaryHeaderVersionOneEXT{};
+			deviceFaultVendorBinaryHeaderVersionOneEXT.headerSize = sizeof(VkDeviceFaultVendorBinaryHeaderVersionOneEXT);//为crash dump header的字节数大小
+			deviceFaultVendorBinaryHeaderVersionOneEXT.headerVersion = VK_DEVICE_FAULT_VENDOR_BINARY_HEADER_VERSION_ONE_EXT;//一个 VkDeviceFaultVendorBinaryHeaderVersionEXT 值，指定header版本
+			deviceFaultVendorBinaryHeaderVersionOneEXT.vendorID = 0;//为实现的VkPhysicalDeviceProperties::vendorID
+			deviceFaultVendorBinaryHeaderVersionOneEXT.deviceID = 0;//为实现的VkPhysicalDeviceProperties::deviceID
+			deviceFaultVendorBinaryHeaderVersionOneEXT.driverVersion = 0;//为实现的VkPhysicalDeviceProperties::driverVersion
+			deviceFaultVendorBinaryHeaderVersionOneEXT.pipelineCacheUUID[VK_UUID_SIZE];//包含匹配VkPhysicalDeviceProperties::pipelineCacheUUID属性的值
+			deviceFaultVendorBinaryHeaderVersionOneEXT.applicationNameOffset = 0;//为0，或者为从crash dump header的基地址开始到包含应用的名字的null-terminated UTF-8 string结束的偏移量，如果不为0，则必须匹配创建instance时指定的VkApplicationInfo::pApplicationName
+			deviceFaultVendorBinaryHeaderVersionOneEXT.applicationVersion = 0;//必须为0或者创建instance时指定的VkApplicationInfo::applicationVersion
+			deviceFaultVendorBinaryHeaderVersionOneEXT.engineNameOffset = 0;//为0，或者为从crash dump header的基地址开始到包含用于创建应用的engine的名字的null-terminated UTF-8 string结束的偏移量，如果不为0，则必须匹配创建instance时指定的 VkApplicationInfo::pEngineName
+			deviceFaultVendorBinaryHeaderVersionOneEXT.engineVersion = 0;//必须为0或者创建instance时指定的VkApplicationInfo::engineVersion
+			deviceFaultVendorBinaryHeaderVersionOneEXT.apiVersion = 0;//必须为0或者创建instance时指定的VkApplicationInfo::apiVersion
+
+
+		}
 
 
 	}
+
 
 }
 

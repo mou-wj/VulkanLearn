@@ -736,17 +736,17 @@ void AdditionalCapacitiesAndDebuggingTest::DebuggingTest()
 
 
 			//当在device执行遇到device loss错误时，实现会在host执行的一些点返回VK_ERROR_DEVICE_LOST，获取错误发生时最近的 diagnostic checkpoints的信息
-			uint32_t checkPointDataCount = 0;
-			std::vector<VkCheckpointDataNV> checkpointDataNVs{};
-			vkGetQueueCheckpointDataNV(VkQueue{/*假设这是一个有效的VkQueue*/ }/*queue*/, & checkPointDataCount, nullptr);//queue必须处于lost状态
-			checkpointDataNVs.resize(checkPointDataCount);
-			vkGetQueueCheckpointDataNV(VkQueue{/*假设这是一个有效的VkQueue*/ }, & checkPointDataCount, checkpointDataNVs.data());//假设正确返回了数据
-			VkCheckpointDataNV& checkpointDataNV = checkpointDataNVs[0];
-			checkpointDataNV.sType = VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV;
-			checkpointDataNV.pNext = nullptr;
-			checkpointDataNV.stage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;//指明一个checkpoint marker 数据引用到的一个pipeline stage
-			uint32_t markerData = 0;
-			checkpointDataNV.pCheckpointMarker = &markerData;//包含在stage上执行的最后一个checkpoint marker的值
+uint32_t checkPointDataCount = 0;
+std::vector<VkCheckpointDataNV> checkpointDataNVs{};
+vkGetQueueCheckpointDataNV(VkQueue{/*假设这是一个有效的VkQueue*/ }/*queue*/, & checkPointDataCount, nullptr);//queue必须处于lost状态
+checkpointDataNVs.resize(checkPointDataCount);
+vkGetQueueCheckpointDataNV(VkQueue{/*假设这是一个有效的VkQueue*/ }, & checkPointDataCount, checkpointDataNVs.data());//假设正确返回了数据
+VkCheckpointDataNV& checkpointDataNV = checkpointDataNVs[0];
+checkpointDataNV.sType = VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV;
+checkpointDataNV.pNext = nullptr;
+checkpointDataNV.stage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;//指明一个checkpoint marker 数据引用到的一个pipeline stage
+uint32_t markerData = 0;
+checkpointDataNV.pCheckpointMarker = &markerData;//包含在stage上执行的最后一个checkpoint marker的值
 
 
 		}
@@ -792,7 +792,7 @@ void AdditionalCapacitiesAndDebuggingTest::DebuggingTest()
 			deviceFaultInfoEXT.pVendorBinaryData = vendorBinaryData.data();
 
 			vkGetDeviceFaultInfoEXT(device, &deviceFaultCountsEXT, &deviceFaultInfoEXT);//假设正确返回了数据
-			VkDeviceFaultAddressInfoEXT &deviceFaultAddressInfoEXT = deviceFaultAddressInfoEXTs[0];
+			VkDeviceFaultAddressInfoEXT& deviceFaultAddressInfoEXT = deviceFaultAddressInfoEXTs[0];
 			deviceFaultAddressInfoEXT.addressType = VK_DEVICE_FAULT_ADDRESS_TYPE_WRITE_INVALID_EXT;/*VkDeviceFaultAddressTypeEXT值，为造成页故障的内存访问的操作类型或者active指令和错误之间的联系类型
 			VkDeviceFaultAddressTypeEXT:
 			VK_DEVICE_FAULT_ADDRESS_TYPE_NONE_EXT : 指明VkDeviceFaultAddressInfoEXT不描述一个页故障或者一个指令地址
@@ -802,7 +802,7 @@ void AdditionalCapacitiesAndDebuggingTest::DebuggingTest()
 			VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_UNKNOWN_EXT : 在故障发生时指定一个指令指针，指明该指令可能和故障有关
 			VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_INVALID_EXT : 指定一个有非法指令错误的指令指针
 			VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_FAULT_EXT : 指定一个和故障有关的指令指针
-			
+
 			*/
 			deviceFaultAddressInfoEXT.reportedAddress = 0;//为device记录的GPU virtual address
 			deviceFaultAddressInfoEXT.addressPrecision = 0;//为2的指数，指明device可以记录的地址的精度，和reportedAddress可以共同决定一个有效的地址范围
@@ -815,8 +815,8 @@ void AdditionalCapacitiesAndDebuggingTest::DebuggingTest()
 
 			//vendor-specific binary crash dump数据的格式对各个vendor可能不尽相同，所以为了区分并正确处理这些数据，写入到VkDeviceFaultInfoEXT::pVendorBinaryData的最开始的字节必须包含一个头信息，格式为
 			VkDeviceFaultVendorBinaryHeaderVersionOneEXT deviceFaultVendorBinaryHeaderVersionOneEXT{};
-			deviceFaultVendorBinaryHeaderVersionOneEXT.headerSize = sizeof(VkDeviceFaultVendorBinaryHeaderVersionOneEXT);//为crash dump header的字节数大小
-			deviceFaultVendorBinaryHeaderVersionOneEXT.headerVersion = VK_DEVICE_FAULT_VENDOR_BINARY_HEADER_VERSION_ONE_EXT;//一个 VkDeviceFaultVendorBinaryHeaderVersionEXT 值，指定header版本
+			deviceFaultVendorBinaryHeaderVersionOneEXT.headerSize = sizeof(VkDeviceFaultVendorBinaryHeaderVersionOneEXT);//为crash dump header的字节数大小,必须为56
+			deviceFaultVendorBinaryHeaderVersionOneEXT.headerVersion = VK_DEVICE_FAULT_VENDOR_BINARY_HEADER_VERSION_ONE_EXT;//一个 VkDeviceFaultVendorBinaryHeaderVersionEXT 值，指定header版本，必须为VK_DEVICE_FAULT_VENDOR_BINARY_HEADER_VERSION_ONE_EXT，指明 binary crash dump header的版本1
 			deviceFaultVendorBinaryHeaderVersionOneEXT.vendorID = 0;//为实现的VkPhysicalDeviceProperties::vendorID
 			deviceFaultVendorBinaryHeaderVersionOneEXT.deviceID = 0;//为实现的VkPhysicalDeviceProperties::deviceID
 			deviceFaultVendorBinaryHeaderVersionOneEXT.driverVersion = 0;//为实现的VkPhysicalDeviceProperties::driverVersion
@@ -829,6 +829,58 @@ void AdditionalCapacitiesAndDebuggingTest::DebuggingTest()
 
 
 		}
+
+
+	}
+
+
+	//Active Tooling Information 参见p4222
+	{
+		//获取提供debugging, profiling, 或者 similar services的在physical device上激活的tools的信息
+		uint32_t toolCount = 0;
+		std::vector<VkPhysicalDeviceToolProperties> physicalDeviceToolPropertiesSets{};
+		vkGetPhysicalDeviceToolProperties(physicalDevice, &toolCount, nullptr);//等价于vkGetPhysicalDeviceToolPropertiesEXT
+		physicalDeviceToolPropertiesSets.resize(toolCount);
+		vkGetPhysicalDeviceToolProperties(physicalDevice, &toolCount, physicalDeviceToolPropertiesSets.data());//假设正确返回了数据
+
+		VkPhysicalDeviceToolProperties& physicalDeviceToolProperties = physicalDeviceToolPropertiesSets[0];//等价于VkPhysicalDeviceToolPropertiesEXT
+		physicalDeviceToolProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TOOL_PROPERTIES;
+		physicalDeviceToolProperties.pNext = nullptr;
+		physicalDeviceToolProperties.name[VK_MAX_EXTENSION_NAME_SIZE];//包含null-terminated UTF-8 string，指明激活的tool的名字
+		physicalDeviceToolProperties.version[VK_MAX_EXTENSION_NAME_SIZE];//包含null-terminated UTF-8 string，指明激活的tool的版本
+		physicalDeviceToolProperties.purposes = VK_TOOL_PURPOSE_PROFILING_BIT;/* VkToolPurposeFlagBits 组合值位掩码，描述激活的tool支持的用途
+		VkToolPurposeFlagBits 等价于VkToolPurposeFlagBitsEXT:
+		VK_TOOL_PURPOSE_VALIDATION_BIT : 指明tool提供验证API使用情况的能力
+		VK_TOOL_PURPOSE_PROFILING_BIT : 指明tool提供分析API使用情况的能力
+		VK_TOOL_PURPOSE_TRACING_BIT : 指明tool提供捕获应用使用的API数据的能力，包括简单日志记录到后续重放的能力
+		VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT : 指明tool提供额外的API功能/扩展，超出底层实现的能力
+		VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT : 指明tool修改应用中有的API功能/扩展
+		VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT :	指明tool可以通过vkCreateDebugReportCallbackEXT 或者 vkCreateDebugUtilsMessengerEXT 指定的回调函数提供额外的应用信息，
+		VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT : 指明tool处理debug markers或者debug annotation, queue labels, 或者 command buffer labels	
+		*/
+		physicalDeviceToolProperties.description[VK_MAX_DESCRIPTION_SIZE];//包含null-terminated UTF-8 string，描述激活的tool
+		physicalDeviceToolProperties.layer[VK_MAX_EXTENSION_NAME_SIZE];//包含null-terminated UTF-8 string，指明提供激活的tool所在的layer的名字，否则则该字段为空字符串
+
+	}
+
+	//Frame Boundary  参见p4225
+	{
+		//该结构体添加到queue submission, VkPresentInfoKHR, 或者VkBindSparseInfo的pNext中关联其queue submission的 frame boundary 信息，用于表示一个frame的边界
+		VkFrameBoundaryEXT frameBoundaryEXT{};
+		frameBoundaryEXT.sType = VK_STRUCTURE_TYPE_MAX_ENUM;//没有定义这里设置为非法值
+		frameBoundaryEXT.pNext = nullptr;
+		frameBoundaryEXT.flags = 0;// VkFrameBoundaryFlagBitsEXT组合值位掩码，标记最后一个 frame identifier为最后提交，可以指定为VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT，表示该提交是该frame的最后一个提交，一旦该submission完成，则表示该frame完成
+		frameBoundaryEXT.frameID = 0;//为 frame identifier
+		frameBoundaryEXT.imageCount = 1;//为存储frame 结果的images的数量
+		VkImage image{/*假设这是一个有效的VkImage*/ };
+		frameBoundaryEXT.pImages = &image;//为VkImage数组指针，指向存储frame 结果的images的指针
+		frameBoundaryEXT.bufferCount = 0;//为存储frame 结果的buffers的数量
+		VkBuffer buffer{/*假设这是一个有效的VkBuffer*/ };
+		frameBoundaryEXT.pBuffers = &buffer;//为VkBuffer数组指针，指向存储frame 结果的buffers的指针
+		frameBoundaryEXT.tagName = 0;//为tag数据的数字标识符
+		frameBoundaryEXT.tagSize = 2;//为tag数据的字节数大小
+		char tag[2] = { 's',0};
+		frameBoundaryEXT.pTag = tag;//为包含tag数据的指针
 
 
 	}

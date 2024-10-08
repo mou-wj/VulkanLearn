@@ -14,7 +14,10 @@ public:
 
 private:
 	void Appendix_A_Test();//Vulkan Environment for SPIR-V
-
+	void Appendix_B_Test();//Memory Model
+	void Appendix_C_Test();//Compressed Image Formats
+	void Appendix_D_Test();//Core Revisions (Informative)
+	void Appendix_E_Test();//Layers & Extensions (Informative)
 
 };
 TEST_REGISTER(Appendix_A_2_J_Test)

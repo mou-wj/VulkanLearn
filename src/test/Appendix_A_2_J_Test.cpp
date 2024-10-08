@@ -175,7 +175,7 @@ void Appendix_A_2_J_Test::Appendix_E_Test()//Layers & Extensions (Informative)
 
 	//Extension Interactions  参见p4355  ，描述了一些Vulkan扩展定义的接口需要依赖其他的扩展
 
-	//List of Current Extensions  参见p4355  ，列举当前的Vulkan扩展
+	//List of Current Extensions  参见p4355  ，列举当前的Vulkan扩展,基于版本1.3.285
 	{
 		/*
         拓展:
@@ -451,7 +451,7 @@ void Appendix_A_2_J_Test::Appendix_E_Test()//Layers & Extensions (Informative)
         */
     }
 
-    //List of Provisional Extensions  参见p5042  ，列举临时的拓展
+    //List of Provisional Extensions  参见p5042  ，列举临时的拓展,基于版本1.3.285
     {
         /*
         拓展:
@@ -571,6 +571,73 @@ void Appendix_A_2_J_Test::Appendix_E_Test()//Layers & Extensions (Informative)
         
         */
     }
+}
+
+void Appendix_A_2_J_Test::Appendix_F_Test()//Vulkan Roadmap Milestones
+{
+    //Vulkan Roadmap Milestones  对Roadmap milestones的每个milestone 都表示一组主流中高端智能机，平板等终端支持的 extensions, features, limits, 以及 formats  ，参见p5293  ，包含:
+
+    //Roadmap 2022   描述该milestone相关的版本，所需特性，limits，所需拓展等信息，  参见p5293
+
+    //Roadmap 2024   描述该milestone相关的版本，所需特性，limits，所需拓展等信息，  参见p5297
+}
+
+void Appendix_A_2_J_Test::Appendix_G_Test()//API Boilerplate
+{
+	//API Boilerplate   描述了一个完整Vulkan API所需的基本内容,  参见p5300  ，包含:
+
+    //Vulkan Header Files   vulkan的头文件 ， 参见p5300
+    {
+		//Vulkan Combined API Header vulkan.h (Informative) 参见p5300
+
+        //Vulkan Platform-Specific Header vk_platform.h (Informative)  参见p5300
+
+        //Vulkan Core API Header vulkan_core.h   参见p5301
+    }
+
+
+    //Window System-Specific Header Control (Informative)   描述和平台相关的拓展，如 VK_KHR_win32_surface 的头文件，参见p5304
+
+	//Provisional Extension Header Control (Informative)   描述临时性的拓展的头文件，参见p5306
+
+	//Video Std Headers   描述视频编码解码相关的头文件，参见p5307
+}
+
+void Appendix_A_2_J_Test::Appendix_H_Test()//Invariance
+{
+	//Invariance  描述同一版本的Vulkan API的一致性的理由以及其规则，  参见p5308  ，包含:
+
+	//Repeatability   参见p5308
+
+	//Multi-pass Algorithms  参见p5308
+
+    //Invariance Rules   参见p5308
+
+	//Tessellation Invariance  参见p5310
+}
+
+void Appendix_A_2_J_Test::Appendix_I_Test()//Lexicon
+{
+	//Lexicon  描述该文档 vulkan specification 使用的术语，缩写以及接口前缀，  参见p5311  ，包含:
+
+	//Glossary  参见p5312  ，描述该文档 vulkan specification 使用的术语词汇
+
+	//Common Abbreviations  参见p5341  ，描述该文档 vulkan specification 使用的缩写词汇
+
+	//Video-Specific Abbreviations   参见p5342  ，描述视频编码解码相关的缩写词汇
+
+	//Prefixes  参见p5343  ，描述vulkan对象或者接口等的名字前缀
+}
+
+void Appendix_A_2_J_Test::Appendix_J_Test()//Credits (Informative)
+{
+    //Credits (Informative)  描述vulkan 1.3的贡献者以及咨询组 ，包含:
+    
+	//Working Group Contributors to Vulkan  参见p5345  ，描述vulkan 1.3的贡献者
+
+    //Other Credits   参见p5353  ，描述vulkan 1.3的咨询组
+
+
 }
 
 NS_TEST_END
